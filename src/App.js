@@ -7,27 +7,9 @@ import Routes from './routes';
 import styled from "styled-components";
 import { User } from './components/Sidebar/user';
 import Background from "./assets/bg.jpg";
-import { useQuery, gql } from '@apollo/client';
-
-const GET_FACTORIES = gql`
-  query {
-    order {
-      orderItems {
-        edges {
-          node {
-            updatedAt
-          }
-        }
-      }
-    }
-  }
-`;
 
 const App = () => {
   const [drawer, setDrawer] = useState(true);
-  const { loading, error, data } = useQuery(GET_FACTORIES);
-
-  console.log(loading, error, data);
 
   return (
     <Wrapper>

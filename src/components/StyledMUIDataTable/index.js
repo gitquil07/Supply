@@ -16,8 +16,7 @@ export const StyledMUIDataTable = styled(MUIDataTable)`
     
     table td, table th {
         border: 1px solid #dddddd;
-    }
- 
+    } 
     
     thead th, thead span{
         font-weight: bold;

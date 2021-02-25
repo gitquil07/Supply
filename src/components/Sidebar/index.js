@@ -35,7 +35,7 @@ export const Sidebar = () => {
                     <Collapse in={state[i.state]} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
                             {i.children.map((i, index) =>
-                                <StyledLink to={i.url}>
+                                <StyledLink to={i.url} key={index}>
                                     <ListItem button key={index}>
                                         <ListItemIcon></ListItemIcon>
                                         <ListItemText primary={i.name} />

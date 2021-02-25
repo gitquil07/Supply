@@ -1,11 +1,12 @@
-import { Route, Switch } from "react-router-dom";
+import { Route } from "react-router-dom";
+import UserCreate from "./users/UserCreate";
 import UsersList from "./users/UsersList";
-
 const Settings = () => {
     return (
-        <Switch>
+        <>
             <Route path="/settings/users" component={UsersList} />
-        </Switch>
+            <Route path="/settings/users/create" component={UserCreate} />
+        </>
     );
 };
 
