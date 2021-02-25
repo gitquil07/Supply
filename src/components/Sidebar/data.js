@@ -1,3 +1,8 @@
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import BookIcon from '@material-ui/icons/Book';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import SettingsIcon from '@material-ui/icons/Settings';
+
 export const Supply = [
     {
         name: "Заказы",
@@ -95,5 +100,32 @@ export const Settings = [
     {
         name: "Отчет",
         url: "#"
+    }
+];
+
+export const navElements = [
+    {
+        name: "Снабжение",
+        icon: <DashboardIcon />,
+        children: Supply,
+        state: "supply"
+    },
+    {
+        name: "Логистика",
+        icon: <BookIcon />,
+        children: Logistics,
+        state: "logistics"
+    },
+    {
+        name: "Таможня",
+        icon: <ShoppingCartIcon />,
+        children: Customs,
+        state: "customs"
+    },
+    {
+        name: "Управление",
+        icon: <SettingsIcon />,
+        children: Settings,
+        state: "settings"
     }
 ];
