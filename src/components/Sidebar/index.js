@@ -21,11 +21,11 @@ export const Sidebar = () => {
     const handleExpand = (name) => setState({ ...state, supply: false, logistics: false, customs: false, settings: false, [name]: !state[name] });
 
     return (
-        <List component="nav">
+        <List component="nav" style={{ color: "white", background: "rgba(0, 0, 0, 0.2)", height: "100%" }}>
             {navElements.map((i, index) =>
                 <Fragment key={index}>
                     <ListItem button onClick={() => handleExpand(i.state)}>
-                        <ListItemIcon> {i.icon} </ListItemIcon>
+                        <ListItemIcon style={{ color: "white" }}> {i.icon} </ListItemIcon>
                         <ListItemText primary={i.name} />
                         {state[i.state] ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
                     </ListItem>
@@ -34,7 +34,7 @@ export const Sidebar = () => {
                         <List component="div" disablePadding>
                             {i.children.map((i, index) =>
                                 <ListItem button key={index}>
-                                    <ListItemIcon>  </ListItemIcon>
+                                    <ListItemIcon></ListItemIcon>
                                     <ListItemText primary={i.name} />
                                 </ListItem>
                             )}
