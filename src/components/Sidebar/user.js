@@ -21,7 +21,7 @@ const Wrapper = styled.div`
     box-sizing: border-box;
     padding-left: 5px;
     color: white;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.7);
 `;
 
 const Name = styled.div`

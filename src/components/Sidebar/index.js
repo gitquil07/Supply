@@ -21,7 +21,7 @@ export const Sidebar = () => {
     const handleExpand = (name) => setState({ ...state, supply: false, logistics: false, customs: false, settings: false, [name]: !state[name] });
 
     return (
-        <List component="nav" style={{ color: "white", background: "rgba(0, 0, 0, 0.2)", height: "100%" }}>
+        <List component="nav" style={{ color: "white", background: "rgba(0, 0, 0, 0.6)", height: "100%" }}>
             {navElements.map((i, index) =>
                 <Fragment key={index}>
                     <ListItem button onClick={() => handleExpand(i.state)}>

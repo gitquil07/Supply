@@ -64,7 +64,7 @@ const StyledDrawer = styled(Drawer)`
 
   .MuiDrawer-paper {
     width: 270px;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${Background});
+    background-image: url(${Background});
     background-size: cover; 
   }
 `;
