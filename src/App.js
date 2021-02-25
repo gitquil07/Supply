@@ -7,9 +7,27 @@ import Routes from './routes';
 import styled from "styled-components";
 import { User } from './components/Sidebar/user';
 import Background from "./assets/bg.jpg";
+import { useQuery, gql } from '@apollo/client';
+
+const GET_FACTORIES = gql`
+  query {
+    order {
+      orderItems {
+        edges {
+          node {
+            updatedAt
+          }
+        }
+      }
+    }
+  }
+`;
 
 const App = () => {
   const [drawer, setDrawer] = useState(true);
+  const { loading, error, data } = useQuery(GET_FACTORIES);
+
+  console.log(loading, error, data);
 
   return (
     <Wrapper>
@@ -39,7 +57,7 @@ const Wrapper = styled.div`
 `;
 
 const Main = styled.div` 
-  margin-top: 10px;
+  margin-top: 20px;
   margin-left: ${props => props.open ? "290px" : "20px"};
   padding-right: 20px;
 `;
@@ -49,9 +67,7 @@ const Header = styled.div`
   margin-left: ${props => props.open && "270px"};
   height: 60px;
   background-color: #fff;
-  box-shadow: -1px 1px 8px 0px rgba(67,67,67,0.66);
-  -webkit-box-shadow: -1px 1px 8px 0px rgba(67,67,67,0.66);
-  -moz-box-shadow: -1px 1px 8px 0px rgba(67,67,67,0.66); 
+  box-shadow: 0px 10px 30px -10px rgba(61, 61, 61, 0.26) !important;
   display: flex;
   align-items: center;
   justify-content: space-between;

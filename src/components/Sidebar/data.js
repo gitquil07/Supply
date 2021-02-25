@@ -95,7 +95,7 @@ export const Customs = [
 export const Settings = [
     {
         name: "Пользователи",
-        url: "#"
+        url: "/settings/users"
     },
     {
         name: "Отчет",

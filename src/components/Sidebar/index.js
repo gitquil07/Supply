@@ -1,4 +1,5 @@
 import { Fragment, useState } from "react";
+import styled from "styled-components";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -9,6 +10,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
 import { navElements } from "./data"
+import { Link } from "react-router-dom";
 
 export const Sidebar = () => {
     const [state, setState] = useState({
@@ -33,10 +35,12 @@ export const Sidebar = () => {
                     <Collapse in={state[i.state]} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
                             {i.children.map((i, index) =>
-                                <ListItem button key={index}>
-                                    <ListItemIcon></ListItemIcon>
-                                    <ListItemText primary={i.name} />
-                                </ListItem>
+                                <StyledLink to={i.url}>
+                                    <ListItem button key={index}>
+                                        <ListItemIcon></ListItemIcon>
+                                        <ListItemText primary={i.name} />
+                                    </ListItem>
+                                </StyledLink>
                             )}
                         </List>
                     </Collapse>
@@ -45,3 +49,8 @@ export const Sidebar = () => {
         </List>
     );
 };
+
+const StyledLink = styled(Link)`
+    text-decoration: none;
+    color: #fff;
+`;
