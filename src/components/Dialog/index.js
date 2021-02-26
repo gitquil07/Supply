@@ -20,6 +20,8 @@ const AlertDialog = ({ dialogTitle, children, clickYes, }) => {
             open={true}
             TransitionComponent={Transition}
             keepMounted
+            fullWidth={true}
+            maxWidth={'md'}
         >
             <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogContent>

@@ -120,8 +120,9 @@ export default UserCreate;
 
 const Form = styled.div`
     width: 100%;  
+
  
-    .inputs {
+    .inputs { 
         display: flex;
         align-items: center; 
         flex-wrap: wrap;

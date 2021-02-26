@@ -10,7 +10,7 @@ const UsersList = () => {
     const { data } = useQuery(GET_USERS);
 
     const options = {
-        filterType: 'checkbox',
+        // filterType: 'checkbox',
     };
 
     const list = data?.account?.users?.edges.map(({ node }) => {
