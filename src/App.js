@@ -5,11 +5,25 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { Sidebar } from './components/Sidebar';
 import Routes from './routes';
 import styled from "styled-components";
-import { User } from './components/Sidebar/user';
 import Background from "./assets/bg.jpg";
+
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 
 const App = () => {
   const [drawer, setDrawer] = useState(true);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
 
   return (
     <Wrapper>
@@ -17,17 +31,29 @@ const App = () => {
         <IconButton onClick={() => setDrawer(!drawer)}>
           <MenuIcon />
         </IconButton>
+
+        <Account>
+          <IconButton aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleMenu} color="inherit">
+            <AccountCircle fontSize="large" />
+          </IconButton>
+          <Menu id="menu-appbar" anchorEl={anchorEl} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} keepMounted transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            open={open}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={handleClose}>Выйти</MenuItem>
+            <MenuItem onClick={handleClose}>Мой аккаунт</MenuItem>
+          </Menu>
+        </Account>
       </Header>
 
       <StyledDrawer variant="persistent" anchor="left" open={drawer}>
-        <User />
         <Sidebar />
       </StyledDrawer>
 
       <Main open={drawer}>
         <Routes />
       </Main>
-    </Wrapper >
+    </Wrapper>
   );
 }
 
@@ -63,4 +89,8 @@ const StyledDrawer = styled(Drawer)`
     background-image: url(${Background});
     background-size: cover; 
   }
+`;
+
+const Account = styled.div`
+
 `;
