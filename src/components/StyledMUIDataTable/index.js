@@ -65,9 +65,16 @@ export const StyledMUIDataTable = styled(MUIDataTable)`
     tbody tr td {
         padding: 15px 10px;
     }
+
+    tbody tr td a {
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    
     
     thead th, thead span { 
-        font-size: 18px;
+        font-size: 17px;
     }
 
     tbody>tr:nth-child(odd) {

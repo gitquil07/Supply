@@ -1,10 +1,10 @@
-import styled from "styled-components";
 import { Title } from "../../../components/Title";
 import { Button } from "../../../components/Button";
 import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
 import { columns } from "./TableData";
 import { useQuery } from "@apollo/client";
 import { GET_USERS } from "./gql";
+import { HeaderForFilter } from "../../../components/HeaderForFilter";
 
 const UsersList = () => {
     const { data } = useQuery(GET_USERS);
@@ -31,10 +31,10 @@ const UsersList = () => {
 
     return (
         <>
-            <Header>
+            <HeaderForFilter>
                 <Title name="Пользователи" />
                 <Button name="Создать пользователя" url="/settings/users/create" />
-            </Header>
+            </HeaderForFilter>
             <StyledMUIDataTable
                 title={"Список всех сотрудников"}
                 data={list}
@@ -46,17 +46,3 @@ const UsersList = () => {
 };
 
 export default UsersList;
-
-const Header = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    height: 70px;
-
-    background: #FFFFFF;
-    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    margin-bottom: 20px;
-    padding: 0 10px;
-`;

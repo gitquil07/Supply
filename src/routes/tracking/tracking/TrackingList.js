@@ -2,9 +2,9 @@ import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
 import { Button } from "../../../components/Button";
 import { Title } from "../../../components/Title"
 import { columns } from "./TableData";
-import { useQuery } from "@apollo/client"; 
+import { useQuery } from "@apollo/client";
 import { GET_TRACKINGS } from "./gql";
-import styled from "styled-components";
+import { HeaderForFilter } from "../../../components/HeaderForFilter";
 
 const TrackingList = () => {
 
@@ -13,8 +13,8 @@ const TrackingList = () => {
     const options = {
         // 
     };
-    
-    const list = data?.application?.applications?.edges?.map(({node}) => {
+
+    const list = data?.application?.applications?.edges?.map(({ node }) => {
         return {
             public_id: node.publicId,
             order: `${node.trackingUser.firstName} + ${node.trackingUser.fullName}`,
@@ -31,32 +31,17 @@ const TrackingList = () => {
 
     return (
         <>
-            <Header>
+            <HeaderForFilter>
                 <Title name="Date picker"></Title>
                 <Button name="Применить"></Button>
-            </Header>
+            </HeaderForFilter>
             <StyledMUIDataTable
                 title={"Заявки на поставку"}
                 data={list}
                 columns={columns}
-                options={options}/>
+                options={options} />
         </>
     );
 }
-
-const Header = styled.div`
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-        
-    height: 70px;
-
-    background: #FFFFFF;
-    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    margin-bottom: 20px;
-    padding: 0 10px;
-`;
-
 
 export default TrackingList;
