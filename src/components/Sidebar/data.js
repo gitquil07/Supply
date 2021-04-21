@@ -37,7 +37,7 @@ export const Supply = [
 export const Logistics = [
     {
         name: "Логистика",
-        url: "#"
+        url: "/tracking"
     },
     {
         name: "Слежение",

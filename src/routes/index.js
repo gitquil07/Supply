@@ -7,8 +7,8 @@ import Tracking from "./tracking";
 const Routes = () => {
     return (
         <Switch>
-            <Route path="/supply" component={Supply} />
             <Route path="/tracking" component={Tracking} />
+            <Route path="/supply" component={Supply} />
             <Route path="/customs" component={Customs} />
             <Route path="/settings" component={Settings} />
         </Switch>
