@@ -57,9 +57,13 @@ export const StyledMUIDataTable = styled(MUIDataTable)`
             height: 60px;
 
             th {
-                padding: 0 16px;
+                padding: 0 10px;
             }
         }
+    }
+
+    tbody tr td {
+        padding: 15px 10px;
     }
     
     thead th, thead span { 
