@@ -21,10 +21,9 @@ query {
               node {
                 code
               }
-            }
+             }
             },
             isSuperuser,
-            
           }
         }
       }
