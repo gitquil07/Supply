@@ -4,12 +4,10 @@ import { Button } from "../../../components/Button";
 import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
 import { columns } from "./TableData";
 import { useQuery } from "@apollo/client";
-import { GET_USERS } from "./Queries";
+import { GET_USERS } from "./gql";
 
 const UsersList = () => {
     const { data } = useQuery(GET_USERS);
-
-    console.log(data)
 
     const options = {
         // filterType: 'checkbox',

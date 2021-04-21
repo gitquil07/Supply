@@ -6,7 +6,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 export const Supply = [
     {
         name: "Заказы",
-        url: "#"
+        url: "/supply/order"
     },
     {
         name: "Поставщики",

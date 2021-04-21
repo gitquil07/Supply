@@ -34,7 +34,7 @@ const App = () => {
 
         <Account>
           <IconButton aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleMenu} color="inherit">
-            <AccountCircle fontSize="large" />
+            <AccountCircle fontSize="large" style={{ color: "grey" }} />
           </IconButton>
           <Menu id="menu-appbar" anchorEl={anchorEl} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} keepMounted transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             open={open}
