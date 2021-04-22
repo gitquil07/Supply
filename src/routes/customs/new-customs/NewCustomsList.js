@@ -1,8 +1,8 @@
+import { useQuery } from "@apollo/client";
+import { GET_NEW_CUSTOMS } from "./gql";
 import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
 import { Button } from "../../../components/Button";
-import { Title } from "../../../components/Title"
-import { useQuery } from "@apollo/client";
-import { GET_TRACKINGS } from "./gql";
+import { Title } from "../../../components/Title";
 import { HeaderForFilter } from "../../../components/HeaderForFilter";
 import { propEq, find } from "ramda";
 import { Link } from "react-router-dom";
@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 
 const NewCustomsList = ({match}) => {
 
-    const { data } = useQuery()
+    const { data } = useQuery(GET_NEW_CUSTOMS)
 
     const columns = [
         {
@@ -102,76 +102,26 @@ const NewCustomsList = ({match}) => {
             }
         },
     ];
-    const reducerList = useSelector(state => state)
-    const list = pathOr([], ['application', 'application_list'], reducerList)
-    const [from, setFrom] = useState(moment().startOf('month').toDate());
-    const [to, setTo] = useState(new Date());
 
-
-    const data = list.map(({public_id, order, degree_of_danger, delivery_condition, package_on_pallet, transport_count, status, created_at, updated_at, type_of_packaging}) => {
-        return{
-            public_id,
-            order : order?.vendor_factory?.vendor?.company_name,
-            degree_of_danger,
-            delivery_condition,
-            package_on_pallet,
-            transport_count,
-            status,
-            created_at: moment(created_at).format('YYYY-MM-DD'),
-            updated_at: moment(updated_at).format('YYYY-MM-DD'),
-            type_of_packaging
-        }})
-
-    useEffect(() => {
-        getApplicationList(moment(from).format("YYYY-MM-DD"), moment(to).format("YYYY-MM-DD"), false, "в растаможке")
-    },[from, to])
+    const list = []; 
 
     const options = {
-        filterType: 'dropdown',
-        responsive: 'stacked'
+     
     };
+
     return (
-        <div className="map-wrapper">
-            <PageTitleBar title={<IntlMessages id="sidebar.customs" />} match={match} />
-            <RctCollapsibleCard>
-                <div className="search-bar-wrap">
-                    <div className="row">
-                        <div className="col-sm-4 col-md-2 col-lg-2">
-                            <DatePicker
-                                format={moment(from).format("DD.MM.YYYY")}
-                                autoOk
-                                variant="inline"
-                                inputVariant="outlined"
-                                label="От"
-                                value={from}
-                                onChange={date => setFrom(date)}
-                            />
-                        </div>
-                        <div className="col-sm-4 col-md-2 col-lg-2">
-                            <DatePicker
-                                format={moment(to).format("DD.MM.YYYY")}
-                                autoOk
-                                variant="inline"
-                                inputVariant="outlined"
-                                label="До"
-                                value={to}
-                                onChange={date => setTo(date)}
-                            />
-                        </div>
-                        <div className="col-sm-4 col-md-6 col-lg-6" />
-                    </div>
-                </div>
-                <br />
-                <MUIDataTable
-                    title={`Заявки на поставку с ${moment(from).format("YYYY-MM-DD")} по ${moment(to).format("YYYY-MM-DD")}`}
-                    data={data}
-                    columns={columns}
-                    options={options}
-                />
-            </RctCollapsibleCard>
-        </div>
+       <>
+            <HeaderForFilter>
+                <Title name="Date picker"></Title>
+                <Button name="Применить"></Button>
+            </HeaderForFilter>
+            <StyledMUIDataTable
+                title={"Заявки на поставку"}
+                data={list}
+                columns={columns}
+                options={options} />
+       </>
     )
 }
-export default connect(null, {
-    getApplicationList,
-})(NewCustomsList);
+
+export default NewCustomsList;

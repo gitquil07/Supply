@@ -68,7 +68,7 @@ export const Customs = [
     },
     {
         name: "Нет денег",
-        url: "/customs/no-mone-customs"
+        url: "/customs/no-money-customs"
     },
     {
         name: "Нет документов",

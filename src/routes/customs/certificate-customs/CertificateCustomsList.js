@@ -1,23 +1,19 @@
-import React, {useState, useEffect}  from 'react';
+import { useQuery } from "@apollo/client";
+import { GET_CERTIFICATE_CUSTOMS } from "./gql";
+import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
+import { Button } from "../../../components/Button";
+import { Title } from "../../../components/Title";
+import { HeaderForFilter } from "../../../components/HeaderForFilter";
+import { propEq, find } from "ramda";
+import { Link } from "react-router-dom";
 
-// intl messages
-import IntlMessages from 'Util/IntlMessages';
 
-// page title bar
-import PageTitleBar from 'Components/PageTitleBar/PageTitleBar';
+const CertificateCustomsList = ({match}) => {
 
-// rct card box
-import RctCollapsibleCard from 'Components/RctCollapsibleCard/RctCollapsibleCard';
-import MUIDataTable from "mui-datatables";
-import {DatePicker} from "@material-ui/pickers";
-import moment from "moment";
-import {Link} from "react-router-dom";
-import {connect} from "react-redux";
-import {getCustomsList} from "Actions";
-import {useSelector} from "react-redux";
-import {find, pathOr, propEq} from 'ramda'
+    const { data } = useQuery(GET_CERTIFICATE_CUSTOMS);
 
-const CertificateCustomsList = ({match, getCustomsList}) => {
+    const list = [];
+
     const columns = [
         {
             name: "public_id",
@@ -76,71 +72,24 @@ const CertificateCustomsList = ({match, getCustomsList}) => {
             }
         },
     ];
-    const reducerList = useSelector(state => state)
-    const list = pathOr([], ['customs', 'customs_list', 'results'], reducerList)
-    const [from, setFrom] = useState(moment().startOf('month').toDate());
-    const [to, setTo] = useState(new Date());
-
-    const data = list.map(({public_id, application, status, created_at}) => {
-        return{
-            public_id,
-            application: application?.order?.vendor_factory?.factory.name + ' / ' + application?.order?.vendor_factory?.vendor?.name ,
-            status: status.join(' - '),
-            transport_type: application?.transport_type?.name,
-            invoices: application?.invoices,
-            created_at: moment(created_at).format('YYYY-MM-DD'),
-        }})
-
-    useEffect(() => {
-        getCustomsList(moment(from).format("YYYY-MM-DD"), moment(to).format("YYYY-MM-DD"), "сертификат")
-    },[from, to])
 
     const options = {
         filterType: 'dropdown',
         responsive: 'stacked'
     };
+
     return (
-        <div className="map-wrapper">
-            <PageTitleBar title={<IntlMessages id="sidebar.certificate-customs" />} match={match} />
-            <RctCollapsibleCard>
-                <div className="search-bar-wrap">
-                    <div className="row">
-                        <div className="col-sm-4 col-md-2 col-lg-2">
-                            <DatePicker
-                                format={moment(from).format("DD.MM.YYYY")}
-                                autoOk
-                                variant="inline"
-                                inputVariant="outlined"
-                                label="От"
-                                value={from}
-                                onChange={date => setFrom(date)}
-                            />
-                        </div>
-                        <div className="col-sm-4 col-md-2 col-lg-2">
-                            <DatePicker
-                                format={moment(to).format("DD.MM.YYYY")}
-                                autoOk
-                                variant="inline"
-                                inputVariant="outlined"
-                                label="До"
-                                value={to}
-                                onChange={date => setTo(date)}
-                            />
-                        </div>
-                        <div className="col-sm-4 col-md-8 col-lg-8" />
-                    </div>
-                </div>
-                <br />
-                <MUIDataTable
-                    title={`Заказы на поставку с ${moment(from).format("YYYY-MM-DD")} по ${moment(to).format("YYYY-MM-DD")}`}
-                    data={data}
-                    columns={columns}
-                    options={options}
-                />
-            </RctCollapsibleCard>
-        </div>
+      <>
+           <HeaderForFilter>
+                <Title name="Date picker"></Title>
+                <Button name="Применить"></Button>
+            </HeaderForFilter>
+            <StyledMUIDataTable
+                title={"Заявки на поставку"}
+                data={list}
+                columns={columns}
+                options={options} />
+      </>
     )
 }
-export default connect(null, {
-    getCustomsList,
-})(CertificateCustomsList);
+export default CertificateCustomsList;

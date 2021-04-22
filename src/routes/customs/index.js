@@ -19,7 +19,7 @@ import NoTypedCustomsList from "./no-typed-customs/NoTypedCustomsList";
 import NoTypedCustomsCreate from "./no-typed-customs/NoTypedCustomsCreate";
 
 import ClosedCustomsList from "./closed-customs/ClosedCustomsList";
-import ClosedCustomsCreate from "./closed-customs/ClosedCustomsCreate";
+import ClosedCustomsDetail from "./closed-customs/ClosedCustomsDetail";
 
 const Customs = ({match}) => {
     return (
@@ -33,11 +33,8 @@ const Customs = ({match}) => {
             <Route path={`${match.url}/no-money-customs`} component={NoMoneyCustomsList} />
             <Route path={`${match.url}/no-money-customs/create/:id`} component={NoMoneyCustomsCreate} />
 
-            <Route path={`${match.url}/no-money-customs`} component={NoDocumentCustomsList} />
-            <Route path={`${match.url}/no-money-customs/create/:id`} component={NoDocumentCustomsCreate} />
-
-            <Route path={`${match.url}/certificate-customs`} component={CertificateCustomsList} />
-            <Route path={`${match.url}/certificate-customs/create/:id`} component={CertificateCustomsCreate} />
+            <Route path={`${match.url}/no-document-customs`} component={NoDocumentCustomsList} />
+            <Route path={`${match.url}/no-document-customs/create/:id`} component={NoDocumentCustomsCreate} />
 
             <Route path={`${match.url}/certificate-customs`} component={CertificateCustomsList} />
             <Route path={`${match.url}/certificate-customs/create/:id`} component={CertificateCustomsCreate} />
@@ -45,8 +42,8 @@ const Customs = ({match}) => {
             <Route path={`${match.url}/no-typed-customs`} component={NoTypedCustomsList} />
             <Route path={`${match.url}/no-typed-customs/create/:id`} component={NoTypedCustomsCreate} />
 
-            <Route path={`${match.url}/no-typed-customs`} component={ClosedCustomsList} />
-            <Route path={`${match.url}/no-typed-customs/create/:id`} component={ClosedCustomsCreate} />
+            <Route path={`${match.url}/closed-customs`} component={ClosedCustomsList} />
+            <Route path={`${match.url}/closed-customs/detail/:id`} component={ClosedCustomsDetail} />
 
         </>
     );
