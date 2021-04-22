@@ -60,35 +60,31 @@ export const Logistics = [
 export const Customs = [
     {
         name: "Новые",
-        url: "#"
+        url: "/customs/new-customs"
     },
     {
         name: "Готовые для оформления",
-        url: "#"
+        url: "/customs/ready-customs"
     },
     {
         name: "Нет денег",
-        url: "#"
+        url: "/customs/no-mone-customs"
     },
     {
         name: "Нет документов",
-        url: "#"
-    },
-    {
-        name: "Нет денег",
-        url: "#"
+        url: "/customs/no-document-customs"
     },
     {
         name: "Сертификат",
-        url: "#"
+        url: "/customs/certificate-customs"
     },
     {
         name: "Ждет льготы",
-        url: "#"
+        url: "/customs/no-typed-customs"
     },
     {
         name: "Закрытые",
-        url: "#"
+        url: "/customs/closed-customs"
     }
 ];
 
