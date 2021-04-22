@@ -1,22 +1,28 @@
+import { useEffect } from 'react';
 import { find, propEq } from 'ramda';
+import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { useQuery } from "@apollo/client";
+import styled from "styled-components";
 
 import { GET_ORDERS } from "./gql";
-import { Button } from "../../../components/Button";
+import { ButtonWithIcon } from "../../../components/Buttons";
 import { TimeParser } from "../../../utils/functions";
-import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
-import { HeaderForFilter } from '../../../components/HeaderForFilter';
-import { Helmet } from 'react-helmet';
 import DatePickers from '../../../components/DatePickers';
+import { CustomMUIDataTable } from "../../../components/StyledMUIDataTable";
 
 const OrderList = ({ match }) => {
 
+
+    const dispatch = useDispatch();
     const { data } = useQuery(GET_ORDERS);
 
-    const options = {
-        filterType: 'checkbox',
-    };
+    useEffect(() => {
+        dispatch({ type: "CHANGE_TITLE", payload: "Заказы" })
+    }, [dispatch])
+
+
 
     const list = data?.order.orders.edges.map(({ node }) => {
         return {
@@ -97,23 +103,29 @@ const OrderList = ({ match }) => {
         },
     ];
 
+
     return (
         <>
             <Helmet>
                 <title>Заказы</title>
             </Helmet>
-            <HeaderForFilter>
+            <Header>
                 <DatePickers />
-                <Button name="Применить" />
-            </HeaderForFilter>
-            <StyledMUIDataTable
+                <ButtonWithIcon name="Создать заказ" />
+            </Header>
+            <CustomMUIDataTable
                 title={"Список всех сотрудников"}
                 data={list}
                 columns={columns}
-                options={options}
             />
         </>
     );
 };
 
 export default OrderList;
+
+const Header = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;

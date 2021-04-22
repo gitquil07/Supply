@@ -1,6 +1,6 @@
-import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
-import { HeaderForFilter } from "../../../components/HeaderForFilter";
-import { Button }  from "../../../components/Button";
+import { CustomMUIDataTable } from "../../../components/StyledMUIDataTable";
+import { CustomHeader } from "../../../components/CustomHeader";
+import { Button } from "../../../components/Buttons";
 import { Title } from "../../../components/Title";
 import { useQuery } from "@apollo/client";
 import { GET_TRACKING_CLIENTS } from "./gql";
@@ -9,8 +9,6 @@ const TrackingClientList = () => {
     const { data } = useQuery(GET_TRACKING_CLIENTS);
 
     const list = [];
-
-    const options = {};
 
     const columns = [
         {
@@ -73,16 +71,16 @@ const TrackingClientList = () => {
 
     return (
         <>
-            <HeaderForFilter>
+            <CustomHeader>
                 <Button name="Создать" />
-            </HeaderForFilter>
-            <StyledMUIDataTable 
+            </CustomHeader>
+            <CustomMUIDataTable
                 title="Список трансрортных команий"
                 data={list}
                 columns={columns}
-                options={options}/>
+            />
         </>
     );
-}   
+}
 
 export default TrackingClientList;

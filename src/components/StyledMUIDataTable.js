@@ -1,7 +1,41 @@
 import MUIDataTable from "mui-datatables";
 import styled from "styled-components";
 
-export const StyledMUIDataTable = styled(MUIDataTable)`
+import SearchIcon from '@material-ui/icons/YoutubeSearchedFor';
+import PrintIcon from '@material-ui/icons/Receipt';
+import DownloadIcon from '@material-ui/icons/GetApp';
+import ViewColumnIcon from '@material-ui/icons/DynamicFeed';
+import FilterIcon from '@material-ui/icons/GroupWork';
+
+export const CustomMUIDataTable = ({ title, list, columns }) => {
+
+    const options = {
+        filterType: 'dropdown',
+        selectableRows: "none",
+    };
+
+    const components = {
+        icons: {
+            SearchIcon,
+            PrintIcon,
+            DownloadIcon,
+            ViewColumnIcon,
+            FilterIcon,
+        }
+    };
+    return (
+        <StyledMUIDataTable
+            title={title}
+            data={list}
+            columns={columns}
+            options={options}
+            {...{ components }}
+        />
+    )
+}
+
+
+const StyledMUIDataTable = styled(MUIDataTable)`
 
     box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1) !important;
     border-radius: 10px;
@@ -33,7 +67,8 @@ export const StyledMUIDataTable = styled(MUIDataTable)`
  
 
     .MUIDataTableSelectCell-root-35 {
-        display: none;border-radius: 5px;
+        display: none;
+        border-radius: 5px;
     }
 
     tr {      
@@ -63,13 +98,9 @@ export const StyledMUIDataTable = styled(MUIDataTable)`
     }
 
     tbody tr td {
-        padding: 15px 10px;
+        padding: 15px 10px; 
     }
-
-    tbody tr td a {
-        text-decoration: none;
-        font-weight: bold;
-    }
+ 
 
     
     

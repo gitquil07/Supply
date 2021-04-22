@@ -11,11 +11,15 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { Title } from './components/Title';
+import { useSelector } from 'react-redux';
 
 const App = () => {
   const [drawer, setDrawer] = useState(true);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const title = useSelector(state => state.title);
+
+  console.log(title)
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -33,7 +37,7 @@ const App = () => {
             <MenuIcon />
           </IconButton>
 
-          <Title name={document.title} />
+          <Title name={title} />
         </span>
 
         <Account>

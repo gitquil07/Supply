@@ -1,18 +1,16 @@
-import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
-import { HeaderForFilter } from "../../../components/HeaderForFilter";
-import { Button }  from "../../../components/Button";
+import { CustomMUIDataTable } from "../../../components/StyledMUIDataTable";
+import { CustomHeader } from "../../../components/CustomHeader";
+import { Button } from "../../../components/Buttons";
 import { Title } from "../../../components/Title";
 import { useQuery } from "@apollo/client";
 import { GET_TRACKING_TRASNPORTS } from "./gql";
 import { find, propEq } from "ramda";
 import { Link } from "react-router-dom";
 
-const TrackingTransportList = ({match}) => {
+const TrackingTransportList = ({ match }) => {
     const { data } = useQuery(GET_TRACKING_TRASNPORTS);
 
     const list = [];
-
-    const options = {};
 
     const columns = [
         {
@@ -83,18 +81,17 @@ const TrackingTransportList = ({match}) => {
 
     return (
         <>
-            <HeaderForFilter>
+            <CustomHeader>
                 <Title name="DatePicker" />
                 <Button name="Применить" />
-            </HeaderForFilter>
-            <StyledMUIDataTable
+            </CustomHeader>
+            <CustomMUIDataTable
                 title="Заявки на слежение"
                 columns={columns}
                 data={list}
-                options={options}
             />
         </>
     );
-}   
+}
 
 export default TrackingTransportList;

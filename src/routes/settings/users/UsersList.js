@@ -1,17 +1,13 @@
 import { Title } from "../../../components/Title";
-import { Button } from "../../../components/Button";
-import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
+import { Button } from "../../../components/Buttons";
+import { CustomMUIDataTable } from "../../../components/StyledMUIDataTable";
 import { columns } from "./TableData";
 import { useQuery } from "@apollo/client";
 import { GET_USERS } from "./gql";
-import { HeaderForFilter } from "../../../components/HeaderForFilter";
+import { CustomHeader } from "../../../components/CustomHeader";
 
 const UsersList = () => {
     const { data } = useQuery(GET_USERS);
-
-    const options = {
-        // filterType: 'checkbox',
-    };
 
     const list = data?.account?.users?.edges.map(({ node }) => {
         return {
@@ -31,15 +27,14 @@ const UsersList = () => {
 
     return (
         <>
-            <HeaderForFilter>
+            <CustomHeader>
                 <Title name="Пользователи" />
                 <Button name="Создать пользователя" url="/settings/users/create" />
-            </HeaderForFilter>
-            <StyledMUIDataTable
+            </CustomHeader>
+            <CustomMUIDataTable
                 title={"Список всех сотрудников"}
                 data={list}
                 columns={columns}
-                options={options}
             />
         </>
     );
