@@ -4,7 +4,6 @@ import { Title } from "../../../components/Title"
 import { columns } from "./TableData";
 import { useQuery } from "@apollo/client"; 
 import { GET_TRACKINGS } from "./gql";
-import styled from "styled-components";
 
 const TrackingList = () => {
 
@@ -25,7 +24,8 @@ const TrackingList = () => {
             transport_type: node.transportType.name,
             created_at: node.created_at,
             updated_at: node.updated_at,
-            type_of_packaging: node.typeOfPackaging
+            type_of_packaging: node.typeOfPackaging,
+            factory: node.order.vendorFactory.name
         }
     });
 
@@ -43,20 +43,5 @@ const TrackingList = () => {
         </>
     );
 }
-
-const Header = styled.div`
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-        
-    height: 70px;
-
-    background: #FFFFFF;
-    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    margin-bottom: 20px;
-    padding: 0 10px;
-`;
-
 
 export default TrackingList;

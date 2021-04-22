@@ -21,6 +21,13 @@ export const GET_TRACKINGS = gql`
                         updatedAt
                         typeOfPackaging
                         publicId
+                        order {
+                            vendorFactory {
+                                factory {
+                                name
+                              }
+                            }
+                          }
                     }
                 }
             }
