@@ -41,19 +41,19 @@ export const Logistics = [
     },
     {
         name: "Слежение",
-        url: "#"
+        url: "/tracking/tracking-transport"
     },
     {
         name: "Прибывшие",
-        url: "#"
+        url: "/tracking/tracking-arrived"
     },
     {
         name: "Клиенты",
-        url: "#"
+        url: "/tracking/tracking-clients"
     },
     {
         name: "Задолжники по заводам",
-        url: "#"
+        url: "/tracking/tracking-dept"
     }
 ];
 

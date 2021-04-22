@@ -1,19 +1,18 @@
+import { useQuery } from "@apollo/client";
+import { GET_TRACKING_ARRIVINGS } from "./gql";
 import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
 import { Button } from "../../../components/Button";
-import { Title } from "../../../components/Title"
-import { useQuery } from "@apollo/client";
-import { GET_TRACKINGS } from "./gql";
+import { Title } from "../../../components/Title";
 import { HeaderForFilter } from "../../../components/HeaderForFilter";
 import { propEq, find } from "ramda";
 import { Link } from "react-router-dom";
 
-const TrackingList = ({match}) => {
+const TrackingArrivedList = ({match}) => {
+    const { data } = useQuery(GET_TRACKING_ARRIVINGS);
 
-    const { data } = useQuery(GET_TRACKINGS);
+    const options = {};
 
-    const options = {
-        // 
-    };
+    const list = [];
 
     const columns = [
         {
@@ -70,35 +69,20 @@ const TrackingList = ({match}) => {
     
     ];
 
-    const list = data?.application?.applications?.edges?.map(({ node }) => {
-        return {
-            public_id: node.publicId,
-            order: `${node.trackingUser.firstName} + ${node.trackingUser.fullName}`,
-            degree_of_danger: node.degreeOfDanger,
-            delivery_condition: node.deliveryCondition,
-            package_on_pallet: node.packageOnPallet,
-            transport_count: node.transportCount,
-            transport_type: node.transportType.name,
-            created_at: node.created_at,
-            updated_at: node.updated_at,
-            type_of_packaging: node.typeOfPackaging,
-            factory: node.order.vendorFactory.name
-        }
-    });
-
     return (
         <>
             <HeaderForFilter>
-                <Title name="Date picker"></Title>
+                <Title name="Date Picker"></Title>
                 <Button name="Применить"></Button>
             </HeaderForFilter>
             <StyledMUIDataTable
-                title={"Заявки на поставку"}
+                title="Заявки на прибывшие"
                 data={list}
                 columns={columns}
-                options={options} />
+                options={options}/>
         </>
     );
+
 }
 
-export default TrackingList;
+export default TrackingArrivedList;
