@@ -10,6 +10,7 @@ import Background from "./assets/bg.jpg";
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import { Title } from './components/Title';
 
 const App = () => {
   const [drawer, setDrawer] = useState(true);
@@ -24,13 +25,16 @@ const App = () => {
     setAnchorEl(null);
   };
 
-
   return (
     <Wrapper>
       <Header open={drawer}>
-        <IconButton onClick={() => setDrawer(!drawer)}>
-          <MenuIcon />
-        </IconButton>
+        <span>
+          <IconButton onClick={() => setDrawer(!drawer)}>
+            <MenuIcon />
+          </IconButton>
+
+          <Title name={document.title} />
+        </span>
 
         <Account>
           <IconButton aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleMenu} color="inherit">
@@ -79,6 +83,12 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  span {
+    display: flex;
+    align-items: center;
+
+  }
 `;
 
 const StyledDrawer = styled(Drawer)`

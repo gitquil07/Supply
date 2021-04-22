@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 import { useQuery } from "@apollo/client";
 
 import { GET_ORDERS } from "./gql";
-import { Title } from "../../../components/Title";
 import { Button } from "../../../components/Button";
 import { TimeParser } from "../../../utils/functions";
 import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
 import { HeaderForFilter } from '../../../components/HeaderForFilter';
+import { Helmet } from 'react-helmet';
+import DatePickers from '../../../components/DatePickers';
 
 const OrderList = ({ match }) => {
 
@@ -28,7 +29,6 @@ const OrderList = ({ match }) => {
             created_at: TimeParser(node.createdAt),
         }
     })
-
 
     const columns = [
         {
@@ -99,9 +99,12 @@ const OrderList = ({ match }) => {
 
     return (
         <>
+            <Helmet>
+                <title>Заказы</title>
+            </Helmet>
             <HeaderForFilter>
-                <Title name="Заказы" />
-                <Button name="Создать пользователя" url="/settings/users/create" />
+                <DatePickers />
+                <Button name="Применить" />
             </HeaderForFilter>
             <StyledMUIDataTable
                 title={"Список всех сотрудников"}
