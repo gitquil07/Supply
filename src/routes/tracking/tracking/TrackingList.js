@@ -1,4 +1,4 @@
-import { CustomMUIDataTable } from "../../../components/StyledMUIDataTable";
+import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Button } from "../../../components/Buttons";
 import { Title } from "../../../components/Title"
 import { useQuery } from "@apollo/client";

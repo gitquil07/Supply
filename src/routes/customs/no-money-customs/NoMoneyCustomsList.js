@@ -1,9 +1,9 @@
 import { useQuery } from "@apollo/client";
 import { GET_NO_MONEY_CUSTOMS } from "./gql";
-import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
-import { Button } from "../../../components/Button";
+import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
+import { Button } from "../../../components/Buttons";
 import { Title } from "../../../components/Title";
-import { HeaderForFilter } from "../../../components/HeaderForFilter";
+import { CustomHeader } from "../../../components/CustomHeader";
 import { propEq, find } from "ramda";
 import { Link } from "react-router-dom";
 
@@ -131,11 +131,11 @@ const NoMoneyCustomsList = ({match}) => {
     
     return (
         <>
-            <HeaderForFilter>
+            <CustomHeader>
                 <Title name="Date picker"></Title>
                 <Button name="Применить"></Button>
-            </HeaderForFilter>
-            <StyledMUIDataTable
+            </CustomHeader>
+            <CustomMUIDataTable
                 title={"Заявки на поставку"}
                 data={list}
                 columns={columns}

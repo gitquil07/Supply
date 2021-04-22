@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { GET_TRACKING_ARRIVINGS } from "./gql";
-import { CustomMUIDataTable } from "../../../components/StyledMUIDataTable";
+import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Button } from "../../../components/Buttons";
 import { Title } from "../../../components/Title";
 import { CustomHeader } from "../../../components/CustomHeader";

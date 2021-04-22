@@ -1,4 +1,4 @@
-import { CustomMUIDataTable } from "../../../components/StyledMUIDataTable";
+import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { CustomHeader } from "../../../components/CustomHeader";
 import { Button }  from "../../../components/Buttons";
 import { Title } from "../../../components/Title";

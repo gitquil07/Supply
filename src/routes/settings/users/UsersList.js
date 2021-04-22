@@ -1,6 +1,6 @@
 import { Title } from "../../../components/Title";
 import { Button } from "../../../components/Buttons";
-import { CustomMUIDataTable } from "../../../components/StyledMUIDataTable";
+import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { columns } from "./TableData";
 import { useQuery } from "@apollo/client";
 import { GET_USERS } from "./gql";

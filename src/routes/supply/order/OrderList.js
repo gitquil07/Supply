@@ -10,7 +10,7 @@ import { GET_ORDERS } from "./gql";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import { TimeParser } from "../../../utils/functions";
 import DatePickers from '../../../components/DatePickers';
-import { CustomMUIDataTable } from "../../../components/StyledMUIDataTable";
+import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 
 const OrderList = ({ match }) => {
 
