@@ -1,13 +1,13 @@
 import { useParams } from "react-router-dom";
 
-const TrackingEdit = () => {
+const TrackingCreate = () => {
     const {id} = useParams();
 
     return (
         <>
-            Tracking Edit {id}
+            Tracking Create {id}
         </>
     );
 }
 
-export default TrackingEdit;
+export default TrackingCreate;
