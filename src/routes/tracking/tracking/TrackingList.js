@@ -94,19 +94,17 @@ const TrackingList = ({ match }) => {
     }
   });
 
-  const handleDateRangeChange = () => {}
+  const handleDateRangeChange = () => { }
 
   return (
     <>
-      <Helmet>
-        <title>{ title }</title>
-      </Helmet>
+      <Helmet title={title} />
       <DatePickers
-          fromDate={fromDate}
-          toDate={toDate}
-          changeFrom={setFromDate}
-          changeTo={setToDate}
-          buttonClicked={handleDateRangeChange}
+        fromDate={fromDate}
+        toDate={toDate}
+        changeFrom={setFromDate}
+        changeTo={setToDate}
+        buttonClicked={handleDateRangeChange}
       />
       <CustomMUIDataTable
         title={setTitleWithDateRange("поставку", fromDate, toDate)}

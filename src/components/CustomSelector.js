@@ -6,22 +6,24 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Arrow from "../assets/icons/arrow.svg";
 
-export const CustomSelector = () => {
+export const CustomSelector = ({ label }) => {
     return (
         <Wrapper>
-            <img src={Arrow} alt="arrow" id="arrow" />
-            <FormControl variant="outlined">
-                <InputLabel shrink id="demo-simple-select-placeholder-label-label"> Выберите завод </InputLabel>
+            <FormControl variant="outlined" id="formControl">
+                <img src={Arrow} alt="arrow" id="arrow" />
+                <InputLabel id="label">{label}</InputLabel>
                 <Select
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
-                    value={"asdasdasd"}
+                    // value={age}
                     // onChange={handleChange}
-                    displayEmpty
+                    label="Age"
                 >
-                    <MenuItem value="" selected>Завод</MenuItem>
+                    <MenuItem value="">
+                        <em>None</em>
+                    </MenuItem>
                     <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
+                    <MenuItem value={20}>Twenty Twenty Twenty Twenty Twenty Twenty Twenty Twenty Twenty Twenty</MenuItem>
                     <MenuItem value={30}>Thirty</MenuItem>
                 </Select>
             </FormControl>
@@ -30,54 +32,35 @@ export const CustomSelector = () => {
 };
 
 const Wrapper = styled.div`
-    width: 100%;   
+    max-width: 300px;
+    min-width: 250px;
     position: relative;
+ 
+
+    #label {
+        background-color: white;
+    }
 
     #arrow {
         position: absolute;
         right: 10px;
         top: 50%;
-        transform: translate(-50%, -50%)
+        transform: translate(-50%, -50%);
     }
 
-    .MuiFormControl-root {
+    .MuiFormControl-root { 
         width: 100%;
-        height: 55px;
 
-        fieldset { 
-            height: 55px;
+        .MuiInputBase-root .MuiSelect-root {
+            padding-right: 50px;
+        }
+
+        fieldset {  
             border: 1px solid rgba(0, 0, 0, 0.1) !important;
         }    
 
-        .MuiInputBase-root {
-            height: 55px;
-            overflow: hidden; 
-
-            input {
-                width: 100%;
-                height: 55px; 
-            }
-
-            svg {
-                display: none;
-            }
-        }
-    
-        select:required:invalid {
-            color: #666;
-        }
-        
-        option[value=""][disabled] {
+        .MuiInputBase-root svg {
             display: none;
         }
-      
-        option {
-            color: #000;
-        }
-    }
-
-    label {
-        background-color: white;
-        padding: 0 5px;
     }
 `;
