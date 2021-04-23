@@ -1,4 +1,3 @@
-import { useQuery } from "@apollo/client";
 import { GET_TRACKING_CLIENTS } from "./gql";
 import { useDateRange, useTitle } from "../../../hooks";
 import { Helmet } from "react-helmet";
@@ -6,7 +5,6 @@ import styled from "styled-components";
 
 import DatePickers from "../../../components/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { CustomHeader } from "../../../components/CustomHeader";
 import { ButtonWithIcon } from "../../../components/Buttons";
 
 const ClientList = ({match}) => {
@@ -15,11 +13,14 @@ const ClientList = ({match}) => {
         fromDate,
         toDate,
         setFromDate,
-        setToDate
-    } = useDateRange();
+        setToDate,
+        handleDateRangeChange,
+        data,
+        error
+    } = useDateRange(GET_TRACKING_CLIENTS);
+
     const title = useTitle("Транспортные компаии");
     
-    const { data } = useQuery(GET_TRACKING_CLIENTS);
 
     const list = [];
 
@@ -81,8 +82,6 @@ const ClientList = ({match}) => {
             }
         },
     ];
-
-    const handleDateRangeChange = () => {}
 
     return (
         <>

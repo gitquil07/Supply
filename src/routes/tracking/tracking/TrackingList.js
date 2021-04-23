@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { useQuery } from "@apollo/client";
 import { GET_TRACKINGS } from "./gql";
 import { propEq, find } from "ramda";
 import { Helmet } from "react-helmet";
@@ -16,12 +15,13 @@ const TrackingList = ({ match }) => {
     fromDate,
     setFromDate,
     toDate,
-    setToDate
-  } = useDateRange();
+    setToDate,
+    handleDateRangeChange,
+    data,
+    error
+  } = useDateRange(GET_TRACKINGS);
 
   const title = useTitle("Логистика");
-
-  const { data } = useQuery(GET_TRACKINGS);
 
   const columns = [
     {
@@ -93,8 +93,6 @@ const TrackingList = ({ match }) => {
       factory: node.order.vendorFactory.name
     }
   });
-
-  const handleDateRangeChange = () => {}
 
   return (
     <>
