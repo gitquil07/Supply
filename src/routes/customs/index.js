@@ -1,49 +1,49 @@
 import { Route } from "react-router-dom";
 
-import NewCustomsList from "./new-customs/NewCustomsList";
-import NewCustomsCreate from "./new-customs/NewCustomsCreate";
+import NewList from "./new/NewList";
+import NewCreate from "./new/NewCreate";
 
-import ReadyCustomsList from "./ready-customs/ReadyCustomsList";
-import ReadyCustomsCreate from "./ready-customs/ReadyCustomsCreate";
+import ReadyList from "./ready/ReadyList";
+import ReadyCreate from "./ready/ReadyCreate";
 
-import NoMoneyCustomsList from "./no-money-customs/NoMoneyCustomsList";
-import NoMoneyCustomsCreate from "./no-money-customs/NoMoneyCustomsCreate";
+import NoMoneyList from "./no-money/NoMoneyList";
+import NoMoneyCreate from "./no-money/NoMoneyCreate";
 
-import NoDocumentCustomsList from "./no-document-customs/NoDocumentCustomsList";
-import NoDocumentCustomsCreate from "./no-document-customs/NoDocumentCustomsCreate";
+import NoDocumentList from "./no-document/NoDocumentList";
+import NoDocumentCustomsCreate from "./no-document/NoDocumentCreate";
 
-import CertificateCustomsList from "./certificate-customs/CertificateCustomsList";
-import CertificateCustomsCreate from "./certificate-customs/CertificateCustomsCreate";
+import CertificateList from "./certificate/CertificateList";
+import CertificateCreate from "./certificate/CertificateCreate";
 
-import NoTypedCustomsList from "./no-typed-customs/NoTypedCustomsList";
-import NoTypedCustomsCreate from "./no-typed-customs/NoTypedCustomsCreate";
+import NoTypedList from "./no-typed/NoTypedList";
+import NoTypedCreate from "./no-typed/NoTypedCreate";
 
-import ClosedCustomsList from "./closed-customs/ClosedCustomsList";
-import ClosedCustomsDetail from "./closed-customs/ClosedCustomsDetail";
+import ClosedList from "./closed/ClosedList";
+import ClosedDetail from "./closed/ClosedDetail";
 
-const Customs = ({match}) => {
+const Customs = ({ match }) => {
     return (
         <>
-            <Route path={`${match.url}/new-customs`} component={NewCustomsList} />
-            <Route path={`${match.url}/new-customs/create/:id`} component={NewCustomsCreate} />
+            <Route path={`${match.url}/new`} component={NewList} />
+            <Route path={`${match.url}/new/create/:id`} component={NewCreate} />
 
-            <Route path={`${match.url}/ready-customs`} component={ReadyCustomsList} />
-            <Route path={`${match.url}/ready-customs/create/:id`} component={ReadyCustomsCreate} />
+            <Route path={`${match.url}/ready`} component={ReadyList} />
+            <Route path={`${match.url}/ready/create/:id`} component={ReadyCreate} />
 
-            <Route path={`${match.url}/no-money-customs`} component={NoMoneyCustomsList} />
-            <Route path={`${match.url}/no-money-customs/create/:id`} component={NoMoneyCustomsCreate} />
+            <Route path={`${match.url}/no-money`} component={NoMoneyList} />
+            <Route path={`${match.url}/no-money/create/:id`} component={NoMoneyCreate} />
 
-            <Route path={`${match.url}/no-document-customs`} component={NoDocumentCustomsList} />
-            <Route path={`${match.url}/no-document-customs/create/:id`} component={NoDocumentCustomsCreate} />
+            <Route path={`${match.url}/no-document`} component={NoDocumentList} />
+            <Route path={`${match.url}/no-document/create/:id`} component={NoDocumentCustomsCreate} />
 
-            <Route path={`${match.url}/certificate-customs`} component={CertificateCustomsList} />
-            <Route path={`${match.url}/certificate-customs/create/:id`} component={CertificateCustomsCreate} />
+            <Route path={`${match.url}/certificate`} component={CertificateList} />
+            <Route path={`${match.url}/certificate/create/:id`} component={CertificateCreate} />
 
-            <Route path={`${match.url}/no-typed-customs`} component={NoTypedCustomsList} />
-            <Route path={`${match.url}/no-typed-customs/create/:id`} component={NoTypedCustomsCreate} />
+            <Route path={`${match.url}/no-typed`} component={NoTypedList} />
+            <Route path={`${match.url}/no-typed/create/:id`} component={NoTypedCreate} />
 
-            <Route path={`${match.url}/closed-customs`} component={ClosedCustomsList} />
-            <Route path={`${match.url}/closed-customs/detail/:id`} component={ClosedCustomsDetail} />
+            <Route path={`${match.url}/closed`} component={ClosedList} />
+            <Route path={`${match.url}/closed/detail/:id`} component={ClosedDetail} />
 
         </>
     );

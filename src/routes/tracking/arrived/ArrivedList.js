@@ -7,7 +7,7 @@ import { CustomHeader } from "../../../components/CustomHeader";
 import { propEq, find } from "ramda";
 import { Link } from "react-router-dom";
 
-const TrackingArrivedList = ({ match }) => {
+const ArrivedList = ({ match }) => {
   const { data } = useQuery(GET_TRACKING_ARRIVINGS);
 
   const list = [];
@@ -83,4 +83,4 @@ const TrackingArrivedList = ({ match }) => {
 
 }
 
-export default TrackingArrivedList;
+export default ArrivedList;

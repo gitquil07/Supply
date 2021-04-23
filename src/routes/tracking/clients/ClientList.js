@@ -5,7 +5,7 @@ import { Title } from "../../../components/Title";
 import { useQuery } from "@apollo/client";
 import { GET_TRACKING_CLIENTS } from "./gql";
 
-const TrackingClientList = () => {
+const ClientList = () => {
     const { data } = useQuery(GET_TRACKING_CLIENTS);
 
     const list = [];
@@ -83,4 +83,4 @@ const TrackingClientList = () => {
     );
 }
 
-export default TrackingClientList;
+export default ClientList;

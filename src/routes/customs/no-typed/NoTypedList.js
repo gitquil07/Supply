@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { GET_CERTIFICATE_CUSTOMS } from "./gql";
+import { GET_NO_TYPED_CUSTOMS } from "./gql";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Button } from "../../../components/Buttons";
 import { Title } from "../../../components/Title";
@@ -8,9 +8,9 @@ import { propEq, find } from "ramda";
 import { Link } from "react-router-dom";
 
 
-const CertificateCustomsList = ({match}) => {
 
-    const { data } = useQuery(GET_CERTIFICATE_CUSTOMS);
+const NoTypedList = ({match}) => {
+    const { data } = useQuery(GET_NO_TYPED_CUSTOMS);
 
     const list = [];
 
@@ -80,16 +80,16 @@ const CertificateCustomsList = ({match}) => {
 
     return (
       <>
-           <CustomHeader>
-                <Title name="Date picker"></Title>
-                <Button name="Применить"></Button>
-            </CustomHeader>
-            <CustomMUIDataTable
-                title={"Заявки на поставку"}
-                data={list}
-                columns={columns}
-                options={options} />
+        <CustomHeader>
+            <Title name="Date picker"></Title>
+            <Button name="Применить"></Button>
+        </CustomHeader>
+        <CustomMUIDataTable
+            title={"Заявки на поставку"}
+            data={list}
+            columns={columns}
+            options={options} />
       </>
     )
 }
-export default CertificateCustomsList;
+export default NoTypedList;

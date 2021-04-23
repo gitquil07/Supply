@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { GET_NO_DOCUMENT_CUSTOMS } from "./gql";
+import { GET_CLOSED_CUSTOMS } from "./gql";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Button } from "../../../components/Buttons";
 import { Title } from "../../../components/Title";
@@ -8,9 +8,9 @@ import { propEq, find } from "ramda";
 import { Link } from "react-router-dom";
 
 
-const NoDocumentCustomsList = ({match, getCustomsList}) => {
+const ClosedList = ({match}) => {
 
-    const { data } = useQuery(GET_NO_DOCUMENT_CUSTOMS);
+    const { data } = useQuery(GET_CLOSED_CUSTOMS);
 
     const list = [];
 
@@ -73,22 +73,23 @@ const NoDocumentCustomsList = ({match, getCustomsList}) => {
         },
     ];
 
+
     const options = {
         filterType: 'dropdown',
         responsive: 'stacked'
     };
     return (
-      <>
-        <CustomHeader>
-            <Title name="Date picker"></Title>
-            <Button name="Применить"></Button>
-        </CustomHeader>
-        <CustomMUIDataTable
-            title={"Заявки на поставку"}
-            data={list}
-            columns={columns}
-            options={options} />
-      </>
+        <>  
+            <CustomHeader>
+                <Title name="Date picker"></Title>
+                <Button name="Применить"></Button>
+            </CustomHeader>
+            <CustomMUIDataTable
+                title={"Заявки на поставку"}
+                data={list}
+                columns={columns}
+                options={options} />
+        </>
     )
 }
-export default NoDocumentCustomsList;
+export default ClosedList;

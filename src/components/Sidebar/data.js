@@ -41,50 +41,50 @@ export const Logistics = [
     },
     {
         name: "Слежение",
-        url: "/tracking/tracking-transport"
+        url: "/tracking/transport"
     },
     {
         name: "Прибывшие",
-        url: "/tracking/tracking-arrived"
+        url: "/tracking/arrived"
     },
     {
         name: "Клиенты",
-        url: "/tracking/tracking-clients"
+        url: "/tracking/clients"
     },
     {
         name: "Задолжники по заводам",
-        url: "/tracking/tracking-dept"
+        url: "/tracking/dept"
     }
 ];
 
 export const Customs = [
     {
         name: "Новые",
-        url: "/customs/new-customs"
+        url: "/customs/new"
     },
     {
         name: "Готовые для оформления",
-        url: "/customs/ready-customs"
+        url: "/customs/ready"
     },
     {
         name: "Нет денег",
-        url: "/customs/no-money-customs"
+        url: "/customs/no-money"
     },
     {
         name: "Нет документов",
-        url: "/customs/no-document-customs"
+        url: "/customs/no-document"
     },
     {
         name: "Сертификат",
-        url: "/customs/certificate-customs"
+        url: "/customs/certificate"
     },
     {
         name: "Ждет льготы",
-        url: "/customs/no-typed-customs"
+        url: "/customs/no-typed"
     },
     {
         name: "Закрытые",
-        url: "/customs/closed-customs"
+        url: "/customs/closed"
     }
 ];
 
