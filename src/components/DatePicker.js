@@ -1,5 +1,6 @@
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import moment from "moment";
+import DateFnsUtils from '@date-io/date-fns';
 import Calendar from "../assets/icons/calendar.svg";
 import styled from "styled-components";
 
@@ -7,16 +8,18 @@ import styled from "styled-components";
 const CustomPicker = ({ date, stateChange, label }) => {
     return (
         <Wrapper>
-            <img src={Calendar} alt="calendar" />
-            <DatePicker
-                format={moment(date).format("DD.MM.YYYY")}
-                autoOk
-                variant="inline"
-                inputVariant="outlined"
-                label={label}
-                value={date}
-                onChange={date => stateChange(date)}
-            />
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <img src={Calendar} alt="calendar" />
+                <DatePicker
+                    format={moment(date).format("DD.MM.YYYY")}
+                    autoOk
+                    variant="inline"
+                    inputVariant="outlined"
+                    label={label}
+                    value={date}
+                    onChange={date => stateChange(date)}
+                />
+            </MuiPickersUtilsProvider>
         </Wrapper>
     )
 }
@@ -25,6 +28,7 @@ export default CustomPicker;
 
 const Wrapper = styled.div`
     position: relative; 
+    width: 210px;
 
     img {
         position: absolute;
