@@ -1,7 +1,5 @@
-import moment from "moment";
 import { propEq, find } from "ramda";
 import { Link } from "react-router-dom";
-import { useQuery } from "@apollo/client";
 import { GET_TRACKING_ARRIVINGS } from "./gql";
 import { Helmet } from "react-helmet";
 
@@ -17,12 +15,13 @@ const ArrivedList = ({ match }) => {
     fromDate,
     setFromDate,
     toDate,
-    setToDate
-  } = useDateRange();
+    setToDate,
+    handleDateRangeChange,
+    data, 
+    error
+  } = useDateRange(GET_TRACKING_ARRIVINGS);
 
   const title = useTitle("Прибывшие");
-
-  const { data } = useQuery(GET_TRACKING_ARRIVINGS);
 
   const list = [];
 
@@ -80,8 +79,6 @@ const ArrivedList = ({ match }) => {
     },
 
   ];
-
-  const handleDateRangeChange = () => {}
 
   return (
     <> 

@@ -1,4 +1,3 @@
-import { useQuery } from "@apollo/client";
 import { GET_TRACKING_TRASNPORTS } from "./gql";
 import { find, propEq } from "ramda";
 import { Link } from "react-router-dom";
@@ -17,12 +16,13 @@ const TrackingTransportList = ({ match }) => {
         fromDate,
         setFromDate,
         toDate,
-        setToDate
-    } = useDateRange();
+        setToDate,
+        handleDateRangeChange,
+        data,
+        error
+    } = useDateRange(GET_TRACKING_TRASNPORTS);
 
     const title = useTitle("Слежение");
-
-    const { data } = useQuery(GET_TRACKING_TRASNPORTS);
 
     const list = [];
 
@@ -93,7 +93,6 @@ const TrackingTransportList = ({ match }) => {
         },
     ];
 
-    const handleDateRangeChange = () => {}
 
     return (
         <>
