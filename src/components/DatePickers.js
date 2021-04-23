@@ -6,9 +6,9 @@ import styled from "styled-components";
 import { Button } from "./Buttons";
 import { CustomHeader } from "./CustomHeader";
 
-const DatePickers = ({ fromDate, toDate, changeFrom, changeTo, buttonClicked }) => {
+const DatePickers = ({ fromDate, toDate, changeFrom, changeTo, buttonClicked, mR }) => {
     return (
-        <StyledCustomHeader>
+        <StyledCustomHeader mR={mR}>
             <Wrapper>
                 <Pickers>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -28,7 +28,7 @@ const Wrapper = styled.div`
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-between; 
 `;
 
 const Pickers = styled.div`
@@ -39,5 +39,6 @@ const Pickers = styled.div`
 
 const StyledCustomHeader = styled(CustomHeader)`
     width: 100%;
-    margin-right: 10px;
+    margin-right: ${props => props.mR && props.mR};
+    box-sizing:border-box;
 `;

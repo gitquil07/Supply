@@ -110,7 +110,7 @@ const OrderList = ({ match }) => {
                 <title>Заказы</title>
             </Helmet>
             <Header>
-                <DatePickers />
+                <DatePickers mR="15px" />
                 <ButtonWithIcon name="Создать заказ" />
             </Header>
             <CustomMUIDataTable
