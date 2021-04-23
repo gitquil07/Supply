@@ -1,10 +1,10 @@
-import { Link } from "react-router-dom";
+import { useMemo } from "react";
 import { GET_TRACKINGS } from "./gql";
-import { propEq, find } from "ramda";
 import { Helmet } from "react-helmet";
 
 import { useDateRange, useTitle } from "../../../hooks";
 import { setTitleWithDateRange } from "../../../utils/functions";
+import { generateColumns } from "./TableData";
 
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import DatePickers from "../../../components/DatePickers";
@@ -22,62 +22,7 @@ const TrackingList = ({ match }) => {
   } = useDateRange(GET_TRACKINGS);
 
   const title = useTitle("Логистика");
-
-  const columns = [
-    {
-      name: "public_id",
-      label: "Номер слежки",
-      options: {
-        filter: true,
-        customBodyRender: (value, tableMeta, updateValue) => {
-          const id = find(propEq("public_id", value))(list);
-          return <Link to={`${match.url}/create/${id?.id}`}>{value}</Link>;
-        },
-      },
-    },
-    {
-      name: "vendor",
-      label: "Поставщик",
-      options: {
-        filter: true,
-        sort: false,
-      },
-    },
-    {
-      name: "location",
-      label: "Место нахождений",
-      options: {
-        filter: true,
-        sort: true,
-      },
-    },
-    {
-      name: "transport_number",
-      label: "Номер транспорта",
-      options: {
-        filter: true,
-        sort: true,
-      },
-    },
-    {
-      name: "created_at",
-      label: "Дата создания заявки",
-      options: {
-        filter: true,
-        sort: false,
-      },
-    },
-    {
-      name: "updated_at",
-      label: "Дата поставки",
-      options: {
-        filter: true,
-        sort: false,
-      },
-    },
-
-  ];
-
+  
   const list = data?.application?.applications?.edges?.map(({ node }) => {
     return {
       public_id: node.publicId,
@@ -93,11 +38,14 @@ const TrackingList = ({ match }) => {
       factory: node.order.vendorFactory.name
     }
   });
+  
+  const { url } = match;
+  const columns = useMemo(() => generateColumns(url, list), [data]);
 
   return (
     <>
       <Helmet>
-        <title>{ title }</title>
+        <title>{title}</title>
       </Helmet>
       <DatePickers
           fromDate={fromDate}

@@ -1,127 +1,53 @@
-import { useQuery } from "@apollo/client";
+import { useMemo } from "react";
 import { GET_NEW_CUSTOMS } from "./gql";
+import { Helmet } from "react-helmet";
+
+import { useDateRange, useTitle } from "../../../hooks";
+import { setTitleWithDateRange } from "../../../utils/functions";
+
+import { generateColumns } from "./TableData";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { Button } from "../../../components/Buttons";
-import { Title } from "../../../components/Title";
-import { CustomHeader } from "../../../components/CustomHeader";
-import { propEq, find } from "ramda";
-import { Link } from "react-router-dom";
+import DatePickers from "../../../components/DatePickers";
 
 
 const NewList = ({match}) => {
 
-    const { data } = useQuery(GET_NEW_CUSTOMS)
-
-    const columns = [
-        {
-            name: "public_id",
-            label: "Номер заявки",
-            options: {
-                filter: true,
-                customBodyRender: (value, tableMeta, updateValue) => {
-                    const id = find(propEq("public_id", value))(list)
-                    return (
-                        <Link to={`${match.url}/${id?.id}`}>
-                            {value}
-                        </Link>
-                    );
-
-                }
-            }
-        },
-        {
-            name: "order",
-            label: "Поставщик",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "degree_of_danger",
-            label: "Степень опасности",
-            options: {
-                filter: true,
-                sort: true,
-            }
-        },
-        {
-            name: "delivery_condition",
-            label: "Способ доставки",
-            options: {
-                filter: true,
-                sort: true,
-            }
-        },
-        {
-            name: "package_on_pallet",
-            label: "Кол-во Паддонов",
-            options: {
-                filter: true,
-                sort: true,
-            }
-        },
-        {
-            name: "transport_count",
-            label: "Кол-во транспорта",
-            options: {
-                filter: true,
-                sort: true,
-            }
-        },
-        {
-            name: "status",
-            label: "Статус",
-            options: {
-                filter: true,
-                sort: true,
-            }
-        },
-        {
-            name: "created_at",
-            label: "Дата создания заявки",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "updated_at",
-            label: "Дата поставки",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "type_of_packaging",
-            label: "Вид упаковки",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-    ];
-
-    const list = []; 
-
-    const options = {
-     
-    };
-
-    return (
-       <>
-            <CustomHeader>
-                <Title name="Date picker"></Title>
-                <Button name="Применить"></Button>
-            </CustomHeader>
-            <CustomMUIDataTable
-                title={"Заявки на поставку"}
-                data={list}
-                columns={columns}
-                options={options} />
-       </>
-    )
+    const {
+        fromDate,
+        setFromDate,
+        toDate,
+        setToDate,
+        handleDateRangeChange,
+        data, 
+        error
+      } = useDateRange(GET_NEW_CUSTOMS);
+    
+      const title = useTitle("Таможня");
+    
+      const list = [];
+    
+      const { url } = match;
+      const columns = useMemo(() => generateColumns(url, list), [data]);
+      
+      return (
+        <> 
+          <Helmet>
+            <title>{title}</title>
+          </Helmet>
+          <DatePickers
+            fromDate={fromDate}
+            toDate={toDate}
+            changeFrom={setFromDate}
+            changeTo={setToDate}
+            buttonClicked={handleDateRangeChange}
+          />
+          <CustomMUIDataTable
+            title={setTitleWithDateRange("поставку", fromDate, toDate)}
+            data={list}
+            columns={columns}
+          />
+        </>
+      );
 }
 
 export default NewList;
