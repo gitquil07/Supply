@@ -1,13 +1,27 @@
-import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { CustomHeader } from "../../../components/CustomHeader";
-import { Button } from "../../../components/Buttons";
-import { Title } from "../../../components/Title";
 import { useQuery } from "@apollo/client";
 import { GET_TRACKING_TRASNPORTS } from "./gql";
 import { find, propEq } from "ramda";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
+
+import { useDateRange, useTitle } from "../../../hooks";
+import { setTitleWithDateRange } from "../../../utils/functions";
+
+import DatePickers from "../../../components/DatePickers";
+import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
+
 
 const TrackingTransportList = ({ match }) => {
+
+    const {
+        fromDate,
+        setFromDate,
+        toDate,
+        setToDate
+    } = useDateRange();
+
+    const title = useTitle("Слежение");
+
     const { data } = useQuery(GET_TRACKING_TRASNPORTS);
 
     const list = [];
@@ -79,14 +93,22 @@ const TrackingTransportList = ({ match }) => {
         },
     ];
 
+    const handleDateRangeChange = () => {}
+
     return (
         <>
-            <CustomHeader>
-                <Title name="DatePicker" />
-                <Button name="Применить" />
-            </CustomHeader>
+            <Helmet>
+                <title>{title}</title>
+            </Helmet>
+            <DatePickers
+                fromDate={fromDate}
+                toDate={toDate}
+                changeFrom={setFromDate}
+                changeTo={setToDate}
+                buttonClicked={handleDateRangeChange}
+            />
             <CustomMUIDataTable
-                title="Заявки на слежение"
+                title={setTitleWithDateRange("слежение", fromDate, toDate)}
                 columns={columns}
                 data={list}
             />

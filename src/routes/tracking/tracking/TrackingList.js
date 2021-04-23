@@ -1,16 +1,25 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { GET_TRACKINGS } from "./gql";
 import { propEq, find } from "ramda";
+import { Helmet } from "react-helmet";
 
-import { CustomHeader } from "../../../components/CustomHeader";
+import { useDateRange, useTitle } from "../../../hooks";
+import { setTitleWithDateRange } from "../../../utils/functions";
+
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { Button } from "../../../components/Buttons";
-import { Title } from "../../../components/Title"
+import DatePickers from "../../../components/DatePickers";
 
 const TrackingList = ({ match }) => {
+
+  const {
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate
+  } = useDateRange();
+
+  const title = useTitle("Логистика");
 
   const { data } = useQuery(GET_TRACKINGS);
 
@@ -85,14 +94,22 @@ const TrackingList = ({ match }) => {
     }
   });
 
+  const handleDateRangeChange = () => {}
+
   return (
     <>
-      <CustomHeader>
-        <Title name="Date picker"></Title>
-        <Button name="Применить"></Button>
-      </CustomHeader>
+      <Helmet>
+        <title>{ title }</title>
+      </Helmet>
+      <DatePickers
+          fromDate={fromDate}
+          toDate={toDate}
+          changeFrom={setFromDate}
+          changeTo={setToDate}
+          buttonClicked={handleDateRangeChange}
+      />
       <CustomMUIDataTable
-        title={"Заявки на поставку"}
+        title={setTitleWithDateRange("поставку", fromDate, toDate)}
         data={list}
         columns={columns}
       />

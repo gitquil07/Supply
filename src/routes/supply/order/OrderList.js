@@ -111,7 +111,7 @@ const OrderList = ({ match }) => {
             </Helmet>
             <Header>
                 <DatePickers mR="15px" />
-                <ButtonWithIcon name="Создать заказ" />
+                <ButtonWithIcon name="Создать заказ" url={`${match.url}/create`}  />
             </Header>
             <CustomMUIDataTable
                 title={"Список всех сотрудников"}

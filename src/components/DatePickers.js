@@ -38,7 +38,7 @@ const Pickers = styled.div`
 `;
 
 const StyledCustomHeader = styled(CustomHeader)`
-    width: 100%;
+    width: 100%; 
     margin-right: ${props => props.mR && props.mR};
-    box-sizing:border-box;
+    box-sizing:border-box; 
 `;

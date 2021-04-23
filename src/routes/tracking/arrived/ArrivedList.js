@@ -1,30 +1,30 @@
-import { useState, useEffect } from "react";
 import moment from "moment";
 import { propEq, find } from "ramda";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { GET_TRACKING_ARRIVINGS } from "./gql";
-import { useDispatch, useSelector } from "react-redux";
 import { Helmet } from "react-helmet";
+
+import { useDateRange, useTitle } from "../../../hooks";
+import { setTitleWithDateRange } from "../../../utils/functions";
 
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import DatePickers from "../../../components/DatePickers";
 
 const ArrivedList = ({ match }) => {
 
-  const [fromDate, setFromDate] = useState(moment().startOf('month').toDate());
-  const [toDate, setToDate] = useState(new Date());
+  const {
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate
+  } = useDateRange();
 
-  const dispatch = useDispatch();
-  const title = useSelector(state => state.title);
+  const title = useTitle("Прибывшие");
 
   const { data } = useQuery(GET_TRACKING_ARRIVINGS);
 
   const list = [];
-
-  useEffect(() => {
-    dispatch({type: "CHANGE_TITLE" , payload: "Прибывшие"})
-  }, [dispatch]);
 
   const columns = [
     {
@@ -96,7 +96,7 @@ const ArrivedList = ({ match }) => {
         buttonClicked={handleDateRangeChange}
       />
       <CustomMUIDataTable
-        title={`Заявки на прибывшие c ${moment(fromDate).format("DD.MM.YYYY")} по ${moment(toDate).format("DD.MM.YYYY")}`}
+        title={setTitleWithDateRange("прибывшие", fromDate, toDate)}
         data={list}
         columns={columns}
       />

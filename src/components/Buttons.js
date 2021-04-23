@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Add from "../assets/icons/add.svg";
 import { CustomHeader } from "./CustomHeader";
 
-export const Button = ({ name, url }) => <IButton to={url}>{name}</IButton>
+export const Button = ({ name, url, color }) => <IButton to={url} color={color}>{name}</IButton>
 
 export const ButtonWithIcon = ({ name, url, icon }) => {
     return (
@@ -16,7 +16,7 @@ export const ButtonWithIcon = ({ name, url, icon }) => {
 }
 
 const IButton = styled(Link)`
-    background: #08BB19;
+    background: ${props => props.color ? props.color : "#08BB19"};
     color: white;
     height: 50px;
     padding: 0 10px;
@@ -29,7 +29,7 @@ const IButton = styled(Link)`
     align-items: center;
 
     :hover {
-        background: #65DE82;
+        background: ${props => props.color ? props.color : "#08BB19"};
     }
 `;
 
@@ -48,7 +48,7 @@ const IIButton = styled(Link)`
     align-items: center;
 
     :hover {
-        background: #65DE82;
+        background: #2060B0;
     }
 
     img {

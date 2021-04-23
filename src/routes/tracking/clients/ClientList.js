@@ -1,11 +1,24 @@
-import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { CustomHeader } from "../../../components/CustomHeader";
-import { Button } from "../../../components/Buttons";
-import { Title } from "../../../components/Title";
 import { useQuery } from "@apollo/client";
 import { GET_TRACKING_CLIENTS } from "./gql";
+import { useDateRange, useTitle } from "../../../hooks";
+import { Helmet } from "react-helmet";
+import styled from "styled-components";
 
-const ClientList = () => {
+import DatePickers from "../../../components/DatePickers";
+import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
+import { CustomHeader } from "../../../components/CustomHeader";
+import { ButtonWithIcon } from "../../../components/Buttons";
+
+const ClientList = ({match}) => {
+    
+    const {
+        fromDate,
+        toDate,
+        setFromDate,
+        setToDate
+    } = useDateRange();
+    const title = useTitle("Транспортные компаии");
+    
     const { data } = useQuery(GET_TRACKING_CLIENTS);
 
     const list = [];
@@ -69,13 +82,26 @@ const ClientList = () => {
         },
     ];
 
+    const handleDateRangeChange = () => {}
+
     return (
         <>
-            <CustomHeader>
-                <Button name="Создать" />
-            </CustomHeader>
+            <Helmet>
+                <title>{title}</title>
+            </Helmet>
+            <Header>
+                <DatePickers 
+                    mR="15px"
+                    fromDate={fromDate}
+                    toDate={toDate}
+                    changeFrom={setFromDate}
+                    changeTo={setToDate}
+                    buttonClicked={handleDateRangeChange}
+                />
+                <ButtonWithIcon name="Создать" url={`${match.url}/create`}  />
+            </Header>
             <CustomMUIDataTable
-                title="Список трансрортных команий"
+                title="Список трансрортных компаний"
                 data={list}
                 columns={columns}
             />
@@ -84,3 +110,9 @@ const ClientList = () => {
 }
 
 export default ClientList;
+
+const Header = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
