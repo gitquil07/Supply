@@ -16,7 +16,7 @@ const TrackingTransportList = ({ match }) => {
         setFromDate,
         toDate,
         setToDate,
-        handleDateRangeChange,
+        handleClick,
         data,
         error
     } = useDateRange(GET_TRACKING_TRANSPORTS);
@@ -38,7 +38,7 @@ const TrackingTransportList = ({ match }) => {
                 toDate={toDate}
                 changeFrom={setFromDate}
                 changeTo={setToDate}
-                buttonClicked={handleDateRangeChange}
+                buttonClicked={handleClick}
             />
             <CustomMUIDataTable
                 title={setTitleWithDateRange("слежение", fromDate, toDate)}

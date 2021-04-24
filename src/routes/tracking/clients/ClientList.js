@@ -17,7 +17,7 @@ const ClientList = ({match}) => {
         toDate,
         setFromDate,
         setToDate,
-        handleDateRangeChange,
+        handleClick,
         data,
         error
     } = useDateRange(GET_TRACKING_CLIENTS);
@@ -40,7 +40,7 @@ const ClientList = ({match}) => {
                     toDate={toDate}
                     changeFrom={setFromDate}
                     changeTo={setToDate}
-                    buttonClicked={handleDateRangeChange}
+                    buttonClicked={handleClick}
                 />
                 <ButtonWithIcon name="Создать" url={`${match.url}/create`}  />
             </Header>

@@ -16,7 +16,7 @@ const TrackingList = ({ match }) => {
     setFromDate,
     toDate,
     setToDate,
-    handleDateRangeChange,
+    handleClick,
     data,
     error
   } = useDateRange(GET_TRACKINGS);
@@ -53,7 +53,7 @@ const TrackingList = ({ match }) => {
         toDate={toDate}
         changeFrom={setFromDate}
         changeTo={setToDate}
-        buttonClicked={handleDateRangeChange}
+        buttonClicked={handleClick}
       />
       <CustomMUIDataTable
         title={setTitleWithDateRange("поставку", fromDate, toDate)}

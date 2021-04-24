@@ -16,7 +16,7 @@ const ReadyCustomsList = ({match, getCustomsList}) => {
         setFromDate,
         toDate,
         setToDate,
-        handleDateRangeChange,
+        handleClick,
         data, 
         error
       } = useDateRange(GET_READY_CUSTOMS);
@@ -38,7 +38,7 @@ const ReadyCustomsList = ({match, getCustomsList}) => {
             toDate={toDate}
             changeFrom={setFromDate}
             changeTo={setToDate}
-            buttonClicked={handleDateRangeChange}
+            buttonClicked={handleClick}
           />
           <CustomMUIDataTable
             title={setTitleWithDateRange("поставку", fromDate, toDate)}

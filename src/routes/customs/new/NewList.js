@@ -17,7 +17,7 @@ const NewList = ({match}) => {
         setFromDate,
         toDate,
         setToDate,
-        handleDateRangeChange,
+        handleClick,
         data, 
         error
       } = useDateRange(GET_NEW_CUSTOMS);
@@ -39,7 +39,7 @@ const NewList = ({match}) => {
             toDate={toDate}
             changeFrom={setFromDate}
             changeTo={setToDate}
-            buttonClicked={handleDateRangeChange}
+            buttonClicked={handleClick}
           />
           <CustomMUIDataTable
             title={setTitleWithDateRange("поставку", fromDate, toDate)}

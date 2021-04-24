@@ -16,7 +16,7 @@ const CertificateList = ({ match }) => {
     setFromDate,
     toDate,
     setToDate,
-    handleDateRangeChange,
+    handleClick,
     data, 
     error
   } = useDateRange(GET_CERTIFICATE_CUSTOMS);
@@ -38,7 +38,7 @@ const CertificateList = ({ match }) => {
         toDate={toDate}
         changeFrom={setFromDate}
         changeTo={setToDate}
-        buttonClicked={handleDateRangeChange}
+        buttonClicked={handleClick}
       />
       <CustomMUIDataTable
         title={setTitleWithDateRange("поставку", fromDate, toDate)}

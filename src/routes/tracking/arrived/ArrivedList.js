@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import {  useMemo } from "react";
 import { GET_TRACKING_ARRIVINGS } from "./gql";
 import { Helmet } from "react-helmet";
 
@@ -9,6 +9,12 @@ import { generateColumns } from "./TableData";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import DatePickers from "../../../components/DatePickers";
 
+import { useLazyQuery } from "@apollo/client";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import moment from "moment";
+
+
 const ArrivedList = ({ match }) => {
 
   const {
@@ -16,7 +22,7 @@ const ArrivedList = ({ match }) => {
     setFromDate,
     toDate,
     setToDate,
-    handleDateRangeChange,
+    handleClick,
     data, 
     error
   } = useDateRange(GET_TRACKING_ARRIVINGS);
@@ -38,7 +44,7 @@ const ArrivedList = ({ match }) => {
         toDate={toDate}
         changeFrom={setFromDate}
         changeTo={setToDate}
-        buttonClicked={handleDateRangeChange}
+        buttonClicked={handleClick}
       />
       <CustomMUIDataTable
         title={setTitleWithDateRange("прибывшие", fromDate, toDate)}

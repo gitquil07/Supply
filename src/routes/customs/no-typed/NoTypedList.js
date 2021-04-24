@@ -17,7 +17,7 @@ const NoTypedList = ({match}) => {
         setFromDate,
         toDate,
         setToDate,
-        handleDateRangeChange,
+        handleClick,
         data, 
         error
       } = useDateRange(GET_NO_TYPED_CUSTOMS);
@@ -39,7 +39,7 @@ const NoTypedList = ({match}) => {
         toDate={toDate}
         changeFrom={setFromDate}
         changeTo={setToDate}
-        buttonClicked={handleDateRangeChange}
+        buttonClicked={handleClick}
       />
       <CustomMUIDataTable
         title={setTitleWithDateRange("поставку", fromDate, toDate)}
