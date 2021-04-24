@@ -8,7 +8,7 @@ import { DragFile } from '../../../components/DragFile';
 import { RemoveIcon } from '../../../components/RemoveIcon';
 import { CustomInput } from '../../../components/CustomInput';
 import { CustomSelector } from '../../../components/CustomSelector';
-
+import { Footer } from '../../../components/Footer';
 
 const OrderCreate = () => {
     const title = useTitle("Создать Заказ");
@@ -64,6 +64,11 @@ const OrderCreate = () => {
                         <RemoveIcon />
                     </AddibleInput>
                 </Form>
+
+                <Footer>
+                    <span>Кол-во материалов: 6</span>
+                    <Button name="Создать Заказ" />
+                </Footer>
             </Wrapper>
         </>
     )
@@ -72,7 +77,7 @@ const OrderCreate = () => {
 export default OrderCreate;
 
 const Wrapper = styled.div`
-    width: 100%; 
+    width: 100%;
 `;
 
 const Form = styled.div`

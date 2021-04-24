@@ -46,13 +46,16 @@ const Wrapper = styled.div`
         right: 10px;
         top: 50%;
         transform: translate(-50%, -50%);
+        z-index: 900;
     }
 
     .MuiFormControl-root { 
         width: 100%;
+ 
 
         .MuiInputBase-root .MuiSelect-root {
             padding-right: 50px;
+            background: #fff;
         }
 
         fieldset {  

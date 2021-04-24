@@ -36,10 +36,15 @@ const Wrapper = styled.div`
         top: 50%;
         right: 20px;
         transform: translate(0, -50%);
+        z-index: 900;
     }
 
     .PrivateNotchedOutline-root-1 {
         border: 1px solid rgba(0, 0, 0, 0.1); 
+    }
+
+    .MuiInputBase-root  {
+        background: #fff;
     }
 
     /* 1px solid rgba(0, 0, 0, 0.1); */

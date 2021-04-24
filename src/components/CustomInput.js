@@ -15,9 +15,14 @@ export const CustomInput = ({ label, change }) => {
 
 const Wrapper = styled.div`
     width: 100%; 
+    min-width: 100px;
 
     .MuiFormControl-root  {
         width: 100%;
+        
+        .MuiInputBase-root {
+            background: #fff;
+        }
 
         fieldset {
             border: 1px solid rgba(0, 0, 0, 0.1) !important;
