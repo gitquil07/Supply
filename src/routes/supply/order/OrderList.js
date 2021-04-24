@@ -28,7 +28,7 @@ const OrderList = ({ match }) => {
             created_at: TimeParser(node.createdAt),
         }
     })
-
+    
     const columns = [
         {
             name: "public_id",

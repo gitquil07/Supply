@@ -1,96 +1,52 @@
-import { useQuery } from "@apollo/client";
+import { useMemo } from "react";
 import { GET_READY_CUSTOMS } from "./gql";
+import { Helmet } from "react-helmet";
+
+import { useDateRange, useTitle } from "../../../hooks";
+import { setTitleWithDateRange } from "../../../utils/functions";
+
+import { generateColumns } from "./TableData";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { Button } from "../../../components/Buttons";
-import { Title } from "../../../components/Title";
-import { CustomHeader } from "../../../components/CustomHeader";
-import { propEq, find } from "ramda";
-import { Link } from "react-router-dom";
-
-
+import DatePickers from "../../../components/DatePickers";
 
 const ReadyCustomsList = ({match, getCustomsList}) => {
 
-    const { data } = useQuery(GET_READY_CUSTOMS);
+    const {
+        fromDate,
+        setFromDate,
+        toDate,
+        setToDate,
+        handleDateRangeChange,
+        data, 
+        error
+      } = useDateRange(GET_READY_CUSTOMS);
+    
+      const title = useTitle("Готовые Для Оформления");
+    
+      const list = [];
+    
+      const { url } = match;
+      const columns = useMemo(() => generateColumns(url, list), [data]);
 
-    const list = [];
-
-    const columns = [
-        {
-            name: "public_id",
-            label: "Заказ номера",
-            options: {
-                filter: true,
-                customBodyRender: (value, tableMeta, updateValue) => {
-                    const id = find(propEq("public_id", value))(list)
-                    return (
-                        <Link to={`${match.url}/${id?.id}`}>
-                            {value}
-                        </Link>
-                    );
-
-                }
-            }
-        },
-        {
-            name: "application",
-            label: "Название Завода / Поставщик",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "status",
-            label: "Статус",
-            options: {
-                filter: true,
-                sort: true,
-            }
-        },
-        {
-            name: "transport_type",
-            label: "Тип транспорта",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "invoices",
-            label: "Инвойсы",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "created_at",
-            label: "Дата создания заказа",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-    ];
-
-    const options = {
-        filterType: 'dropdown',
-        responsive: 'stacked'
-    };
-
-    return (
-        <>
-            <CustomHeader>
-                <Title name="Date picker"></Title>
-                <Button name="Применить"></Button>
-            </CustomHeader>
-            <CustomMUIDataTable
-                title={"Заявки на поставку"}
-                data={list}
-                columns={columns}
-                options={options} />
+      return (
+        <> 
+          <Helmet>
+            <title>{title}</title>
+          </Helmet>
+          <DatePickers
+            fromDate={fromDate}
+            toDate={toDate}
+            changeFrom={setFromDate}
+            changeTo={setToDate}
+            buttonClicked={handleDateRangeChange}
+          />
+          <CustomMUIDataTable
+            title={setTitleWithDateRange("поставку", fromDate, toDate)}
+            data={list}
+            columns={columns}
+          />
         </>
-    )
+      );
 }
+
 export default ReadyCustomsList;

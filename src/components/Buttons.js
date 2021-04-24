@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Add from "../assets/icons/add.svg";
 import { CustomHeader } from "./CustomHeader";
 
-export const Button = ({ name, url, color }) => <IButton to={url} color={color}>{name}</IButton>
+export const Button = ({ name, url, color, clickHandler}) => <IButton to={url} color={color} onClick={clickHandler}>{name}</IButton>
 
 export const ButtonWithIcon = ({ name, url, icon }) => {
     return (

@@ -8,12 +8,12 @@ export const useDateRange = (query) => {
     const [fromDate, setFromDate] = useState(moment().startOf('month').toDate()),
           [toDate, setToDate] = useState(new Date());
 
-    const { error, data, refetch} = useQuery(query, {
-        variables: {
-            fromDate,
-            toDate
-        }
-    });
+        const { error, data, refetch} = useQuery(query, {
+            variables: {
+                fromDate,
+                toDate
+            }
+        });
 
     const handleDateRangeChange = () => {
       refetch({
