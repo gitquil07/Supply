@@ -4,28 +4,28 @@ import styled from "styled-components";
 import { Link } from 'react-router-dom';
 import { useQuery } from "@apollo/client";
 
-import { GET_ORDERS } from "./gql";
 import { useTitle } from '../../../hooks';
 import { TimeParser } from "../../../utils/functions";
 import DatePickers from '../../../components/DatePickers';
 import { ButtonWithIcon } from "../../../components/Buttons";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
+import { GET_APPLICATIONS } from './gql';
 
-const OrderList = ({ match }) => {
+const ApplicationList = ({ match }) => {
 
-    const { data } = useQuery(GET_ORDERS);
+    const { data } = useQuery(GET_APPLICATIONS);
 
-    const title = useTitle("Заказы");
+    console.log(data);
 
-    const list = data?.order.orders.edges.map(({ node }) => {
+    const title = useTitle("Заявки На Транспорт");
+
+    const list = data?.application.applications.edges.map(({ node }) => {
         return {
-            public_id: node.publicId,
-            factory: node.vendorFactory?.factory.name,
-            vendor: node.vendorFactory?.vendor.name,
-            status: node.status,
-            invoice_proforma: node.invoiceProforma,
-            invoice_date: node.invoiceDate,
-            created_at: TimeParser(node.createdAt),
+            public_id: node.public_id,
+            // vendor_factory: vendor_factory?.factory?.name + ' / ' + vendor_factory?.vendor?.company_name,
+            // status,
+            // created_at: moment(created_at).format('YYYY-MM-DD'),
+            // updated_at: moment(updated_at).format('YYYY-MM-DD')
         }
     })
 
@@ -35,10 +35,11 @@ const OrderList = ({ match }) => {
             label: "Номер заказа",
             options: {
                 filter: true,
-                customBodyRender: (value) => {
-                    const id = find(propEq("public_id", value))(list);
+                sort: false,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                    const id = find(propEq("public_id", value))(list)
                     return (
-                        <Link to={`${match.url}/detail/${id.public_id}`}>
+                        <Link to={`${match.url}/${id?.id}`}>
                             {value}
                         </Link>
                     );
@@ -47,16 +48,8 @@ const OrderList = ({ match }) => {
             }
         },
         {
-            name: "factory",
-            label: "Название Завода",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "vendor",
-            label: "Поставщик",
+            name: "vendor_factory",
+            label: "Название Завода / Поставщик",
             options: {
                 filter: true,
                 sort: false,
@@ -67,28 +60,20 @@ const OrderList = ({ match }) => {
             label: "Статус",
             options: {
                 filter: true,
-                sort: true,
-            }
-        },
-        {
-            name: "invoice_proforma",
-            label: "Invoice Proforma",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "invoice_date",
-            label: "Invoice Date",
-            options: {
-                filter: true,
                 sort: false,
             }
         },
         {
             name: "created_at",
             label: "Дата создания заказа",
+            options: {
+                filter: true,
+                sort: false,
+            }
+        },
+        {
+            name: "updated_at",
+            label: "Дата поставки",
             options: {
                 filter: true,
                 sort: false,
@@ -105,7 +90,7 @@ const OrderList = ({ match }) => {
                 <ButtonWithIcon name="Создать заказ" url={`${match.url}/create`} />
             </Header>
             <CustomMUIDataTable
-                title={"Список всех сотрудников"}
+                title={"Заказы на поставку с 2021-04-01 по 2021-04-24"}
                 list={list}
                 columns={columns}
             />
@@ -113,7 +98,7 @@ const OrderList = ({ match }) => {
     );
 };
 
-export default OrderList;
+export default ApplicationList;
 
 const Header = styled.div`
     display: flex;

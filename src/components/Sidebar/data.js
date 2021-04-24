@@ -14,7 +14,7 @@ export const Supply = [
     },
     {
         name: "Заявки на транспортзы",
-        url: "#"
+        url: "/supply/application"
     },
     {
         name: "База данных",

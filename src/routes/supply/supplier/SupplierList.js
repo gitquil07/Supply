@@ -1,21 +1,21 @@
 import { find, propEq } from 'ramda';
 import { Helmet } from 'react-helmet';
-import styled from "styled-components";
 import { Link } from 'react-router-dom';
 import { useQuery } from "@apollo/client";
+import styled from "styled-components";
 
 import { GET_ORDERS } from "./gql";
-import { useTitle } from '../../../hooks';
+import { ButtonWithIcon } from "../../../components/Buttons";
 import { TimeParser } from "../../../utils/functions";
 import DatePickers from '../../../components/DatePickers';
-import { ButtonWithIcon } from "../../../components/Buttons";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
+import { useTitle } from '../../../hooks';
 
-const OrderList = ({ match }) => {
+const SupplierList = ({ match }) => {
 
     const { data } = useQuery(GET_ORDERS);
 
-    const title = useTitle("Заказы");
+    const title = useTitle("Бизнес Партнеры");
 
     const list = data?.order.orders.edges.map(({ node }) => {
         return {
@@ -27,7 +27,7 @@ const OrderList = ({ match }) => {
             invoice_date: node.invoiceDate,
             created_at: TimeParser(node.createdAt),
         }
-    })
+    });
 
     const columns = [
         {
@@ -113,7 +113,7 @@ const OrderList = ({ match }) => {
     );
 };
 
-export default OrderList;
+export default SupplierList;
 
 const Header = styled.div`
     display: flex;
