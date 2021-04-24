@@ -28,7 +28,7 @@ const OrderList = ({ match }) => {
             created_at: TimeParser(node.createdAt),
         }
     })
-    
+
     const columns = [
         {
             name: "public_id",
@@ -106,7 +106,7 @@ const OrderList = ({ match }) => {
             </Header>
             <CustomMUIDataTable
                 title={"Список всех сотрудников"}
-                list={list}
+                data={list}
                 columns={columns}
             />
         </>
