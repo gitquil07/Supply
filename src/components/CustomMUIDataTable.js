@@ -7,7 +7,7 @@ import DownloadIcon from '@material-ui/icons/GetApp';
 import ViewColumnIcon from '@material-ui/icons/DynamicFeed';
 import FilterIcon from '@material-ui/icons/GroupWork';
 
-export const CustomMUIDataTable = ({ title, list, columns }) => {
+export const CustomMUIDataTable = ({ title, data, columns }) => {
 
     const options = {
         filterType: 'dropdown',
@@ -26,7 +26,7 @@ export const CustomMUIDataTable = ({ title, list, columns }) => {
     return (
         <StyledMUIDataTable
             title={title}
-            data={list}
+            data={data}
             columns={columns}
             options={options}
             {...{ components }}
