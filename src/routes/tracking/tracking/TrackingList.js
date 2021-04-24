@@ -23,36 +23,37 @@ const TrackingList = ({ match }) => {
 
   const title = useTitle("Логистика");
   
-  const list = data?.application?.applications?.edges?.map(({ node }) => {
-    return {
-      public_id: node.publicId,
-      order: `${node.trackingUser.firstName} + ${node.trackingUser.fullName}`,
-      degree_of_danger: node.degreeOfDanger,
-      delivery_condition: node.deliveryCondition,
-      package_on_pallet: node.packageOnPallet,
-      transport_count: node.transportCount,
-      transport_type: node.transportType.name,
-      created_at: node.created_at,
-      updated_at: node.updated_at,
-      type_of_packaging: node.typeOfPackaging,
-      factory: node.order.vendorFactory.name
-    }
-  });
+  // const list = data?.application?.applications?.edges?.map(({ node }) => {
+  //   return {
+  //     public_id: node.publicId,
+  //     order: `${node.trackingUser.firstName} + ${node.trackingUser.fullName}`,
+  //     degree_of_danger: node.degreeOfDanger,
+  //     delivery_condition: node.deliveryCondition,
+  //     package_on_pallet: node.packageOnPallet,
+  //     transport_count: node.transportCount,
+  //     transport_type: node.transportType.name,
+  //     created_at: node.created_at,
+  //     updated_at: node.updated_at,
+  //     type_of_packaging: node.typeOfPackaging,
+  //     factory: node.order.vendorFactory.name
+  //   }
+  // });
+
+  const list = [];
   
   const { url } = match;
   const columns = useMemo(() => generateColumns(url, list), [data]);
 
+
   return (
     <>
-      <Helmet>
-        <title>{title}</title>
-      </Helmet>
+      <Helmet title={title} />
       <DatePickers
-          fromDate={fromDate}
-          toDate={toDate}
-          changeFrom={setFromDate}
-          changeTo={setToDate}
-          buttonClicked={handleDateRangeChange}
+        fromDate={fromDate}
+        toDate={toDate}
+        changeFrom={setFromDate}
+        changeTo={setToDate}
+        buttonClicked={handleDateRangeChange}
       />
       <CustomMUIDataTable
         title={setTitleWithDateRange("поставку", fromDate, toDate)}

@@ -16,7 +16,7 @@ const DatePickers = ({ fromDate, toDate, changeFrom, changeTo, buttonClicked, mR
                         <CustomPicker label="До" date={toDate} stateChange={date => changeTo(date)} />
                     </MuiPickersUtilsProvider>
                 </Pickers>
-                <Button name="Применить" onClick={buttonClicked} />
+                <Button name="Применить" clickHandler={buttonClicked} />
             </Wrapper>
         </StyledCustomHeader>
     );

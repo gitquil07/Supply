@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { GET_TRACKING_TRASNPORTS } from "./gql";
+import { GET_TRACKING_TRANSPORTS } from "./gql";
 import { Helmet } from "react-helmet";
 
 import { useDateRange, useTitle } from "../../../hooks";
@@ -19,7 +19,7 @@ const TrackingTransportList = ({ match }) => {
         handleDateRangeChange,
         data,
         error
-    } = useDateRange(GET_TRACKING_TRASNPORTS);
+    } = useDateRange(GET_TRACKING_TRANSPORTS);
 
     const title = useTitle("Слежение");
 

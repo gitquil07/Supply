@@ -1,8 +1,6 @@
-import { useEffect } from 'react';
 import { find, propEq } from 'ramda';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { useQuery } from "@apollo/client";
 import styled from "styled-components";
 
@@ -11,18 +9,13 @@ import { ButtonWithIcon } from "../../../components/Buttons";
 import { TimeParser } from "../../../utils/functions";
 import DatePickers from '../../../components/DatePickers';
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
+import { useTitle } from '../../../hooks';
 
 const OrderList = ({ match }) => {
 
-
-    const dispatch = useDispatch();
     const { data } = useQuery(GET_ORDERS);
 
-    useEffect(() => {
-        dispatch({ type: "CHANGE_TITLE", payload: "Заказы" })
-    }, [dispatch])
-
-
+    const title = useTitle("Заказы");
 
     const list = data?.order.orders.edges.map(({ node }) => {
         return {
@@ -35,7 +28,7 @@ const OrderList = ({ match }) => {
             created_at: TimeParser(node.createdAt),
         }
     })
-
+    
     const columns = [
         {
             name: "public_id",
@@ -106,12 +99,10 @@ const OrderList = ({ match }) => {
 
     return (
         <>
-            <Helmet>
-                <title>Заказы</title>
-            </Helmet>
+            <Helmet title={title} />
             <Header>
                 <DatePickers mR="15px" />
-                <ButtonWithIcon name="Создать заказ" url={`${match.url}/create`}  />
+                <ButtonWithIcon name="Создать заказ" url={`${match.url}/create`} />
             </Header>
             <CustomMUIDataTable
                 title={"Список всех сотрудников"}

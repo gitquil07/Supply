@@ -19,7 +19,6 @@ const App = () => {
   const open = Boolean(anchorEl);
   const title = useSelector(state => state.title);
 
-  console.log(title)
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);

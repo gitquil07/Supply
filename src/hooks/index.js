@@ -8,12 +8,12 @@ export const useDateRange = (query) => {
     const [fromDate, setFromDate] = useState(moment().startOf('month').toDate()),
           [toDate, setToDate] = useState(new Date());
 
-    const { error, data, refetch} = useQuery(query, {
-        variables: {
-            fromDate,
-            toDate
-        }
-    });
+        const { error, data, refetch} = useQuery(query, {
+            variables: {
+                fromDate,
+                toDate
+            }
+        });
 
     const handleDateRangeChange = () => {
       refetch({
@@ -39,7 +39,7 @@ export const useDateRange = (query) => {
 export const useTitle = (title_to_set) => {
     
     const dispatch = useDispatch(),
-          title_to_get = useSelector(state => state.title);
+            title_to_get = useSelector(state => state.title);
 
     useEffect(() => {
         dispatch({type: "CHANGE_TITLE", payload: title_to_set})

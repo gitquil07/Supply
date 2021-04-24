@@ -1,16 +1,12 @@
-import { useState } from "react";
 import styled from "styled-components";
 import TextField from '@material-ui/core/TextField';
 
-export const CustomInput = ({ label, placeholder, change }) => {
-    const [placeholderText, setPlaceHolderText] = useState(placeholder)
+export const CustomInput = ({ label, change }) => {
     return (
         <Wrapper>
             <TextField
                 label={label}
                 variant="outlined"
-                value={placeholderText}
-                onClick={() => setPlaceHolderText("")}
                 onChange={e => change(e)}
             />
         </Wrapper>
@@ -18,9 +14,13 @@ export const CustomInput = ({ label, placeholder, change }) => {
 };
 
 const Wrapper = styled.div`
-    width: 100%;
+    width: 100%; 
 
     .MuiFormControl-root  {
         width: 100%;
-    }
+
+        fieldset {
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        }
+    }  
 `;

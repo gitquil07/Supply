@@ -1,46 +1,67 @@
-
-import { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import styled from "styled-components";
-import { useDispatch } from 'react-redux';
-import { CustomSelector } from '../../../components/CustomSelector';
-import { DragImage } from '../../../components/DragImage';
-import { CustomInput } from '../../../components/CustomInput';
-import { DatePicker } from '@material-ui/pickers';
+
+import { useTitle } from '../../../hooks';
+import { Button } from '../../../components/Buttons';
 import CustomPicker from '../../../components/DatePicker';
+import { DragFile } from '../../../components/DragFile';
+import { RemoveIcon } from '../../../components/RemoveIcon';
+import { CustomInput } from '../../../components/CustomInput';
+import { CustomSelector } from '../../../components/CustomSelector';
 
 
 const OrderCreate = () => {
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        dispatch({ type: "CHANGE_TITLE", payload: "Создать Заказ" })
-    }, [dispatch])
+    const title = useTitle("Создать Заказ");
 
     return (
         <>
-            <Helmet>
-                <title>Создать Заказ</title>
-            </Helmet>
+            <Helmet title={title} />
             <Wrapper>
                 <Form>
                     <Title>Данные заказа</Title>
 
                     <Inputs>
-                        <CustomSelector />
-                        <CustomSelector />
-                        <CustomSelector />
-                        <CustomSelector />
+                        <CustomSelector label="Выберите завод" />
+                        <CustomSelector label="Выберите поставщика" />
+                        <CustomPicker label="Дата  создание" />
+                        <CustomInput label="Инвойс заказа" />
                     </Inputs>
 
-                    <DragImage />
+                    <DragFile />
+
+                    <Header>
+                        <Title>Материал</Title>
+                        <Button name="Добавить материал" color="#5762B2" />
+                    </Header>
 
                     <AddibleInput>
-                        <CustomInput label="Выберите материал" placeholder="Название материала" />
-                        <CustomPicker />
-                        <CustomPicker />
-                        <CustomInput />
-                        <CustomInput />
+                        <CustomSelector label="Выберите материал" />
+                        <CustomPicker label="Срок изготовление" />
+                        <CustomPicker label="Дата отгрузки" />
+                        <CustomInput label="Кол-во" />
+                        <CustomSelector label="Ед. Изм." />
+                        <CustomInput label="Кол-во" />
+                        <RemoveIcon />
+                    </AddibleInput>
+
+                    <AddibleInput>
+                        <CustomSelector label="Выберите материал" />
+                        <CustomPicker label="Срок изготовление" />
+                        <CustomPicker label="Дата отгрузки" />
+                        <CustomInput label="Кол-во" />
+                        <CustomSelector label="Ед. Изм." />
+                        <CustomInput label="Кол-во" />
+                        <RemoveIcon />
+                    </AddibleInput>
+
+                    <AddibleInput>
+                        <CustomSelector label="Выберите материал" />
+                        <CustomPicker label="Срок изготовление" />
+                        <CustomPicker label="Дата отгрузки" />
+                        <CustomInput label="Кол-во" />
+                        <CustomSelector label="Ед. Изм." />
+                        <CustomInput label="Кол-во" />
+                        <RemoveIcon />
                     </AddibleInput>
                 </Form>
             </Wrapper>
@@ -66,15 +87,25 @@ const Title = styled.div`
 `;
 
 const Inputs = styled.div`
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
     gap: 10px;
     margin: 15px 0;
 `;
 
 const AddibleInput = styled.div`
-    display: grid;  
-    grid-template-columns: 1fr auto auto 1fr 1fr;
+    display: flex;
     gap: 10px;
+    margin: 20px 0;
+    background: #F6F6FC;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 10px;
+`;
+
+const Header = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin: 20px 0;
 `;

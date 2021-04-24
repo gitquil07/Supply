@@ -28,7 +28,8 @@ export default CustomPicker;
 
 const Wrapper = styled.div`
     position: relative; 
-    width: 210px;
+    min-width: 160px;
+    max-width: 160px;
 
     img {
         position: absolute;
