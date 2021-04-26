@@ -1,19 +1,21 @@
-import { Title } from "../../../components/Title";
-import { Button } from "../../../components/Button";
+import { find, propEq } from 'ramda';
+import { Helmet } from 'react-helmet';
 import styled from "styled-components";
-import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
-import { columns } from "./TableData";
+import { Link } from 'react-router-dom';
 import { useQuery } from "@apollo/client";
-import { GET_ORDERS } from "./gql";
-import { TimeParser } from "../../../utils/functions";
 
-const OrderList = () => {
+import { GET_ORDERS } from "./gql";
+import { useTitle } from '../../../hooks';
+import { TimeParser } from "../../../utils/functions";
+import DatePickers from '../../../components/DatePickers';
+import { ButtonWithIcon } from "../../../components/Buttons";
+import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
+
+const OrderList = ({ match }) => {
 
     const { data } = useQuery(GET_ORDERS);
 
-    const options = {
-        filterType: 'checkbox',
-    };
+    const title = useTitle("Заказы");
 
     const list = data?.order.orders.edges.map(({ node }) => {
         return {
@@ -27,18 +29,85 @@ const OrderList = () => {
         }
     })
 
+    const columns = [
+        {
+            name: "public_id",
+            label: "Номер заказа",
+            options: {
+                filter: true,
+                customBodyRender: (value) => {
+                    const id = find(propEq("public_id", value))(list);
+                    return (
+                        <Link to={`${match.url}/detail/${id.public_id}`}>
+                            {value}
+                        </Link>
+                    );
+
+                }
+            }
+        },
+        {
+            name: "factory",
+            label: "Название Завода",
+            options: {
+                filter: true,
+                sort: false,
+            }
+        },
+        {
+            name: "vendor",
+            label: "Поставщик",
+            options: {
+                filter: true,
+                sort: false,
+            }
+        },
+        {
+            name: "status",
+            label: "Статус",
+            options: {
+                filter: true,
+                sort: true,
+            }
+        },
+        {
+            name: "invoice_proforma",
+            label: "Invoice Proforma",
+            options: {
+                filter: true,
+                sort: false,
+            }
+        },
+        {
+            name: "invoice_date",
+            label: "Invoice Date",
+            options: {
+                filter: true,
+                sort: false,
+            }
+        },
+        {
+            name: "created_at",
+            label: "Дата создания заказа",
+            options: {
+                filter: true,
+                sort: false,
+            }
+        },
+    ];
+
 
     return (
         <>
+            <Helmet title={title} />
             <Header>
-                <Title name="Заказы" />
-                <Button name="Создать пользователя" url="/settings/users/create" />
+                <DatePickers mR="15px" />
+                <ButtonWithIcon name="Создать заказ" url={`${match.url}/create`} />
             </Header>
-            <StyledMUIDataTable
+            <CustomMUIDataTable
                 title={"Список всех сотрудников"}
                 data={list}
                 columns={columns}
-                options={options}
             />
         </>
     );
@@ -50,12 +119,4 @@ const Header = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
-    height: 70px;
-
-    background: #FFFFFF;
-    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    margin-bottom: 20px;
-    padding: 0 10px;
 `;

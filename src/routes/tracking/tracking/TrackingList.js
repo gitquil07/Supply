@@ -1,62 +1,67 @@
-import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
-import { Button } from "../../../components/Button";
-import { Title } from "../../../components/Title"
-import { columns } from "./TableData";
-import { useQuery } from "@apollo/client"; 
+import { useMemo } from "react";
 import { GET_TRACKINGS } from "./gql";
-import styled from "styled-components";
+import { Helmet } from "react-helmet";
 
-const TrackingList = () => {
+import { useDateRange, useTitle } from "../../../hooks";
+import { setTitleWithDateRange } from "../../../utils/functions";
+import { generateColumns } from "./TableData";
 
-    const { data } = useQuery(GET_TRACKINGS);
+import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
+import DatePickers from "../../../components/DatePickers";
 
-    const options = {
-        // 
-    };
-    
-    const list = data?.application?.applications?.edges?.map(({node}) => {
-        return {
-            public_id: node.publicId,
-            order: `${node.trackingUser.firstName} + ${node.trackingUser.fullName}`,
-            degree_of_danger: node.degreeOfDanger,
-            delivery_condition: node.deliveryCondition,
-            package_on_pallet: node.packageOnPallet,
-            transport_count: node.transportCount,
-            transport_type: node.transportType.name,
-            created_at: node.created_at,
-            updated_at: node.updated_at,
-            type_of_packaging: node.typeOfPackaging
-        }
-    });
+const TrackingList = ({ match }) => {
 
-    return (
-        <>
-            <Header>
-                <Title name="Date picker"></Title>
-                <Button name="Применить"></Button>
-            </Header>
-            <StyledMUIDataTable
-                title={"Заявки на поставку"}
-                data={list}
-                columns={columns}
-                options={options}/>
-        </>
-    );
+  const {
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    handleClick,
+    data,
+    error
+  } = useDateRange(GET_TRACKINGS);
+
+  const title = useTitle("Логистика");
+  
+  // const list = data?.application?.applications?.edges?.map(({ node }) => {
+  //   return {
+  //     public_id: node.publicId,
+  //     order: `${node.trackingUser.firstName} + ${node.trackingUser.fullName}`,
+  //     degree_of_danger: node.degreeOfDanger,
+  //     delivery_condition: node.deliveryCondition,
+  //     package_on_pallet: node.packageOnPallet,
+  //     transport_count: node.transportCount,
+  //     transport_type: node.transportType.name,
+  //     created_at: node.created_at,
+  //     updated_at: node.updated_at,
+  //     type_of_packaging: node.typeOfPackaging,
+  //     factory: node.order.vendorFactory.name
+  //   }
+  // });
+
+  const list = [];
+  
+  const { url } = match;
+  const columns = useMemo(() => generateColumns(url, list), [data]);
+
+
+  return (
+    <>
+      <Helmet title={title} />
+      <DatePickers
+        fromDate={fromDate}
+        toDate={toDate}
+        changeFrom={setFromDate}
+        changeTo={setToDate}
+        buttonClicked={handleClick}
+      />
+      <CustomMUIDataTable
+        title={setTitleWithDateRange("поставку", fromDate, toDate)}
+        data={list}
+        columns={columns}
+      />
+    </>
+  );
 }
-
-const Header = styled.div`
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-        
-    height: 70px;
-
-    background: #FFFFFF;
-    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    margin-bottom: 20px;
-    padding: 0 10px;
-`;
-
 
 export default TrackingList;

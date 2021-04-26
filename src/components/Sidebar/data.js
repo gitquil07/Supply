@@ -13,8 +13,8 @@ export const Supply = [
         url: "#"
     },
     {
-        name: "ЗакаЗаявки на транспортзы",
-        url: "#"
+        name: "Заявки на транспортзы",
+        url: "/supply/application"
     },
     {
         name: "База данных",
@@ -41,54 +41,50 @@ export const Logistics = [
     },
     {
         name: "Слежение",
-        url: "#"
+        url: "/tracking/transport"
     },
     {
         name: "Прибывшие",
-        url: "#"
+        url: "/tracking/arrived"
     },
     {
         name: "Клиенты",
-        url: "#"
+        url: "/tracking/clients"
     },
     {
         name: "Задолжники по заводам",
-        url: "#"
+        url: "/tracking/dept"
     }
 ];
 
 export const Customs = [
     {
         name: "Новые",
-        url: "#"
+        url: "/customs/new"
     },
     {
         name: "Готовые для оформления",
-        url: "#"
+        url: "/customs/ready"
     },
     {
         name: "Нет денег",
-        url: "#"
+        url: "/customs/no-money"
     },
     {
         name: "Нет документов",
-        url: "#"
-    },
-    {
-        name: "Нет денег",
-        url: "#"
+        url: "/customs/no-document"
     },
     {
         name: "Сертификат",
-        url: "#"
+        url: "/customs/certificate"
     },
     {
         name: "Ждет льготы",
-        url: "#"
+        url: "/customs/no-typed"
     },
     {
         name: "Закрытые",
-        url: "#"
+        url: "/customs/closed"
     }
 ];
 

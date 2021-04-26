@@ -32,7 +32,6 @@ const UserCreate = () => {
                         inputs.map((e, i) =>
                             <TextField
                                 key={i}
-                                id="filled-required"
                                 name={e.name}
                                 label={e.label}
                                 type={e.type ? e.type : "text"}
@@ -58,7 +57,7 @@ const UserCreate = () => {
                                     <Checkbox checked={checkId(item.id, brand)} color="primary" />
                                 </MenuItem>
                             ))} */}
-                        </Select>  
+                        </Select>
                     </FormControl>
 
                     <FormControl variant="filled">

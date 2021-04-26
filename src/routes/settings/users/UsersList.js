@@ -1,17 +1,13 @@
-import styled from "styled-components";
 import { Title } from "../../../components/Title";
-import { Button } from "../../../components/Button";
-import { StyledMUIDataTable } from "../../../components/StyledMUIDataTable";
+import { Button } from "../../../components/Buttons";
+import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { columns } from "./TableData";
 import { useQuery } from "@apollo/client";
 import { GET_USERS } from "./gql";
+import { CustomHeader } from "../../../components/CustomHeader";
 
 const UsersList = () => {
     const { data } = useQuery(GET_USERS);
-
-    const options = {
-        // filterType: 'checkbox',
-    };
 
     const list = data?.account?.users?.edges.map(({ node }) => {
         return {
@@ -31,32 +27,17 @@ const UsersList = () => {
 
     return (
         <>
-            <Header>
+            <CustomHeader>
                 <Title name="Пользователи" />
                 <Button name="Создать пользователя" url="/settings/users/create" />
-            </Header>
-            <StyledMUIDataTable
+            </CustomHeader>
+            <CustomMUIDataTable
                 title={"Список всех сотрудников"}
                 data={list}
                 columns={columns}
-                options={options}
             />
         </>
     );
 };
 
 export default UsersList;
-
-const Header = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    height: 70px;
-
-    background: #FFFFFF;
-    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    margin-bottom: 20px;
-    padding: 0 10px;
-`;
