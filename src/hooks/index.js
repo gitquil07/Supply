@@ -6,17 +6,17 @@ import moment from "moment";
 export const useDateRange = (query) => {
 
     const [fromDate, setFromDate] = useState(moment().startOf('month').toDate()),
-          [toDate, setToDate] = useState(new Date());
+        [toDate, setToDate] = useState(new Date());
 
-    const [ fetchData, {error, data}] = useLazyQuery(query);
+    const [fetchData, { error, data }] = useLazyQuery(query);
 
     useEffect(() => {
-        fetchData({ variables: { fromDate: moment(fromDate).format("YYYY-MM-DD"), toDate: moment(toDate).format("YYYY-MM-DD")}});
-      }, []);
+        fetchData({ variables: { fromDate: moment(fromDate).format("YYYY-MM-DD"), toDate: moment(toDate).format("YYYY-MM-DD") } });
+    }, []);
 
-    const handleClick = () => { 
+    const handleClick = () => {
         console.log("button clicked");
-        fetchData({ variables: { fromDate: moment(fromDate).format("YYYY-MM-DD"), toDate: moment(toDate).format("YYYY-MM-DD")}});
+        fetchData({ variables: { fromDate: moment(fromDate).format("YYYY-MM-DD"), toDate: moment(toDate).format("YYYY-MM-DD") } });
     }
 
     return {

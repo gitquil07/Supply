@@ -1,4 +1,4 @@
-import {  useMemo } from "react";
+import { useMemo } from "react";
 import { GET_TRACKING_ARRIVINGS } from "./gql";
 import { Helmet } from "react-helmet";
 
@@ -18,7 +18,7 @@ const ArrivedList = ({ match }) => {
     toDate,
     setToDate,
     handleClick,
-    data, 
+    data,
     error
   } = useDateRange(GET_TRACKING_ARRIVINGS);
 
@@ -27,10 +27,10 @@ const ArrivedList = ({ match }) => {
   const list = [];
 
   const { url } = match;
-  const columns = useMemo(() => generateColumns(url, list), [data]); 
+  const columns = useMemo(() => generateColumns(url, list), [data]);
 
   return (
-    <> 
+    <>
       <Helmet>
         <title>{title}</title>
       </Helmet>
