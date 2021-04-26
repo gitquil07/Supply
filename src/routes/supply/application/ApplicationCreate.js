@@ -41,7 +41,6 @@ const ApplicationCreate = () => {
 
                 <Material>
                     <CustomLongInput label="Выберите материал" />
-
                     <RowWrapper>
                         <Row>
                             <CustomSelector label="Номер инвойса" />
@@ -57,7 +56,46 @@ const ApplicationCreate = () => {
                             <CustomSelector label="Получатель" />
                         </Row>
                     </RowWrapper>
+                    <RemoveIcon />
+                </Material>
 
+                <Material>
+                    <CustomLongInput label="Выберите материал" />
+                    <RowWrapper>
+                        <Row>
+                            <CustomSelector label="Номер инвойса" />
+                            <CustomInput label="Отгружаемое кол-во" />
+                            <CustomSelector label="Номер инвойса" />
+                            <CustomSelector label="Получатель" />
+                        </Row>
+
+                        <Row>
+                            <CustomSelector label="Номер инвойса" />
+                            <CustomInput label="Отгружаемое кол-во" />
+                            <CustomSelector label="Номер инвойса" />
+                            <CustomSelector label="Получатель" />
+                        </Row>
+                    </RowWrapper>
+                    <RemoveIcon />
+                </Material>
+
+                <Material>
+                    <CustomLongInput label="Выберите материал" />
+                    <RowWrapper>
+                        <Row>
+                            <CustomSelector label="Номер инвойса" />
+                            <CustomInput label="Отгружаемое кол-во" />
+                            <CustomSelector label="Номер инвойса" />
+                            <CustomSelector label="Получатель" />
+                        </Row>
+
+                        <Row>
+                            <CustomSelector label="Номер инвойса" />
+                            <CustomInput label="Отгружаемое кол-во" />
+                            <CustomSelector label="Номер инвойса" />
+                            <CustomSelector label="Получатель" />
+                        </Row>
+                    </RowWrapper>
                     <RemoveIcon />
                 </Material>
 
