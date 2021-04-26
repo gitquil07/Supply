@@ -1,34 +1,27 @@
 import { gql } from "@apollo/client";
 
 export const GET_CLOSED_CUSTOMS = gql`
-query MyQuery {
+query MyQuery($fromDate: Date, $toDate: Date) {
     application {
-    applications {
+      applications(fromDate: $fromDate, toDate: $toDate) {
         edges {
-        node {
-            order {
-            vendorFactory {
-                vendor {
-                trackings {
-                    edges {
-                    node {
-                        publicId
-                        vendor {
-                        name
-                        updatedAt
-                        }
-                        location
-                        transportNumber
-                        createdAt
-                    }
-                    }
+          node {
+            publicId
+            status
+            invoices {
+              edges {
+                node {
+                  number
                 }
-                }
+              }
             }
+            createdAt
+            transportType {
+              name
             }
+          }
         }
-        }
+      }
     }
-    }
-}
+  }
 `;

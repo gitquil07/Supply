@@ -14,7 +14,10 @@ export const useDateRange = (query) => {
         fetchData({ variables: { fromDate: moment(fromDate).format("YYYY-MM-DD"), toDate: moment(toDate).format("YYYY-MM-DD")}});
       }, []);
 
-    const handleClick = () => fetchData({ variables: { fromDate, toDate}})
+    const handleClick = () => { 
+        console.log("button clicked");
+        fetchData({ variables: { fromDate: moment(fromDate).format("YYYY-MM-DD"), toDate: moment(toDate).format("YYYY-MM-DD")}});
+    }
 
     return {
         fromDate,

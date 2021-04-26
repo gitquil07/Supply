@@ -9,11 +9,6 @@ import { generateColumns } from "./TableData";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import DatePickers from "../../../components/DatePickers";
 
-import { useLazyQuery } from "@apollo/client";
-import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import moment from "moment";
-
 
 const ArrivedList = ({ match }) => {
 
