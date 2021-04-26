@@ -1,43 +1,48 @@
+import { useState } from "react";
+import { useToggleDialog } from "../../../hooks";
+
+
 import styled from "styled-components";
 
 import { Form } from "../../../components/Form";
 import { Button } from "../../../components/Buttons";
 import { CustomInput } from "../../../components/CustomInput";
-// import { RequestCard } from "../../../components/RequestCard";
 import { CustomSelector } from "../../../components/CustomSelector";
+import SmallDialog from "../../../components/SmallDialog";
+
 
 const TrackingTransportCreate = () => {
+
+    const [requestDialogState, closeRequestDialog, openRequestDialog] = useToggleDialog();
+    const [materialsDialogState, closeMaterialDialog, openMaterialDialog] = useToggleDialog();
+
     return (
         <>
             <Form>
                 <TranspostDataTitle>Данные транспорта</TranspostDataTitle>
                 <TranspostDataParameters>
                     <CustomSelector 
-                        label="Транспортировщики">
-                    </CustomSelector>
+                        label="Транспортировщики"/>
                     <CustomInput
                         label="Номер транспорта"
                     >
                     </CustomInput>
                     <CustomSelector
-                        label="Примечание">
-                    </CustomSelector>
+                        label="Примечание"/>
                     <CustomInput
                         label="Сумма"
                     >
                     </CustomInput>
                     <CustomSelector
                         label="Валюта"
-                    >
-                    </CustomSelector>
+                    />
                     <CustomInput
                         label="Нетто"
                     >
                     </CustomInput>
                     <CustomSelector
                         label="Брутто"
-                    >
-                    </CustomSelector>
+                    />
                 </TranspostDataParameters>
                 <Header>
                     <Title>Заявки</Title>
@@ -45,12 +50,29 @@ const TrackingTransportCreate = () => {
                 </Header>
 
                 {/* <RequestCard></RequestCard> */}
+                <button onClick={openRequestDialog}>open</button>
+                <button onClick={openMaterialDialog}>open</button>
             </Form>
+
+            <SmallDialog close={closeRequestDialog} isOpen={requestDialogState}>
+                <CustomSelector
+                    fullWidth={true}
+                    label="Номер заявки"
+                ></CustomSelector>
+            </SmallDialog>
+
+            <SmallDialog close={closeMaterialDialog} isOpen={materialsDialogState}>
+                <CustomSelector
+                    fullWidth={true}
+                    label="Номер заявки"
+                ></CustomSelector>
+            </SmallDialog>
         </>
     );
 }
 
 export default TrackingTransportCreate; 
+
 
 const TranspostDataParameters = styled.div`
     display: flex;
