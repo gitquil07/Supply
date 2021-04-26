@@ -23,12 +23,12 @@ const Tracking = ({ match }) => {
             <Route exact path={`${match.url}`} component={TrackingList} />
 
             <Route path={`${match.url}/detail/:id`} component={TrackingDetail} />
-            <Route path={`${match.url}/edit/:id`} component={TrackingCreate} />
+            <Route path={`${match.url}/create/:id`} component={TrackingCreate} />
 
             <Route path={`${match.url}/arrived`} component={ArrivedList} />
             <Route path={`${match.url}/arrived/create/:id`} component={ArrivedCreate} />
 
-            <Route path={`${match.url}/transport`} component={TransportList} />
+            <Route exact path={`${match.url}/transport`} component={TransportList} />
             <Route path={`${match.url}/transport/create/:id`} component={TransportCreate} />
 
             <Route path={`${match.url}/clients`} component={ClientList} />
