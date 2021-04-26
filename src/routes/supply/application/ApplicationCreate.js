@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 import { useTitle } from '../../../hooks';
 import { Button } from '../../../components/Buttons';
-import CustomPicker from '../../../components/DatePicker';
 import { DragFile } from '../../../components/DragFile';
 import { RemoveIcon } from '../../../components/RemoveIcon';
 import { CustomInput } from '../../../components/CustomInput';
@@ -11,6 +10,7 @@ import { CustomSelector } from '../../../components/CustomSelector';
 import { Footer } from '../../../components/Footer';
 import { CustomLongInput } from '../../../components/CustomLongInput';
 import { Form } from '../../../components/Form';
+import { FlexWithWrap } from '../../../components/Flex';
 
 const ApplicationCreate = () => {
     const title = useTitle("Создание новой Заявки");
@@ -21,7 +21,7 @@ const ApplicationCreate = () => {
             <Form>
                 <Title>Данные транспорта</Title>
 
-                <Inputs>
+                <FlexWithWrap>
                     <CustomSelector label="Тип транспорта" />
                     <CustomInput label="Количество транспота" />
                     <CustomSelector label="Вид упаковки" />
@@ -30,7 +30,7 @@ const ApplicationCreate = () => {
                     <CustomInput label="Количество упаковки" />
                     <CustomSelector label="Условие доставки" />
                     <CustomSelector label="Человек для слежения" />
-                </Inputs>
+                </FlexWithWrap>
 
                 <DragFile />
 
@@ -113,13 +113,6 @@ export default ApplicationCreate;
 
 const Title = styled.div`
     font-size: 18px;
-`;
-
-const Inputs = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 15px 0;
 `;
 
 const Header = styled.div`

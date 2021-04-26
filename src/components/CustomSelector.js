@@ -6,9 +6,9 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Arrow from "../assets/icons/arrow.svg";
 
-export const CustomSelector = ({ label }) => {
+export const CustomSelector = ({ label, short }) => {
     return (
-        <Wrapper>
+        <Wrapper short={short}>
             <FormControl variant="outlined" id="formControl">
                 <img src={Arrow} alt="arrow" id="arrow" />
                 <InputLabel id="label">{label}</InputLabel>
@@ -32,8 +32,8 @@ export const CustomSelector = ({ label }) => {
 };
 
 const Wrapper = styled.div`
-    max-width: 300px;
-    min-width: 250px;
+    max-width: ${props => props.short ? "100px" : "300px"};
+    min-width: ${props => props.short ? "150px" : "250px"};
     position: relative;
  
 
