@@ -14,3 +14,15 @@ export const FlexForHeader = styled.div`
     margin: ${props => props.m};
     padding: ${props => props.p};
 `;
+
+export const AddibleInput = styled.div`
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    background: #F6F6FC;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 10px;
+`;
+

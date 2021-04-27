@@ -8,6 +8,7 @@ import { DragFile } from '../../../components/Inputs/DragFile';
 import { RemoveIcon } from '../../../components/RemoveIcon';
 import { CustomInput } from '../../../components/Inputs/CustomInput';
 import { CustomSelector } from '../../../components/Inputs/CustomSelector';
+import { AddibleInput } from "../../../components/Flex";
 import { Footer } from '../../../components/Footer';
 
 const OrderCreate = () => {
@@ -95,17 +96,6 @@ const Inputs = styled.div`
     display: flex;
     gap: 10px;
     margin: 15px 0;
-`;
-
-const AddibleInput = styled.div`
-    display: flex;
-    gap: 10px;
-    margin: 20px 0;
-    background: #F6F6FC;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
-    border-radius: 10px;
-    padding: 10px;
 `;
 
 const Header = styled.div`
