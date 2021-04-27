@@ -10,9 +10,7 @@ export const DragFile = () => {
     const acceptFile = (target) => {
         setFiles([...files, target.files[0]]);
     }
-
-    console.log(files);
-
+    
     return (
         <Wrapper>
             <Form>
