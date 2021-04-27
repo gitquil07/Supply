@@ -6,7 +6,7 @@ export const Form = styled.div`
     box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
     border-radius: 10px;    
     padding: 20px;
-    overflow-y: scroll; 
+    overflow-y: auto;
 
     ::-webkit-scrollbar {
         width: 10px;

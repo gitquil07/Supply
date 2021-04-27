@@ -7,18 +7,20 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { default as CButton} from '@material-ui/core/Button';
 import CloseIcon from "@material-ui/icons/Close";
 
- const SmallDialog = ({close, isOpen, children}) => {
+ const SmallDialog = ({title, close, isOpen, children}) => {
     console.log("close", close);
     return (
 
             <StyledDialog onClose={close} open={isOpen} >
                 <RequestTitle>
-                    Добавить заявку
+                    {title}
                     <CloseButton onClick={close}>
                         <CloseIconLight />
                     </CloseButton>
                 </RequestTitle>
-                    { children }
+                    <Inputs>
+                        { children }
+                    </Inputs>
                 <Button name="Добавить материал" color="#5762B2"/>
             </StyledDialog>
 
@@ -65,4 +67,12 @@ const RequestTitle = styled(DialogTitle)`
 
 const CloseIconLight = styled(CloseIcon)`
     color: white; 
+`;
+
+
+const Inputs = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0 10px 0;
 `;

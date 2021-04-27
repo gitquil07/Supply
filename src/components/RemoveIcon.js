@@ -5,7 +5,8 @@ export const RemoveIcon = ({ clicked }) => <Icon onClick={clicked}><img src={Tra
 
 const Icon = styled.div`
     background: #EE8D8D;
-    width: 50px;
+    min-width: 50px;
+    min-height: 56px;
     display: flex;
     justify-content: center;
     align-items: center;
