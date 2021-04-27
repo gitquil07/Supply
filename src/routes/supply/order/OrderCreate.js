@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Helmet } from 'react-helmet';
 import styled from "styled-components";
 
@@ -9,10 +10,33 @@ import { RemoveIcon } from '../../../components/RemoveIcon';
 import { CustomInput } from '../../../components/Inputs/CustomInput';
 import { CustomSelector } from '../../../components/Inputs/CustomSelector';
 import { Footer } from '../../../components/Footer';
+import { fromPromise } from '@apollo/client';
 
 const OrderCreate = () => {
     const title = useTitle("Создать Заказ");
-    
+
+    const [materials, setMaterials] = useState([
+        {
+            id: 1,
+            name: "",
+            productDuration: "",
+            shipmentTime: "",
+            quantity: "",
+            price: ""
+
+        }
+    ]);
+
+
+    const addMaterial = () => {
+        setMaterials([...materials, { id: materials.length + 1, name: "", productDuration: "", shipmentTime: "", quantity: "", price: "" }]);
+    };
+
+    const removeMaterial = (id) => {
+        setMaterials([...materials.filter(e => e.id !== id)])
+    }
+ 
+
     return (
         <>
             <Helmet title={title} />
@@ -31,38 +55,24 @@ const OrderCreate = () => {
 
                     <Header>
                         <Title>Материал</Title>
-                        <Button name="Добавить материал" color="#5762B2" />
+                        <Button name="Добавить материал" color="#5762B2" clickHandler={addMaterial} />
                     </Header>
 
-                    <AddibleInput>
-                        <CustomSelector label="Выберите материал" />
-                        <CustomPicker label="Срок изготовление" />
-                        <CustomPicker label="Дата отгрузки" />
-                        <CustomInput label="Кол-во" />
-                        <CustomSelector label="Ед. Изм." />
-                        <CustomInput label="Кол-во" />
-                        <RemoveIcon />
-                    </AddibleInput>
+                    {
+                        materials.map((e) =>
+                            <AddibleInput>
+                                <CustomSelector label="Выберите материал" />
+                                <CustomPicker label="Срок изготовление" />
+                                <CustomPicker label="Дата отгрузки" />
+                                <CustomInput label="Кол-во" />
+                                <CustomSelector label="Ед. Изм." />
+                                <CustomInput label="Цена" />
 
-                    <AddibleInput>
-                        <CustomSelector label="Выберите материал" />
-                        <CustomPicker label="Срок изготовление" />
-                        <CustomPicker label="Дата отгрузки" />
-                        <CustomInput label="Кол-во" />
-                        <CustomSelector label="Ед. Изм." />
-                        <CustomInput label="Кол-во" />
-                        <RemoveIcon />
-                    </AddibleInput>
+                                <RemoveIcon clicked={() => removeMaterial(e.id)} />
+                            </AddibleInput>
+                        )
+                    }
 
-                    <AddibleInput>
-                        <CustomSelector label="Выберите материал" />
-                        <CustomPicker label="Срок изготовление" />
-                        <CustomPicker label="Дата отгрузки" />
-                        <CustomInput label="Кол-во" />
-                        <CustomSelector label="Ед. Изм." />
-                        <CustomInput label="Кол-во" />
-                        <RemoveIcon />
-                    </AddibleInput>
                 </Form>
 
                 <Footer>

@@ -6,8 +6,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Arrow from "../../assets/icons/arrow.svg";
 
-export const CustomSelector = ({ label, fullWidth,  short }) => {
-    return ( 
+export const CustomSelector = ({ label, fullWidth, short }) => {
+    return (
         <Wrapper short={short} fullWidth={fullWidth}>
             <FormControl variant="outlined" id="formControl">
                 <img src={Arrow} alt="arrow" id="arrow" />
@@ -15,7 +15,7 @@ export const CustomSelector = ({ label, fullWidth,  short }) => {
                 <Select
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
-                    // value={age}
+                    value={10}
                     // onChange={handleChange}
                     label="Age"
                 >
@@ -33,12 +33,12 @@ export const CustomSelector = ({ label, fullWidth,  short }) => {
 
 const Wrapper = styled.div`
 
-    ${({fullWidth}) => {
-        return fullWidth? 
-        css`
+    ${({ fullWidth }) => {
+        return fullWidth ?
+            css`
             width: 100%;
-        `: 
-        css`
+        `:
+            css`
              max-width: ${props => props.short ? "100px" : "300px"};
              min-width: ${props => props.short ? "150px" : "250px"};         
         `
