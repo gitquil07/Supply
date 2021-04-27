@@ -55,7 +55,7 @@ const ApplicationCreate = () => {
                             <CustomSelector label="Номер инвойса" />
                             <CustomSelector label="Получатель" />
                         </Row>
-                    </RowWrapper>
+                    </RowWrapper>k
                     <RemoveIcon />
                 </Material>
 

@@ -44,3 +44,14 @@ export const useTitle = (title_to_set) => {
 
 }
 
+export const useToggleDialog = () => {
+    const [open, setOpen] = useState(false),
+
+        handleOpen = () => setOpen(true),
+        handleClose = () => setOpen(false);
+
+
+    return [open, handleClose, handleOpen];
+
+}
+

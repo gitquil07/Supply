@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import React from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -6,9 +6,9 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Arrow from "../../assets/icons/arrow.svg";
 
-export const CustomSelector = ({ label, short }) => {
-    return (
-        <Wrapper short={short}>
+export const CustomSelector = ({ label, fullWidth,  short }) => {
+    return ( 
+        <Wrapper short={short} fullWidth={fullWidth}>
             <FormControl variant="outlined" id="formControl">
                 <img src={Arrow} alt="arrow" id="arrow" />
                 <InputLabel id="label">{label}</InputLabel>
@@ -32,8 +32,18 @@ export const CustomSelector = ({ label, short }) => {
 };
 
 const Wrapper = styled.div`
-    max-width: ${props => props.short ? "100px" : "300px"};
-    min-width: ${props => props.short ? "150px" : "250px"};
+
+    ${({fullWidth}) => {
+        return fullWidth? 
+        css`
+            width: 100%;
+        `: 
+        css`
+             max-width: ${props => props.short ? "100px" : "300px"};
+             min-width: ${props => props.short ? "150px" : "250px"};         
+        `
+    }}
+
     position: relative;
  
 
