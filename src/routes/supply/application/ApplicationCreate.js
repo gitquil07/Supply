@@ -3,12 +3,12 @@ import styled from "styled-components";
 
 import { useTitle } from '../../../hooks';
 import { Button } from '../../../components/Buttons';
-import { DragFile } from '../../../components/DragFile';
+import { DragFile } from '../../../components/Inputs/DragFile';
 import { RemoveIcon } from '../../../components/RemoveIcon';
-import { CustomInput } from '../../../components/CustomInput';
-import { CustomSelector } from '../../../components/CustomSelector';
+import { CustomInput } from '../../../components/Inputs/CustomInput';
+import { CustomSelector } from '../../../components/Inputs/CustomSelector';
 import { Footer } from '../../../components/Footer';
-import { CustomLongInput } from '../../../components/CustomLongInput';
+import { CustomLongInput } from '../../../components/Inputs/CustomLongInput';
 import { Form } from '../../../components/Form';
 import { FlexWithWrap } from '../../../components/Flex';
 

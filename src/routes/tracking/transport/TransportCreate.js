@@ -1,19 +1,41 @@
+import { useState } from "react";
+import { Helmet } from "react-helmet";
 import styled from "styled-components";
 
-import { Form } from "../../../components/Form";
-import { Button } from "../../../components/Buttons";
-import { CustomInput } from "../../../components/CustomInput";
-import { CustomSelector } from "../../../components/CustomSelector";
-import { FlexForHeader, FlexWithWrap } from "../../../components/Flex";
-import { Table } from "../../../components/Table";
-import { RemoveIcon } from "../../../components/RemoveIcon";
-import { Footer } from "../../../components/Footer";
-import { DisabledInput } from "../../../components/DisabledInput";
-import { Helmet } from "react-helmet";
 import { useTitle } from "../../../hooks";
+import { Form } from "../../../components/Form";
+import { Table } from "../../../components/Table";
+import { Footer } from "../../../components/Footer";
+import { Arrows } from "../../../components/Arrows";
+import { Button } from "../../../components/Buttons";
+import { RemoveIcon } from "../../../components/RemoveIcon";
+import { CustomInput } from "../../../components/Inputs/CustomInput";
+import { DisabledInput } from "../../../components/DisabledInput";
+import { CustomSelector } from "../../../components/Inputs/CustomSelector";
+import { FlexForHeader, FlexWithWrap } from "../../../components/Flex";
 
 const TrackingTransportCreate = () => {
     const title = useTitle("Создание нового Слежения");
+    const [applications, setApplications] = useState([
+        {
+            expand: true
+        },
+        {
+            expand: true
+        },
+
+    ]);
+
+    const expand = (index) => {
+        const oldState = [...applications];
+
+        oldState[index].expand = !oldState[index].expand;
+
+        setApplications([...oldState]);
+    };
+
+
+    console.log(applications)
 
     return (
         <>
@@ -36,39 +58,43 @@ const TrackingTransportCreate = () => {
                     <Button name="Добавить заявку" color="#5762B2" />
                 </FlexForHeader>
 
-                <Applications>
-                    <FlexForHeader p="0 0 30px 0">
-                        <Title>Номер заявки: <span>873264923</span></Title>
-                        <Expand>Свернуть</Expand>
-                    </FlexForHeader>
+                {
+                    applications.map((e, i) =>
+                        <Applications expand={e.expand}>
+                            <FlexForHeader p="0 0 30px 0">
+                                <Title>Номер заявки: <span>873264923</span></Title>
+                                <Expand onClick={() => expand(i)}><Arrows open={e.expand} /> Свернуть</Expand>
+                            </FlexForHeader>
 
-                    <Tables>
-                        <Table />
-                        <Table />
-                    </Tables>
+                            <Tables>
+                                <Table />
+                                <Table />
+                            </Tables>
 
-                    <Material>
-                        <FlexForHeader m="20px 0">
-                            <Title>Материалы</Title>
-                            <Button name="Добавить материал" color="#5762B2" />
-                        </FlexForHeader>
+                            <Material>
+                                <FlexForHeader m="20px 0">
+                                    <Title>Материалы</Title>
+                                    <Button name="Добавить материал" color="#5762B2" />
+                                </FlexForHeader>
 
-                        <InputRow>
-                            <DisabledInput name="Название материала" value="01290949889612389" />
-                            <DisabledInput name="OOO “trade solution”" value="100 000 000" />
-                            <DisabledInput name="Брутто вес" value="320 000 кг" />
-                            <DisabledInput name="Обем" value="21 м3" />
-                            <CustomInput label="Отгружаемое кол-во" />
+                                <InputRow>
+                                    <DisabledInput name="Название материала" value="01290949889612389" />
+                                    <DisabledInput name="OOO “trade solution”" value="100 000 000" />
+                                    <DisabledInput name="Брутто вес" value="320 000 кг" />
+                                    <DisabledInput name="Обем" value="21 м3" />
+                                    <CustomInput label="Отгружаемое кол-во" />
 
-                            <RemoveIcon />
-                        </InputRow>
-                    </Material>
+                                    <RemoveIcon />
+                                </InputRow>
+                            </Material>
 
-                    <Footer>
-                        <span>Кол-во материалов: 6</span>
-                        <Button name="Создать Слежение" />
-                    </Footer>
-                </Applications>
+                            <Footer>
+                                <span>Кол-во материалов: 6</span>
+                                <Button name="Создать Слежение" />
+                            </Footer>
+                        </Applications>
+                    )
+                }
             </Form>
         </>
     );
@@ -90,11 +116,18 @@ const Applications = styled.div`
     box-sizing: border-box;
     border-radius: 5px;
     padding: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    max-height: ${({ expand }) => expand ? "1000px" : "72px"};
+    transition:  max-height 0.3s ease-in;
 `;
+
 
 const Expand = styled.div`
     color: #5762B2;
+    cursor: pointer;
 `;
+
 
 const Tables = styled.div`
     display: flex;
@@ -111,7 +144,7 @@ const InputRow = styled.div`
     /* height: 56px; */
     background: white;
     padding: 10px;
-    box-sizing: border-box;
+    box-sizing: border - box;
     border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 10px;
 `;

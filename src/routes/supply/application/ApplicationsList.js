@@ -6,7 +6,7 @@ import { useQuery } from "@apollo/client";
 
 import { useTitle } from '../../../hooks';
 import { TimeParser } from "../../../utils/functions";
-import DatePickers from '../../../components/DatePickers';
+import DatePickers from '../../../components/Inputs/DatePickers';
 import { ButtonWithIcon } from "../../../components/Buttons";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { GET_APPLICATIONS } from './gql';

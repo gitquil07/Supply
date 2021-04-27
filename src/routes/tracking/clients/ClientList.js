@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { useDateRange, useTitle } from "../../../hooks";
 
 import { generateColumns } from "./TableData";
-import DatePickers from "../../../components/DatePickers";
+import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { ButtonWithIcon } from "../../../components/Buttons";
 

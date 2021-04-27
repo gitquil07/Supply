@@ -1,7 +1,7 @@
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import moment from "moment";
 import DateFnsUtils from '@date-io/date-fns';
-import Calendar from "../assets/icons/calendar.svg";
+import Calendar from "../../assets/icons/calendar.svg";
 import styled from "styled-components";
 
 

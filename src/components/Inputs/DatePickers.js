@@ -3,8 +3,8 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from '@date-io/date-fns';
 import CustomPicker from "./DatePicker";
 import styled from "styled-components";
-import { Button } from "./Buttons";
-import { CustomHeader } from "./CustomHeader";
+import { Button } from "../Buttons";
+import { CustomHeader } from "../CustomHeader";
 
 const DatePickers = ({ fromDate, toDate, changeFrom, changeTo, buttonClicked, mR }) => {
     return (
