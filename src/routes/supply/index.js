@@ -7,6 +7,11 @@ import OrderCreate from "./order/OrderCreate";
 import ApplicationList from "./application/ApplicationsList";
 import ApplicationCreate from "./application/ApplicationCreate";
 
+import InfoRecordList from "./InfoRecord/InfoRecordList";
+import InfoRecordDetail from "./InfoRecord/InfoRecordDetail";
+
+console.log("InfoRecordDetail", InfoRecordDetail);
+
 const Supply = ({ match }) => {
     return (
         <Switch>
@@ -16,6 +21,9 @@ const Supply = ({ match }) => {
 
             <Route path={`${match.url}/application`} component={ApplicationList} exact />
             <Route path={`${match.url}/application/create`} component={ApplicationCreate} />
+
+            <Route path={`${match.url}/info-record`} component={InfoRecordList} exact/>
+            <Route path={`${match.url}/info-record/detail/:id`} component={InfoRecordDetail} />
         </Switch>
     );
 };
