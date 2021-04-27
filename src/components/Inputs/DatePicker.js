@@ -27,9 +27,7 @@ const CustomPicker = ({ date, stateChange, label }) => {
 export default CustomPicker;
 
 const Wrapper = styled.div`
-    position: relative; 
-    min-width: 160px;
-    max-width: 160px;
+    position: relative;
 
     img {
         position: absolute;
@@ -37,6 +35,10 @@ const Wrapper = styled.div`
         right: 20px;
         transform: translate(0, -50%);
         z-index: 900;
+    }
+
+    .MuiFormControl-root {
+        width: 100%;
     }
 
     .PrivateNotchedOutline-root-1 {

@@ -11,7 +11,7 @@ import { CustomInput } from "../../../components/Inputs/CustomInput";
 import { CustomSelector } from "../../../components/Inputs/CustomSelector";
 import SmallDialog from "../../../components/SmallDialog";
 
-import { FlexForHeader, FlexWithWrap } from "../../../components/Flex";
+import { AddibleInput, FlexForHeader, FlexWithWrap } from "../../../components/Flex";
 import { Table } from "../../../components/Table";
 import { Footer } from "../../../components/Footer";
 import { Arrows } from "../../../components/Arrows";
@@ -51,15 +51,15 @@ const TrackingTransportCreate = () => {
             <Form>
                 <Title>Данные транспорта</Title>
 
-                <FlexWithWrap>
+                <AddibleInput>
                     <CustomSelector label="Транспортировщики" />
-                    <CustomInput label="Номер транспорта" short />
+                    <CustomInput label="Номер транспорта" />
                     <CustomSelector label="Примечание" />
-                    <CustomInput label="Сумма" short />
-                    <CustomSelector label="Валюта" short />
-                    <CustomInput label="Нетто" short />
-                    <CustomSelector label="Брутто" short />
-                </FlexWithWrap>
+                    <CustomInput label="Сумма" />
+                    <CustomSelector label="Валюта" />
+                    <CustomInput label="Нетто" />
+                    <CustomSelector label="Брутто" />
+                </AddibleInput>
 
                 <FlexForHeader m="20px 0">
                     <Title>Заявки</Title>

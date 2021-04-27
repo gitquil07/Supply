@@ -32,18 +32,6 @@ export const CustomSelector = ({ label, fullWidth, short }) => {
 };
 
 const Wrapper = styled.div`
-
-    ${({ fullWidth }) => {
-        return fullWidth ?
-            css`
-            width: 100%;
-        `:
-            css`
-             max-width: ${props => props.short ? "100px" : "300px"};
-             min-width: ${props => props.short ? "150px" : "250px"};         
-        `
-    }}
-
     position: relative;
  
 

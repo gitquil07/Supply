@@ -9,9 +9,9 @@ import { DragFile } from '../../../components/Inputs/DragFile';
 import { RemoveIcon } from '../../../components/RemoveIcon';
 import { CustomInput } from '../../../components/Inputs/CustomInput';
 import { CustomSelector } from '../../../components/Inputs/CustomSelector';
-import { AddibleInput } from "../../../components/Flex";
+import { AddibleInput, AddibleInputWithTrash } from "../../../components/Flex";
 import { Footer } from '../../../components/Footer';
-import { fromPromise } from '@apollo/client';
+import { Form } from "../../../components/Form";
 
 const OrderCreate = () => {
     const title = useTitle("Создать Заказ");
@@ -28,7 +28,6 @@ const OrderCreate = () => {
         }
     ]);
 
-
     const addMaterial = () => {
         setMaterials([...materials, { id: materials.length + 1, name: "", productDuration: "", shipmentTime: "", quantity: "", price: "" }]);
     };
@@ -36,7 +35,6 @@ const OrderCreate = () => {
     const removeMaterial = (id) => {
         setMaterials([...materials.filter(e => e.id !== id)])
     }
- 
 
     return (
         <>
@@ -45,12 +43,12 @@ const OrderCreate = () => {
                 <Form>
                     <Title>Данные заказа</Title>
 
-                    <Inputs>
+                    <AddibleInput>
                         <CustomSelector label="Выберите завод" />
                         <CustomSelector label="Выберите поставщика" />
                         <CustomPicker label="Дата  создание" />
                         <CustomInput label="Инвойс заказа" />
-                    </Inputs>
+                    </AddibleInput>
 
                     <DragFile />
 
@@ -61,16 +59,17 @@ const OrderCreate = () => {
 
                     {
                         materials.map((e) =>
-                            <AddibleInput>
-                                <CustomSelector label="Выберите материал" />
-                                <CustomPicker label="Срок изготовление" />
-                                <CustomPicker label="Дата отгрузки" />
-                                <CustomInput label="Кол-во" />
-                                <CustomSelector label="Ед. Изм." />
-                                <CustomInput label="Цена" />
-
+                            <AddibleInputWithTrash>
+                                <InputsWrapper>
+                                    <CustomSelector label="Выберите материал" />
+                                    <CustomPicker label="Срок изготовление" />
+                                    <CustomPicker label="Дата отгрузки" />
+                                    <CustomInput label="Кол-во" />
+                                    <CustomSelector label="Ед. Изм." />
+                                    <CustomInput label="Цена" />
+                                </InputsWrapper>
                                 <RemoveIcon clicked={() => removeMaterial(e.id)} />
-                            </AddibleInput>
+                            </AddibleInputWithTrash>
                         )
                     }
 
@@ -91,21 +90,8 @@ const Wrapper = styled.div`
     width: 100%;
 `;
 
-const Form = styled.div`
-    background: #FFFFFF;
-    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    padding: 20px;
-`;
-
 const Title = styled.div`
     font-size: 18px;
-`;
-
-const Inputs = styled.div`
-    display: flex;
-    gap: 10px;
-    margin: 15px 0;
 `;
 
 const Header = styled.div`
@@ -113,4 +99,10 @@ const Header = styled.div`
     justify-content: space-between;
     align-items: center;
     margin: 20px 0;
+`;
+
+const InputsWrapper = styled.div`
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+    grid-gap: 10px;
 `;

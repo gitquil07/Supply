@@ -1,9 +1,9 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import TextField from '@material-ui/core/TextField';
 
-export const CustomInput = ({ label, change, short, fullWidth}) => {
+export const CustomInput = ({ label, change }) => {
     return (
-        <Wrapper short={short} fullWidth={fullWidth}>
+        <Wrapper>
             <TextField label={label} variant="outlined" onChange={e => change(e)} />
         </Wrapper>
     );
@@ -11,17 +11,6 @@ export const CustomInput = ({ label, change, short, fullWidth}) => {
 
 const Wrapper = styled.div`
     width: 100%; 
-    min-width: 100px;
-    ${({fullWidth}) => { 
-        return fullWidth? 
-        css`
-            width:100%;
-        `:
-        css`
-            max-width: ${props => props.short ? "175px" : "300px"};
-        `
-    }}
-    
 
     .MuiFormControl-root  {
         width: 100%;
