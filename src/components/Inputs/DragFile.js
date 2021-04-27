@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
-import Doc from "../assets/icons/file.svg";
-import Remove from "../assets/icons/deleteFile.svg";
+import Doc from "../../assets/icons/file.svg";
+import Remove from "../../assets/icons/deleteFile.svg";
 
 
 export const DragFile = () => {

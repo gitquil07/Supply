@@ -7,7 +7,7 @@ import { setTitleWithDateRange } from "../../../utils/functions";
 
 import { generateColumns } from "./TableData";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import DatePickers from "../../../components/DatePickers";
+import DatePickers from "../../../components/Inputs/DatePickers";
 
 const CertificateList = ({ match }) => {
 
