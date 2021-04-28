@@ -10,8 +10,6 @@ import ApplicationCreate from "./application/ApplicationCreate";
 import InfoRecordList from "./InfoRecord/InfoRecordList";
 import InfoRecordDetail from "./InfoRecord/InfoRecordDetail";
 
-console.log("InfoRecordDetail", InfoRecordDetail);
-
 const Supply = ({ match }) => {
     return (
         <Switch>

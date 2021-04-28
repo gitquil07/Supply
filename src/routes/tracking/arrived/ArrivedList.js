@@ -48,7 +48,6 @@ const ArrivedList = ({ match }) => {
       />
     </>
   );
-
 }
 
 export default ArrivedList;

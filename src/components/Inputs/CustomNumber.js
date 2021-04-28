@@ -1,10 +1,10 @@
 import styled, { css } from "styled-components";
 import TextField from '@material-ui/core/TextField';
 
-export const CustomInput = ({ name, label, stateChange, short, fullWidth}) => {
+export const CustomNumber = ({ name, label, stateChange, short, fullWidth}) => {
     return (
         <Wrapper short={short} fullWidth={fullWidth}>
-            <TextField name={name} label={label} variant="outlined" onChange={e => stateChange(e)} />
+            <TextField type="number" name={name} label={label} variant="outlined" onChange={e => stateChange(e)} />
         </Wrapper>
     );
 };

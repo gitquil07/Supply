@@ -6,7 +6,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Arrow from "../../assets/icons/arrow.svg";
 
-export const CustomSelector = ({ label, fullWidth, short }) => {
+export const CustomSelector = ({ name, label, options, keyName, fullWidth, short, value, stateChange }) => {
+
     return (
         <Wrapper short={short} fullWidth={fullWidth}>
             <FormControl variant="outlined" id="formControl">
@@ -15,16 +16,19 @@ export const CustomSelector = ({ label, fullWidth, short }) => {
                 <Select
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
-                    value={10}
-                    // onChange={handleChange}
+                    value={value}
                     label="Age"
+                    name={name}
+                    onChange={stateChange}
                 >
-                    <MenuItem value="">
-                        <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={10}>Ten</MenuItem>
+                {
+                    options?.map(({node}) => {
+                        return <MenuItem value={node.pk}>{node[keyName]}</MenuItem>
+                    })
+                }
+                    {/* <MenuItem value={10}>Ten</MenuItem>
                     <MenuItem value={20}>Twenty Twenty Twenty Twenty Twenty Twenty Twenty Twenty Twenty Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    <MenuItem value={30}>Thirty</MenuItem> */}
                 </Select>
             </FormControl>
         </Wrapper>

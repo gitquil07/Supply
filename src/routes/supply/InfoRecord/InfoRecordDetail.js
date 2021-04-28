@@ -46,6 +46,7 @@ const InfoRecordDetail = ({match}) => {
                     </Title>
                 </FlexForHeader>
                 <GreyTable>
+                    <table>
                     <thead>
                         <tr>
                             <th>
@@ -136,44 +137,218 @@ const InfoRecordDetail = ({match}) => {
                                 Активный
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                                Телевизор
+                            </td>
+                            <td>
+                                Мумтоз
+                            </td>
+                            <td>
+                                STP329-0-32CHR СРЕДНЯЯ ПА ...
+                            </td>
+                            <td>
+                                5.00
+                            </td>
+                            <td>
+                                кг
+                            </td>
+                            <td>
+                                12
+                            </td>
+                            <td>
+                                20
+                            </td>
+                            <td>
+                                01.04.2021
+                            </td>
+                            <td>
+                                Активный
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Телевизор
+                            </td>
+                            <td>
+                                Мумтоз
+                            </td>
+                            <td>
+                                STP329-0-32CHR СРЕДНЯЯ ПА ...
+                            </td>
+                            <td>
+                                5.00
+                            </td>
+                            <td>
+                                кг
+                            </td>
+                            <td>
+                                12
+                            </td>
+                            <td>
+                                20
+                            </td>
+                            <td>
+                                01.04.2021
+                            </td>
+                            <td>
+                                Активный
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Телевизор
+                            </td>
+                            <td>
+                                Мумтоз
+                            </td>
+                            <td>
+                                STP329-0-32CHR СРЕДНЯЯ ПА ...
+                            </td>
+                            <td>
+                                5.00
+                            </td>
+                            <td>
+                                кг
+                            </td>
+                            <td>
+                                12
+                            </td>
+                            <td>
+                                20
+                            </td>
+                            <td>
+                                01.04.2021
+                            </td>
+                            <td>
+                                Активный
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Телевизор
+                            </td>
+                            <td>
+                                Мумтоз
+                            </td>
+                            <td>
+                                STP329-0-32CHR СРЕДНЯЯ ПА ...
+                            </td>
+                            <td>
+                                5.00
+                            </td>
+                            <td>
+                                кг
+                            </td>
+                            <td>
+                                12
+                            </td>
+                            <td>
+                                20
+                            </td>
+                            <td>
+                                01.04.2021
+                            </td>
+                            <td>
+                                Активный
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Телевизор
+                            </td>
+                            <td>
+                                Мумтоз
+                            </td>
+                            <td>
+                                STP329-0-32CHR СРЕДНЯЯ ПА ...
+                            </td>
+                            <td>
+                                5.00
+                            </td>
+                            <td>
+                                кг
+                            </td>
+                            <td>
+                                12
+                            </td>
+                            <td>
+                                20
+                            </td>
+                            <td>
+                                01.04.2021
+                            </td>
+                            <td>
+                                Активный
+                            </td>
+                        </tr>
                     </tbody>
+                    </table>
                 </GreyTable>
             </Form>
         </>
     );
 }
 
-const GreyTable = styled.table`
+const GreyTable = styled.div`
     width:100%;
     background-color:#F6F6FC;
     border-radius:10px;
-    /* border-collapse:collapse; */
     border:1px solid rgba(0, 0, 0, 0.15);
-    padding:10px;
+    padding:0 10px 10px 10px;
     box-sizing:border-box;
     font-size:18px;
     margin-top:20px;
+    text-align:left;
+    max-height:400px;
+    overflow:auto;
 
-    thead tr th{
-        position:-webkit-sticky;
-        top:0;
-        z-index:2;
-        padding:0 10px 10px 10px;
-        font-weight:normal;
+    ::-webkit-scrollbar { 
+        width:5px;
     }
-    
-    tbody{
-        padding:10px;
-        color:rgba(0, 0, 0, 0.5);
-        border-radius:5px;
-        border:1px solid rgba(0, 0, 0, 0.1);
 
-        tr{
-            border-bottom:1px solid rgba(0, 0, 0, 0.1);
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        max-height:50px;
+        background: #5762B2;
+        border-radius: 6px;
+    }
+
+    table {
+        border-collapse:collapse;
+        width:100%;
+
+        thead{
+            font-weight:normal;
+            /* box-sizing:border-box; */
+
+            tr th{ 
+                position:sticky;
+                top:0;
+                z-index:6;
+                background-color:#F6F6FC;
+                padding:10px 10px 10px 10px;
+            }
+        }
+        
+        tbody{
+            padding:0 10px 10px 10px;
+            color:rgba(0, 0, 0, 0.5);
+            border-radius:5px;
+            position:relative;
+            border:1px solid rgba(0, 0, 0, 0.1);
             background-color:#fff;
+            box-sizing:border-box;
 
-            td{
-                padding:10px;
+            tr{
+                border-bottom:1px solid rgba(0, 0, 0, 0.1);
+
+                td{
+                    padding:10px;
+                }
             }
         }
     }

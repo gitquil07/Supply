@@ -4,25 +4,19 @@ import Doc from "../../assets/icons/file.svg";
 import Remove from "../../assets/icons/deleteFile.svg";
 
 
-export const DragFile = () => {
-    const [files, setFiles] = useState([]);
-
-    const acceptFile = (target) => {
-        setFiles([...files, target.files[0]]);
-    }
-    
+export const DragFile = ({receivedFile, files, removeClicked}) => {    
     return (
         <Wrapper>
             <Form>
                 <span>Перащите файл или выберите</span>
                 <label for="upload-photo">Выбрать файл</label>
-                <input type="file" name="photo" id="upload-photo" onChange={({ target }) => acceptFile(target)} />
+                <input type="file" name="photo" id="upload-photo" onChange={({ target }) => receivedFile(target.files[0])} />
             </Form>
             <List>
                 {files.map((e, i) => <File key={i}>
                     <img src={Doc} alt="doc" />
                     {e.name}
-                    <img src={Remove} alt="remove" />
+                    <img src={Remove} alt="remove" id="remove" onClick={() => removeClicked(i)}/>
                 </File>)}
             </List>
         </Wrapper>
@@ -91,5 +85,9 @@ const File = styled.div`
 
     img {
         margin: 0 5px;
+    }
+
+    #remove {
+        cursor: pointer;
     }
 `;
