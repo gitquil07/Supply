@@ -6,7 +6,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Arrow from "../../assets/icons/arrow.svg";
 
-export const CustomSelector = ({ name, label, options, keyName, fullWidth, short, value, stateChange }) => {
+export const CustomSelector = ({ name, label, options, optName, keyName, fullWidth, short, value, stateChange }) => {
 
     return (
         <Wrapper short={short} fullWidth={fullWidth}>
@@ -23,7 +23,7 @@ export const CustomSelector = ({ name, label, options, keyName, fullWidth, short
                 >
                 {
                     options?.map(({node}) => {
-                        return <MenuItem value={node.pk}>{node[keyName]}</MenuItem>
+                        return <MenuItem value={node.pk}>{(node?.[optName])? node?.[optName]?.[keyName] : node?.[keyName]}</MenuItem>
                     })
                 }
                     {/* <MenuItem value={10}>Ten</MenuItem>
@@ -36,18 +36,6 @@ export const CustomSelector = ({ name, label, options, keyName, fullWidth, short
 };
 
 const Wrapper = styled.div`
-
-    ${({ fullWidth }) => {
-        return fullWidth ?
-            css`
-            width: 100%;
-        `:
-            css`
-             max-width: ${props => props.short ? "100px" : "300px"};
-             min-width: ${props => props.short ? "150px" : "250px"};         
-        `
-    }}
-
     position: relative;
  
 

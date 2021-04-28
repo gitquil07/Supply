@@ -18,7 +18,7 @@ export const Supply = [
     },
     {
         name: "База данных",
-        url: "#"
+        url: "/supply/info-record"
     },
     {
         name: "Прибывшие",

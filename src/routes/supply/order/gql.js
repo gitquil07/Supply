@@ -82,16 +82,19 @@ query MyQuery {
     }
   }
   vendor {
-    vendors {
+    vendorFactories {
       edges {
         node {
-          name
           pk
+          vendor {
+            name
+          }
         }
       }
     }
   }
-  product {
+
+product {
     products {
       edges {
         node {

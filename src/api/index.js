@@ -1,25 +1,22 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: "https://supply-api.artelgroup.org/",
+    baseURL: "http://10.35.84.119:10000/",
     headers: {
-        'Content-Type': 'application/json'
+        'Content-Type' : 'application/json'
     }
 });
 
 export const uploadFile = (path, files) => {
-    console.log("files", files);
     const formData = new FormData();
 
-    let i = 1;
     for(let file of files){
-        formData.append(`file_${i}`, file);
-        i++;
+        formData.append("files", file, file.name);
     }
 
     return axiosInstance.post(path, formData, {
         headers:{
-            'Content-Type' : 'multipart/form-data'
+            'Content-Type': 'multipart/form-data'
         }
     });
 }

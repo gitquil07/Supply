@@ -15,18 +15,26 @@ import { DragFile } from '../../../components/Inputs/DragFile';
 import { RemoveIcon } from '../../../components/RemoveIcon';
 import { CustomInput } from '../../../components/Inputs/CustomInput';
 import { CustomSelector } from '../../../components/Inputs/CustomSelector';
-import { AddibleInput } from "../../../components/Flex";
+import { AddibleInput, AddibleInputWithTrash } from "../../../components/Flex";
 import { Footer } from '../../../components/Footer';
 import { ORDER_CREATE } from "./gql";
 import { GET_SELECT_OPTIONS } from "./gql";
 import { fromPromise } from '@apollo/client';
 import { CustomNumber } from "../../../components/Inputs/CustomNumber";
+import { Form } from "../../../components/Form";
 
 const OrderCreate = () => {
     const title = useTitle("Создать Заказ");
-    const [createOrder] = useMutation(ORDER_CREATE),
-          { data, error } = useQuery(GET_SELECT_OPTIONS),
-          { factories, products, vendors } = getObjectivesList(data, "factory", "vendor", "product");
+    const [createOrder] = useMutation(ORDER_CREATE, {
+        onError: (error) => console.log(error)
+    }),
+    { data, error } = useQuery(GET_SELECT_OPTIONS);
+        //   { factories, products, vendorFactories } = getObjectivesList(data, "factory", "vendor", "product");
+
+    const factories = data?.factory?.factories?.edges,
+          products = data?.product?.products?.edges,
+          vendors = data?.vendor?.vendorFactories?.edges;
+
 
     const [files, setFiles] = useState([]);
     const [materials, setMaterials] = useState([
@@ -87,17 +95,18 @@ const OrderCreate = () => {
 
         orderRequestBody.orderItems = formedOrderMaterials;
 
+        createOrder({
+            variables: {
+                input: {
+                    data: orderRequestBody
+                }
+            }
+        });
+       
+
         uploadFile('/api-file/documents/', files)
             .then(resp => console.log(resp))
             .catch(err => console.log(err));
-
-        createOrder({
-            variables: {
-               input: {
-                    data: orderRequestBody
-               }
-            }
-        });
     }
 
 
@@ -106,12 +115,12 @@ const OrderCreate = () => {
     };
 
     const removeMaterial = (id) => {
-        setMaterials([...materials.filter(e => e.id !== id)])
+        setMaterials(materials.filter(e => e.id !== id));
     }
 
     if(error) return "error";
 
-    console.log(files)
+    console.log(materials)
 
     return (
         <>
@@ -120,12 +129,12 @@ const OrderCreate = () => {
                 <Form>
                     <Title>Данные заказа</Title>
 
-                    <Inputs>
-                        <CustomSelector label="Выберите завод" options={factories} keyName="name" name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")} />
-                        <CustomSelector label="Выберите поставщика" options={vendors} keyName="name" name="status" value={orderData.status} stateChange={(e) => handleDataChange(e, "order")} />
+                    <AddibleInput>
+                        <CustomSelector label="Выберите завод" options={factories} optName="factory" keyName="name" name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")} />
+                        <CustomSelector label="Выберите поставщика" options={vendors} optName="vendor" keyName="name" name="status" value={orderData.status} stateChange={(e) => handleDataChange(e, "order")} />
                         <CustomPicker label="Дата  создание" name="invoiceData" date={orderData.invoiceData} stateChange={(date) => setOrderData({...orderData, invoiceDate: date})} />
                         <CustomInput label="Инвойс заказа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} />
-                    </Inputs>
+                    </AddibleInput>
 
                     <DragFile receivedFile={(file) => setFiles([...files, file])} files={files} removeClicked={(index) => setFiles(files.filter((e, i) => i !== index))} />
 
@@ -136,16 +145,17 @@ const OrderCreate = () => {
 
                     {
                         materials.map((e, index) =>
-                            <AddibleInput>
-                                <CustomSelector name="vendorProduct" options={products} keyName="maktx" label="Выберите материал" value={e.vendorProduct}  stateChange={(e) => handleDataChange(e, "material", index)} />
-                                <CustomNumber  name="productionDayCount" label="Срок изготовление" value={e.productionDayCount}  stateChange={(e) => handleDataChange(e, "material", index)} />
-                                <CustomPicker name="dateOfDelivery" label="Дата отгрузки" value={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
-                                <CustomInput name="count" label="Кол-во" value={e.count}  stateChange={(e) => handleDataChange(e, "material", index)} />
-                                <CustomSelector name="currency" options={testMeasureOptions} keyName="pk" label="Ед. Изм." value={e.currency}  stateChange={(e) => handleDataChange(e, "material", index)} />
-                                <CustomInput name="price" label="Цена" value={e.price}  stateChange={(e) => handleDataChange(e, "material", index)} />
-
+                            <AddibleInputWithTrash>
+                                <InputsWrapper>
+                                    <CustomSelector name="vendorProduct" options={products} keyName="maktx" optName="product" label="Выберите материал" value={e.vendorProduct}  stateChange={(e) => handleDataChange(e, "material", index)} />
+                                    <CustomNumber  name="productionDayCount" label="Срок изготовление" value={e.productionDayCount}  stateChange={(e) => handleDataChange(e, "material", index)} />
+                                    <CustomPicker name="dateOfDelivery" label="Дата отгрузки" value={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
+                                    <CustomInput name="count" label="Кол-во" value={e.count}  stateChange={(e) => handleDataChange(e, "material", index)} />
+                                    <CustomSelector name="currency" options={testMeasureOptions} keyName="pk" label="Ед. Изм." value={e.currency}  stateChange={(e) => handleDataChange(e, "material", index)} />
+                                    <CustomInput name="price" label="Цена" value={e.price}  stateChange={(e) => handleDataChange(e, "material", index)} />
+                                </InputsWrapper>
                                 <RemoveIcon clicked={() => removeMaterial(e.id)} />
-                            </AddibleInput>
+                            </AddibleInputWithTrash>
                         )
                     }
 
@@ -166,21 +176,8 @@ const Wrapper = styled.div`
     width: 100%;
 `;
 
-const Form = styled.div`
-    background: #FFFFFF;
-    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    padding: 20px;
-`;
-
 const Title = styled.div`
     font-size: 18px;
-`;
-
-const Inputs = styled.div`
-    display: flex;
-    gap: 10px;
-    margin: 15px 0;
 `;
 
 const Header = styled.div`
@@ -188,4 +185,10 @@ const Header = styled.div`
     justify-content: space-between;
     align-items: center;
     margin: 20px 0;
+`;
+
+const InputsWrapper = styled.div`
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+    grid-gap: 10px;
 `;

@@ -10,7 +10,7 @@ import { CustomSelector } from '../../../components/Inputs/CustomSelector';
 import { Footer } from '../../../components/Footer';
 import { CustomLongInput } from '../../../components/Inputs/CustomLongInput';
 import { Form } from '../../../components/Form';
-import { FlexWithWrap } from '../../../components/Flex';
+import { AddibleInput } from '../../../components/Flex';
 
 const ApplicationCreate = () => {
     const title = useTitle("Создание новой Заявки");
@@ -21,7 +21,7 @@ const ApplicationCreate = () => {
             <Form>
                 <Title>Данные транспорта</Title>
 
-                <FlexWithWrap>
+                <AddibleInput>
                     <CustomSelector label="Тип транспорта" />
                     <CustomInput label="Количество транспота" />
                     <CustomSelector label="Вид упаковки" />
@@ -30,7 +30,7 @@ const ApplicationCreate = () => {
                     <CustomInput label="Количество упаковки" />
                     <CustomSelector label="Условие доставки" />
                     <CustomSelector label="Человек для слежения" />
-                </FlexWithWrap>
+                </AddibleInput>
 
                 <DragFile />
 
@@ -55,50 +55,9 @@ const ApplicationCreate = () => {
                             <CustomSelector label="Номер инвойса" />
                             <CustomSelector label="Получатель" />
                         </Row>
-                    </RowWrapper>k
-                    <RemoveIcon />
-                </Material>
-
-                <Material>
-                    <CustomLongInput label="Выберите материал" />
-                    <RowWrapper>
-                        <Row>
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomInput label="Отгружаемое кол-во" />
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomSelector label="Получатель" />
-                        </Row>
-
-                        <Row>
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomInput label="Отгружаемое кол-во" />
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomSelector label="Получатель" />
-                        </Row>
                     </RowWrapper>
                     <RemoveIcon />
                 </Material>
-
-                <Material>
-                    <CustomLongInput label="Выберите материал" />
-                    <RowWrapper>
-                        <Row>
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomInput label="Отгружаемое кол-во" />
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomSelector label="Получатель" />
-                        </Row>
-
-                        <Row>
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomInput label="Отгружаемое кол-во" />
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomSelector label="Получатель" />
-                        </Row>
-                    </RowWrapper>
-                    <RemoveIcon />
-                </Material>
-
             </Form>
 
             <Footer>
