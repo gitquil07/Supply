@@ -34,7 +34,6 @@ export const CustomMUIDataTable = ({ title, data, columns }) => {
     )
 }
 
-
 const StyledMUIDataTable = styled(MUIDataTable)`
 
     box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1) !important;
@@ -81,7 +80,6 @@ const StyledMUIDataTable = styled(MUIDataTable)`
     
     table td, table th {
         border: none !important;
-        /* border: 1px solid #dddddd; */
     } 
 
     thead {
@@ -100,15 +98,12 @@ const StyledMUIDataTable = styled(MUIDataTable)`
     tbody tr td {
         padding: 15px 10px; 
     }
- 
-
-    
     
     thead th, thead span { 
         font-size: 17px;
     }
 
-    tbody>tr:nth-child(odd) {
+    tbody>tr:nth-child(even) {
         background-color: #F1F1F6;
     }
 

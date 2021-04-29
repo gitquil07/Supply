@@ -1,19 +1,19 @@
+import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { useQuery } from "@apollo/client";
 
 import { GET_USERS } from "./gql";
 import { columns } from "./TableData";
 import { useTitle } from "../../../hooks";
+import MaterialsCreate from "./MaterialsCreate";
 import { FlexForHeader } from "../../../components/Flex";
+import { Pagination } from "../../../components/Pagination";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { Pagination } from "../../../components/Pagination";
-import UserCreate from "./UserCreate";
-import { useState } from "react";
 
-const UsersList = ({ match }) => {
-    const title = useTitle("Пользователи");
+const MaterialsList = ({ match }) => {
+    const title = useTitle("Материалы");
     const [createOpen, setCreateOpen] = useState(false);
     const { data } = useQuery(GET_USERS);
 
@@ -29,7 +29,7 @@ const UsersList = ({ match }) => {
 
     return (
         <>
-            <UserCreate isOpen={createOpen} close={() => setCreateOpen(false)} />
+            <MaterialsCreate isOpen={createOpen} close={() => setCreateOpen(false)} />
             <Helmet title={title} />
             <FlexForHeader>
                 <DatePickers mR="15px" />
@@ -45,4 +45,4 @@ const UsersList = ({ match }) => {
     );
 };
 
-export default UsersList;
+export default MaterialsList;

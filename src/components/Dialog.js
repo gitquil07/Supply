@@ -1,13 +1,13 @@
 import React from 'react';
+import styled from "styled-components";
+import Slide from '@material-ui/core/Slide';
+import { useHistory } from "react-router-dom";
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Slide from '@material-ui/core/Slide';
-import styled from "styled-components";
-import { useHistory } from "react-router-dom";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -15,6 +15,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const AlertDialog = ({ dialogTitle, children, clickYes, }) => {
     let history = useHistory();
+
     return (
         <StyledDialog
             open={true}

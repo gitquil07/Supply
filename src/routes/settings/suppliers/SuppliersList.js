@@ -9,11 +9,11 @@ import { ButtonWithIcon } from "../../../components/Buttons";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
-import UserCreate from "./UserCreate";
 import { useState } from "react";
+import SuppliersCreate from "./SuppliersCreate";
 
-const UsersList = ({ match }) => {
-    const title = useTitle("Пользователи");
+const SuppliersList = ({ match }) => {
+    const title = useTitle("Поставщики");
     const [createOpen, setCreateOpen] = useState(false);
     const { data } = useQuery(GET_USERS);
 
@@ -29,7 +29,7 @@ const UsersList = ({ match }) => {
 
     return (
         <>
-            <UserCreate isOpen={createOpen} close={() => setCreateOpen(false)} />
+            <SuppliersCreate isOpen={createOpen} close={() => setCreateOpen(false)} />
             <Helmet title={title} />
             <FlexForHeader>
                 <DatePickers mR="15px" />
@@ -45,4 +45,4 @@ const UsersList = ({ match }) => {
     );
 };
 
-export default UsersList;
+export default SuppliersList;
