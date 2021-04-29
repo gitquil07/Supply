@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import moment from "moment";
 import { Helmet } from 'react-helmet';
@@ -8,6 +8,7 @@ import { uploadFile } from "../../../api";
 import { useTitle } from '../../../hooks';
 import { getObjectivesList } from "../../../utils/functions";
 import { testMeasureOptions } from "../../../utils/static";
+import MenuItem from '@material-ui/core/MenuItem';
 
 import { Button } from '../../../components/Buttons';
 import CustomPicker from '../../../components/Inputs/DatePicker';
@@ -18,7 +19,7 @@ import { CustomSelector } from '../../../components/Inputs/CustomSelector';
 import { AddibleInput, AddibleInputWithTrash } from "../../../components/Flex";
 import { Footer } from '../../../components/Footer';
 import { ORDER_CREATE } from "./gql";
-import { GET_SELECT_OPTIONS } from "./gql";
+import { GET_FACTORIES_LIST } from "./gql";
 import { CustomNumber } from "../../../components/Inputs/CustomNumber";
 import { Form } from "../../../components/Form";
 
@@ -27,12 +28,19 @@ const OrderCreate = () => {
     const [createOrder] = useMutation(ORDER_CREATE, {
         onError: (error) => console.log(error)
     }),
-    { data, error } = useQuery(GET_SELECT_OPTIONS);
+    { data, error } = useQuery(GET_FACTORIES_LIST);
 
+    
+    const [factory, setFactory] = useState("");
     const factories = data?.factory?.factories?.edges,
-          products = data?.product?.products?.edges,
-          vendors = data?.vendor?.vendorFactories?.edges;
+          vendorFactories = [],
+          products = [];
 
+
+
+    useEffect(() => {
+        console.log(factory);
+    }, [factory]);
 
 
     const [files, setFiles] = useState([]);
@@ -128,8 +136,21 @@ const OrderCreate = () => {
                     <Title>Данные заказа</Title>
 
                     <AddibleInput>
-                        <CustomSelector label="Выберите завод" options={factories} optName="factory" keyName="name" name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")} />
-                        <CustomSelector label="Выберите поставщика" options={vendors} optName="vendor" keyName="name" name="status" value={orderData.status} stateChange={(e) => handleDataChange(e, "order")} />
+                        <CustomSelector label="Выберите завод" name="factory" value={factory} stateChange={(e) => setFactory(e.target.value)}>
+                            {
+                                factories?.map(({node}) => {
+                                    return <MenuItem value={node.id}>{node.name}</MenuItem>
+                                })
+                            }
+                        </CustomSelector>
+                        <CustomSelector label="Выберите поставщика" options={vendorFactories} name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")}>
+                            {
+                                vendorFactories?.map(({node}) => {
+                                    return <MenuItem value={node.pk}>{node.vendor.name}</MenuItem>
+                                })
+                            }
+                        </CustomSelector>
+                        {/* <CustomSelector label="Выберите поставщика" options={vendors} optName="vendor" keyName="name" name="status" value={orderData.status} stateChange={(e) => handleDataChange(e, "order")} /> */}
                         <CustomPicker label="Дата создание" name="invoiceDate" date={orderData.invoiceDate} stateChange={(date) => setOrderData({...orderData, invoiceDate: date})} />
                         <CustomInput label="Инвойс заказа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} />
                     </AddibleInput>
@@ -145,11 +166,23 @@ const OrderCreate = () => {
                         materials.map((e, index) => {
                             return <AddibleInputWithTrash>
                                 <InputsWrapper>
-                                    <CustomSelector name="vendorProduct" options={products} keyName="maktx" optName="product" label="Выберите материал" value={e.vendorProduct}  stateChange={(e) => handleDataChange(e, "material", index)} />
+                                    <CustomSelector name="vendorProduct" label="Выберите материал" value={e.vendorProduct} stateChange={(e) => handleDataChange(e, "material", index)}>
+                                        {
+                                            products?.map(({node}) => {
+                                                return <MenuItem value={node.pk}>{node.maktx}</MenuItem>
+                                            })
+                                        }
+                                    </CustomSelector>
                                     <CustomNumber  name="productionDayCount" label="Срок изготовление" value={e.productionDayCount}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomPicker name="dateOfDelivery" label="Дата отгрузки" date={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
                                     <CustomInput name="count" label="Кол-во" value={e.count}  stateChange={(e) => handleDataChange(e, "material", index)} />
-                                    <CustomSelector name="currency" options={testMeasureOptions} keyName="pk" label="Ед. Изм." value={e.currency}  stateChange={(e) => handleDataChange(e, "material", index)} />
+                                    <CustomSelector name="currency" label="Ед. Изм." value={e.currency} stateChange={(e) => handleDataChange(e, "material", index)}>
+                                        {
+                                            testMeasureOptions?.map(({node}) => {
+                                                return <MenuItem value={node.pk}>{node.pk}</MenuItem>
+                                            })
+                                        }
+                                    </CustomSelector>
                                     <CustomInput name="price" label="Цена" value={e.price}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                 </InputsWrapper>
                                 <RemoveIcon clicked={() => removeMaterial(index)} />

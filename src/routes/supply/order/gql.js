@@ -54,56 +54,18 @@ mutation ($input: OrderCreateMutationInput!) {
 }
 `;
 
-export const GET_FACTORIES = gql`
+
+export const GET_FACTORIES_LIST = gql`
 query MyQuery {
   factory {
     factories {
       edges {
         node {
+          name
           id
-          name
         }
       }
     }
   }
 }
-`;
-
-export const GET_SELECT_OPTIONS = gql`
-query MyQuery {
-  factory {
-    factories {
-      edges {
-        node {
-          name
-          pk
-        }
-      }
-    }
-  }
-  vendor {
-    vendorFactories {
-      edges {
-        node {
-          pk
-          vendor {
-            name
-          }
-        }
-      }
-    }
-  }
-
-product {
-    products {
-      edges {
-        node {
-          maktx
-          pk
-        }
-      }
-    }
-  }
-}
-
 `;
