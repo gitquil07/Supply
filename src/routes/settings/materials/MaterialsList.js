@@ -5,7 +5,6 @@ import { useQuery } from "@apollo/client";
 import { GET_USERS } from "./gql";
 import { columns } from "./TableData";
 import { useTitle } from "../../../hooks";
-import MaterialsCreate from "./MaterialsCreate";
 import { FlexForHeader } from "../../../components/Flex";
 import { Pagination } from "../../../components/Pagination";
 import { ButtonWithIcon } from "../../../components/Buttons";
@@ -14,7 +13,6 @@ import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 
 const MaterialsList = ({ match }) => {
     const title = useTitle("Материалы");
-    const [createOpen, setCreateOpen] = useState(false);
     const { data } = useQuery(GET_USERS);
 
     const list = data?.account?.users?.edges.map(({ node }) => {
@@ -29,11 +27,10 @@ const MaterialsList = ({ match }) => {
 
     return (
         <>
-            <MaterialsCreate isOpen={createOpen} close={() => setCreateOpen(false)} />
             <Helmet title={title} />
             <FlexForHeader>
                 <DatePickers mR="15px" />
-                <ButtonWithIcon name="Создать пользователя" clicked={() => setCreateOpen(true)} url="#" />
+                <ButtonWithIcon name="Создать материал" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable
                 title={"Список всех сотрудников"}

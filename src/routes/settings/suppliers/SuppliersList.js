@@ -29,11 +29,10 @@ const SuppliersList = ({ match }) => {
 
     return (
         <>
-            <SuppliersCreate isOpen={createOpen} close={() => setCreateOpen(false)} />
             <Helmet title={title} />
             <FlexForHeader>
                 <DatePickers mR="15px" />
-                <ButtonWithIcon name="Создать пользователя" clicked={() => setCreateOpen(true)} url="#" />
+                <ButtonWithIcon name="Создать поставщика" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable
                 title={"Список всех сотрудников"}
