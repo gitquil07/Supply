@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
 import moment from "moment";
 import { Helmet } from 'react-helmet';
 import styled from "styled-components";
@@ -19,7 +19,7 @@ import { CustomSelector } from '../../../components/Inputs/CustomSelector';
 import { AddibleInput, AddibleInputWithTrash } from "../../../components/Flex";
 import { Footer } from '../../../components/Footer';
 import { ORDER_CREATE } from "./gql";
-import { GET_FACTORIES_LIST } from "./gql";
+import { GET_FACTORIES_LIST, GET_VENDOR_FACTORIES, GET_VENDOR_FACTORY_PRODUCTS } from "./gql";
 import { CustomNumber } from "../../../components/Inputs/CustomNumber";
 import { Form } from "../../../components/Form";
 
@@ -28,19 +28,14 @@ const OrderCreate = () => {
     const [createOrder] = useMutation(ORDER_CREATE, {
         onError: (error) => console.log(error)
     }),
-    { data, error } = useQuery(GET_FACTORIES_LIST);
+    factoriesQuerySet = useQuery(GET_FACTORIES_LIST),
+    [getVendorFactories, vendorFactoriesResp] = useLazyQuery(GET_VENDOR_FACTORIES),
+    [getVendorFactoryProducts, vendorFactoryProductsResp] = useLazyQuery(GET_VENDOR_FACTORY_PRODUCTS);
 
-    
     const [factory, setFactory] = useState("");
-    const factories = data?.factory?.factories?.edges,
-          vendorFactories = [],
-          products = [];
-
-
-
-    useEffect(() => {
-        console.log(factory);
-    }, [factory]);
+    const factories = factoriesQuerySet?.data?.factory?.factories?.edges || [],
+          vendorFactories = vendorFactoriesResp?.data?.vendor.vendorFactories?.edges || [],
+          products = vendorFactoryProductsResp?.data?.vendor.vendorProducts?.edges || [];
 
 
     const [files, setFiles] = useState([]);
@@ -61,6 +56,28 @@ const OrderCreate = () => {
         invoiceDate: Date.now(),
         invoiceProforma: ""
     });
+
+    useEffect(() => {
+
+        getVendorFactories({
+            variables: {
+                factory
+            }
+        });
+
+    }, [factory]);
+
+    useEffect(() => {
+        const { vendorFactory } = orderData;
+        console.log("vendorFactory", vendorFactory);
+        getVendorFactoryProducts({
+            variables: {
+                vendorFactory        
+            }
+        });
+
+    }, [orderData.vendorFactory]);
+
 
     const handleDataChange = (event, dataType, index) => {
         if(dataType === "order"){
@@ -125,8 +142,7 @@ const OrderCreate = () => {
         setMaterials(materials.filter((e, idx) => idx !== index));
     }
 
-    if(error) return "error";
-
+    if(factoriesQuerySet.error) return "error";
 
     return (
         <>
@@ -139,14 +155,14 @@ const OrderCreate = () => {
                         <CustomSelector label="Выберите завод" name="factory" value={factory} stateChange={(e) => setFactory(e.target.value)}>
                             {
                                 factories?.map(({node}) => {
-                                    return <MenuItem value={node.id}>{node.name}</MenuItem>
+                                    return <MenuItem value={node?.pk}>{node?.name}</MenuItem>
                                 })
                             }
                         </CustomSelector>
                         <CustomSelector label="Выберите поставщика" options={vendorFactories} name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")}>
                             {
                                 vendorFactories?.map(({node}) => {
-                                    return <MenuItem value={node.pk}>{node.vendor.name}</MenuItem>
+                                    return <MenuItem value={node?.vendor?.pk}>{node?.vendor?.name}</MenuItem>
                                 })
                             }
                         </CustomSelector>
@@ -179,7 +195,7 @@ const OrderCreate = () => {
                                     <CustomSelector name="currency" label="Ед. Изм." value={e.currency} stateChange={(e) => handleDataChange(e, "material", index)}>
                                         {
                                             testMeasureOptions?.map(({node}) => {
-                                                return <MenuItem value={node.pk}>{node.pk}</MenuItem>
+                                                return <MenuItem value={node?.pk}>{node?.pk}</MenuItem>
                                             })
                                         }
                                     </CustomSelector>

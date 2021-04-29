@@ -62,10 +62,46 @@ query MyQuery {
       edges {
         node {
           name
-          id
+          pk
         }
       }
     }
   }
 }
 `;
+
+export const GET_VENDOR_FACTORIES = gql`
+  query MyQuery($factory: ID) {
+    vendor {
+      vendorFactories(factory: $factory) {
+        edges {
+          node {
+            vendor {
+              name
+              pk
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_VENDOR_FACTORY_PRODUCTS = gql`
+query MyQuery($vendorFactory : ID) {
+  vendor {
+    vendorProducts(vendorFactory: $vendorFactory) {
+      edges {
+        node {
+          product {
+            maktx
+            pk
+          }
+        }
+      }
+    }
+  }
+}
+
+`;
+
