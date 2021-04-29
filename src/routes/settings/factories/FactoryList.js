@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 
 import { GET_FACTORIES } from "./gql";
 import { columns } from "./TableData";
@@ -33,7 +33,7 @@ const FactoryList = ({ match }) => {
             <Helmet title={title} />
             <FlexForHeader>
                 <DatePickers mR="15px" />
-                <ButtonWithIcon name="Создать пользователя" clicked={() => setCreateOpen(true)} url="#" />
+                <ButtonWithIcon name="Создать завод" clicked={() => setCreateOpen(true)} url="#" />
             </FlexForHeader>
             <CustomMUIDataTable
                 title={"Список всех сотрудников"}

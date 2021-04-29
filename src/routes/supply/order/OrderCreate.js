@@ -32,6 +32,7 @@ const OrderCreate = () => {
     [getVendorFactories, vendorFactoriesResp] = useLazyQuery(GET_VENDOR_FACTORIES),
     [getVendorFactoryProducts, vendorFactoryProductsResp] = useLazyQuery(GET_VENDOR_FACTORY_PRODUCTS);
 
+
     const [factory, setFactory] = useState("");
     const factories = factoriesQuerySet?.data?.factory?.factories?.edges || [],
           vendorFactories = vendorFactoriesResp?.data?.vendor.vendorFactories?.edges || [],
@@ -67,8 +68,8 @@ const OrderCreate = () => {
 
     }, [factory]);
 
+    const { vendorFactory } = orderData;
     useEffect(() => {
-        const { vendorFactory } = orderData;
         console.log("vendorFactory", vendorFactory);
         getVendorFactoryProducts({
             variables: {
@@ -76,8 +77,7 @@ const OrderCreate = () => {
             }
         });
 
-    }, [orderData.vendorFactory]);
-
+    }, [vendorFactory]);
 
     const handleDataChange = (event, dataType, index) => {
         if(dataType === "order"){
@@ -134,7 +134,7 @@ const OrderCreate = () => {
 
     const addMaterial = () => {
         const temp = materials.slice(0);
-        temp.push({vendorProduct: "", dateOfDelivery: "", productionDayCount: "", count: "", currency: "",  price: ""});
+        temp.push({vendorProduct: "", dateOfDelivery: Date.now(), productionDayCount: "", count: "", currency: "",  price: ""});
         setMaterials(temp);
     };
 
