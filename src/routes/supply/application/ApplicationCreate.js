@@ -2,15 +2,15 @@ import { Helmet } from 'react-helmet';
 import styled from "styled-components";
 
 import { useTitle } from '../../../hooks';
+import { Form } from '../../../components/Form';
+import { Footer } from '../../../components/Footer';
 import { Button } from '../../../components/Buttons';
-import { DragFile } from '../../../components/Inputs/DragFile';
+import { AddibleInput } from '../../../components/Flex';
 import { RemoveIcon } from '../../../components/RemoveIcon';
+import { DragFile } from '../../../components/Inputs/DragFile';
 import { CustomInput } from '../../../components/Inputs/CustomInput';
 import { CustomSelector } from '../../../components/Inputs/CustomSelector';
-import { Footer } from '../../../components/Footer';
 import { CustomLongInput } from '../../../components/Inputs/CustomLongInput';
-import { Form } from '../../../components/Form';
-import { AddibleInput } from '../../../components/Flex';
 
 const ApplicationCreate = () => {
     const title = useTitle("Создание новой Заявки");
