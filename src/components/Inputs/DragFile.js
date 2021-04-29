@@ -1,10 +1,9 @@
-import { useState } from "react";
 import styled from "styled-components";
 import Doc from "../../assets/icons/file.svg";
 import Remove from "../../assets/icons/deleteFile.svg";
 
 
-export const DragFile = ({receivedFile, files, removeClicked}) => {    
+export const DragFile = ({ receivedFile, files, removeClicked }) => {
     return (
         <Wrapper>
             <Form>
@@ -13,10 +12,10 @@ export const DragFile = ({receivedFile, files, removeClicked}) => {
                 <input type="file" name="photo" id="upload-photo" onChange={({ target }) => receivedFile(target.files[0])} />
             </Form>
             <List>
-                {files.map((e, i) => <File key={i}>
+                {files?.map((e, i) => <File key={i}>
                     <img src={Doc} alt="doc" />
                     {e.name}
-                    <img src={Remove} alt="remove" id="remove" onClick={() => removeClicked(i)}/>
+                    <img src={Remove} alt="remove" id="remove" onClick={() => removeClicked(i)} />
                 </File>)}
             </List>
         </Wrapper>

@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet";
 import { useQuery } from "@apollo/client";
 
-import { GET_USERS } from "./gql";
+import { GET_FACTORIES } from "./gql";
 import { columns } from "./TableData";
 import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
@@ -9,27 +9,27 @@ import { ButtonWithIcon } from "../../../components/Buttons";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
-import UserCreate from "./UserCreate";
 import { useState } from "react";
+import FactoryCreate from "./FactoryCreate";
 
-const UsersList = ({ match }) => {
-    const title = useTitle("Пользователи");
+const FactoryList = ({ match }) => {
+    const title = useTitle("Заводы");
     const [createOpen, setCreateOpen] = useState(false);
-    const { data } = useQuery(GET_USERS);
+    const { data } = useQuery(GET_FACTORIES);
 
-    const list = data?.account?.users?.edges.map(({ node }) => {
+    const list = data?.factory?.factories?.edges.map(({ node }) => {
         return {
-            first_name: node.firstName,
-            last_name: node.lastName,
-            username: node.username,
-            phone_number: node.phoneNumber,
-            role: node.role?.displayName,
+            code: node.code,
+            created_at: node.createdAt,
+            name: node.name
         }
-    })
+    });
+
+    console.log(data)
 
     return (
         <>
-            <UserCreate isOpen={createOpen} close={() => setCreateOpen(false)} />
+            <FactoryCreate isOpen={createOpen} close={() => setCreateOpen(false)} />
             <Helmet title={title} />
             <FlexForHeader>
                 <DatePickers mR="15px" />
@@ -45,4 +45,4 @@ const UsersList = ({ match }) => {
     );
 };
 
-export default UsersList;
+export default FactoryList;

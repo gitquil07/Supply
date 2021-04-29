@@ -1,26 +1,23 @@
 import styled from "styled-components";
 import React from 'react';
-import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import Arrow from "../../assets/icons/arrow.svg";
+import Arrow from "../../assets/icons/arrow-for-pagination.svg";
 
-export const CustomSelector = ({ name, label, fullWidth, short, value, stateChange, children }) => {
-
+export const SmallSelectForPagination = ({ stateChange }) => {
     return (
-        <Wrapper short={short} fullWidth={fullWidth}>
+        <Wrapper>
             <FormControl variant="outlined" id="formControl">
                 <img src={Arrow} alt="arrow" id="arrow" />
-                <InputLabel id="label">{label}</InputLabel>
                 <Select
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
-                    value={value}
-                    label="Age"
-                    name={name}
+                    value={30}
                     onChange={stateChange}
                 >
-                    {children}
+                    <MenuItem value="30">30</MenuItem>
+                    <MenuItem value="50">50</MenuItem>
                 </Select>
             </FormControl>
         </Wrapper>
@@ -29,27 +26,30 @@ export const CustomSelector = ({ name, label, fullWidth, short, value, stateChan
 
 const Wrapper = styled.div`
     position: relative;
- 
-
-    #label {
-        background-color: white;
-    }
+    height: 40px;
 
     #arrow {
         position: absolute;
-        right: 10px;
+        right: 7px;
         top: 50%;
         transform: translate(-50%, -50%);
-        z-index: 900;
+        z-index: 900; 
     }
 
     .MuiFormControl-root { 
         width: 100%;
- 
+        height: 40px;
 
-        .MuiInputBase-root .MuiSelect-root {
-            padding-right: 50px;
-            background: #fff;
+        .MuiInputBase-root {
+            height: 40px;
+
+            .MuiSelect-root {
+                padding: 0 45px 0 15px;
+                background: #fff;
+                height: 40px;
+                display: flex;
+                align-items: center;
+            }
         }
 
         fieldset {  

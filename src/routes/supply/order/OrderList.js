@@ -1,14 +1,14 @@
-import { find, propEq } from 'ramda';
+import { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import styled from "styled-components";
-import { Link } from 'react-router-dom';
 import { useQuery } from "@apollo/client";
 
 import { GET_ORDERS } from "./gql";
 import { useTitle } from '../../../hooks';
+import { generateColumns } from './TableData';
 import { TimeParser } from "../../../utils/functions";
-import DatePickers from '../../../components/Inputs/DatePickers';
+import { FlexForHeader } from '../../../components/Flex';
 import { ButtonWithIcon } from "../../../components/Buttons";
+import DatePickers from '../../../components/Inputs/DatePickers';
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 
 const OrderList = ({ match }) => {
@@ -29,81 +29,17 @@ const OrderList = ({ match }) => {
         }
     })
 
-    const columns = [
-        {
-            name: "public_id",
-            label: "Номер заказа",
-            options: {
-                filter: true,
-                customBodyRender: (value) => {
-                    const id = find(propEq("public_id", value))(list);
-                    return (
-                        <Link to={`${match.url}/detail/${id.public_id}`}>
-                            {value}
-                        </Link>
-                    );
 
-                }
-            }
-        },
-        {
-            name: "factory",
-            label: "Название Завода",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "vendor",
-            label: "Поставщик",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "status",
-            label: "Статус",
-            options: {
-                filter: true,
-                sort: true,
-            }
-        },
-        {
-            name: "invoice_proforma",
-            label: "Invoice Proforma",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "invoice_date",
-            label: "Invoice Date",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "created_at",
-            label: "Дата создания заказа",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-    ];
-
+    const { url } = match;
+    const columns = useMemo(() => generateColumns(url, list), [list, url]);
 
     return (
         <>
             <Helmet title={title} />
-            <Header>
+            <FlexForHeader>
                 <DatePickers mR="15px" />
                 <ButtonWithIcon name="Создать заказ" url={`${match.url}/create`} />
-            </Header>
+            </FlexForHeader>
             <CustomMUIDataTable
                 title={"Список всех сотрудников"}
                 data={list}
@@ -114,9 +50,3 @@ const OrderList = ({ match }) => {
 };
 
 export default OrderList;
-
-const Header = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`;

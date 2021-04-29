@@ -3,7 +3,7 @@ import SmallDialog from "../../../components/SmallDialog";
 import { CustomInput } from "../../../components/Inputs/CustomInput";
 import { CustomSelector } from "../../../components/Inputs/CustomSelector";
 
-const UserCreate = ({ isOpen, close }) => {
+const MaterialsCreate = ({ isOpen, close }) => {
     const [state, setState] = useState({ first_name: "", last_name: "", username: "", password: "" });
     const [brand, setBrand] = useState([]);
     const [factory, setFactory] = useState([]);
@@ -21,7 +21,7 @@ const UserCreate = ({ isOpen, close }) => {
     }
 
     return (
-        <SmallDialog title="Создать пользователя" isOpen={isOpen} close={close}>
+        <SmallDialog title="Создать Материалы" isOpen={isOpen} close={close}>
             {
                 inputs.map((e, i) =>
                     <CustomInput
@@ -40,4 +40,4 @@ const UserCreate = ({ isOpen, close }) => {
     )
 }
 
-export default UserCreate;
+export default MaterialsCreate;

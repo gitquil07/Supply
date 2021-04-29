@@ -10,11 +10,11 @@ import { generateColumns } from './TableData';
 import { useMemo } from 'react';
 import { Pagination } from '../../../components/Pagination';
 
-const ApplicationList = ({ match }) => {
+const ArrivedList = ({ match }) => {
 
     const { data } = useQuery(GET_APPLICATIONS);
 
-    const title = useTitle("Заявки на Логистику");
+    const title = useTitle("Прибывшие");
 
     const list = data?.application.applications.edges.map(({ node }) => {
         return {
@@ -41,7 +41,7 @@ const ApplicationList = ({ match }) => {
     );
 };
 
-export default ApplicationList;
+export default ArrivedList;
 
 const Header = styled.div`
     display: flex;
