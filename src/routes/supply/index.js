@@ -10,6 +10,9 @@ import ApplicationCreate from "./application/ApplicationCreate";
 import InfoRecordList from "./info-record/InfoRecordList";
 import InfoRecordDetail from "./info-record/InfoRecordDetail";
 
+import ArrivedList from "./arrived/ArrivedList"
+import CustomsList from "./customs/CustomsList";
+
 const Supply = ({ match }) => {
     return (
         <Switch>
@@ -22,6 +25,10 @@ const Supply = ({ match }) => {
 
             <Route path={`${match.url}/info-record`} component={InfoRecordList} exact />
             <Route path={`${match.url}/info-record/detail/:id`} component={InfoRecordDetail} />
+
+            <Route path={`${match.url}/arrived`} component={ArrivedList} exact />
+
+            <Route path={`${match.url}/customs`} component={CustomsList} exact />
         </Switch>
     );
 };

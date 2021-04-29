@@ -22,11 +22,11 @@ export const Supply = [
     },
     {
         name: "Прибывшие",
-        url: "#"
+        url: "/supply/arrived"
     },
     {
         name: "Таможня",
-        url: "#"
+        url: "/supply/customs"
     },
     {
         name: "Отчет",
