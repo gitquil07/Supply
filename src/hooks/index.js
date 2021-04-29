@@ -1,4 +1,4 @@
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
@@ -55,3 +55,37 @@ export const useToggleDialog = () => {
 
 }
 
+export const useCreate = (initialState, gql, close) => {
+    const [state, setState] = useState(initialState);
+
+    const [ create ] = useMutation(gql, {
+              onError: error => console.log(error)
+          });
+
+    const handleClose = () => {
+        close();
+        setState(initialState);
+    } 
+
+    const handleInputChange = e => {
+        setState({...state, [e.target.name] : e.target.value});
+    }
+
+    const handleSubmit = () => {
+        create({
+            variables: {
+                input: {
+                    data: state
+                }
+            }
+        })
+    }
+
+    return {
+        state,
+        handleClose,
+        handleInputChange,
+        handleSubmit
+    }
+
+}

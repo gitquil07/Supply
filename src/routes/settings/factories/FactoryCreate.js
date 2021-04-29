@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 
-import { useMutation } from "@apollo/client";
+// import { useMutation } from "@apollo/client";
 import { CREATE_FACTORY } from "./gql";
 import { Button } from "../../../components/Buttons";
 import SmallDialog from "../../../components/SmallDialog";
 import { CustomInput } from "../../../components/Inputs/CustomInput";
 import { CustomNumber } from "../../../components/Inputs/CustomNumber";
+
+import { useCreate } from "../../../hooks";
 
 const initialState = {
     name: "",
@@ -16,40 +18,49 @@ const initialState = {
 
 const FactoryCreate = ({ isOpen, close }) => {
 
-    const [factoryCreate, setFactoryCreate] = useState(initialState);
+    const {
+        state,
+        handleClose,
+        handleInputChange,
+        handleSubmit
+    } = useCreate(initialState, CREATE_FACTORY, close);
 
-    const [ addFactory ] = useMutation(CREATE_FACTORY, {
-        onError: (error) => console.log(error)
-    });
+    // const [state, setState] = useState(initialState);
 
-    const handleInputChange = (e) => {
-        setFactoryCreate({...factoryCreate, [e.target.name] : e.target.value});
-    }
+    // const [ create ] = useMutation(CREATE_FACTORY, {
+    //     onError: (error) => console.log(error)
+    // });
 
-    const handleClose = () => {
-        close();
-        setFactoryCreate(initialState);
-    }
+    // const handleInputChange = (e) => {
+    //     setState({...state, [e.target.name] : e.target.value});
+    // }
 
-    const handleSubmit = () => {
-        addFactory({
-            variables: {
-                input: factoryCreate
-            }
-        })
-    }
+    // const handleClose = () => {
+    //     close();
+    //     setState(initialState);
+    // }
+
+    // const handleSubmit = () => {
+    //     create({
+    //         variables: {
+    //             input: {
+    //                 data : state
+    //             }
+    //         }
+    //     })
+    // }
 
     useEffect(() => {
-        console.log(factoryCreate);
-    }, [factoryCreate]);
+        console.log(state);
+    }, [state]);
 
     return (
         <SmallDialog title="Создать Заводы" isOpen={isOpen} close={handleClose}>
-            <CustomInput value={factoryCreate.name} name="name" label="Название завода" stateChange={handleInputChange} />
-            <CustomInput value={factoryCreate.officialName} name="officialName" label="Название завода" stateChange={handleInputChange} />
-            <CustomInput value={factoryCreate.code} name="code" label="Код" stateChange={handleInputChange} />
-            <CustomNumber value={factoryCreate.position} name="position" label="Позиция" stateChange={handleInputChange} fullWidth />
-            <Button name="Добавить завод" color="#5762B2" onClick={handleSubmit}/>
+            <CustomInput value={state.name} name="name" label="Название завода" stateChange={handleInputChange} />
+            <CustomInput value={state.officialName} name="officialName" label="Название завода" stateChange={handleInputChange} />
+            <CustomInput value={state.code} name="code" label="Код" stateChange={handleInputChange} />
+            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={handleInputChange} fullWidth />
+            <Button name="Добавить завод" color="#5762B2" clickHandler={handleSubmit}/>
         </SmallDialog>
     );
 };

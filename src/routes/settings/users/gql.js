@@ -29,3 +29,19 @@ query {
     }
   } 
 `;
+
+
+export const CREATE_USER = gql`
+mutation MyMutation($input: UserCreateMutationInput) {
+  account {
+    userCreate(input: $input) {
+      ok
+      errors
+      user {
+        id
+      }
+    }
+  }
+}
+
+`;

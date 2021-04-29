@@ -29,3 +29,19 @@ query {
     }
   } 
 `;
+
+
+export const CREATE_VENDOR = gql`
+mutation MyMutation($input: FactoryCreateMutationInput!) {
+  factory {
+    factoryCreate(input: $input) {
+      ok,
+      errors,
+      factory {
+        id
+      },
+      clientMutationId
+    }
+  }
+}
+`;

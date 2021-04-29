@@ -3,7 +3,22 @@ import SmallDialog from "../../../components/SmallDialog";
 import { CustomInput } from "../../../components/Inputs/CustomInput";
 import { CustomSelector } from "../../../components/Inputs/CustomSelector";
 
+import { useCreate } from "../../../hooks";
+import MenuItem from "@material-ui/core/MenuItem";
+import { CREATE_MATERIAL } from "./gql";
+import { Button } from "../../../components/Buttons";
+
+const initialState = {};
+
 const MaterialsCreate = ({ isOpen, close }) => {
+
+    // const {
+    //     state,
+    //     handleClose,
+    //     handleDataChange,
+    //     handleSubmit
+    // } = useCreate(initialState, CREATE_MATERIAL, close);
+
     const [state, setState] = useState({ first_name: "", last_name: "", username: "", password: "" });
     const [brand, setBrand] = useState([]);
     const [factory, setFactory] = useState([]);
@@ -36,6 +51,8 @@ const MaterialsCreate = ({ isOpen, close }) => {
             <CustomSelector label="Бренд" onChange={(value) => setBrand(value)} value={brand} />
             <CustomSelector label="Завод" onChange={(value) => setFactory(value)} value={factory} />
             <CustomSelector label="Отчеты" onChange={(value) => setReport(value)} value={report} />
+            {/* <Button label="Добавить материал" color="#5762B2" stateChange={handleSubmit} /> */}
+            <Button label="Добавить материал" color="#5762B2" />
         </SmallDialog>
     )
 }
