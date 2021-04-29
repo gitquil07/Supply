@@ -5,7 +5,7 @@ export const Form = styled.div`
     background: #FFFFFF;
     box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
     border-radius: 10px;    
-    padding: 20px;
+    padding: 20px; 
     overflow-y: auto;
 
     ::-webkit-scrollbar {
@@ -13,12 +13,13 @@ export const Form = styled.div`
     }
 
     ::-webkit-scrollbar-track {
-        box-shadow: inset 0 0 6px #5762B2;
+        background-color: rgba(0, 0, 0, 0.1);
         border-radius: 10px;
     }
 
     ::-webkit-scrollbar-thumb {
-        box-shadow: inset 0 0 6px #5762B2;
+        background: rgba(87, 98, 178, 0.5);
+        box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
         border-radius: 10px;
     }
 `;

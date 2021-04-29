@@ -18,15 +18,15 @@ export const Supply = [
     },
     {
         name: "База данных",
-        url: "#"
+        url: "/supply/info-record"
     },
     {
         name: "Прибывшие",
-        url: "#"
+        url: "/supply/arrived"
     },
     {
         name: "Таможня",
-        url: "#"
+        url: "/supply/customs"
     },
     {
         name: "Отчет",
@@ -94,9 +94,17 @@ export const Settings = [
         url: "/settings/users"
     },
     {
-        name: "Отчет",
-        url: "#"
-    }
+        name: "Заводы",
+        url: "/settings/factories"
+    },
+    {
+        name: "Поставщики",
+        url: "/settings/suppliers"
+    },
+    {
+        name: "Материалы",
+        url: "/settings/materials"
+    },
 ];
 
 export const navElements = [

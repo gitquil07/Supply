@@ -6,7 +6,7 @@ import { useDateRange, useTitle } from "../../../hooks";
 import { setTitleWithDateRange } from "../../../utils/functions";
 
 import { generateColumns } from "./TableData";
-import DatePickers from "../../../components/DatePickers";
+import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 
 const TrackingTransportList = ({ match }) => {

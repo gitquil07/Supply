@@ -12,4 +12,5 @@ const Icon = styled.div`
     align-items: center;
     height: 100%;
     border-radius: 5px;
+    cursor: pointer;
 `;

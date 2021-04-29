@@ -2,15 +2,15 @@ import { Helmet } from 'react-helmet';
 import styled from "styled-components";
 
 import { useTitle } from '../../../hooks';
-import { Button } from '../../../components/Buttons';
-import { DragFile } from '../../../components/DragFile';
-import { RemoveIcon } from '../../../components/RemoveIcon';
-import { CustomInput } from '../../../components/CustomInput';
-import { CustomSelector } from '../../../components/CustomSelector';
-import { Footer } from '../../../components/Footer';
-import { CustomLongInput } from '../../../components/CustomLongInput';
 import { Form } from '../../../components/Form';
-import { FlexWithWrap } from '../../../components/Flex';
+import { Footer } from '../../../components/Footer';
+import { Button } from '../../../components/Buttons';
+import { AddibleInput } from '../../../components/Flex';
+import { RemoveIcon } from '../../../components/RemoveIcon';
+import { DragFile } from '../../../components/Inputs/DragFile';
+import { CustomInput } from '../../../components/Inputs/CustomInput';
+import { CustomSelector } from '../../../components/Inputs/CustomSelector';
+import { CustomLongInput } from '../../../components/Inputs/CustomLongInput';
 
 const ApplicationCreate = () => {
     const title = useTitle("Создание новой Заявки");
@@ -21,7 +21,7 @@ const ApplicationCreate = () => {
             <Form>
                 <Title>Данные транспорта</Title>
 
-                <FlexWithWrap>
+                <AddibleInput>
                     <CustomSelector label="Тип транспорта" />
                     <CustomInput label="Количество транспота" />
                     <CustomSelector label="Вид упаковки" />
@@ -30,7 +30,7 @@ const ApplicationCreate = () => {
                     <CustomInput label="Количество упаковки" />
                     <CustomSelector label="Условие доставки" />
                     <CustomSelector label="Человек для слежения" />
-                </FlexWithWrap>
+                </AddibleInput>
 
                 <DragFile />
 
@@ -58,47 +58,6 @@ const ApplicationCreate = () => {
                     </RowWrapper>
                     <RemoveIcon />
                 </Material>
-
-                <Material>
-                    <CustomLongInput label="Выберите материал" />
-                    <RowWrapper>
-                        <Row>
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomInput label="Отгружаемое кол-во" />
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomSelector label="Получатель" />
-                        </Row>
-
-                        <Row>
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomInput label="Отгружаемое кол-во" />
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomSelector label="Получатель" />
-                        </Row>
-                    </RowWrapper>
-                    <RemoveIcon />
-                </Material>
-
-                <Material>
-                    <CustomLongInput label="Выберите материал" />
-                    <RowWrapper>
-                        <Row>
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomInput label="Отгружаемое кол-во" />
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomSelector label="Получатель" />
-                        </Row>
-
-                        <Row>
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomInput label="Отгружаемое кол-во" />
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomSelector label="Получатель" />
-                        </Row>
-                    </RowWrapper>
-                    <RemoveIcon />
-                </Material>
-
             </Form>
 
             <Footer>

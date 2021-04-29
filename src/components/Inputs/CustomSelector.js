@@ -1,30 +1,26 @@
 import styled from "styled-components";
 import React from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import Arrow from "../assets/icons/arrow.svg";
+import Arrow from "../../assets/icons/arrow.svg";
 
-export const CustomSelector = ({ label, short }) => {
+export const CustomSelector = ({ name, label, fullWidth, short, value, stateChange, children }) => {
+
     return (
-        <Wrapper short={short}>
+        <Wrapper short={short} fullWidth={fullWidth}>
             <FormControl variant="outlined" id="formControl">
                 <img src={Arrow} alt="arrow" id="arrow" />
                 <InputLabel id="label">{label}</InputLabel>
                 <Select
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
-                    // value={age}
-                    // onChange={handleChange}
+                    value={value}
                     label="Age"
+                    name={name}
+                    onChange={stateChange}
                 >
-                    <MenuItem value="">
-                        <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty Twenty Twenty Twenty Twenty Twenty Twenty Twenty Twenty Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    {children}
                 </Select>
             </FormControl>
         </Wrapper>
@@ -32,8 +28,6 @@ export const CustomSelector = ({ label, short }) => {
 };
 
 const Wrapper = styled.div`
-    max-width: ${props => props.short ? "100px" : "300px"};
-    min-width: ${props => props.short ? "150px" : "250px"};
     position: relative;
  
 

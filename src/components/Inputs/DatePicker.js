@@ -1,7 +1,7 @@
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import moment from "moment";
 import DateFnsUtils from '@date-io/date-fns';
-import Calendar from "../assets/icons/calendar.svg";
+import Calendar from "../../assets/icons/calendar.svg";
 import styled from "styled-components";
 
 
@@ -13,6 +13,7 @@ const CustomPicker = ({ date, stateChange, label }) => {
                 <DatePicker
                     format={moment(date).format("DD.MM.YYYY")}
                     autoOk
+                    value={date}
                     variant="inline"
                     inputVariant="outlined"
                     label={label}
@@ -27,9 +28,7 @@ const CustomPicker = ({ date, stateChange, label }) => {
 export default CustomPicker;
 
 const Wrapper = styled.div`
-    position: relative; 
-    min-width: 160px;
-    max-width: 160px;
+    position: relative;
 
     img {
         position: absolute;
@@ -37,6 +36,10 @@ const Wrapper = styled.div`
         right: 20px;
         transform: translate(0, -50%);
         z-index: 900;
+    }
+
+    .MuiFormControl-root {
+        width: 100%;
     }
 
     .PrivateNotchedOutline-root-1 {
