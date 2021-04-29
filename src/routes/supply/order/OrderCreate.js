@@ -19,7 +19,6 @@ import { AddibleInput, AddibleInputWithTrash } from "../../../components/Flex";
 import { Footer } from '../../../components/Footer';
 import { ORDER_CREATE } from "./gql";
 import { GET_SELECT_OPTIONS } from "./gql";
-import { fromPromise } from '@apollo/client';
 import { CustomNumber } from "../../../components/Inputs/CustomNumber";
 import { Form } from "../../../components/Form";
 
@@ -29,31 +28,29 @@ const OrderCreate = () => {
         onError: (error) => console.log(error)
     }),
     { data, error } = useQuery(GET_SELECT_OPTIONS);
-        //   { factories, products, vendorFactories } = getObjectivesList(data, "factory", "vendor", "product");
 
     const factories = data?.factory?.factories?.edges,
           products = data?.product?.products?.edges,
           vendors = data?.vendor?.vendorFactories?.edges;
 
 
+
     const [files, setFiles] = useState([]);
     const [materials, setMaterials] = useState([
         {
-            id: 1,
             vendorProduct: "",
-            dateOfDelivery: "",
+            dateOfDelivery: Date.now(),
             productionDayCount: "",
             count: "",
             currency : "", 
             price: ""
-
         }
     ]);
 
     const [orderData, setOrderData] = useState({
         vendorFactory: "",
         status: "",
-        invoiceDate: "",
+        invoiceDate: Date.now(),
         invoiceProforma: ""
     });
 
@@ -111,16 +108,17 @@ const OrderCreate = () => {
 
 
     const addMaterial = () => {
-        setMaterials([...materials, { id: materials.length + 1, vendorProduct: "", dateOfDelivery: "", productionDayCount: "", count: "", currency: "",  price: ""}]);
+        const temp = materials.slice(0);
+        temp.push({vendorProduct: "", dateOfDelivery: "", productionDayCount: "", count: "", currency: "",  price: ""});
+        setMaterials(temp);
     };
 
-    const removeMaterial = (id) => {
-        setMaterials(materials.filter(e => e.id !== id));
+    const removeMaterial = (index) => {
+        setMaterials(materials.filter((e, idx) => idx !== index));
     }
 
     if(error) return "error";
 
-    console.log(materials)
 
     return (
         <>
@@ -132,7 +130,7 @@ const OrderCreate = () => {
                     <AddibleInput>
                         <CustomSelector label="Выберите завод" options={factories} optName="factory" keyName="name" name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")} />
                         <CustomSelector label="Выберите поставщика" options={vendors} optName="vendor" keyName="name" name="status" value={orderData.status} stateChange={(e) => handleDataChange(e, "order")} />
-                        <CustomPicker label="Дата  создание" name="invoiceData" date={orderData.invoiceData} stateChange={(date) => setOrderData({...orderData, invoiceDate: date})} />
+                        <CustomPicker label="Дата создание" name="invoiceDate" date={orderData.invoiceDate} stateChange={(date) => setOrderData({...orderData, invoiceDate: date})} />
                         <CustomInput label="Инвойс заказа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} />
                     </AddibleInput>
 
@@ -144,19 +142,19 @@ const OrderCreate = () => {
                     </Header>
 
                     {
-                        materials.map((e, index) =>
-                            <AddibleInputWithTrash>
+                        materials.map((e, index) => {
+                            return <AddibleInputWithTrash>
                                 <InputsWrapper>
                                     <CustomSelector name="vendorProduct" options={products} keyName="maktx" optName="product" label="Выберите материал" value={e.vendorProduct}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomNumber  name="productionDayCount" label="Срок изготовление" value={e.productionDayCount}  stateChange={(e) => handleDataChange(e, "material", index)} />
-                                    <CustomPicker name="dateOfDelivery" label="Дата отгрузки" value={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
+                                    <CustomPicker name="dateOfDelivery" label="Дата отгрузки" date={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
                                     <CustomInput name="count" label="Кол-во" value={e.count}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomSelector name="currency" options={testMeasureOptions} keyName="pk" label="Ед. Изм." value={e.currency}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomInput name="price" label="Цена" value={e.price}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                 </InputsWrapper>
-                                <RemoveIcon clicked={() => removeMaterial(e.id)} />
+                                <RemoveIcon clicked={() => removeMaterial(index)} />
                             </AddibleInputWithTrash>
-                        )
+                        })
                     }
 
                 </Form>
