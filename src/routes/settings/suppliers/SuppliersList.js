@@ -9,12 +9,9 @@ import { ButtonWithIcon } from "../../../components/Buttons";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
-import { useState } from "react";
-import SuppliersCreate from "./SuppliersCreate";
 
 const SuppliersList = ({ match }) => {
     const title = useTitle("Поставщики");
-    const [createOpen, setCreateOpen] = useState(false);
     const { data } = useQuery(GET_USERS);
 
     const list = data?.account?.users?.edges.map(({ node }) => {
