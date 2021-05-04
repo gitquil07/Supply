@@ -1,39 +1,50 @@
 import { Helmet } from "react-helmet";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 
-import { GET_USERS } from "./gql";
-import { columns } from "./TableData";
+import { GET_VENDORS } from "./gql";
+import { generateColumns } from "./TableData";
 import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
-import { useState } from "react";
+import { useEffect, useMemo } from "react";
 import SuppliersCreate from "./SuppliersCreate";
 
 const SuppliersList = ({ match }) => {
     const title = useTitle("Поставщики");
-    const [createOpen, setCreateOpen] = useState(false);
-    const { data } = useQuery(GET_USERS);
+    const [ getVendors, { data }] = useLazyQuery(GET_VENDORS);
 
-    const list = data?.account?.users?.edges.map(({ node }) => {
+    useEffect(() => {
+        getVendors();
+    }, []);
+
+    const list = data?.vendor?.vendors?.edges?.map(({ node }) => {
         return {
-            first_name: node.firstName,
-            last_name: node.lastName,
-            username: node.username,
-            phone_number: node.phoneNumber,
-            role: node.role?.displayName,
+           id: node.id,
+           name: node.name,
+           companyName: node.companyName,
+           sapCountry: node.sapCountry?.name,
+           sapAccountGroup: node.sapAccountGroup?.name,
+           phoneNumber: node.phoneNumber,
+           street: node.street,
+           house: node.house,
+           postcode: node.postcode,
+           sapOkonkh: node.sapOkonkh,
+           sapCity: node.sapCity
         }
-    })
+    });
+
+    const { url } = match;
+    const columns = useMemo(() => generateColumns(url) , [data]);
 
     return (
         <>
-            <SuppliersCreate isOpen={createOpen} close={() => setCreateOpen(false)} />
             <Helmet title={title} />
             <FlexForHeader>
                 <DatePickers mR="15px" />
-                <ButtonWithIcon name="Создать пользователя" clicked={() => setCreateOpen(true)} url="#" />
+                <ButtonWithIcon name="Создать поставщика" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable
                 title={"Список всех сотрудников"}

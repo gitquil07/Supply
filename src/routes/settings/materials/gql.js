@@ -32,15 +32,14 @@ query {
 
 
 export const CREATE_MATERIAL = gql`
-mutation MyMutation($input: FactoryCreateMutationInput!) {
-  factory {
-    factoryCreate(input: $input) {
-      ok,
-      errors,
-      factory {
+mutation ProductCreate($input: ProductCreateMutationInput!) {
+  product {
+    productCreate(input: $input) {
+      ok
+      errors
+      product {
         id
-      },
-      clientMutationId
+      }
     }
   }
 }

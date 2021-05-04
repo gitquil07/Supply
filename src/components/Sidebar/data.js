@@ -105,6 +105,10 @@ export const Settings = [
         name: "Материалы",
         url: "/settings/materials"
     },
+    {
+        name: "Продукты",
+        url: "/settings/products"
+    }
 ];
 
 export const navElements = [

@@ -55,8 +55,11 @@ export const useToggleDialog = () => {
 
 }
 
-export const useCreate = (initialState, gql, close) => {
-    const [state, setState] = useState(initialState);
+export const useCreate = (stateValue, gql, close) => {
+
+    // console.log("stateValue", stateValue);
+
+    const [state, setState] = useState(stateValue);
 
     const [ create ] = useMutation(gql, {
               onError: error => console.log(error)
@@ -64,25 +67,37 @@ export const useCreate = (initialState, gql, close) => {
 
     const handleClose = () => {
         close();
-        setState(initialState);
+        let resetValues = {};
+        Object.keys(stateValue).forEach(key => {
+            resetValues[key] = "";
+        })
+
+        setState(resetValues);
     } 
 
     const handleInputChange = e => {
         setState({...state, [e.target.name] : e.target.value});
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (pk) => {
+
+        const input = {};
+              input.data = state;
+
+        if(pk !== undefined){
+            input.pk = pk;
+        }
+
         create({
             variables: {
-                input: {
-                    data: state
-                }
+                input
             }
         })
     }
 
     return {
         state,
+        setState,
         handleClose,
         handleInputChange,
         handleSubmit

@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { uploadFile } from "../../../api";
 import { useTitle } from '../../../hooks';
 import { getObjectivesList } from "../../../utils/functions";
-import { testMeasureOptions } from "../../../utils/static";
+import { measureOptions } from "../../../utils/static";
 import MenuItem from '@material-ui/core/MenuItem';
 
 import { Button } from '../../../components/Buttons';
@@ -194,7 +194,7 @@ const OrderCreate = () => {
                                     <CustomInput name="count" label="Кол-во" value={e.count}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomSelector name="currency" label="Ед. Изм." value={e.currency} stateChange={(e) => handleDataChange(e, "material", index)}>
                                         {
-                                            testMeasureOptions?.map(({node}) => {
+                                            measureOptions?.map(({node}) => {
                                                 return <MenuItem value={node?.pk}>{node?.pk}</MenuItem>
                                             })
                                         }
