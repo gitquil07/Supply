@@ -1,29 +1,63 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { Helmet } from "react-helmet";
-import { useQuery } from "@apollo/client";
 
-import { GET_USERS } from "./gql";
-import { columns } from "./TableData";
+import { PAGINATE_VENDOR_PRODUCTS } from "./gql";
+import { generateColumns } from "./TableData";
 import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
 import { Pagination } from "../../../components/Pagination";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
+import { exceptKey } from "../../../utils/functions";
+import { usePagination } from "../../../hooks";
+import { getList } from "../../../utils/functions";
+
 
 const MaterialsList = ({ match }) => {
     const title = useTitle("Материалы");
-    const { data } = useQuery(GET_USERS);
+ 
+    const {
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage,
+        dataPaginationRes
+    } = usePagination({
+        qraphQlQuery: PAGINATE_VENDOR_PRODUCTS, 
+        singular: "vendor", 
+        plural: "vendorProducts"
+    });
 
-    const list = data?.account?.users?.edges.map(({ node }) => {
+
+    const paginationParams = {
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage
+    }
+
+
+    const vendorProducts = getList(dataPaginationRes?.data) || [];
+    const list = vendorProducts.map(({node}) => {
+        const obj = exceptKey(node, ["__typename", "vendorFactory", "product", "productionDayCount", "deliveryDayCount"]);
+        console.log(obj);
         return {
-            first_name: node.firstName,
-            last_name: node.lastName,
-            username: node.username,
-            phone_number: node.phoneNumber,
-            role: node.role?.displayName,
+            ...obj,
+            vendorFactoryProduct: node.vendorFactory?.factory?.name  + " / " + node.vendorFactory?.vendor?.name + "\n" + node.product?.name,  
+            deliveryAndProductionDayCount: node.deliveryDayCount + " / " + node.productionDayCount  + "\n"
         }
-    })
+    });
+
+
+    const { url } = match;
+    const columns =  useMemo(() => generateColumns(url), [])
 
     return (
         <>
@@ -36,8 +70,9 @@ const MaterialsList = ({ match }) => {
                 title={"Список всех материалов"}
                 data={list}
                 columns={columns}
+                count={amountOfElemsPerPage}
             />
-            <Pagination />
+             <Pagination {...paginationParams}/>
         </>
     );
 };

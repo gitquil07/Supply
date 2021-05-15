@@ -13,6 +13,9 @@ import MaterialCreate from "./materials/MaterialsCreate"
 import ProductsList from "./products/ProductsList";
 import ProductCreate from "./products/ProductCreate";
 
+import VendorFactoriesList from "./vendorFactories/VendorFactoriesList";
+import VendorFactoryCreate from "./vendorFactories/VendorFactoryCreate";
+
 const Settings = ({ match }) => {
 
     const url = (path) => `${match.url}/${path}`;
@@ -29,10 +32,15 @@ const Settings = ({ match }) => {
 
             <Route path={url("materials")} component={MaterialsList} exact />
             <Route path={url("materials/create")} component={MaterialCreate} />
+            <Route path={url("materials/edit/:id")} component={MaterialCreate} />
 
             <Route path={url("products")} component={ProductsList} exact />
             <Route path={url("products/create")} render={props => <ProductCreate {...props} />} />
             <Route path={url("products/edit/:id")} render={props => <ProductCreate {...props}/>} />
+
+            <Route path={url("vendor-factories")} component={VendorFactoriesList} exact />
+            <Route path={url("vendor-factories/create")} component={VendorFactoryCreate} />
+            <Route path={url("vendor-factories/edit/:id")} component={VendorFactoryCreate} />
         </>
     );
 };

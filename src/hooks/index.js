@@ -1,12 +1,14 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { NotificationManager } from "react-notifications";
+import { onResponseComplete } from "../utils/functions";
 import moment from "moment";
 
 export const useDateRange = (query) => {
 
     const [fromDate, setFromDate] = useState(moment().startOf('month').toDate()),
-        [toDate, setToDate] = useState(new Date());
+          [toDate, setToDate] = useState(new Date());
 
     const [fetchData, { error, data }] = useLazyQuery(query);
 
@@ -55,52 +57,296 @@ export const useToggleDialog = () => {
 
 }
 
-export const useCreate = (stateValue, gql, close) => {
+export const usePagination = ({type, qraphQlQuery, singular, plural}) => {
 
-    // console.log("stateValue", stateValue);
+    const [fromDateChange, setFromDateChange] = useState(moment().startOf("month").toDate()),
+          [toDateChange, setToDateChange] = useState(new Date());
 
-    const [state, setState] = useState(stateValue);
+    const [fromDate, setFromDate] = useState(moment().startOf("month").toDate()),
+          [toDate, setToDate] = useState(new Date());
 
-    const [ create ] = useMutation(gql, {
-              onError: error => console.log(error)
-          });
 
-    const handleClose = () => {
-        close();
-        let resetValues = {};
-        Object.keys(stateValue).forEach(key => {
-            resetValues[key] = "";
-        })
-
-        setState(resetValues);
-    } 
-
-    const handleInputChange = e => {
-        setState({...state, [e.target.name] : e.target.value});
+    const handleDateApply = () => {
+        setFromDate(fromDateChange);
+        setToDate(toDateChange);
     }
 
-    const handleSubmit = (pk) => {
+    const [paginatingState, setPaginatingState] = useState({
+        prevPage: null,
+        nextPage: null,
+        direction: null,
+        first: null,
+        last: null
+    });
 
-        const input = {};
-              input.data = state;
+    const [mutate, setMutateState] = useState("");
 
-        if(pk !== undefined){
-            input.pk = pk;
+    const [ getDataPagination, dataPaginationRes] = useLazyQuery(qraphQlQuery);
+
+    const [amountOfElemsPerPage, setAmountOfElemsPerPage] = useState(30);
+    
+    const nextPageCursor = dataPaginationRes?.data?.[singular]?.[plural]?.pageInfo?.endCursor,
+          hasNextPage = dataPaginationRes?.data?.[singular]?.[plural]?.pageInfo?.hasNextPage;
+
+    const prevPageCursor = dataPaginationRes?.data?.[singular]?.[plural]?.pageInfo?.startCursor,
+          hasPreviousPage = dataPaginationRes?.data?.[singular]?.[plural]?.pageInfo?.hasPreviousPage;
+
+
+
+    useEffect(() => {
+        const vars = {
+            variables: {
+               first: amountOfElemsPerPage,
+               last: null,
+               after: null,
+               before: null 
+            }
         }
 
-        create({
-            variables: {
-                input
-            }
-        })
+        if(type === "dateFilter"){
+            vars.variables.fromDate = moment(fromDate).format("YYYY-MM-DD");
+            vars.variables.toDate = moment(toDate).format("YYYY-MM-DD");
+        }
+
+        console.log("vars", vars);
+
+        getDataPagination(vars);
+
+    }, [fromDate, toDate]);
+
+    console.log("---------------- component rendered --------------------");
+
+    useEffect(() => {
+
+        console.log("useEffect 1 called --------------------------------------------------------------");
+
+        if(paginatingState.prevPage === null && paginatingState.nextPage === null && hasNextPage == true && hasPreviousPage == false){
+            console.log("here first condition");
+            setPaginatingState({
+                ...paginatingState,
+                direction: "forward",
+                nextPage: true,
+                prevPage: false,
+                last: false,
+                first: true
+            });
+        }
+
+        if((hasNextPage == true && hasPreviousPage == false && paginatingState.prevPage === false) || (hasNextPage == false && hasPreviousPage == true && paginatingState.nextPage === false)){
+            console.log("here second condition");
+            setPaginatingState({
+                ...paginatingState,
+                prevPage: true,
+                nextPage: true
+            });
+        }
+
+        if(paginatingState.direction == "forward" && hasNextPage === false && hasPreviousPage === false){
+            console.log("here third condition");
+            setPaginatingState({
+                ...paginatingState,
+                prevPage: true,
+                nextPage:  false,
+                last: true,
+                first: false
+            });
+        }
+
+        if(paginatingState.direction == "backward" && hasNextPage === false && hasPreviousPage === false){
+            console.log("here fourth condition");
+            setPaginatingState({
+                ...paginatingState,
+                prevPage: false,
+                nextPage: true,
+                first: true,
+                last: false
+            });
+        }
+
+        if(paginatingState.direction === null && hasNextPage === false && hasPreviousPage === false){
+            setPaginatingState({
+                ...paginatingState,
+                nextPage: false,
+                prevPage: false,
+                last: false,
+                first: true
+            });
+        }
+
+        console.log("useEffect 1 finished --------------------------------------------------");
+
+    }, [hasNextPage, hasPreviousPage]);
+
+
+    useEffect(() => {
+        console.log("useEffect 2 called -----------------------------------------");
+        console.log("paginatingState", paginatingState);
+        console.log("useEffect 2 finished ---------------------------------------");
+    }, [paginatingState]);
+
+    useEffect(() => {
+        console.log("useEffect 3 called --------------------------------------------");
+
+        if(paginatingState.prevPage !== null && paginatingState.nextPage !== null){
+            console.log("condition paginatingState");
+            setPaginatingState({
+                ...paginatingState,
+                direction: null,
+                nextPage: null,
+                prevPage: null,
+                first: null,
+                last: null
+            });
+        }
+
+        console.log("useEffect 3 finished ----------------------------------------")
+    }, [amountOfElemsPerPage]);
+
+
+    useEffect(() => {
+        console.log("useEffect 4 called --------------------------------------------");
+        console.log("hasNextPage", hasNextPage);
+        console.log("hasPreviousPage", hasPreviousPage);
+        console.log("mutate", mutate);
+        if(mutate === "createOrUpdate" && ((hasNextPage === true && hasPreviousPage === false) || (hasNextPage === false && hasPreviousPage === false && paginatingState.direction === "forward"))){
+            console.log("inside condition");
+            setPaginatingState({
+                ...paginatingState,
+                direction: null,
+                nextPage: null,
+                prevPage: null,
+                first: null,
+                last: null
+            });
+
+            setMutateState("");
+        }
+        console.log("useEffect 4 finished------------------------------------------------");
+    }, [mutate, hasNextPage, hasPreviousPage])
+
+    
+    return {
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setMutateState,
+        setAmountOfElemsPerPage,
+        dataPaginationRes,
+
+
+        // For pages which has date filter
+        toDate,
+        fromDate,
+        fromDateChange,
+        setFromDateChange,
+        toDateChange,
+        setToDateChange,
+        handleDateApply
+    };
+
+} 
+
+export const useFormData = (initialState = {}) => {
+    const [state, setState] = useState(initialState);
+
+    const handleChange = ({
+        fElem,
+        type,
+        multiple
+    }) => {
+
+        type = type || "input";
+        multiple = multiple || false;
+
+        let value = (type == "input") && fElem.target.value;
+
+        switch(type){
+            case "choice":
+                value = fElem.target.checked;
+                break;    
+        }
+
+        if(!multiple){
+            setState({...state, [fElem.target.name] : value});
+        }else{
+            setState({...state, [fElem.target.name] : [
+                ...state[fElem.target.name],
+                value
+            ]})
+        }
     }
 
     return {
         state,
         setState,
-        handleClose,
-        handleInputChange,
-        handleSubmit
+        handleChange
     }
+}
+
+export const useTemplate = (state, setState, template) => {
+
+    const addTempl = () => {
+        const temp = state.slice(0);
+        temp.push({...template});
+        setState(temp);
+    }
+
+    const removeTempl = (index) => {
+        setState(state.filter((e, idx) => idx !== index))
+    }
+
+    return {
+        addTempl,
+        removeTempl
+    }
+
+}
+
+export const useCustomMutation = ({graphQlQuery: {queryCreate, queryUpdate}}, entityName, callback) => {
+
+    const handleError = (error) => NotificationManager.error(error.message);
+
+    const options = {};
+          options.onError = handleError;
+
+    const [create] = useMutation(queryCreate, {
+        ...options,
+        onCompleted: data => {
+            onResponseComplete(data, "create", entityName, callback);
+        }
+    });
+
+    const [update] = useMutation(queryUpdate, {
+        ...options,
+        onCompleted: data => {
+            onResponseComplete(data, "update", entityName, callback);
+        }
+    }); 
+
+    const submitData = (data, pk) => {
+
+        const options = {
+            variables: {
+                input: {
+                    data
+                }
+            }
+        }
+
+        if(pk !== undefined){
+            options.variables.input.pk = pk;
+            update(options);
+        }else{
+            create(options);
+        }
+
+    }
+
+    return {
+        submitData
+    };
 
 }

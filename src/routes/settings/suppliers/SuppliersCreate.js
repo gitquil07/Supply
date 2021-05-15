@@ -7,20 +7,21 @@ import { useTitle } from "../../../hooks";
 import styled from "styled-components"
 import { Footer } from "../../../components/Footer";
 import { Button } from "../../../components/Buttons";
-import { FlexForHeader } from '../../../components/Flex';
 
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { GET_SAP_COUNTRIES } from "./gql";
-import { useCreate } from "../../../hooks";
-import { CREATE_VENDOR, UPDATE_VENDOR } from "./gql";
-import { useEffect, useState } from "react";
+import { CREATE_VENDOR, UPDATE_VENDOR, GET_VENDOR } from "./gql";
+import { useEffect } from "react";
 import MenuItem from "@material-ui/core/MenuItem";
-import { update } from "ramda";
-import { showNotification } from "../../../utils/functions";
+import { useHistory } from "react-router-dom";
+import { vendorRole } from "../../../utils/static";
+import { useCustomMutation, useFormData } from "../../../hooks";
+import { getList } from "../../../utils/functions";
+import { useState } from"react";
+
 
 const initialState = {
     sapCountry: "",
-    sapAccountGroup: "",
     name: "",
     companyName: "",
     phoneNumber: "",
@@ -29,170 +30,103 @@ const initialState = {
     role: "",
     email: "",
     postcode: "",
-    sapSearchCriteria: "",
-    sapOkonkh: "",
-    sapCity: ""
 };
-
-const accountGroups = [
-    {
-        pk: 1,
-        name: "account_1"
-    }
-]
-
-const sapCountries = [
-    {
-        pk: 1,
-        name: "country_1"
-    }
-]
-
 
 const SuppliersCreate = ({ match }) => {
 
-    const title = useTitle("Создание нового Поставщика");
-    const [state, setState] = useState(initialState);
-    const {id} = match.params;
+    const title = useTitle("Создание нового Партнера"),
+          {id} = match.params,
+          history = useHistory();
 
-    const [ create ] = useMutation(CREATE_VENDOR, {
-                onCompleted: data => {
-                    showNotification(data, "vendor", "vendorCreate", "Поставщик создан");
-                },
-                onError: error => console.log(error)
-          }),
+    const {
+        state,
+        setState,
+        handleChange
+    } = useFormData(initialState);
 
-          [ update ] = useMutation(UPDATE_VENDOR, {
-                onCompleted: data => {
-                    showNotification(data, "vendor", "vendorUpdate", "Поставщик изменён" );
-                },
-                onError: error => console.log(error)
-          });
+    const { submitData } = useCustomMutation({
+            graphQlQuery: {
+                queryCreate: CREATE_VENDOR,
+                queryUpdate: UPDATE_VENDOR
+            }
+        },
+        "Партнер",
+        () => {
+            history.push("/settings/suppliers");
+        }
+    );
 
-    const [getSapCountries, { data }] = useLazyQuery(GET_SAP_COUNTRIES),
-          sapCountries = data?.sap?.sapCountries?.edges;
+    const [getSapCountries, sapCountriesRes] = useLazyQuery(GET_SAP_COUNTRIES),
+          sapCountries = getList(sapCountriesRes?.data),
+          [getVendor, vendorRes] = useLazyQuery(GET_VENDOR),
+          pk = vendorRes?.data?.vendor?.vendor?.pk;
 
     useEffect(() => {
         getSapCountries();
-    }, []);
-
-    const handleInputChange = e => {
-        setState({...state, [e.target.name] : e.target.value});
-    }
-
-    const handleSubmit = () => {
-
         if(id !== undefined){
-            // update({
-            //     variables: {
-            //         input
-            //     }   
-            // });
-        }else{  
-            // create({
-            //     variables: {
-            //         input
-            //     }
-            // })
+            getVendor({
+                variables: {
+                    id
+                }
+            });
+        }
+    }, [id]);
+
+
+    useEffect(() => {
+        const vendor = vendorRes.data?.vendor?.vendor;
+
+        const state = {};
+        if(vendor){
+            Object.keys(vendor).forEach(key => {
+                if(key !== "pk" && key !== "__typename"){
+                    state[key] = (typeof vendor[key] === "object" && vendor[key] !== null)?  vendor[key]?.pk :  vendor[key];
+                }
+            })
         }
 
-    }
+        setState(state);
+
+    }, [vendorRes.data?.vendor?.vendor])
+
     return (
         <>
             <Helmet title={title} />
             <Form>
-                <p>Информация о Поставщике</p>
+                <p>Информация о Партнере</p>
                 <AddibleInput>
-                    <CustomInput name="name" label="Имя" value={state.name} stateChange={e => handleInputChange(e)} />
-                    <CustomInput name="phoneNumber" label="Номер телефона" value={state.phoneNumber} stateChange={e => handleInputChange(e)} />
-                    <CustomInput name="companyName" label="Фирма" value={state.companyName} stateChange={e => handleInputChange(e)} />
-                    <CustomInput name="email" label="Email" value={state.email} stateChange={e => handleInputChange(e)} />
-                    <CustomInput name="role" label="Роль" value={state.role} stateChange={e => handleInputChange(e)} />
-                    <CustomInput name="postcode" label="Почтовый индекс" value={state.postcode} stateChange={e => handleInputChange(e)} />
-                    <CustomInput name="sapOkonkh" label="ОКОНКХ" value={state.sapOkonkh} stateChange={e => handleInputChange(e)} />
-                    <CustomInput name="sapCity" label="Город" value={state.sapCity} stateChange={e => handleInputChange(e)} />
-                    <CustomInput name="sapSearchCriteria" label="Критерий поиска" value={state.sapSearchCriteria} stateChange={e => handleInputChange(e)} />
+                    <CustomInput name="name" label="Имя" value={state.name} stateChange={e => handleChange({fElem: e})} />
+                    <CustomInput name="phoneNumber" label="Номер телефона" value={state.phoneNumber} stateChange={e => handleChange({fElem: e})} />
+                    <CustomInput name="companyName" label="Фирма" value={state.companyName} stateChange={e => handleChange({fElem: e})} />
+                    <CustomInput name="email" label="Email" value={state.email} stateChange={e => handleChange({fElem: e})} />
+                    <CustomSelector name="role" label="Роль" value={state.role} stateChange={e => handleChange({fElem: e})}>
+                        {
+                            vendorRole.map(role => (
+                                <MenuItem value={role.value}>{role.label}</MenuItem>
+                            ))
+                        }
+                    </CustomSelector>
+                    <CustomInput name="postcode" label="Почтовый индекс" value={state.postcode} stateChange={e => handleChange({fElem: e})} />
                 </AddibleInput>
 
                 <p>Адрес</p>
                 <AddibleInput>
-                    <CustomSelector name="sapCountry" label="Страна" value={state.sapCountry} stateChange={e => handleInputChange(e)}>
+                    <CustomSelector name="sapCountry" label="Страна" value={state.sapCountry} stateChange={e => handleChange({fElem: e})}>
                         {
                             sapCountries?.map(({node}) => {
                                 return <MenuItem value={node.pk}>{node.name}</MenuItem>
                             })
                         }
                     </CustomSelector>
-                    <CustomSelector name="sapAccountGroup" label="Группа аккаунтов" value={state.sapAccountGroup} stateChange={e => handleInputChange(e)}>
-                        {
-                            accountGroups?.map(accountGroup => {
-                                return <MenuItem value={accountGroup.pk}>{accountGroup.name}</MenuItem>
-                            })
-                        }
-                    </CustomSelector>
-                    <CustomInput name="street" label="Улица" value={state.street} stateChange={handleInputChange} />
-                    <CustomInput name="house" label="Дом" value={state.house} stateChange={handleInputChange} />
+                    <CustomInput name="street" label="Улица" value={state.street} stateChange={e => handleChange({fElem: e})} />
+                    <CustomInput name="house" label="Дом" value={state.house} stateChange={e => handleChange({fElem: e})} />
                 </AddibleInput>
 
                 <Header>
-                    <Title>Материал</Title>
-                    <Button name="Добавить поставшика" color="#5762B2" clickHandler={handleSubmit} />
                 </Header>
-
-                <GreyTable>
-                    <Head>
-                        <span> Завод: </span>
-                        <span> Поставщик: </span>
-                        <span> Продукт: </span>
-                        <span> Цена: </span>
-                        <span> Ед. Изм: </span>
-                        <span> Дни изготовления: </span>
-                        <span> Дни доставки: </span>
-                        <span> Дата изменения: </span>
-                        <span> Статус: </span>
-                    </Head>
-                    <Body>
-                        <List>
-                            <span> Телевизор </span>
-                            <span> Мумтоз </span>
-                            <span> STP329-0-32CHR СРЕДНЯЯ ПА ... </span>
-                            <span> 5.00 </span>
-                            <span> кг </span>
-                            <span> 12 </span>
-                            <span> 20 </span>
-                            <span> 01.04.2021 </span>
-                            <span> Активный </span>
-                        </List>
-
-                        <List>
-                            <span> Телевизор </span>
-                            <span> Мумтоз </span>
-                            <span> STP329-0-32CHR СРЕДНЯЯ ПА ... </span>
-                            <span> 5.00 </span>
-                            <span> кг </span>
-                            <span> 12 </span>
-                            <span> 20 </span>
-                            <span> 01.04.2021 </span>
-                            <span> Активный </span>
-                        </List>
-
-                        <List>
-                            <span> Телевизор </span>
-                            <span> Мумтоз </span>
-                            <span> STP329-0-32CHR СРЕДНЯЯ ПА ... </span>
-                            <span> 5.00 </span>
-                            <span> кг </span>
-                            <span> 12 </span>
-                            <span> 20 </span>
-                            <span> 01.04.2021 </span>
-                            <span> Активный </span>
-                        </List>
-                    </Body>
-                </GreyTable>
             </Form>
-            <Footer>
-                <span>Кол-во материалов: 6</span>
-                <Button name="Сохранить" />
+            <Footer justify="flex-end">
+                    <Button name={pk? "Сохранить" : "создать"} clickHandler={() => pk? submitData(state, pk) : submitData(state)} /> 
             </Footer>
         </>
     )

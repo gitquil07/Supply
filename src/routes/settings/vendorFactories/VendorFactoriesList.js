@@ -1,20 +1,22 @@
 import { Helmet } from "react-helmet";
+import { useMemo } from "react";
 
-import { PAGINATE_VENDORS } from "./gql";
+import { PAGINATE_VENDOR_FACTORIES } from "./gql";
 import { generateColumns } from "./TableData";
 import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
+import { Pagination } from "../../../components/Pagination";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { Pagination } from "../../../components/Pagination";
-import { useMemo } from "react";
+import { exceptKey } from "../../../utils/functions";
 import { usePagination } from "../../../hooks";
 import { getList } from "../../../utils/functions";
 
-const SuppliersList = ({ match }) => {
-    const title = useTitle("Партнеры");
+const VendorFactoriesList = ({ match }) => {
 
+    const title = useTitle("Поставщики");
+    
     const {
         nextPageCursor,
         prevPageCursor,
@@ -25,9 +27,9 @@ const SuppliersList = ({ match }) => {
         setAmountOfElemsPerPage,
         dataPaginationRes
     } = usePagination({
-        qraphQlQuery: PAGINATE_VENDORS, 
+        qraphQlQuery: PAGINATE_VENDOR_FACTORIES,
         singular: "vendor", 
-        plural: "vendors"
+        plural: "vendorFactories"
     });
 
     const paginationParams = {
@@ -40,35 +42,28 @@ const SuppliersList = ({ match }) => {
         setAmountOfElemsPerPage
     }
 
-    const vendors = getList(dataPaginationRes?.data) || [];
-    const list = vendors.map(({ node }) => {
+    const vendorFactories = getList(dataPaginationRes?.data) || [];
+    const list = vendorFactories.map(({node}) => {
+        const obj = exceptKey(node, ["__typename"]);
         return {
-           id: node.id,
-           name: node.name,
-           companyName: node.companyName,
-           sapCountry: node.sapCountry?.name,
-           sapAccountGroup: node.sapAccountGroup?.name,
-           phoneNumber: node.phoneNumber,
-           street: node.street,
-           house: node.house,
-           postcode: node.postcode,
-           sapOkonkh: node.sapOkonkh,
-           sapCity: node.sapCity
+            ...obj,
+            vendor: node.vendor?.name,
+            factory: node.factory?.name
         }
-    });
+    })
 
-    const { url } = match;
-    const columns = useMemo(() => generateColumns(url) , []);
+    const {url} = match;
+    const columns = useMemo(() => generateColumns(url), []);
 
     return (
         <>
             <Helmet title={title} />
             <FlexForHeader>
                 <DatePickers mR="15px" />
-                <ButtonWithIcon name="Создать партнерв" url={`${match.url}/create`} />
+                <ButtonWithIcon name="Создать поставщика" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable
-                title={"Список всех партнеров"}
+                title={"Список всех поставщиков"}
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
@@ -78,4 +73,4 @@ const SuppliersList = ({ match }) => {
     );
 };
 
-export default SuppliersList;
+export default VendorFactoriesList;

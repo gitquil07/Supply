@@ -14,21 +14,25 @@ import ArrivedList from "./arrived/ArrivedList"
 import CustomsList from "./customs/CustomsList";
 
 const Supply = ({ match }) => {
+
+    const url = (path) => `${match.url}${path}`;
+
     return (
         <Switch>
-            <Route path={`${match.url}/order`} component={OrderList} exact />
-            <Route path={`${match.url}/order/detail`} component={OrderDetail} />
-            <Route path={`${match.url}/order/create`} component={OrderCreate} />
+            <Route path={url("/order")} component={OrderList} exact />
+            <Route path={url("/order/detail")} component={OrderDetail} />
+            <Route path={url("/order/create")} component={OrderCreate} />
+            <Route path={url("/order/edit/:id")} component={OrderCreate} />
 
-            <Route path={`${match.url}/application`} component={ApplicationList} exact />
-            <Route path={`${match.url}/application/create`} component={ApplicationCreate} />
+            <Route path={url("/application")} component={ApplicationList} exact />
+            <Route path={url("/application/create")} component={ApplicationCreate} />
 
-            <Route path={`${match.url}/info-record`} component={InfoRecordList} exact />
-            <Route path={`${match.url}/info-record/detail/:id`} component={InfoRecordDetail} />
+            <Route path={url("/info-record")} component={InfoRecordList} exact />
+            <Route path={url("/info-record/detail/:id")} component={InfoRecordDetail} />
 
-            <Route path={`${match.url}/arrived`} component={ArrivedList} exact />
+            <Route path={url("/arrived")} component={ArrivedList} exact />
 
-            <Route path={`${match.url}/customs`} component={CustomsList} exact />
+            <Route path={url("/customs")} component={CustomsList} exact />
         </Switch>
     );
 };

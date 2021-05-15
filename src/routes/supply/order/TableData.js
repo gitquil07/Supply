@@ -1,7 +1,7 @@
 import { propEq, find } from "ramda";
 import { Link } from "react-router-dom";
 
-export const generateColumns = (url, list) => {
+export const generateColumns = (url) => {
     const options = {
         filter: true,
         sort: false
@@ -13,9 +13,8 @@ export const generateColumns = (url, list) => {
             label: "Номер заказа",
             options: {
                 filter: true,
-                customBodyRender: (value, tableMeta, updateValue) => {
-                    const id = find(propEq("public_id", value))(list);
-                    return <Link to={`${url}/detail/${id?.id}`}>{value}</Link>;
+                customBodyRender: (value) => {
+                    return <Link to={`${url}/edit/${value.id}`}>{value.publicId}</Link>
                 },
             },
         },
@@ -36,12 +35,12 @@ export const generateColumns = (url, list) => {
         },
         {
             name: "invoice_proforma",
-            label: "Invoice Proforma",
+            label: "Инвойс",
             options: options
         },
         {
             name: "invoice_date",
-            label: "Invoice Date",
+            label: "Дата инвойса",
             options: options
         },
         {

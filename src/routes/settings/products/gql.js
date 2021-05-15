@@ -1,10 +1,10 @@
 import { gql } from "@apollo/client"
 
-export const GET_PRODUCTS = gql`
-query Products {
-    product {
-      products {
-        edges {
+export const PAGINATE_PRODUCTS = gql`
+query nextPage($first: Int, $last: Int, $after: String, $before: String) {
+  product {
+    products(first: $first, last: $last, after: $after, before: $before) {
+      edges {
           node {
             id
             group {
@@ -15,10 +15,16 @@ query Products {
             codeTnved
             typeOfPackaging
           }
-        }
+      }
+      pageInfo {
+        endCursor
+        startCursor
+        hasPreviousPage
+        hasNextPage
       }
     }
   }
+}
 `;
 
 export const CREATE_PRODUCT_GROUP = gql`

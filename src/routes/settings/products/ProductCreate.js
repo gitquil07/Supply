@@ -9,7 +9,7 @@ import { Footer } from "../../../components/Footer";
 import { Button } from "../../../components/Buttons";
 
 import MenuItem from "@material-ui/core/MenuItem";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import { RemoveIcon } from '../../../components/RemoveIcon';
 import { CREATE_PRODUCT, CREATE_PRODUCT_GROUP, GET_PRODUCT_AND_GROUP  } from "./gql";
@@ -20,16 +20,18 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { getOne } from "../../../api";
 import { showNotification } from "../../../utils/functions";
 import { useHistory } from "react-router-dom";
+import { NotificationManager } from "react-notifications";
+import { getValueOfProperty } from "../../../utils/functions";
+import { useTemplate } from "../../../hooks";
 
 
 const ProductCreate = ({match}) => {
+    
+    const { id } = match.params,
+          history = useHistory();
 
-    
-    const { id } = match.params;
-    const history = useHistory();
-    
-    const [products, setProducts] = useState([
-        {
+    const memoizedTempl = useMemo(() => {
+        return   {
             name: "",
             code: "",
             codeTnved: "",
@@ -37,7 +39,16 @@ const ProductCreate = ({match}) => {
             typeOfPackaging: "",
             group: ""
         }
+    }, []);
+    
+    const [products, setProducts] = useState([
+        memoizedTempl
     ]);
+
+    const {
+        addTempl,
+        removeTempl
+    } = useTemplate(products, setProducts, memoizedTempl);
     
     const [groupCreate, setGroupCreate] = useState({
         name: "",
@@ -61,7 +72,7 @@ const ProductCreate = ({match}) => {
                 history.push("/settings/products");
             }
         },
-        onError: error => console.log(error)
+        onError: error => NotificationManager.error(error.message)
     });
 
     const [ updateProduct ] = useMutation(UPDATE_PRODUCT, {
@@ -79,20 +90,16 @@ const ProductCreate = ({match}) => {
                 history.push("/settings/products")
             }
         },
-        onError: error => console.log(error)
+        onError: error => NotificationManager.error(error.message)
     })
 
     
-    const product = getProductResp?.data?.product?.product || undefined,
-          productPk = getProductResp?.data?.product?.product?.pk || undefined,
-          group = getProductResp?.data?.product?.product?.group || undefined,
-          groupPk =  getProductResp?.data?.product?.product?.group?.pk || undefined;
-    
+    const product = getValueOfProperty(getProductResp?.data, "product"),
+          group = getValueOfProperty(getProductResp?.data, "group"),
+          productPk = getProductResp?.data?.product?.product?.pk,
+          groupPk =  getProductResp?.data?.product?.product?.group?.pk;    
     
 
-
-    console.log("productPk", productPk);
-    console.log("groupPk", group?.pk);
     useEffect(() => {
         if(id !== undefined){
             getProduct({
@@ -104,6 +111,8 @@ const ProductCreate = ({match}) => {
     }, [id]);
 
     useEffect(() => {
+
+        console.log("product group useEffect");
         if(product !== undefined && group !== undefined){
             setGroupCreate({
                 name: group.name,
@@ -124,16 +133,8 @@ const ProductCreate = ({match}) => {
         console.log("groupCreate", groupCreate);
         console.log("products", products);
     }, [groupCreate, products])
-    
 
-    let potTitle;
-    if(id !== undefined){
-        potTitle = "Редактирование продукта";
-    }else{
-        potTitle = "Создание нового продукта";
-    }
-
-    const title = useTitle(potTitle);
+    const title = useTitle(id? "Редактирование продукта" : "Создание нового продукта");
 
     // Will launch after (save) button clicked
     function launchProductsCreate(data){
@@ -166,16 +167,7 @@ const ProductCreate = ({match}) => {
             setProducts(productsCopy);
         }
     }
-    
-    const addProduct = () => {
-        const temp = products.slice(0);
-        temp.push({name:"", code:"", codeTnved:"", measure: "", typeOfPackaging: "", group: ""});
-        setProducts(temp);
-    };
 
-    const removeProduct = (index) => {
-        setProducts(products.filter((e, idx) => idx !== index));
-    }
 
     const save = () => {
         
@@ -211,7 +203,7 @@ const ProductCreate = ({match}) => {
                 </AddibleInput>
                 <FlexForHeader>
                     <p>Продукты</p>
-                    <Button name="Добавить продукты" color="#5762B2" clickHandler={addProduct}/>
+                    <Button name="Добавить продукты" color="#5762B2" clickHandler={addTempl}/>
                 </FlexForHeader>
                 {
                     products.map((e, index) => {
@@ -231,7 +223,7 @@ const ProductCreate = ({match}) => {
                                     }
                                 </CustomSelector>
                             </InputsWrapper>
-                            <RemoveIcon clicked={() => removeProduct(index)} />
+                            <RemoveIcon clicked={() => removeTempl(index)} />
                         </AddibleInputWithTrash>
                     })
                 }  

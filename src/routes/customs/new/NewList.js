@@ -27,7 +27,7 @@ const NewList = ({match}) => {
       const list = [];
     
       const { url } = match;
-      const columns = useMemo(() => generateColumns(url, list), [data]);
+      const columns = useMemo(() => generateColumns(url, list), []);
       
       return (
         <> 

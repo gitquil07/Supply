@@ -1,7 +1,6 @@
 import { Helmet } from "react-helmet";
-import { useLazyQuery } from "@apollo/client";
 
-import { GET_USERS } from "./gql";
+import { PAGINATE_USERS } from "./gql";
 import { generateColumns } from "./TableData";
 import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
@@ -10,20 +9,43 @@ import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
 import UserCreate from "./UserCreate";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
+import { usePagination } from "../../../hooks";
+import { getList } from "../../../utils/functions";
 
-const UsersList = ({ match }) => {
+const UsersList = () => {
     const title = useTitle("Пользователи");
     const [createOpen, setCreateOpen] = useState(false);
     const [id, setId] = useState(undefined);
     
-    const [getUsers, { data }] = useLazyQuery(GET_USERS);
+    const {
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage,
+        dataPaginationRes,
+        setMutateState
+    } = usePagination({
+        qraphQlQuery: PAGINATE_USERS, 
+        singular: "account", 
+        plural: "users"
+    });
 
-    useEffect(() => {
-        getUsers();
-    }, []);
-    
-    const list = data?.account?.users?.edges?.map(({ node }) => {
+    const paginationParams = {
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage
+    }
+
+    const users = getList(dataPaginationRes?.data) || [];
+    const list = users.map(({ node }) => {
         return {
             id: node.id,
             pk: node.pk,
@@ -51,11 +73,12 @@ const UsersList = ({ match }) => {
         setCreateOpen(false);
     }
 
-    const columns = useMemo(() => generateColumns(editEntry), [data]);
+    const columns = useMemo(() => generateColumns(editEntry), []);
 
     return (
         <>
-            <UserCreate isOpen={createOpen} close={close} entry={user} />
+            <UserCreate isOpen={createOpen} close={close} entry={user}
+                        setMutateState={setMutateState}  getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
             <Helmet title={title} />
             <FlexForHeader>
                 <DatePickers mR="15px" />
@@ -65,8 +88,9 @@ const UsersList = ({ match }) => {
                 title={"Список всех сотрудников"}
                 data={list}
                 columns={columns}
+                count={amountOfElemsPerPage}
             />
-            <Pagination />
+            <Pagination {...paginationParams}/>
         </>
     );
 };

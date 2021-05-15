@@ -38,22 +38,6 @@ export const generateColumns = (url) => {
             }
         },
         {
-            name: "sapCity",
-            label: "Город",
-            options: {
-                filter: true,
-                sort:false
-            }
-        },
-        {
-            name: "sapAccountGroup",
-            label: "Группа",
-            options: {
-                filter: true,
-                sort: false
-            }
-        },
-        {
             name: "phoneNumber",
             label: "Номер телефона",
             options: {
@@ -85,13 +69,5 @@ export const generateColumns = (url) => {
                 sort:false
             }
         },
-        {
-            name: "sapOkonkh",
-            label: "ОКОНКХ",
-            options: {
-                filter: true,
-                sort:false
-            }
-        }
     ];
 } 

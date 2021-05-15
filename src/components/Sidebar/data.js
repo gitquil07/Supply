@@ -17,10 +17,6 @@ export const Supply = [
         url: "/supply/application"
     },
     {
-        name: "База данных",
-        url: "/supply/info-record"
-    },
-    {
         name: "Прибывшие",
         url: "/supply/arrived"
     },
@@ -98,16 +94,20 @@ export const Settings = [
         url: "/settings/factories"
     },
     {
-        name: "Поставщики",
+        name: "Партнеры",
         url: "/settings/suppliers"
     },
     {
-        name: "Материалы",
+        name: "База данных",
         url: "/settings/materials"
     },
     {
         name: "Продукты",
         url: "/settings/products"
+    },
+    {
+        name: "Поставщики",
+        url: "/settings/vendor-factories"
     }
 ];
 

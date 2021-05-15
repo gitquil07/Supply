@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { Helmet } from "react-helmet";
-import { useLazyQuery } from "@apollo/client";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
-import { GET_PRODUCTS } from "./gql";
+import { PAGINATE_PRODUCTS } from "./gql";
 import { generateColumns } from "./TableData";
 import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
@@ -11,17 +9,42 @@ import { Pagination } from "../../../components/Pagination";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
+import { usePagination } from "../../../hooks";
+import { getList } from "../../../utils/functions";
 
 const ProductsList = ({ match }) => {
 
     const title = useTitle("Продукты");
-    const [getProducts,  { data }] = useLazyQuery(GET_PRODUCTS);
 
-    useEffect(() => {
-        getProducts();
-    }, []);
+    const {
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage,
+        dataPaginationRes
+    } = usePagination({
+        qraphQlQuery:PAGINATE_PRODUCTS,
+        singular: "product", 
+        plural: "products"
+    });
 
-    const list = data?.product?.products?.edges?.map(({node}) => {
+
+    const paginationParams = {
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage
+    }
+
+    const products = getList(dataPaginationRes?.data) || []; 
+
+    const list = products.map(({node}) => {
         return {
             id: node.id,
             name: node.name,
@@ -33,7 +56,7 @@ const ProductsList = ({ match }) => {
     })
 
     const {url} = match;
-    const columns = useMemo(() => generateColumns(url), [data]);
+    const columns = useMemo(() => generateColumns(url), []);
 
     return (
         <>
@@ -46,8 +69,9 @@ const ProductsList = ({ match }) => {
                 title={"Список всех продуктов"}
                 data={list}
                 columns={columns}
+                count={amountOfElemsPerPage}
             />
-            <Pagination />
+            <Pagination {...paginationParams} />
         </>
     );
 };

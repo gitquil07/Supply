@@ -1,9 +1,9 @@
 import { gql } from "@apollo/client";
 
-export const GET_USERS = gql`
-query {
-    account {
-      users {
+export const PAGINATE_USERS = gql`
+query nextPage($first: Int, $last: Int, $after: String, $before: String) {
+  account {
+      users (first: $first, last: $last, after: $after, before: $before){
         edges {
           node {
             id,
@@ -28,9 +28,16 @@ query {
             isSuperuser,
           }
         }
+        pageInfo {
+          endCursor
+          startCursor
+          hasPreviousPage
+          hasNextPage
+        }
       }
     }
-  } 
+}
+
 `;
 
 
@@ -42,36 +49,6 @@ mutation MyMutation($input: UserCreateMutationInput!) {
       errors
       user {
         id
-      }
-      query {
-        account {
-          users {
-            edges {
-              node {
-                id
-                password
-                username
-                email
-                role {
-                  pk
-                  name
-                  displayName
-                }
-                lastName
-                firstName
-                username
-                factories {
-                  edges {
-                    node{
-                      pk
-                      name
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
       }
     }
   }
@@ -118,6 +95,22 @@ query GetFactories {
         node {
           pk
           name
+        }
+      }
+    }
+  }
+}
+`;
+
+
+export const GET_ROLES = gql`
+query getRoles {
+  account {
+    roles {
+      edges {
+        node {
+          pk
+          displayName
         }
       }
     }

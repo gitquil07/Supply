@@ -1,34 +1,18 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@apollo/client";
-import { GET_FACTORIES } from "./gql";
+import React, { useEffect } from "react";
+import { useLazyQuery } from "@apollo/client";
+import { GET_FACTORIES, GET_ROLES } from "./gql";
 import SmallDialog from "../../../components/SmallDialog";
 import { CustomInput } from "../../../components/Inputs/CustomInput";
 import { CustomSelector } from "../../../components/Inputs/CustomSelector";
 import { Button } from "../../../components/Buttons";
 import MenuItem from "@material-ui/core/MenuItem";
 import { CREATE_USER, UPDATE_USER } from "./gql";
-import { showNotification } from "../../../utils/functions";
 
 import Checkbox from "@material-ui/core/Checkbox";
 import ListItemText from "@material-ui/core/ListItemText";
+import { useCustomMutation, useFormData } from "../../../hooks";
+import { getList } from "../../../utils/functions";
 
-import { useCreate } from "../../../hooks";
-import { init } from "ramda";
-
-const roles = [
-    {
-        id: 1,
-        name: "админ"
-    },
-    {
-        id: 2,
-        name: "role_2"
-    },
-    {
-        id: 3,
-        name: "role_3"
-    }
-];
 
 const initialState = { 
     firstName: "",
@@ -41,11 +25,15 @@ const initialState = {
     factories: []
 }
 
-const UserCreate = ({ isOpen, close, entry}) => {
+const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOfElemsPerPage, paginatingState}) => {
 
     let pk = entry?.pk;
 
-    const [state, setState] = useState(initialState);
+    const {
+        state,
+        setState,
+        handleChange
+    } = useFormData(initialState);
 
     useEffect(() => {
         if(entry !== undefined){
@@ -62,12 +50,27 @@ const UserCreate = ({ isOpen, close, entry}) => {
         }
     }, [entry?.id]);
 
-    // Test
-    // useEffect(() => {
-    //     console.log("state", state);
-    // }, [state]);
 
-    const { data } = useQuery(GET_FACTORIES);
+    const [getFactories, getFactoriesRes] = useLazyQuery(GET_FACTORIES),
+          [getRoles, getRolesRes] = useLazyQuery(GET_ROLES);
+
+    const factories = getList(getFactoriesRes?.data),
+          roles = getList(getRolesRes?.data);
+
+    const getFactoryNames = (selects) => {
+        let names = [];
+        for(let selectPk of selects){
+            names.push(factories.find(({node}) => node.pk === selectPk)?.node?.name)
+        }
+
+        return names;
+    }
+
+    useEffect(() => {
+        getFactories();
+        getRoles();
+    }, []);
+
 
     const inputs = [
         { label: "Имя", name: "firstName" },
@@ -77,69 +80,38 @@ const UserCreate = ({ isOpen, close, entry}) => {
         { label: "Пароль", name: "password", type: "password" },
     ];
 
-    const handleInputChange = (e) => {
-        setState({...state, [e.target.name] : e.target.value});
-    }
-
-    const handleMultipleSelect = (e) => {
-        setState({...state, factories: [...state.factories, e.target.value]});
-    }
-
     const handleClose = () => {
         close();
         setState(initialState);
     }
 
-    const [ create ] = useMutation(CREATE_USER, {
-        onError: (error) => console.log(error),
-        onCompleted: (data) => {
-            showNotification(data, "account", "userCreate", "Пользователь создан");
-            handleClose();
-        }
-    });
-
-    const [ update ] = useMutation(UPDATE_USER, {
-        onError: (error) => console.log(error),
-        onCompleted: (data) => {
-            showNotification(data, "account", "userUpdate", "Пользователь успешно изменен");
-            handleClose();
-        }
-    });
-
-    const handleSubmit = (pk) => {
-
-        const body = {
-            variables : {
-                input: {
-                    data : state
-                }
+    const { submitData } = useCustomMutation({
+            graphQlQuery: {
+                queryCreate: CREATE_USER,
+                queryUpdate: UPDATE_USER
             }
-        };
-
-        if(pk !== undefined){
-            body.variables.input.pk = pk;
-            update(body);
-        }else{
-            create(body);
+        },
+        "Пользователь",
+        () => {
+            handleClose();
+            if((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)){
+                setMutateState("createOrUpdate");
+                getEntries({
+                    variables: {
+                        first: amountOfElemsPerPage,
+                        last: null,
+                        after: null,
+                        before: null
+                    }
+                });
+            }
         }
-
-    }
-
-    const factories = data?.factory?.factories?.edges;
-
-    const getFactoryNames = (selects) => {
-        let names = [];
-        for(let selectPk of selects){
-            names.push(factories.find(({node}) => node.pk === selectPk).node.name)
-        }
-
-        return names;
-    }
+    );
 
     return (
         <SmallDialog title={pk? "Изменить пользователя" : "Создать пользователя"} isOpen={isOpen} close={handleClose}>
             {
-                !pk && <CustomInput name="username" value={state.username} label="Username" stateChange={handleInputChange} />
+                !pk && <CustomInput name="username" value={state.username} label="Username" stateChange={e => handleChange({fElem: e})} />
             }
             {
                 inputs.map((e, i) =>
@@ -148,15 +120,15 @@ const UserCreate = ({ isOpen, close, entry}) => {
                         value={state[e.name]}
                         name={e.name}
                         label={e.label}
-                        stateChange={handleInputChange}
+                        stateChange={e => handleChange({fElem: e})}
                     />
                 )
             }
             
-            <CustomSelector label="Роль" name="role" stateChange={(e) => handleInputChange(e)} value={state.role}>
+            <CustomSelector label="Роль" name="role" stateChange={(e) => handleChange({fElem: e})} value={state.role}>
                 {
-                    roles?.map(role => {
-                        return <MenuItem value={role?.id} selected={role.name === role}>{role?.name}</MenuItem>
+                    roles?.map(({node}) => {
+                        return <MenuItem value={node?.pk} selected={node.displayName == state.role}>{node?.displayName}</MenuItem>
                     })
                 }
             </CustomSelector>
@@ -166,7 +138,7 @@ const UserCreate = ({ isOpen, close, entry}) => {
                 name="factories"
                 value={state.factories.join(", ")}
                 renderValue={(selected) => selected.join(', ')}
-                stateChange={(e) => handleMultipleSelect(e)} >
+                stateChange={e => handleChange({fElem: e, multiple: true})} >
                 {
                     factories?.map(factory => (
                         <MenuItem value={factory?.node?.pk}>
@@ -179,24 +151,11 @@ const UserCreate = ({ isOpen, close, entry}) => {
             {
                 getFactoryNames(state.factories).join(", ")
             }
-             {/* <Select
-                multiple
-                native
-                value={factoryName}
-                onChange={handleChangeMultiple}
-                inputProps={{
-                    id: 'select-multiple-native',
-                }}
-                >
-                {factories?.map(({node}) => (
-                    <option key={node.pk} value={node.pk}>
-                        {node.name}
-                    </option>
-                ))}
-                </Select> */}
-            <Button name={pk? "Сохранить" :  "Добавить пользователя"} color="#5762B2" clickHandler={() => pk? handleSubmit(pk) : handleSubmit()}/>
+            <Button name={pk? "Сохранить" :  "Добавить пользователя"} color="#5762B2" clickHandler={() => pk? submitData(state, pk) : submitData(state)}/>
         </SmallDialog>
     )
 }
 
-export default UserCreate;
+export default React.memo(UserCreate, (prevProps, nextProps) => {
+    return prevProps.isOpen === nextProps.isOpen;
+});

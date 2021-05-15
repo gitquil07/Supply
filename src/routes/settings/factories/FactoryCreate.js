@@ -6,9 +6,8 @@ import SmallDialog from "../../../components/SmallDialog";
 import { CustomInput } from "../../../components/Inputs/CustomInput";
 import { CustomNumber } from "../../../components/Inputs/CustomNumber";
 
-import { useEffect, useState } from "react";
-import { useMutation } from "@apollo/client";
-import { showNotification } from "../../../utils/functions";
+import { useEffect } from "react";
+import { useCustomMutation, useFormData } from "../../../hooks";
 
 const initialState = {
     name: "",
@@ -17,11 +16,15 @@ const initialState = {
     position: ""
 }
 
-const FactoryCreate = ({ isOpen, close, entry }) => {
-
+const FactoryCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOfElemsPerPage, paginatingState }) => {
+    
     let pk = entry?.pk;
 
-    const [state, setState] = useState(initialState);
+    const {
+        state,
+        setState,
+        handleChange
+    } = useFormData(initialState);
 
     useEffect(() => {
 
@@ -38,63 +41,45 @@ const FactoryCreate = ({ isOpen, close, entry }) => {
 
     }, [entry?.id]);
 
-    // Test 
-    // useEffect(() => {
-    //     console.log("state", state);
-    // }, [state]);
-
-    const handleInputChange = (e) => {
-        setState({...state, [e.target.name] : e.target.value});
-    }
-
     const handleClose = () => {
         close();
         setState(initialState);
     }
 
-    const [ create ] = useMutation(CREATE_FACTORY, {
-        onError: (error) => console.log(error),
-        onCompleted: (data) => {
-            showNotification(data, "factory", "factoryCreate", "Завод создан");
-            handleClose();
-        }
-    });
-
-    const [ update ] = useMutation(UPDATE_FACTORY, {
-        onError: (error) => console.log(error),
-        onCompleted: (data) => {
-            showNotification(data, "factory", "factoryUpdate", "Завод успешно изменен");
-            handleClose();
-        }
-    });
-
-    const handleSubmit = (pk) => {
-        const body = {
-            variables : {
-                input: {
-                    data : state
-                }
+    const { submitData } = useCustomMutation({
+            graphQlQuery: {
+                queryCreate: CREATE_FACTORY,
+                queryUpdate: UPDATE_FACTORY,
             }
-        };
-
-        if(pk !== undefined){
-            body.variables.input.pk = pk;
-            update(body);
-        }else{
-            create(body);
+        },
+        "Завод",
+        () => {
+            handleClose();
+            if((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)){
+                setMutateState("create");
+                getEntries({
+                    variables: {
+                        first: amountOfElemsPerPage,
+                        last: null,
+                        after: null,
+                        before: null
+                    }
+                });
+            }
         }
-
-    }
+    );
 
     return (
         <SmallDialog title={pk? "Изменить" : "Создать Завод"} isOpen={isOpen} close={handleClose}>
-            <CustomInput value={state.name} name="name" label="Название завода" stateChange={handleInputChange} />
-            <CustomInput value={state.officialName} name="officialName" label="Название завода" stateChange={handleInputChange} />
-            <CustomInput value={state.code} name="code" label="Код" stateChange={handleInputChange} />
-            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={handleInputChange} fullWidth />
-            <Button name={pk? "сохранить" : "Добавить завод"} color="#5762B2" clickHandler={() => pk? handleSubmit(pk) : handleSubmit()}/>
+            <CustomInput value={state.name} name="name" label="Название завода" stateChange={e => handleChange(e)} />
+            <CustomInput value={state.officialName} name="officialName" label="Название завода" stateChange={e => handleChange(e)} />
+            <CustomInput value={state.code} name="code" label="Код" stateChange={e => handleChange(e)} />
+            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={e => handleChange(e)} fullWidth />
+            <Button name={pk? "сохранить" : "Добавить завод"} color="#5762B2" clickHandler={() => pk? submitData(state, pk) : submitData(state)}/>
         </SmallDialog>
     );
 };
 
-export default FactoryCreate;
+export default React.memo(FactoryCreate, (prevProps, nextProps) => {
+           return prevProps.isOpen === nextProps.isOpen;
+});

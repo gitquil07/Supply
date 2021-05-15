@@ -1,9 +1,9 @@
 import { gql } from "@apollo/client";
 
-export const GET_VENDORS = gql`
-query getVendors {
+export const PAGINATE_VENDORS = gql`
+query nextPage($first: Int, $last: Int, $after: String, $before: String) {
   vendor {
-    vendors {
+    vendors(first: $first, last: $last, after: $after, before: $before) {
       edges {
         node {
           id
@@ -12,20 +12,22 @@ query getVendors {
           sapCountry {
             name
           }
-          sapAccountGroup {
-           	name
-          }
           phoneNumber
           street
           house
           postcode
-          sapOkonkh
-          sapCity
         }
+      }
+      pageInfo {
+        endCursor
+        startCursor
+        hasPreviousPage
+        hasNextPage
       }
     }
   }
 }
+
 `;
 
 export const GET_SAP_COUNTRIES = gql`
@@ -42,6 +44,23 @@ query MyQuery {
   }
 }
 `;
+
+// export const GET_SAP_ACCOUNTS = gql`
+// query getAccountGroups{
+//   vendor {
+//     vendors {
+//       edges {
+//         node {
+//           sapAccountGroup {
+//             name
+//             pk
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+// `;
 
 export const CREATE_VENDOR = gql`
 mutation createVendor($input: VendorCreateMutationInput!) {
@@ -65,17 +84,12 @@ mutation updateVendor($input: VendorUpdateMutationInput!) {
 }
 `;
 
-
-
 export const GET_VENDOR = gql`
 query getVendor($id: ID!) {
   vendor {
     vendor(id: $id) {
       pk
       sapCountry {
-        pk
-      }
-      sapAccountGroup {
         pk
       }
       name
@@ -86,9 +100,6 @@ query getVendor($id: ID!) {
       role
       email
       postcode
-      sapSearchCriteria
-      sapOkonkh
-      sapCity
     }
   }
 }

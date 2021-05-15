@@ -1,9 +1,9 @@
 import { gql } from "@apollo/client";
 
-export const GET_FACTORIES = gql`
-query {
+export const PAGINATE_FACTORIES = gql`
+query nextPage($first: Int, $last: Int, $after: String, $before: String) {
   factory {
-    factories {
+    factories(first: $first, last: $last, after: $after, before: $before) {
       edges {
         node {
           id
@@ -15,9 +15,16 @@ query {
           createdAt
         }
       }
+      pageInfo {
+        endCursor
+        startCursor
+        hasPreviousPage
+        hasNextPage
+      }
     }
   }
 }
+
 `;
 
 export const CREATE_FACTORY = gql`
@@ -28,23 +35,6 @@ mutation MyMutation($input: FactoryCreateMutationInput!) {
       errors
       factory {
         id
-      }
-      query {
-        factory {
-          factories {
-            edges {
-              node {
-                id
-                pk
-                name
-                officialName
-                code
-                position
-                createdAt
-              }
-            }
-          }
-        }
       }
       clientMutationId
     }
@@ -69,5 +59,4 @@ mutation UPDATE_FACTORY($input: FactoryUpdateMutationInput!) {
     }
   }
 }
-
 `;
