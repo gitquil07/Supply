@@ -12,6 +12,7 @@ import InfoRecordDetail from "./info-record/InfoRecordDetail";
 
 import ArrivedList from "./arrived/ArrivedList"
 import CustomsList from "./customs/CustomsList";
+import ReportTable from "./report/ReportTable";
 
 const Supply = ({ match }) => {
 
@@ -33,6 +34,8 @@ const Supply = ({ match }) => {
             <Route path={url("/arrived")} component={ArrivedList} exact />
 
             <Route path={url("/customs")} component={CustomsList} exact />
+
+            <Route path={url("/report")} component={ReportTable} exact />
         </Switch>
     );
 };
