@@ -29,13 +29,27 @@ import { getList, getValueOfProperty } from "../../../utils/functions";
 const vals = ["sadasds", "sadasdsadfg", "gferfgre"];
 
 
+const initialState = {
+    orders: "",
+    trackingUser: "",
+    transportType: "",
+    deliveryCondition: "",
+    degreeOfDanger: "",
+    typeOfPackaging: "",
+    packageOnPallet: "",
+    transportCount: "",
+    shippingDate: "",
+    status: "",
+    transportMix: ""
+};
+
 const ApplicationCreate = ({ match }) => {
     const title = useTitle("Создание новой Заявки"),
           {
             state,
             setState,
             handleChange
-          } = useFormData(),
+          } = useFormData(initialState),
           { id } = match.params,
           history = useHistory();
 
@@ -68,7 +82,7 @@ const ApplicationCreate = ({ match }) => {
     
     const {
               addTempl,
-              removeTmpl
+              removeTempl
           } = useTemplate(items, setItems, memoizedTmpl);
 
 
@@ -87,8 +101,8 @@ const ApplicationCreate = ({ match }) => {
     );
 
     useEffect(() => {
-        console.log("application state", state);
-    }, [state]);
+        console.log("application items state", items);
+    }, [items]);
 
     useEffect(() => {
         getOrders();
@@ -158,13 +172,13 @@ const ApplicationCreate = ({ match }) => {
                             )
                         }
                     </CustomSelector>
-                    <CustomInput label="Условия доставки" value={state.deliveryCondition} name="deliveryCondition" onChange={e => handleChange({fElem: e})}/>
-                    <CustomInput label="уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" onChange={e => handleChange({fElem: e})}/>
-                    <CustomInput label="Тип упаковки" value={state.typeOfPackaging} name="typeOfPackaging" onChange={e => handleChange({fElem: e})} />
-                    <CustomNumber label="Кол-во на поддоне" value={state.packageOnPallet} name="packageOnPallet" onChange={e => handleChange({fElem: e})} />
-                    <CustomNumber label="Кол-во транспорта" value={state.transportCount} name="transportCount" onChange={e => handleChange({fElem: e})} />
+                    <CustomInput label="Условия доставки" value={state.deliveryCondition} name="deliveryCondition" stateChange={e => handleChange({fElem: e})}/>
+                    <CustomInput label="уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({fElem: e})}/>
+                    <CustomInput label="Тип упаковки" value={state.typeOfPackaging} name="typeOfPackaging" stateChange={e => handleChange({fElem: e})} />
+                    <CustomNumber label="Кол-во на поддоне" value={state.packageOnPallet} name="packageOnPallet" stateChange={e => handleChange({fElem: e})} />
+                    <CustomNumber label="Кол-во транспорта" value={state.transportCount} name="transportCount" stateChange={e => handleChange({fElem: e})} />
                     <CustomPicker label="Дата отгрузки" value={state.shippingDate} name="shippingDate" stateChange={date => handleDateChange(date)} />
-                    <CustomInput label="Статус" value={state.status} name="status" onChange={e => handleChange({fElem: e})} />
+                    <CustomInput label="Статус" value={state.status} name="status" stateChange={e => handleChange({fElem: e})} />
                 </AddibleInput>
                 <p>
                     <label htmlFor="transportMix">Комбинированный транспорт</label>
@@ -193,10 +207,10 @@ const ApplicationCreate = ({ match }) => {
                                                     DFGDFGDF
                                             </EditableMenuItem>
                                         </CustomSelectorAdd>
-                                        <CustomInput label="Кол-во" value={item.count} name="count" onChange={e => handleItemChange(e, index)} />
-                                        <CustomNumber label="Вес" value={item.weight} name="weight" onChange={e => handleItemChange(e, index)} />
-                                        <CustomNumber label="Размер" value={item.size} name="size" onChange={e => handleItemChange(e, index)} />
-                                        <CustomNumber label="Цена инвойса"  value={item.invoicePrice} name="invoicePrice" onChange={e => handleItemChange(e, index)} />
+                                        <CustomInput label="Кол-во" value={item.count} name="count" stateChange={e => handleItemChange(e, index)} />
+                                        <CustomNumber label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} />
+                                        <CustomNumber label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} />
+                                        <CustomNumber label="Цена инвойса"  value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
                                     </Row>
 
                                     {/* <Row>
@@ -205,7 +219,7 @@ const ApplicationCreate = ({ match }) => {
                                         <CustomNumber label="Цена инвойса" />
                                     </Row> */}
                                 </RowWrapper>
-                                <RemoveIcon clicked={removeTmpl}/>
+                                <RemoveIcon clicked={() => removeTempl(index)}/>
                             </Material>
                     })
                 }

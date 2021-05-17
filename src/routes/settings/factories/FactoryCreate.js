@@ -71,10 +71,10 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, getEntries, amoun
 
     return (
         <SmallDialog title={pk? "Изменить" : "Создать Завод"} isOpen={isOpen} close={handleClose}>
-            <CustomInput value={state.name} name="name" label="Название завода" stateChange={e => handleChange(e)} />
-            <CustomInput value={state.officialName} name="officialName" label="Название завода" stateChange={e => handleChange(e)} />
-            <CustomInput value={state.code} name="code" label="Код" stateChange={e => handleChange(e)} />
-            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={e => handleChange(e)} fullWidth />
+            <CustomInput value={state.name} name="name" label="Название завода" stateChange={e => handleChange({fElem:e})} />
+            <CustomInput value={state.officialName} name="officialName" label="Название завода" stateChange={e => handleChange({fElem:e})} />
+            <CustomInput value={state.code} name="code" label="Код" stateChange={e => handleChange({fElem:e})} />
+            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={e => handleChange({fElem:e})} fullWidth />
             <Button name={pk? "сохранить" : "Добавить завод"} color="#5762B2" clickHandler={() => pk? submitData(state, pk) : submitData(state)}/>
         </SmallDialog>
     );
