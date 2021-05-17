@@ -1,11 +1,11 @@
 export const tableData = (
     <tr>
         <td className="group-1">1</td>
-        <td className="group-1">Mexico</td>
+        <td className="group-1-last">Mexico</td>
 
         <td className="group-2">Mexico</td>
         <td className="group-2">Mexico</td>
-        <td className="group-2">Mexico</td>
+        <td className="group-2-last">Mexico</td>
 
         <td className="group-3">Mexico</td>
         <td className="group-3">Mexico</td>
@@ -16,7 +16,7 @@ export const tableData = (
         <td className="group-4">Mexico</td>
         <td className="group-4">Mexico</td>
         <td className="group-4">Mexico</td>
-        <td className="group-4">Mexico</td>
+        <td className="group-4-last">Mexico</td>
 
         <td className="group-5">Mexico</td>
         <td className="group-5">Mexico</td>
@@ -29,6 +29,7 @@ export const tableData = (
         <td className="group-5">Mexico</td>
         <td className="group-5">Mexico</td>
         <td className="group-5">Mexico</td>
+        <td className="group-5-last">Mexico</td>
 
         <td className="group-6">Mexico</td>
         <td className="group-7">Mexico</td>
