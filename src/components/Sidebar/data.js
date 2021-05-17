@@ -26,7 +26,7 @@ export const Supply = [
     },
     {
         name: "Отчет",
-        url: "#"
+        url: "/supply/report"
     }
 ];
 
