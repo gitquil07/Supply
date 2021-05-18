@@ -1,7 +1,21 @@
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { tableData } from './tableData'
+import { useQuery } from '@apollo/client';
+import { GET_TABLE_BODY } from "./gql"
 
 const ReportTable = () => {
+    const [tableBody, setTableBody] = useState([]);
+    const [tableCol, setTableCol] = useState([]);
+    const { data } = useQuery(GET_TABLE_BODY);
+    const body = data?.report?.generalReport?.data?.body;
+    const columns = data?.report?.generalReport?.data?.columns;
+
+
+    useEffect(() => {
+        body && setTableBody(body);
+        columns && setTableCol(columns);
+    }, [body, columns])
+
     return (
         <Wrapper>
             <Table>
@@ -60,31 +74,52 @@ const ReportTable = () => {
                     </tr>
                 </thead>
 
-                <tbody>
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
-                    {tableData}
+                <tbody id='tbody'>
+                    {
+                        tableBody.map((element, index) => {
+                            const value = (num) => element[num] && element[num].length > 20 ? element[num].substring(0, 25) + "..." : element[num];
+
+                            return (
+                                <tr>
+                                    <td className="group-1">{index + 1}</td>
+                                    <td className="group-1-last">{value(0)}</td>
+
+                                    <td className="group-2">{value(1)}</td>
+                                    <td className="group-2">{value(2)}</td>
+                                    <td className="group-2-last">{value(3)}</td>
+
+                                    <td className="group-3">{value(4)}</td>
+                                    <td className="group-3">{value(5)}</td>
+                                    <td className="group-3">{value(6)}</td>
+                                    <td className="group-3">{value(7)}</td>
+                                    <td className="group-3">{value(8)}</td>
+                                    <td className="group-4">{value(9)}</td>
+                                    <td className="group-4">{value(10)}</td>
+                                    <td className="group-4">{value(11)}</td>
+                                    <td className="group-4">{value(12)}</td>
+                                    <td className="group-4-last">{value(13)}</td>
+
+                                    <td className="group-5">{value(14)}</td>
+                                    <td className="group-5">{value(15)}</td>
+                                    <td className="group-5">{value(16)}</td>
+                                    <td className="group-5">{value(17)}</td>
+                                    <td className="group-5">{value(18)}</td>
+                                    <td className="group-5">{value(19)}</td>
+                                    <td className="group-5">{value(20)}</td>
+                                    <td className="group-5">{value(21)}</td>
+                                    <td className="group-5">{value(22)}</td>
+                                    <td className="group-5">{value(23)}</td>
+                                    <td className="group-5">{value(24)}</td>
+                                    <td className="group-5-last">{value(25)}</td>
+
+                                    <td className="group-6">{value(26)}</td>
+                                    <td className="group-7">{value(27)}</td>
+                                    <td className="group-7">{value(28)}</td>
+                                    <td className="group-6">{value(29)}</td>
+                                </tr>
+                            )
+                        })
+                    }
                 </tbody>
             </Table>
         </Wrapper >
@@ -131,8 +166,9 @@ const Table = styled.table`
             height: 50px;
             background: #4A4D63;
             color: #fff;
-            border-right: 5px solid #fff;
-            padding: 0;
+            /* border-right: 5px solid #fff; */
+            border: none;
+            padding: 0;  
         }
 
         tr {
@@ -235,17 +271,18 @@ const Table = styled.table`
 
             .group-1-last {
                 background: #FFFFFF;
-                border-right: 5px solid white;;
-
+                border-right: 5px solid white;
+                /* box-shadow: 6px 0 5px rgb(0 0 0 / 15%); */
 
                 ::after {
-                    content: none;
+                     content: none;
                 }
             }
 
             .group-2-last {
                 background: #FFFFFF;
-                border-right: 5px solid white;;
+                border-right: 5px solid white;
+
 
                 ::after {
                     content: none;
