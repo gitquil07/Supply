@@ -1,19 +1,20 @@
 import { Helmet } from "react-helmet";
+import { useMemo } from "react";
 
-import { PAGINATE_VENDORS } from "./gql";
+import { PAGINATE_PRODUCTS } from "./gql";
 import { generateColumns } from "./TableData";
 import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
+import { Pagination } from "../../../components/Pagination";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { Pagination } from "../../../components/Pagination";
-import { useMemo } from "react";
 import { usePagination } from "../../../hooks";
 import { getList } from "../../../utils/functions";
 
-const SuppliersList = ({ match }) => {
-    const title = useTitle("Партнеры");
+const ProductsList = ({ match }) => {
+
+    const title = useTitle("Продукты");
 
     const {
         nextPageCursor,
@@ -25,10 +26,11 @@ const SuppliersList = ({ match }) => {
         setAmountOfElemsPerPage,
         dataPaginationRes
     } = usePagination({
-        qraphQlQuery: PAGINATE_VENDORS, 
-        singular: "vendor", 
-        plural: "vendors"
+        qraphQlQuery:PAGINATE_PRODUCTS,
+        singular: "product", 
+        plural: "products"
     });
+
 
     const paginationParams = {
         nextPageCursor,
@@ -40,35 +42,31 @@ const SuppliersList = ({ match }) => {
         setAmountOfElemsPerPage
     }
 
-    const vendors = getList(dataPaginationRes?.data) || [];
-    const list = vendors.map(({ node }) => {
-        return {
-           id: node.id,
-           name: node.name,
-           companyName: node.companyName,
-           sapCountry: node.sapCountry?.name,
-           sapAccountGroup: node.sapAccountGroup?.name,
-           phoneNumber: node.phoneNumber,
-           street: node.street,
-           house: node.house,
-           postcode: node.postcode,
-           sapOkonkh: node.sapOkonkh,
-           sapCity: node.sapCity
-        }
-    });
+    const products = getList(dataPaginationRes?.data) || []; 
 
-    const { url } = match;
-    const columns = useMemo(() => generateColumns(url) , []);
+    const list = products.map(({node}) => {
+        return {
+            id: node.id,
+            name: node.name,
+            group: node.group.name,
+            measure: node.measure,
+            codeTnved: node.codeTnved,
+            typeOfPackaging: node.typeOfPackaging
+        }
+    })
+
+    const {url} = match;
+    const columns = useMemo(() => generateColumns(url), []);
 
     return (
         <>
             <Helmet title={title} />
             <FlexForHeader>
                 <DatePickers mR="15px" />
-                <ButtonWithIcon name="Создать партнерв" url={`${match.url}/create`} />
+                <ButtonWithIcon name="Создать продукт" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable
-                title={"Список всех партнеров"}
+                title={"Список всех продуктов"}
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
@@ -78,4 +76,4 @@ const SuppliersList = ({ match }) => {
     );
 };
 
-export default SuppliersList;
+export default ProductsList;

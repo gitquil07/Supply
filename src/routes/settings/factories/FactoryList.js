@@ -1,46 +1,93 @@
 import { Helmet } from "react-helmet";
-import { useQuery } from "@apollo/client";
-
-import { GET_FACTORIES } from "./gql";
-import { columns } from "./TableData";
+import { PAGINATE_FACTORIES } from "./gql";
+import { generateColumns } from "./TableData";
 import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import FactoryCreate from "./FactoryCreate";
+import { usePagination } from "../../../hooks";
+import { getList } from "../../../utils/functions";
 
-const FactoryList = ({ match }) => {
+const FactoryList = () => {
     const title = useTitle("Заводы");
     const [createOpen, setCreateOpen] = useState(false);
-    const { data } = useQuery(GET_FACTORIES);
+    const [id, setId] = useState(undefined);
 
-    const list = data?.factory?.factories?.edges.map(({ node }) => {
+    const {
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage,
+        dataPaginationRes,
+        setMutateState
+    } = usePagination({
+        qraphQlQuery: PAGINATE_FACTORIES,
+        singular: "factory", 
+        plural: "factories"
+    });
+
+
+    const paginationParams = {
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage
+    }
+
+
+    const factories = getList(dataPaginationRes?.data) || [];
+    const list = factories.map(({ node }) => {
         return {
+            id: node.id,
+            pk: node.pk,
             code: node.code,
-            created_at: node.createdAt,
-            name: node.name
+            name: node.name,
+            officialName: node.officialName,
+            position: node.position,
+            createdAt: node.createdAt
         }
     });
 
-    console.log(data)
+    const factory = list?.find(factory => factory.id === id);
+
+    const editEntry = (id) => {
+        setId(id);
+        setCreateOpen(true);
+    }
+
+    const close = () => {
+        setId(undefined);
+        setCreateOpen(false);
+    }
+
+    const columns = useMemo(() => generateColumns(editEntry), []); 
 
     return (
         <>
-            <FactoryCreate isOpen={createOpen} close={() => setCreateOpen(false)} />
+            <FactoryCreate isOpen={createOpen} close={close} entry={factory} 
+                           setMutateState={setMutateState}  getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
             <Helmet title={title} />
             <FlexForHeader>
                 <DatePickers mR="15px" />
-                <ButtonWithIcon name="Создать пользователя" clicked={() => setCreateOpen(true)} url="#" />
+                <ButtonWithIcon name="Создать завод" clicked={() => setCreateOpen(true)} url="#" />
             </FlexForHeader>
             <CustomMUIDataTable
-                title={"Список всех сотрудников"}
+                title={"Список всех заводов"}
                 data={list}
                 columns={columns}
+                count={amountOfElemsPerPage}
             />
-            <Pagination />
+            <Pagination {...paginationParams}/>
         </>
     );
 };

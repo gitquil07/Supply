@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export const generateColumns = (url) => {
+export const generateColumns = (url) => { 
 
     return [
         {
@@ -9,33 +9,49 @@ export const generateColumns = (url) => {
             options: {
                 filter: true,
                 sort: false,
-                customBodyRender: (value) => {
+                customBodyRender(value){
                     return <Link to={`${url}/edit/${value}`}>{value}</Link>
                 }
+            },
+        },
+        {
+            name: "name",
+            label: "Продукт",
+            options: {
+                filter: false,
+                sort: true
             }
         },
         {
-            name: "updatedAt",
-            label: "Дата изменения:",
+            name: "group",
+            label: "Группа",
             options: {
                 filter: true,
                 sort: true,
             }
         },
         {
-            name: "vendorFactoryProduct",
-            label: "Завод / Поставщик ",
+            name: "measure",
+            label: "Ед. измерения",
             options: {
                 filter: true,
                 sort: false,
             }
         },
         {
-            name: "deliveryAndProductionDayCount",
-            label: "Дни изгот. / Дни дост.",
+            name: "codeTnved",
+            label: "Код Тн ВЭД",
             options: {
                 filter: true,
                 sort: false,
+            }
+        },
+        {
+            name: "typeOfPackaging",
+            label: "Тип упаковки",
+            options:{
+                filter:false,
+                sort:false,
             }
         }
     ];

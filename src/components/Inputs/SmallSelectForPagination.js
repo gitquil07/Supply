@@ -5,7 +5,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Arrow from "../../assets/icons/arrow-for-pagination.svg";
 
-export const SmallSelectForPagination = ({ stateChange }) => {
+export const SmallSelectForPagination = ({ stateChange, value }) => {
     return (
         <Wrapper>
             <FormControl variant="outlined" id="formControl">
@@ -13,11 +13,11 @@ export const SmallSelectForPagination = ({ stateChange }) => {
                 <Select
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
-                    value={30}
+                    value={value}
                     onChange={stateChange}
                 >
-                    <MenuItem value="30">30</MenuItem>
-                    <MenuItem value="50">50</MenuItem>
+                    <MenuItem value={30} selected={value === 30}>30</MenuItem>
+                    <MenuItem value={50} selected={value === 50}>50</MenuItem>
                 </Select>
             </FormControl>
         </Wrapper>

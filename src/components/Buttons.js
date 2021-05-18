@@ -18,7 +18,7 @@ export const ButtonWithIcon = ({ name, url, clicked }) => {
 const IButton = styled(Link)`
     background: ${props => props.color ? props.color : "#08BB19"};
     color: white;
-    height: 50px;
+    height: 56px;
     padding: 0 10px;
     text-align: center;
     border-radius: 5px;
@@ -37,7 +37,7 @@ const IButton = styled(Link)`
 const IIButton = styled(Link)`
     background: #5762B2;
     color: white;
-    height: 50px;
+    height: 56px;
     padding: 0 10px;
     text-align: center;
     border-radius: 5px;

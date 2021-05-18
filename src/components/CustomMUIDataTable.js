@@ -7,12 +7,14 @@ import DownloadIcon from '@material-ui/icons/GetApp';
 import ViewColumnIcon from '@material-ui/icons/DynamicFeed';
 import FilterIcon from '@material-ui/icons/GroupWork';
 
-export const CustomMUIDataTable = ({ title, data, columns }) => {
+export const CustomMUIDataTable = ({count, title, data, columns }) => {
 
     const options = {
         filterType: 'dropdown',
         selectableRows: "none",
+        rowsPerPage: count
     };
+
 
     const components = {
         icons: {

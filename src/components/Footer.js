@@ -1,10 +1,13 @@
 import styled from "styled-components";
 
-export const Footer = ({ children }) => {
+export const Footer = ({ children, justify }) => {
     return (
-        <Wrapper>
+        justify? 
+        <Wrapper justify={justify}>
             {children}
-        </Wrapper>
+        </Wrapper> : <Wrapper>
+            {children}
+        </Wrapper> 
     );
 };
 
@@ -21,6 +24,7 @@ const Wrapper = styled.div`
     margin-right: 20px;
 
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
+    justify-content: ${({justify}) => justify? `${justify}` : "space-between"};
     align-items: center;
 `;

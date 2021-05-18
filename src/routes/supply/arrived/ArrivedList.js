@@ -23,7 +23,7 @@ const ArrivedList = ({ match }) => {
     });
 
     const { url } = match;
-    const columns = useMemo(() => generateColumns(url, list), [list, url]);
+    const columns = useMemo(() => generateColumns(url), []);
 
     return (
         <>

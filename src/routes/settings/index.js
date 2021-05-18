@@ -1,21 +1,48 @@
 import { Route } from "react-router-dom";
-import FactoryList from "./factories/FactoryList";
-import MaterialsList from "./materials/MaterialsList";
-import SuppliersList from "./suppliers/SuppliersList";
+
 import UsersList from "./users/UsersList";
-const Settings = () => {
+
+import FactoryList from "./factories/FactoryList";
+
+import SuppliersList from "./suppliers/SuppliersList";
+import SuppliersCreate from "./suppliers/SuppliersCreate";
+
+import MaterialsList from "./materials/MaterialsList";
+import MaterialCreate from "./materials/MaterialsCreate"
+
+import ProductsList from "./products/ProductsList";
+import ProductCreate from "./products/ProductCreate";
+
+import VendorFactoriesList from "./vendorFactories/VendorFactoriesList";
+import VendorFactoryCreate from "./vendorFactories/VendorFactoryCreate";
+
+const Settings = ({ match }) => {
+
+    const url = (path) => `${match.url}/${path}`;
+
     return (
         <>
-            <Route path="/settings/users" component={UsersList} exact />
+            <Route path={url("users")} component={UsersList} exact />
 
-            <Route path="/settings/factories" component={FactoryList} exact />
+            <Route path={url("factories")} component={FactoryList} exact />
 
-            <Route path="/settings/suppliers" component={SuppliersList} exact />
+            <Route path={url("suppliers")} component={SuppliersList} exact />
+            <Route path={url("suppliers/create")} component={SuppliersCreate} />
+            <Route path={url("suppliers/edit/:id")} component={SuppliersCreate} />
 
-            <Route path="/settings/materials" component={MaterialsList} exact />
+            <Route path={url("materials")} component={MaterialsList} exact />
+            <Route path={url("materials/create")} component={MaterialCreate} />
+            <Route path={url("materials/edit/:id")} component={MaterialCreate} />
 
+            <Route path={url("products")} component={ProductsList} exact />
+            <Route path={url("products/create")} render={props => <ProductCreate {...props} />} />
+            <Route path={url("products/edit/:id")} render={props => <ProductCreate {...props}/>} />
+
+            <Route path={url("vendor-factories")} component={VendorFactoriesList} exact />
+            <Route path={url("vendor-factories/create")} component={VendorFactoryCreate} />
+            <Route path={url("vendor-factories/edit/:id")} component={VendorFactoryCreate} />
         </>
     );
 };
 
-export default Settings; 
+export default Settings;

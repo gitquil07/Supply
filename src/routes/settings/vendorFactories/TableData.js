@@ -1,4 +1,6 @@
-export const generateColumns = (editEntry) => {
+import { Link } from "react-router-dom";
+
+export const generateColumns = (url) => {
 
     return [
         {
@@ -8,58 +10,50 @@ export const generateColumns = (editEntry) => {
                 filter: false,
                 sort: false,
                 customBodyRender: (value) => {
-                    return <a href="#" onClick={(() => editEntry(value))}>{value}</a>
+                    return <Link to={`${url}/edit/${value}`}>{value}</Link>
                 }
             }
         },
         {
-            name: "firstName",
-            label: "Имя",
+            name: "factory",
+            label: "Завод",
             options: {
                 filter: true,
                 sort: false,
             }
         },
         {
-            name: "lastName",
-            label: "Фамилия",
+            name: "vendor",
+            label: "Поставщик",
             options: {
                 filter: true,
                 sort: true,
             }
         },
         {
-            name: "username",
-            label: "Username",
+            name: "paymentCondition",
+            label: "Условия оплаты", 
             options: {
                 filter: true,
                 sort: false,
             }
         },
         {
-            name: "phoneNumber",
-            label: "Номер телефона",
+            name: "partnerStartDate",
+            label: "Дата",
             options: {
                 filter: true,
                 sort: false,
             }
         },
         {
-            name: "role",
-            label: "Роли",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "factories",
-            label: "Заводы",
+            name: "isActive",
+            label: "Статус",
             options: {
                 filter: true,
                 sort: false,
                 customBodyRender: (value) => {
-                    return  value.join(", ");
+                    return  value? "Активнвый" : "Не активный"
                 }
             }
         },

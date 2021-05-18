@@ -1,43 +1,184 @@
-import { useState } from "react";
-import SmallDialog from "../../../components/SmallDialog";
+import { Helmet } from "react-helmet";
+import { AddibleInput } from "../../../components/Flex";
+import { Form } from "../../../components/Form";
 import { CustomInput } from "../../../components/Inputs/CustomInput";
 import { CustomSelector } from "../../../components/Inputs/CustomSelector";
+import { useTitle } from "../../../hooks";
+import styled from "styled-components"
+import { Footer } from "../../../components/Footer";
+import { Button } from "../../../components/Buttons";
 
-const SuppliersCreate = ({ isOpen, close }) => {
-    const [state, setState] = useState({ first_name: "", last_name: "", username: "", password: "" });
-    const [brand, setBrand] = useState([]);
-    const [factory, setFactory] = useState([]);
-    const [report, setReport] = useState([]);
+import { useLazyQuery } from "@apollo/client";
+import { GET_SAP_COUNTRIES } from "./gql";
+import { CREATE_VENDOR, UPDATE_VENDOR, GET_VENDOR } from "./gql";
+import { useEffect } from "react";
+import MenuItem from "@material-ui/core/MenuItem";
+import { useHistory } from "react-router-dom";
+import { vendorRole } from "../../../utils/static";
+import { useCustomMutation, useFormData } from "../../../hooks";
+import { getList } from "../../../utils/functions";
+import { useState } from"react";
 
-    const inputs = [
-        { label: "Имя", name: "first_name" },
-        { label: "Фамилия", name: "last_name" },
-        { label: "Username", name: "username" },
-        { label: "Пароль", name: "password", type: "password" },
-    ];
 
-    const changeState = (target) => {
-        setState({ ...state, [target.name]: target.value })
-    }
+const initialState = {
+    sapCountry: "",
+    name: "",
+    companyName: "",
+    phoneNumber: "",
+    street: "",
+    house: "",
+    role: "",
+    email: "",
+    postcode: "",
+};
+
+const SuppliersCreate = ({ match }) => {
+
+    const title = useTitle("Создание нового Партнера"),
+          {id} = match.params,
+          history = useHistory();
+
+    const {
+        state,
+        setState,
+        handleChange
+    } = useFormData(initialState);
+
+    const { submitData } = useCustomMutation({
+            graphQlQuery: {
+                queryCreate: CREATE_VENDOR,
+                queryUpdate: UPDATE_VENDOR
+            }
+        },
+        "Партнер",
+        () => {
+            history.push("/settings/suppliers");
+        }
+    );
+
+    const [getSapCountries, sapCountriesRes] = useLazyQuery(GET_SAP_COUNTRIES),
+          sapCountries = getList(sapCountriesRes?.data),
+          [getVendor, vendorRes] = useLazyQuery(GET_VENDOR),
+          pk = vendorRes?.data?.vendor?.vendor?.pk;
+
+    useEffect(() => {
+        getSapCountries();
+        if(id !== undefined){
+            getVendor({
+                variables: {
+                    id
+                }
+            });
+        }
+    }, [id]);
+
+
+    useEffect(() => {
+        const vendor = vendorRes.data?.vendor?.vendor;
+
+        const state = {};
+        if(vendor){
+            Object.keys(vendor).forEach(key => {
+                if(key !== "pk" && key !== "__typename"){
+                    state[key] = (typeof vendor[key] === "object" && vendor[key] !== null)?  vendor[key]?.pk :  vendor[key];
+                }
+            })
+        }
+
+        setState(state);
+
+    }, [vendorRes.data?.vendor?.vendor])
 
     return (
-        <SmallDialog title="Создать Поставщики" isOpen={isOpen} close={close}>
-            {
-                inputs.map((e, i) =>
-                    <CustomInput
-                        key={i}
-                        name={e.name}
-                        label={e.label}
-                        onChange={(e) => changeState(e.target.value)}
-                    />
-                )
-            }
+        <>
+            <Helmet title={title} />
+            <Form>
+                <p>Информация о Партнере</p>
+                <AddibleInput>
+                    <CustomInput name="name" label="Имя" value={state.name} stateChange={e => handleChange({fElem: e})} />
+                    <CustomInput name="phoneNumber" label="Номер телефона" value={state.phoneNumber} stateChange={e => handleChange({fElem: e})} />
+                    <CustomInput name="companyName" label="Фирма" value={state.companyName} stateChange={e => handleChange({fElem: e})} />
+                    <CustomInput name="email" label="Email" value={state.email} stateChange={e => handleChange({fElem: e})} />
+                    <CustomSelector name="role" label="Роль" value={state.role} stateChange={e => handleChange({fElem: e})}>
+                        {
+                            vendorRole.map(role => (
+                                <MenuItem value={role.value}>{role.label}</MenuItem>
+                            ))
+                        }
+                    </CustomSelector>
+                    <CustomInput name="postcode" label="Почтовый индекс" value={state.postcode} stateChange={e => handleChange({fElem: e})} />
+                </AddibleInput>
 
-            <CustomSelector label="Бренд" onChange={(value) => setBrand(value)} value={brand} />
-            <CustomSelector label="Завод" onChange={(value) => setFactory(value)} value={factory} />
-            <CustomSelector label="Отчеты" onChange={(value) => setReport(value)} value={report} />
-        </SmallDialog>
+                <p>Адрес</p>
+                <AddibleInput>
+                    <CustomSelector name="sapCountry" label="Страна" value={state.sapCountry} stateChange={e => handleChange({fElem: e})}>
+                        {
+                            sapCountries?.map(({node}) => {
+                                return <MenuItem value={node.pk}>{node.name}</MenuItem>
+                            })
+                        }
+                    </CustomSelector>
+                    <CustomInput name="street" label="Улица" value={state.street} stateChange={e => handleChange({fElem: e})} />
+                    <CustomInput name="house" label="Дом" value={state.house} stateChange={e => handleChange({fElem: e})} />
+                </AddibleInput>
+
+                <Header>
+                </Header>
+            </Form>
+            <Footer justify="flex-end">
+                    <Button name={pk? "Сохранить" : "создать"} clickHandler={() => pk? submitData(state, pk) : submitData(state)} /> 
+            </Footer>
+        </>
     )
 }
 
 export default SuppliersCreate;
+
+const Title = styled.div`
+    font-size: 18px;
+`;
+
+const Header = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+`;
+
+const GreyTable = styled.div`
+    width: 100%;
+    background-color: #F6F6FC;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+    font-size: 18px;
+    margin-top: 20px;
+    padding: 10px; 
+`;
+
+const Head = styled.div`
+    display: grid;
+    grid-template-columns: .7fr 0.7fr 1.5fr .5fr .4fr 0.9fr 0.7fr 0.7fr 0.7fr;
+    padding: 0 10px 10px 10px;
+    gap: 10px;
+`;
+
+const Body = styled.div` 
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    border-radius: 5px;
+`;
+
+const List = styled.div`
+    display: grid;
+    grid-template-columns: .7fr 0.7fr 1.5fr .5fr .4fr 0.9fr 0.7fr 0.7fr 0.7fr;
+    gap: 10px;
+    padding: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.5);
+
+    :last-child {
+        border: none;
+    }
+`;

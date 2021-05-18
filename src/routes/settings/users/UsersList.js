@@ -1,8 +1,7 @@
 import { Helmet } from "react-helmet";
-import { useQuery } from "@apollo/client";
 
-import { GET_USERS } from "./gql";
-import { columns } from "./TableData";
+import { PAGINATE_USERS } from "./gql";
+import { generateColumns } from "./TableData";
 import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
 import { ButtonWithIcon } from "../../../components/Buttons";
@@ -10,26 +9,76 @@ import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
 import UserCreate from "./UserCreate";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { usePagination } from "../../../hooks";
+import { getList } from "../../../utils/functions";
 
-const UsersList = ({ match }) => {
+const UsersList = () => {
     const title = useTitle("Пользователи");
     const [createOpen, setCreateOpen] = useState(false);
-    const { data } = useQuery(GET_USERS);
+    const [id, setId] = useState(undefined);
+    
+    const {
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage,
+        dataPaginationRes,
+        setMutateState
+    } = usePagination({
+        qraphQlQuery: PAGINATE_USERS, 
+        singular: "account", 
+        plural: "users"
+    });
 
-    const list = data?.account?.users?.edges.map(({ node }) => {
+    const paginationParams = {
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage
+    }
+
+    const users = getList(dataPaginationRes?.data) || [];
+    const list = users.map(({ node }) => {
         return {
-            first_name: node.firstName,
-            last_name: node.lastName,
+            id: node.id,
+            pk: node.pk,
+            firstName: node.firstName,
+            lastName: node.lastName,
             username: node.username,
-            phone_number: node.phoneNumber,
+            phoneNumber: node.phoneNumber,
             role: node.role?.displayName,
+            email: node?.email,
+            password: node?.password,
+            factories: (typeof node.pk === "object")? node.pk : [node.pk]
         }
     })
 
+
+    const user = list?.find(user => user.id === id);
+
+    const editEntry = (id) => {
+        setId(id);
+        setCreateOpen(true);
+    }
+
+    const close = () => {
+        setId(undefined);
+        setCreateOpen(false);
+    }
+
+    const columns = useMemo(() => generateColumns(editEntry), []);
+
     return (
         <>
-            <UserCreate isOpen={createOpen} close={() => setCreateOpen(false)} />
+            <UserCreate isOpen={createOpen} close={close} entry={user}
+                        setMutateState={setMutateState}  getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
             <Helmet title={title} />
             <FlexForHeader>
                 <DatePickers mR="15px" />
@@ -39,8 +88,9 @@ const UsersList = ({ match }) => {
                 title={"Список всех сотрудников"}
                 data={list}
                 columns={columns}
+                count={amountOfElemsPerPage}
             />
-            <Pagination />
+            <Pagination {...paginationParams}/>
         </>
     );
 };

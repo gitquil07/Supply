@@ -1,19 +1,98 @@
 import styled from "styled-components";
 import { SmallSelectForPagination } from "./Inputs/SmallSelectForPagination";
 import Arrow from "../assets/icons/arrow-for-pagination.svg";
+import moment from "moment";
+
+export const Pagination = (props) => {
+
+    const {
+        toDate,
+        fromDate,
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage,
+        type
+    } = props;
 
 
-export const Pagination = () => {
+    const nextPage = () => {
+        setPaginatingState({
+            ...paginatingState,
+            direction: "forward"
+        });
+
+        const vars = {
+            variables: {
+                first: amountOfElemsPerPage,
+                last: null,
+                after: nextPageCursor,
+                before: null
+            }
+        }
+
+        if(type == "dateFilter"){
+            vars.variables.fromDate = moment(fromDate).format("YYYY-MM-DD");
+            vars.variables.toDate = moment(toDate).format("YYYY-MM-DD");
+        }
+
+        getDataPagination(vars);
+    }
+
+    const prevPage = () => {
+        setPaginatingState({
+            ...paginatingState,
+            direction: "backward"
+        });
+
+        const vars = {
+            variables: {
+                first: null,
+                last: amountOfElemsPerPage,
+                after: null,
+                before: prevPageCursor
+            }
+        }
+
+
+        if(type === "dateFilter"){
+            vars.variables.fromDate = moment(fromDate).format("YYYY-MM-DD");
+            vars.variables.toDate = moment(toDate).format("YYYY-MM-DD")
+        }
+
+        getDataPagination(vars);
+    }
+
+
+    const handleElemsAmountChange = (amount) => {
+
+        setAmountOfElemsPerPage(amount);
+
+            getDataPagination({
+                variables: {
+                    fromDate: moment().startOf("month").format("YYYY-MM-DD"),
+                    toDate: moment(new Date()).format("YYYY-MM-DD"),
+                    first: amount,
+                    last: null,
+                    after: null,
+                    before: null
+                }
+            });
+    
+    }
+
     return (
         <Wrapper>
             <span>
-                <p>Показывать по: </p> <SmallSelectForPagination />
+                <p>Показывать по: </p> <SmallSelectForPagination value={amountOfElemsPerPage} stateChange={e => handleElemsAmountChange(e.target.value)}/>
             </span>
 
             <span>
-                <span id="leftButton"><img src={Arrow} alt="arrow" /></span>
-                <p>51-100 из 150</p>
-                <span id="rightButton"><img src={Arrow} alt="arrow" /></span>
+                <button id="leftButton" disabled={!paginatingState.prevPage} onClick={prevPage}><img src={Arrow} alt="arrow" /></button>
+                <button id="rightButton" disabled={!paginatingState.nextPage} onClick={nextPage}><img src={Arrow} alt="arrow" /></button>
             </span>
         </Wrapper>
     );
@@ -50,6 +129,14 @@ const Wrapper = styled.div`
 
         p {
             margin: 0 10px;
+        }
+
+        button{
+            cursor:pointer;
+        }
+
+        button[disabled]{
+            cursor:auto;
         }
 
         #leftButton {

@@ -11,9 +11,17 @@ import { DragFile } from '../../../components/Inputs/DragFile';
 import { CustomInput } from '../../../components/Inputs/CustomInput';
 import { CustomSelector } from '../../../components/Inputs/CustomSelector';
 import { CustomLongInput } from '../../../components/Inputs/CustomLongInput';
+// import CustomSelectorWithAdds, { SelectorBody } from "../../../components/Inputs/CustomSelectorWithAdds";
+import { CustomSelectorAdd } from "../../../components/Inputs/CustomSelector";
+import { EditableMenuItem } from "../../../components/Inputs/CustomSelector";
+
+const vals = ["sadasds", "sadasdsadfg", "gferfgre"];
+
 
 const ApplicationCreate = () => {
     const title = useTitle("Создание новой Заявки");
+
+    
 
     return (
         <>
@@ -43,14 +51,21 @@ const ApplicationCreate = () => {
                     <CustomLongInput label="Выберите материал" />
                     <RowWrapper>
                         <Row>
-                            <CustomSelector label="Номер инвойса" />
+                            <CustomSelectorAdd label="Номер инвойса">
+                                <EditableMenuItem stateChange={() => {}} override={{value: 1, selected: false}}>
+                                        saSDADSAD
+                                </EditableMenuItem>
+                                <EditableMenuItem stateChange={() => {}} override={{value: 2, selected: true}}>
+                                        DFGDFGDF
+                                </EditableMenuItem>
+                            </CustomSelectorAdd>
                             <CustomInput label="Отгружаемое кол-во" />
                             <CustomSelector label="Номер инвойса" />
                             <CustomSelector label="Получатель" />
                         </Row>
 
                         <Row>
-                            <CustomSelector label="Номер инвойса" />
+                            <CustomInput label="Цена" />
                             <CustomInput label="Отгружаемое кол-во" />
                             <CustomSelector label="Номер инвойса" />
                             <CustomSelector label="Получатель" />

@@ -12,11 +12,13 @@ import { CustomSelector } from "../../../components/Inputs/CustomSelector";
 import SmallDialog from "../../../components/SmallDialog";
 
 import { AddibleInput, FlexForHeader, FlexWithWrap } from "../../../components/Flex";
-import { Table } from "../../../components/Table";
+import { Table, TableIII } from "../../../components/Table";
 import { Footer } from "../../../components/Footer";
 import { Arrows } from "../../../components/Arrows";
 import { RemoveIcon } from "../../../components/RemoveIcon";
 import { DisabledInput } from "../../../components/DisabledInput";
+import CustomPicker from "../../../components/Inputs/DatePicker";
+import { CustomHeader } from "../../../components/CustomHeader";
 
 const TrackingTransportCreate = () => {
     const title = useTitle("Создание нового Слежения");
@@ -38,9 +40,6 @@ const TrackingTransportCreate = () => {
         setApplications([...oldState]);
     };
 
-
-    console.log(applications)
-
     const [requestDialogState, closeRequestDialog, openRequestDialog] = useToggleDialog();
     const [materialsDialogState, closeMaterialDialog, openMaterialDialog] = useToggleDialog();
 
@@ -49,22 +48,6 @@ const TrackingTransportCreate = () => {
         <>
             <Helmet title={title} />
             <Form>
-                <Title>Данные транспорта</Title>
-
-                <AddibleInput>
-                    <CustomSelector label="Транспортировщики" />
-                    <CustomInput label="Номер транспорта" />
-                    <CustomSelector label="Примечание" />
-                    <CustomInput label="Сумма" />
-                    <CustomSelector label="Валюта" />
-                    <CustomInput label="Нетто" />
-                    <CustomSelector label="Брутто" />
-                </AddibleInput>
-
-                <FlexForHeader m="20px 0">
-                    <Title>Заявки</Title>
-                    <Button name="Добавить заявку" color="#5762B2" clickHandler={openRequestDialog} />
-                </FlexForHeader>
 
                 {
                     applications.map((e, i) =>
@@ -74,10 +57,14 @@ const TrackingTransportCreate = () => {
                                 <Expand onClick={() => expand(i)}><Arrows open={e.expand} /> Свернуть</Expand>
                             </FlexForHeader>
 
-                            <Tables>
-                                <Table />
-                                <Table />
-                            </Tables>
+                            <Inputs>
+                                <CustomSelector label="Статус" />
+                                <CustomPicker label="Дата" />
+                                <CustomInput label="Местонахождение" />
+                                <Button name="Добавить статус" color="#5762B2" />
+                            </Inputs>
+
+                            <TableIII />
 
                             <Material>
                                 <FlexForHeader m="20px 0">
@@ -133,6 +120,13 @@ const Title = styled.div`
     span {
         color: rgba(0, 0, 0, 0.5);
     }
+`;
+
+const Inputs = styled.div`
+    gap: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 3fr 1fr;
+    margin-bottom: 10px;
 `;
 
 const Applications = styled.div`

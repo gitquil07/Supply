@@ -1,13 +1,11 @@
-import { useState, useEffect } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { useState, useEffect, useMemo } from "react";
+import { useQuery, useLazyQuery } from "@apollo/client";
 import moment from "moment";
 import { Helmet } from 'react-helmet';
 import styled from "styled-components";
 
 import { uploadFile } from "../../../api";
 import { useTitle } from '../../../hooks';
-import { getObjectivesList } from "../../../utils/functions";
-import { testMeasureOptions } from "../../../utils/static";
 import MenuItem from '@material-ui/core/MenuItem';
 
 import { Button } from '../../../components/Buttons';
@@ -18,34 +16,56 @@ import { CustomInput } from '../../../components/Inputs/CustomInput';
 import { CustomSelector } from '../../../components/Inputs/CustomSelector';
 import { AddibleInput, AddibleInputWithTrash } from "../../../components/Flex";
 import { Footer } from '../../../components/Footer';
-import { ORDER_CREATE } from "./gql";
-import { GET_FACTORIES_LIST } from "./gql";
+import { ORDER_CREATE, ORDER_UPDATE } from "./gql";
+import { GET_FACTORIES_LIST, GET_VENDOR_FACTORIES, GET_VENDOR_FACTORY_PRODUCTS } from "./gql";
 import { CustomNumber } from "../../../components/Inputs/CustomNumber";
 import { Form } from "../../../components/Form";
+import { statuses } from "../../../utils/static";
+import { useHistory } from "react-router-dom";
+import { GET_ORDER } from "./gql";
+import { exceptKey } from "../../../utils/functions";
+import { useCustomMutation } from "../../../hooks";
+import { getList } from "../../../utils/functions";
+import { useTemplate } from "../../../hooks";
 
-const OrderCreate = () => {
-    const title = useTitle("Создать Заказ");
-    const [createOrder] = useMutation(ORDER_CREATE, {
-        onError: (error) => console.log(error)
-    }),
-    { data, error } = useQuery(GET_FACTORIES_LIST);
 
-    
+
+const OrderCreate = ({match}) => {
+
+    const { id } = match.params,
+          title = useTitle("Создать Заказ"),
+          history = useHistory();
+
+    const { submitData } = useCustomMutation({
+            graphQlQuery: {
+                queryCreate: ORDER_CREATE,
+                queryUpdate: ORDER_UPDATE
+            }
+        },
+        "Заказ",
+        () => {
+            history.push('/supply/order');
+        }
+    );
+
+    const factoriesQuerySet = useQuery(GET_FACTORIES_LIST),
+            [getOrder, orderRes] = useLazyQuery(GET_ORDER),
+            [getVendorFactories, vendorFactoriesResp] = useLazyQuery(GET_VENDOR_FACTORIES),
+            [getVendorFactoryProducts, vendorFactoryProductsResp] = useLazyQuery(GET_VENDOR_FACTORY_PRODUCTS);
+
     const [factory, setFactory] = useState("");
-    const factories = data?.factory?.factories?.edges,
-          vendorFactories = [],
-          products = [];
 
-
-
-    useEffect(() => {
-        console.log(factory);
-    }, [factory]);
+    const factories = getList(factoriesQuerySet?.data) || [],
+          vendorFactories = getList(vendorFactoriesResp?.data) || [],
+          vendorProducts = getList(vendorFactoryProductsResp?.data) || [],
+          pk = orderRes?.data?.order?.order?.pk;
 
 
     const [files, setFiles] = useState([]);
-    const [materials, setMaterials] = useState([
-        {
+
+
+    const memoizedTempl = useMemo(() => {
+        return {
             vendorProduct: "",
             dateOfDelivery: Date.now(),
             productionDayCount: "",
@@ -53,7 +73,16 @@ const OrderCreate = () => {
             currency : "", 
             price: ""
         }
+    }, []);
+
+    const [materials, setMaterials] = useState([
+        memoizedTempl
     ]);
+
+    const {
+        addTempl,
+        removeTempl
+    } = useTemplate(materials, setMaterials, memoizedTempl);
 
     const [orderData, setOrderData] = useState({
         vendorFactory: "",
@@ -61,6 +90,66 @@ const OrderCreate = () => {
         invoiceDate: Date.now(),
         invoiceProforma: ""
     });
+
+    useEffect(() => {
+        if(id !== undefined){
+            getOrder({
+                variables: {
+                    id
+                }
+            });
+        }
+    }, [id]);
+
+    useEffect(() => {
+        if(orderRes?.data !== undefined){
+            const order = orderRes?.data.order.order;
+            setFactory(order.vendorFactory.factory.pk);
+            setOrderData({
+                vendorFactory: order.vendorFactory.pk,
+                status: order.status,
+                invoiceDate: order.invoiceDate,
+                invoiceProforma: order.invoiceProforma
+            });
+            const orderItems = order.orderItems.edges.map(({node}) => {
+                return {
+                        ...exceptKey(node, "__typename"),
+                        vendorProduct: node.vendorProduct.pk 
+                    }
+            });
+            setMaterials(orderItems);
+        }
+  
+    }, [orderRes?.data]);
+
+    useEffect(() => {
+        console.log("order", orderData);
+    }, [orderData]);
+
+    useEffect(() => {
+        console.log("factory", factory);
+    }, [factory]);
+
+    useEffect(() => {
+
+        getVendorFactories({
+            variables: {
+                factory
+            }
+        });
+
+    }, [factory]);
+
+    const { vendorFactory } = orderData;
+    useEffect(() => {
+        console.log("vendorFactory", vendorFactory);
+        getVendorFactoryProducts({
+            variables: {
+                vendorFactory        
+            }
+        });
+
+    }, [vendorFactory]);
 
     const handleDataChange = (event, dataType, index) => {
         if(dataType === "order"){
@@ -80,19 +169,14 @@ const OrderCreate = () => {
         setMaterials(materialsCopy);
     }
 
-    const sendOrder = () => {
+    const handleSubmit = () => {
         const orderRequestBody = {...orderData};
         let orderMaterials = materials.slice(0);
 
         const formedOrderMaterials = orderMaterials.map(orderMaterial => {
             return {
-                        vendorProduct: orderMaterial.vendorProduct,
-                        dateOfDelivery: orderMaterial.dateOfDelivery,
-                        productionDayCount: orderMaterial.productionDayCount,
+                        ...orderMaterial,
                         dateOfDelivery: moment(orderMaterial.dateOfDelivery).format("YYYY-MM-DD"),
-                        currency: orderMaterial.currency,
-                        count: orderMaterial.count,
-                        price: orderMaterial.price
                     }
         });
 
@@ -100,32 +184,15 @@ const OrderCreate = () => {
 
         orderRequestBody.orderItems = formedOrderMaterials;
 
-        createOrder({
-            variables: {
-                input: {
-                    data: orderRequestBody
-                }
-            }
-        });
-       
+        pk? submitData(orderRequestBody, pk) : submitData(orderRequestBody);
 
-        uploadFile('/api-file/documents/', files)
-            .then(resp => console.log(resp))
-            .catch(err => console.log(err));
+
+        if(files.length > 0){
+            uploadFile('/api-file/documents/', files)
+                .then(resp => console.log(resp))
+                .catch(err => console.log(err));
+        }
     }
-
-
-    const addMaterial = () => {
-        const temp = materials.slice(0);
-        temp.push({vendorProduct: "", dateOfDelivery: "", productionDayCount: "", count: "", currency: "",  price: ""});
-        setMaterials(temp);
-    };
-
-    const removeMaterial = (index) => {
-        setMaterials(materials.filter((e, idx) => idx !== index));
-    }
-
-    if(error) return "error";
 
 
     return (
@@ -139,18 +206,27 @@ const OrderCreate = () => {
                         <CustomSelector label="Выберите завод" name="factory" value={factory} stateChange={(e) => setFactory(e.target.value)}>
                             {
                                 factories?.map(({node}) => {
-                                    return <MenuItem value={node.id}>{node.name}</MenuItem>
+                                    return <MenuItem key={node.pk} value={node.pk} selected={factory === node.pk}>{node.name}</MenuItem>
                                 })
                             }
                         </CustomSelector>
-                        <CustomSelector label="Выберите поставщика" options={vendorFactories} name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")}>
+                        <CustomSelector label="Выберите поставщика" name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")}>
                             {
                                 vendorFactories?.map(({node}) => {
-                                    return <MenuItem value={node.pk}>{node.vendor.name}</MenuItem>
+                                    return <MenuItem key={node.pk} value={node.pk} selected={orderData.vendorFactory ===  node.pk}>{node?.vendor?.name}</MenuItem>
                                 })
                             }
                         </CustomSelector>
-                        {/* <CustomSelector label="Выберите поставщика" options={vendors} optName="vendor" keyName="name" name="status" value={orderData.status} stateChange={(e) => handleDataChange(e, "order")} /> */}
+
+
+                        <CustomSelector label="Статус"  name="status" value={orderData.status} stateChange={e => handleDataChange(e, "order")}>
+                            {
+                                statuses.map(status => {
+                                        return <MenuItem key={status.value} value={status.label} selected={orderData.status === status.value}>{status.label}</MenuItem>    
+                                    }
+                                )
+                            }
+                        </CustomSelector>
                         <CustomPicker label="Дата создание" name="invoiceDate" date={orderData.invoiceDate} stateChange={(date) => setOrderData({...orderData, invoiceDate: date})} />
                         <CustomInput label="Инвойс заказа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} />
                     </AddibleInput>
@@ -159,7 +235,7 @@ const OrderCreate = () => {
 
                     <Header>
                         <Title>Материал</Title>
-                        <Button name="Добавить материал" color="#5762B2" clickHandler={addMaterial} />
+                        <Button name="Добавить материал" color="#5762B2" clickHandler={addTempl} />
                     </Header>
 
                     {
@@ -168,24 +244,17 @@ const OrderCreate = () => {
                                 <InputsWrapper>
                                     <CustomSelector name="vendorProduct" label="Выберите материал" value={e.vendorProduct} stateChange={(e) => handleDataChange(e, "material", index)}>
                                         {
-                                            products?.map(({node}) => {
-                                                return <MenuItem value={node.pk}>{node.maktx}</MenuItem>
+                                            vendorProducts?.map(({node}) => {
+                                                return <MenuItem key={node.pk} value={node.pk} selected={materials[index].vendorProduct === node.pk}>{node.product.name}</MenuItem>
                                             })
                                         }
                                     </CustomSelector>
                                     <CustomNumber  name="productionDayCount" label="Срок изготовление" value={e.productionDayCount}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomPicker name="dateOfDelivery" label="Дата отгрузки" date={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
                                     <CustomInput name="count" label="Кол-во" value={e.count}  stateChange={(e) => handleDataChange(e, "material", index)} />
-                                    <CustomSelector name="currency" label="Ед. Изм." value={e.currency} stateChange={(e) => handleDataChange(e, "material", index)}>
-                                        {
-                                            testMeasureOptions?.map(({node}) => {
-                                                return <MenuItem value={node.pk}>{node.pk}</MenuItem>
-                                            })
-                                        }
-                                    </CustomSelector>
                                     <CustomInput name="price" label="Цена" value={e.price}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                 </InputsWrapper>
-                                <RemoveIcon clicked={() => removeMaterial(index)} />
+                                <RemoveIcon clicked={() => removeTempl(index)} />
                             </AddibleInputWithTrash>
                         })
                     }
@@ -193,8 +262,8 @@ const OrderCreate = () => {
                 </Form>
 
                 <Footer>
-                    <span>Кол-во материалов: 6</span>
-                    <Button name="Создать Заказ" clickHandler={sendOrder}/>
+                    <span>Кол-во материалов: {materials.length}</span>
+                    <Button name={pk? "Изменить заказ" : "Создать заказ"} clickHandler={handleSubmit}/>
                 </Footer>
             </Wrapper>
         </>

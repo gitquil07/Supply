@@ -1,14 +1,11 @@
 import styled from "styled-components";
 
-import { Button } from "./Buttons"
-
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { default as CButton} from '@material-ui/core/Button';
 import CloseIcon from "@material-ui/icons/Close";
 
  const SmallDialog = ({title, close, isOpen, children}) => {
-    console.log("close", close);
     return (
 
             <StyledDialog onClose={close} open={isOpen} >
@@ -21,7 +18,6 @@ import CloseIcon from "@material-ui/icons/Close";
                     <Inputs>
                         { children }
                     </Inputs>
-                <Button name="Добавить материал" color="#5762B2"/>
             </StyledDialog>
 
     );

@@ -1,50 +1,93 @@
 import { Helmet } from 'react-helmet';
-import styled from "styled-components";
-import { useQuery } from "@apollo/client";
-
 import { useTitle } from '../../../hooks';
 import DatePickers from '../../../components/Inputs/DatePickers';
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { GET_APPLICATIONS } from './gql';
+import { APPLICATIONS } from './gql';
 import { generateColumns } from './TableData';
 import { useMemo } from 'react';
+import { FlexForHeader } from "../../../components/Flex";
+import { ButtonWithIcon } from "../../../components/Buttons"
 import { Pagination } from '../../../components/Pagination';
+import { usePagination } from "../../../hooks";
+import { getList } from "../../../utils/functions";
+
 
 const ApplicationList = ({ match }) => {
-
-    const { data } = useQuery(GET_APPLICATIONS);
-
     const title = useTitle("Заявки на Логистику");
+    const {
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage,
+        dataPaginationRes,
 
-    const list = data?.application.applications.edges.map(({ node }) => {
+
+        // For pages which has date filter
+        toDate,
+        fromDate,
+        fromDateChange,
+        setFromDateChange,
+        toDateChange,
+        setToDateChange,
+        handleDateApply
+    } = usePagination({
+        type: "dateFilter", 
+        qraphQlQuery: APPLICATIONS
+    });
+
+
+    const paginationParams = {
+        toDate,
+        fromDate,
+        nextPageCursor,
+        prevPageCursor,
+        paginatingState,
+        setPaginatingState,
+        amountOfElemsPerPage,
+        getDataPagination,
+        setAmountOfElemsPerPage,
+        type: "dateFilter"
+    }
+
+    const applications = getList(dataPaginationRes?.data) || [];
+    const list = applications.map(({ node }) => {
         return {
-            public_id: node.public_id
+            ...node,
+            publicId: {publicId: node.publicId, id: node.id},
+            transportType: node.transportType.name,
+            typeOfPackaging: node.typeOfPackaging + " / " +  node.count,
+            trackingUser: node.trackingUser.firstName + " " + node.trackingUser.lastName
         }
     });
 
     const { url } = match;
-    const columns = useMemo(() => generateColumns(url, list), [list, url]);
+    const columns = useMemo(() => generateColumns(url), []);
 
     return (
         <>
             <Helmet title={title} />
-            <Header>
-                <DatePickers />
-            </Header>
+            <FlexForHeader>
+                <DatePickers mR="15px"
+                    fromDate={fromDateChange}
+                    toDate={toDateChange}
+                    changeFrom={setFromDateChange}
+                    changeTo={setToDateChange}
+                    buttonClicked={handleDateApply}
+                />
+                <ButtonWithIcon name="создать заявку" url={`${match.url}/create`}/>
+            </FlexForHeader>
             <CustomMUIDataTable
                 title={"Список заявок"}
-                list={list}
+                data={list}
                 columns={columns}
+                count={amountOfElemsPerPage}
             />
-            <Pagination />
+            <Pagination {...paginationParams} />
         </>
     );
 };
 
 export default ApplicationList;
-
-const Header = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`;

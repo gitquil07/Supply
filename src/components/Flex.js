@@ -17,7 +17,7 @@ export const FlexForHeader = styled.div`
 
 export const AddibleInput = styled.div`
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
     grid-gap: 10px;   
     margin: 20px 0;
     background: #F6F6FC;
