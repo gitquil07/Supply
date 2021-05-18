@@ -9,9 +9,12 @@ const ReportTable = () => {
                     <tr>
                         <th colSpan="2">Завод</th>
                         <th colSpan="3">10.05.2021</th>
-                        <th colSpan="10">Общие данные о остатки и закупке <span className="badge">Июнь  2020</span></th>
+                        <th colSpan="10">
+                            Общие данные о остатки и закупке
+                            <span className="badge">Июнь  2020</span>
+                        </th>
                         <th colSpan="12">Транспортировка</th>
-                        <th colSpan="4">План на  <span className="badge">Июнь  2020</span></th>
+                        <th colSpan="4" id="last-child-thead">План на  <span className="badge">Июнь  2020</span></th>
                     </tr>
 
                     <tr>
@@ -48,7 +51,7 @@ const ReportTable = () => {
                         <th rowSpan="2">Остаток на начало месяц</th>
                         <th rowSpan="2">Приход  на Июнь</th>
                         <th rowSpan="2">Расход на Июнь</th>
-                        <th rowSpan="2" className="last-child">Остаток на конец месяца</th>
+                        <th rowSpan="2" className="last-col">Остаток на конец месяца</th>
                     </tr>
 
                     <tr>
@@ -116,6 +119,10 @@ const Table = styled.table`
         background: #5762B2; 
     }
 
+    .last-col {
+        border-right: none;
+    }
+
     thead {
         width: 100%;
         white-space: nowrap;
@@ -135,7 +142,7 @@ const Table = styled.table`
                 padding: 20px; 
                 border-right: 1px solid #000000;
                 border-bottom: 1px solid #000000;
-            }
+            } 
             
             .last-child {
                 border-right: 5px solid white;;
@@ -146,6 +153,10 @@ const Table = styled.table`
                 border-radius: 5px;
                 padding: 5px;
                 margin-left: 10px;
+            }
+
+            #last-child-thead {
+                border-right: none;
             }
         }
 
