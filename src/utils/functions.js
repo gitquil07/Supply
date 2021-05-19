@@ -75,8 +75,8 @@ export const onResponseComplete = (data, type, entityName, callback) => {
     if(responseResult){
 
         let message = entityName;
-        if(type == "create") message += " создан";
-        if(type == "update") message += " изменен";
+        if(type === "create") message += " создан";
+        if(type === "update") message += " изменен";
 
         NotificationManager.success(message);
 
