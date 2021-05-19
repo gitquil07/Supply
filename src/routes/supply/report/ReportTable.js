@@ -317,4 +317,6 @@ const Table = styled.table`
                 }
             }
     }
+
+}
 `

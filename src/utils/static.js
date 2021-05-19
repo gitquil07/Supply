@@ -43,32 +43,59 @@ export const measureOptions = [
 
 export const packagingTypes = [
     {
-        value: "BOX",
+        value: "KOROBKA",
         label: "коробка"
     },
     {
-        value: "BAG",
+        value: "MESHOK",
         label: "мешок"
     },
     {
-        value: "PALLET",
+        value: "PODDON",
         label: "поддон"
     },
     {
-        value: "CASE",
+        value: "IASHCHIK",
         label: "ящик"
     },
     {
-        value: "CONTAINER",
+        value: "TARA",
         label: "тара"
     },
     {
-        value: "BARREL",
+        value: "BOCHKA",
         label: "бочка"
     },
     {
-        value: "ROLL",
+        value: "RULON",
         label: "рулон"
+    }
+];
+
+export const deliveryCondition = [
+    {
+        value: "EXW",
+        label: "EXW"
+    },
+    {
+        value: "FCA",
+        label: "FCA"
+    },
+    {
+        value: "FOB",
+        label: "FOB"
+    },
+    {
+        value: "DAP",
+        label: "DAP"
+    },
+    {
+        value: "CIP",
+        label: "CIP"
+    },
+    {
+        value: "CPT",
+        label: "CPT"
     }
 ];
 
@@ -149,7 +176,7 @@ export const statuses = [
     },
     {
         label: "в растаможке",
-        value: "V_RAZTAMOZHKE"
+        value: "V_RASTAMOZHKE"
     },
     {
         label: "поступлено",

@@ -30,25 +30,23 @@ const ProductCreate = ({match}) => {
     const { id } = match.params,
           history = useHistory();
 
-    const memoizedTempl = useMemo(() => {
-        return   {
+    const templ = {
             name: "",
             code: "",
             codeTnved: "",
             measure: "",
             typeOfPackaging: "",
             group: ""
-        }
-    }, []);
+        };
     
     const [products, setProducts] = useState([
-        memoizedTempl
+        templ
     ]);
 
     const {
         addTempl,
         removeTempl
-    } = useTemplate(products, setProducts, memoizedTempl);
+    } = useTemplate(products, setProducts, templ);
     
     const [groupCreate, setGroupCreate] = useState({
         name: "",

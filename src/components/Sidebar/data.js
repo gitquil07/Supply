@@ -108,6 +108,14 @@ export const Settings = [
     {
         name: "Поставщики",
         url: "/settings/vendor-factories"
+    },
+    {
+        name: "Транспорт",
+        url: "/settings/transports"
+    },
+    {
+        name: "Фирмы",
+        url: "/settings/firms"
     }
 ];
 

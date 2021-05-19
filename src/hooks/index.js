@@ -262,6 +262,7 @@ export const useFormData = (initialState = {}) => {
         multiple = multiple || false;
 
         let value = (type == "input") && fElem.target.value;
+        console.log("value from hook", value);
 
         switch(type){
             case "choice":
@@ -319,6 +320,7 @@ export const useCustomMutation = ({graphQlQuery: {queryCreate, queryUpdate}}, en
         }
     });
 
+
     const [update] = useMutation(queryUpdate, {
         ...options,
         onCompleted: data => {
@@ -326,7 +328,7 @@ export const useCustomMutation = ({graphQlQuery: {queryCreate, queryUpdate}}, en
         }
     }); 
 
-    const submitData = (data, pk) => {
+    const submitData = (data, pk, id) => {
 
         const options = {
             variables: {
@@ -334,6 +336,10 @@ export const useCustomMutation = ({graphQlQuery: {queryCreate, queryUpdate}}, en
                     data
                 }
             }
+        }
+
+        if(id){
+            options.variables.id = id;
         }
 
         if(pk !== undefined){
