@@ -29,7 +29,7 @@ export const Header = ({ menuIconClicked }) => {
                     <MenuIcon />
                 </IconButton>
 
-                <Title name={title} />
+                <Title size="24">{title}</Title>
             </span>
 
             <Account>

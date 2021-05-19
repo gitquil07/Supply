@@ -1,9 +1,12 @@
 import styled from "styled-components";
 
-export const Title = ({ name }) => <Wrapper>{name}</Wrapper>
-
-const Wrapper = styled.div`
+export const Title = styled.div`
     color: #474747;
-    font-size: 24px;
+    font-size: ${({ size }) => `${size}px`};
     font-weight: bold;
+    margin: 10px 0;
+
+    span {
+        color: rgba(0, 0, 0, 0.5);
+    }
 `;

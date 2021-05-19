@@ -4,7 +4,7 @@ import { Sidebar } from './components/Sidebar';
 import Routes from './routes';
 import styled from "styled-components";
 import Background from "./assets/bg.jpg";
-import {NotificationContainer} from 'react-notifications';
+import { NotificationContainer } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 
 import { Header } from './components/Header';
@@ -20,7 +20,7 @@ const App = () => {
 
       <Main open={drawer}>
         <Header menuIconClicked={() => setDrawer(!drawer)} drawer={drawer} />
-        <NotificationContainer/>
+        <NotificationContainer />
         <Contents>
           <Routes />
         </Contents>
