@@ -320,6 +320,7 @@ export const useCustomMutation = ({graphQlQuery: {queryCreate, queryUpdate}}, en
         }
     });
 
+
     const [update] = useMutation(queryUpdate, {
         ...options,
         onCompleted: data => {

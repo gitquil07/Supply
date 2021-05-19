@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-import { CREATE_FACTORY, UPDATE_FACTORY } from "./gql";
+import { CREATE_FIRM, UPDATE_FIRM } from "./gql";
 import { Button } from "../../../components/Buttons";
 import SmallDialog from "../../../components/SmallDialog";
 import { CustomInput } from "../../../components/Inputs/CustomInput";
@@ -10,13 +10,11 @@ import { useCustomMutation, useFormData } from "../../../hooks";
 
 const initialState = {
     name: "",
-    officialName: "",
-    code: "",
-    position: ""
+    inn: ""
 }
 
-const FactoryCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOfElemsPerPage, paginatingState }) => {
-    
+const FirmCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOfElemsPerPage, paginatingState }) => {
+
     let pk = entry?.pk;
 
     const {
@@ -31,9 +29,7 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, getEntries, amoun
 
             setState({
                 name: entry.name,
-                officialName: entry.officialName,
-                code: entry.code,
-                position: entry.position
+                inn: entry.inn
             });
 
         }
@@ -47,11 +43,11 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, getEntries, amoun
 
     const { submitData } = useCustomMutation({
             graphQlQuery: {
-                queryCreate: CREATE_FACTORY,
-                queryUpdate: UPDATE_FACTORY,
+                queryCreate: CREATE_FIRM,
+                queryUpdate: UPDATE_FIRM,
             }
         },
-        "Завод",
+        "Тип транспорта",
         () => {
             handleClose();
             if((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)){
@@ -68,17 +64,17 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, getEntries, amoun
         }
     );
 
+        console.log("pk", pk);
+
     return (
-        <SmallDialog title={pk? "Изменить" : "Создать Завод"} isOpen={isOpen} close={handleClose}>
-            <CustomInput value={state.name} name="name" label="Название завода" stateChange={e => handleChange({fElem:e})} />
-            <CustomInput value={state.officialName} name="officialName" label="Название завода" stateChange={e => handleChange({fElem:e})} />
-            <CustomInput value={state.code} name="code" label="Код" stateChange={e => handleChange({fElem:e})} />
-            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={e => handleChange({fElem:e})} fullWidth />
-            <Button name={pk? "сохранить" : "Добавить завод"} color="#5762B2" clickHandler={() => pk? submitData(state, pk) : submitData(state)}/>
+        <SmallDialog title={pk? "Изменить" : "Создать фирму"} isOpen={isOpen} close={handleClose}>
+            <CustomInput value={state.name} name="name" label="Название фирмы" stateChange={e => handleChange({fElem:e})} />
+            <CustomNumber value={state.inn} name="inn" label="Кол-во дней" stateChange={e => handleChange({fElem:e})} fullWidth />
+            <Button name={pk? "сохранить" : "Добавить фирму"} color="#5762B2" clickHandler={() => pk? submitData(state, pk) : submitData(state)}/>
         </SmallDialog>
     );
 };
 
-export default React.memo(FactoryCreate, (prevProps, nextProps) => {
+export default React.memo(FirmCreate, (prevProps, nextProps) => {
            return prevProps.isOpen === nextProps.isOpen;
 });
