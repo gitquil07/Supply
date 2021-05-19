@@ -6,36 +6,42 @@ import Select from '@material-ui/core/Select';
 import Arrow from "../../assets/icons/arrow.svg";
 import MenuItem from "@material-ui/core/MenuItem";
 
-export const CustomSelector = ({ name, label, disabled, fullWidth, short, value, stateChange, children }) => {
+export const CustomSelector = ({ name, label, disabled, defaultValue, fullWidth, short, value, stateChange, children, multiple}) => {
+
+    const props = {
+        labelId: "demo-simple-select-outlined-label",
+        id: "demo-simple-select-outlined",
+        name,
+        value,
+        disabled,
+        defaultValue,
+        onChange: stateChange
+    };
+
+    if(multiple){
+        props.multiple = true;
+        props.renderValue = selected => selected.join(", ");
+    }
 
     return (
         <Wrapper short={short} fullWidth={fullWidth}>
             <FormControl variant="outlined" id="formControl">
                 <img src={Arrow} alt="arrow" id="arrow" />
                 <InputLabel id="label">{label}</InputLabel>
-                <Select
-                    labelId="demo-simple-select-outlined-label"
-                    id="demo-simple-select-outlined"
-                    value={value}
-                    label="Age"
-                    name={name}
-                    onChange={stateChange}
-                    disabled={disabled}
-                >
-                    {children}
-                </Select>
+                    <Select {...props} >{children}</Select>
             </FormControl>
         </Wrapper>
     );
+
 };
 
 
-export const CustomSelectorAdd = ({ name, label, disabled, fullWidth, short, value, stateChange, children }) => {
+export const CustomSelectorAdd = ({ name, label, disabled, fullWidth, short, value, stateChange, openModal, children }) => {
     return (
         <Wrapper short={short} fullWidth={fullWidth}>
             <FormControl variant="outlined" id="formControl">
                 <img src={Arrow} alt="arrow" id="arrowSec" />
-                <button className="add" >
+                <button className="add" disabled={disabled} onClick={openModal}>
                     <span className="circle"></span>
                 </button>
                 <InputLabel id="label">{label}</InputLabel>
@@ -143,6 +149,11 @@ const Wrapper = styled.div`
         right:45px;
     }
 
+    .add:disabled{
+        cursor: auto;
+        background-color: rgba(87, 98, 178, 0.2);
+    }   
+
     .add{
         position:absolute;
         width:30px;
@@ -200,6 +211,10 @@ const Wrapper = styled.div`
         .MuiInputBase-root .MuiSelect-root {
             padding-right: 50px;
             background: #fff;
+        }
+
+        .MuiInputBase-root .MuiSelect-root .editBtn {
+            display:none;
         }
 
         fieldset {  

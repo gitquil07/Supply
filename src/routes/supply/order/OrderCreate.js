@@ -64,25 +64,23 @@ const OrderCreate = ({match}) => {
     const [files, setFiles] = useState([]);
 
 
-    const memoizedTempl = useMemo(() => {
-        return {
+    const templ = {
             vendorProduct: "",
             dateOfDelivery: Date.now(),
             productionDayCount: "",
             count: "",
             currency : "", 
             price: ""
-        }
-    }, []);
+        };
 
     const [materials, setMaterials] = useState([
-        memoizedTempl
+        templ
     ]);
 
     const {
         addTempl,
         removeTempl
-    } = useTemplate(materials, setMaterials, memoizedTempl);
+    } = useTemplate(materials, setMaterials, templ);
 
     const [orderData, setOrderData] = useState({
         vendorFactory: "",

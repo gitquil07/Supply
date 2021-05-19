@@ -111,6 +111,14 @@ query getApplication($id : ID!){
           }
         }
       }
+      deliveryCondition
+      degreeOfDanger
+      typeOfPackaging
+      packageOnPallet
+      transportCount
+      shippingDate,
+      status
+      transportMix
     }
   }
 }
@@ -138,11 +146,10 @@ mutation updateApplication($input: ApplicationUpdateMutationInput!) {
 }
 `;
 
-
 export const GET_ORDER_ITEMS = gql`
-query getOrderItems {
+query getOrderItems($orders: [ID]!) {
   order {
-    orderItems {
+    orderItems(orders: $orders) {
       edges {
         node {
           pk
@@ -174,11 +181,12 @@ query getFirms {
 `;
 
 export const GET_INVOICES = gql`
-query getInvoices {
+query getInvoices($id: ID!) {
   application {
-    invoices {
+    invoices(application: $id) {
       edges {
         node {
+          id
           pk
           number
         }
@@ -189,22 +197,48 @@ query getInvoices {
 `;
 
 export const CREATE_INVOICE = gql`
-mutation invoiceCreate($input: InvoiceCreareMutationInput!){
-  application{
-    invoiceCreate{
+mutation invoiceCreate($input: InvoiceCreateMutationInput!, $id: ID) {
+  application {
+    invoiceCreate(input: $input) {
       ok
       errors
+      query {
+        application {
+          invoices(application: $id) {
+            edges {
+              node {
+                id
+                pk
+                number
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
 `;
 
 export const UPDATE_INVOICE = gql`
-mutation updateInvoice($input: InvoiceUpdateMutationInput!) {
+mutation updateInvoice($input: InvoiceUpdateMutationInput!, $id: ID!) {
   application {
     invoiceUpdate(input: $input) {
       ok
       errors
+      query {
+        application {
+          invoices(application: $id){
+            edges{
+              node{
+                id
+                pk
+                number
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

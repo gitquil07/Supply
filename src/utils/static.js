@@ -176,7 +176,7 @@ export const statuses = [
     },
     {
         label: "в растаможке",
-        value: "V_RAZTAMOZHKE"
+        value: "V_RASTAMOZHKE"
     },
     {
         label: "поступлено",

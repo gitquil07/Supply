@@ -27,6 +27,7 @@ const Supply = ({ match }) => {
 
             <Route path={url("/application")} component={ApplicationList} exact />
             <Route path={url("/application/create")} component={ApplicationCreate} />
+            <Route path={url("/application/edit/:id")} component={ApplicationCreate} />
 
             <Route path={url("/info-record")} component={InfoRecordList} exact />
             <Route path={url("/info-record/detail/:id")} component={InfoRecordDetail} />
