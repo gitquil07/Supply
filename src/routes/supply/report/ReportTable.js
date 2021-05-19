@@ -319,4 +319,6 @@ const Table = styled.table`
                 }
             }
     }
+
+}
 `
