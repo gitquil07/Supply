@@ -11,10 +11,10 @@ const logoutLink = onError(({networkError}) => {
 })
 
 const authMiddleware = new ApolloLink((operation, forward) => {
-    console.log("operation", operation);
-    console.log("forward", forward);
+    // console.log("operation", operation);
+    // console.log("forward", forward);
     const token = localStorage.getItem("supply_token");
-    console.log("token in apollo client", token);
+    // console.log("token in apollo client", token);
 
     operation.setContext({
         headers: {
@@ -25,10 +25,10 @@ const authMiddleware = new ApolloLink((operation, forward) => {
     return forward(operation);
 });
 
-console.log("ApolloLink", authMiddleware);
-console.log("concat result", concat(authMiddleware, httpLink));
-console.log("logoutLink", logoutLink);
-console.log("res", logoutLink.concat(concat(authMiddleware, httpLink)));
+// console.log("ApolloLink", authMiddleware);
+// console.log("concat result", concat(authMiddleware, httpLink));
+// console.log("logoutLink", logoutLink);
+// console.log("res", logoutLink.concat(concat(authMiddleware, httpLink)));
 
 
 export const client = new ApolloClient({
