@@ -10,6 +10,7 @@ import { CREATE_USER, UPDATE_USER } from "./gql";
 
 import Checkbox from "@material-ui/core/Checkbox";
 import ListItemText from "@material-ui/core/ListItemText";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { useCustomMutation, useFormData } from "../../../hooks";
 import { getList } from "../../../utils/functions";
 
@@ -136,14 +137,15 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
                 multiple 
                 label="Завод" 
                 name="factories"
-                value={state.factories.join(", ")}
-                renderValue={(selected) => selected.join(', ')}
-                stateChange={e => handleChange({fElem: e, multiple: true})} >
+                value={state.factories}
+                stateChange={e => handleChange({fElem: e})} >
                 {
-                    factories?.map(factory => (
-                        <MenuItem value={factory?.node?.pk}>
-                            <Checkbox checked={state.factories?.find(pk => pk === factory?.node?.pk)} />
-                            <ListItemText primary={factory.node.name} />
+                    factories?.map(({node}) => (
+                        <MenuItem value={node.pk}>
+                            <ListItemIcon>
+                                <Checkbox checked={state.factories.indexOf(node.pk) > -1}/>
+                            </ListItemIcon>
+                            <ListItemText primary={node.name} />
                         </MenuItem>
                     ))
                 }

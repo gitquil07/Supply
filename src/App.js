@@ -6,10 +6,31 @@ import styled from "styled-components";
 import Background from "./assets/bg.jpg";
 import {NotificationContainer} from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
-
+import Auth from "./routes/login";
+import { UserContext } from "./context/UserContext";
 import { Header } from './components/Header';
 
 const App = () => {
+
+  const [auth, setAuth] = useState(""),
+        token = localStorage.getItem("supply_token");
+
+  return (
+    <>
+      <NotificationContainer/>
+      <UserContext.Provider value={{
+        setAuth
+      }}>
+        {
+          token?  <ProtectedPages /> : <Auth />
+        }
+      </UserContext.Provider>
+    </>
+  );
+};
+
+
+const ProtectedPages = () => {
   const [drawer, setDrawer] = useState(true);
 
   return (
@@ -20,14 +41,15 @@ const App = () => {
 
       <Main open={drawer}>
         <Header menuIconClicked={() => setDrawer(!drawer)} drawer={drawer} />
-        <NotificationContainer/>
         <Contents>
           <Routes />
         </Contents>
       </Main>
     </Wrapper>
   );
-};
+}
+
+
 
 export default App;
 

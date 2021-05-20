@@ -262,7 +262,6 @@ export const useFormData = (initialState = {}) => {
         multiple = multiple || false;
 
         let value = (type == "input") && fElem.target.value;
-        console.log("value from hook", value);
 
         switch(type){
             case "choice":

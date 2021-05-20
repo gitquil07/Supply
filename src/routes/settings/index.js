@@ -16,8 +16,8 @@ import ProductCreate from "./products/ProductCreate";
 import VendorFactoriesList from "./vendorFactories/VendorFactoriesList";
 import VendorFactoryCreate from "./vendorFactories/VendorFactoryCreate";
 
-import TransportsList from "./transport/TransportsList";
-import FirmsList from "./firm/FirmsList"; 
+import TransportsList from "./transports/TransportsList";
+import FirmsList from "./firms/FirmsList"; 
 
 const Settings = ({ match }) => {
 
