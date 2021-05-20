@@ -11,14 +11,17 @@ import { CustomInput } from "../../../components/Inputs/CustomInput";
 import { CustomSelector } from "../../../components/Inputs/CustomSelector";
 import SmallDialog from "../../../components/SmallDialog";
 
-import { AddibleInput, FlexForHeader, FlexWithWrap } from "../../../components/Flex";
-import { Table, TableIII } from "../../../components/Table";
+import { FlexForHeader } from "../../../components/Flex";
+import { TableIII } from "../../../components/Table";
 import { Footer } from "../../../components/Footer";
 import { Arrows } from "../../../components/Arrows";
 import { RemoveIcon } from "../../../components/RemoveIcon";
 import { DisabledInput } from "../../../components/DisabledInput";
 import CustomPicker from "../../../components/Inputs/DatePicker";
-import { CustomHeader } from "../../../components/CustomHeader";
+import { GrayishBackground, MiniForm } from "../../../components/ComponentsForForm/MiniForm";
+import { InputsWrapper } from "../../../components/ComponentsForForm/InputsWrapper";
+import { Title } from "../../../components/Title";
+import { CustomizableInputs } from "../../../components/ComponentsForForm/CustomizableInputs";
 
 const TrackingTransportCreate = () => {
     const title = useTitle("Создание нового Слежения");
@@ -47,13 +50,58 @@ const TrackingTransportCreate = () => {
     return (
         <>
             <Helmet title={title} />
-            <Form>
 
+            <Form>
+                <MiniForm>
+                    <Title size="18">Данные транспорта</Title>
+
+                    <InputsWrapper>
+                        <CustomSelector label="Транспортировщики" />
+                        <CustomInput label="Номер транспорта" />
+                        <CustomInput label="Условие доставки" />
+                        <CustomInput label="Сумма" />
+                        <CustomSelector label="Валюта" />
+                        <CustomInput label="Нетто" />
+                        <CustomSelector label="Брутто" />
+                    </InputsWrapper>
+                </MiniForm>
+
+                <MiniForm>
+                    <Title size="18">Инвойсы</Title>
+
+                    <CustomizableInputs t="1fr 1fr 2fr">
+                        <CustomInput label="01290949889612389" />
+                        <CustomSelector label="Статус" />
+                        <CustomInput label="Вид оплаты" />
+                    </CustomizableInputs>
+
+                    <CustomizableInputs t="1fr 1fr 2fr">
+                        <CustomInput label="01290949889612389" />
+                        <CustomSelector label="Статус" />
+                        <CustomInput label="Вид оплаты" />
+                    </CustomizableInputs>
+                </MiniForm>
+
+                <MiniForm>
+                    <Title size="18">Статус слежения: <span>873264923</span></Title>
+
+                    <CustomizableInputs t="1fr 1fr 2fr .5fr">
+                        <CustomSelector label="Статус" />
+                        <CustomPicker label="Дата" />
+                        <CustomInput label="Местонахождение" />
+                        <Button name="Добавить статус" color="#5762B2" />
+                    </CustomizableInputs>
+
+                    <TableIII />
+
+                </MiniForm>
+
+                {/* 
                 {
                     applications.map((e, i) =>
                         <Applications expand={e.expand}>
                             <FlexForHeader p="0 0 30px 0">
-                                <Title>Номер заявки: <span>873264923</span></Title>
+                                <Title>Статус слежения: <span>873264923</span></Title>
                                 <Expand onClick={() => expand(i)}><Arrows open={e.expand} /> Свернуть</Expand>
                             </FlexForHeader>
 
@@ -89,7 +137,8 @@ const TrackingTransportCreate = () => {
                             </Footer>
                         </Applications>
                     )
-                }
+                } */}
+
 
             </Form>
 
@@ -113,14 +162,6 @@ const TrackingTransportCreate = () => {
 }
 
 export default TrackingTransportCreate;
-
-const Title = styled.div`
-    font-size:18px;
-
-    span {
-        color: rgba(0, 0, 0, 0.5);
-    }
-`;
 
 const Inputs = styled.div`
     gap: 10px;

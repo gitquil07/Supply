@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/client';
 import { GET_TABLE_BODY } from "./gql"
+import { findValue } from '../../../utils/functions'
 
 const ReportTable = () => {
     const [tableBody, setTableBody] = useState([]);
@@ -21,7 +22,7 @@ const ReportTable = () => {
             <Table>
                 <thead>
                     <tr>
-                        <th colSpan="2">Завод</th>
+                        <th colSpan="2"></th>
                         <th colSpan="3">10.05.2021</th>
                         <th colSpan="10">
                             Общие данные о остатки и закупке
@@ -77,45 +78,43 @@ const ReportTable = () => {
                 <tbody id='tbody'>
                     {
                         tableBody.map((element, index) => {
-                            const value = (num) => element[num] && element[num].length > 20 ? element[num].substring(0, 25) + "..." : element[num];
-
                             return (
                                 <tr>
                                     <td className="group-1">{index + 1}</td>
-                                    <td className="group-1-last">{value(0)}</td>
+                                    <td className="group-1-last">{findValue(element, 0)}</td>
 
-                                    <td className="group-2">{value(1)}</td>
-                                    <td className="group-2">{value(2)}</td>
-                                    <td className="group-2-last">{value(3)}</td>
+                                    <td className="group-2">{findValue(element, 1)}</td>
+                                    <td className="group-2">{findValue(element, 2)}</td>
+                                    <td className="group-2-last">{findValue(element, 3)}</td>
 
-                                    <td className="group-3">{value(4)}</td>
-                                    <td className="group-3">{value(5)}</td>
-                                    <td className="group-3">{value(6)}</td>
-                                    <td className="group-3">{value(7)}</td>
-                                    <td className="group-3">{value(8)}</td>
-                                    <td className="group-4">{value(9)}</td>
-                                    <td className="group-4">{value(10)}</td>
-                                    <td className="group-4">{value(11)}</td>
-                                    <td className="group-4">{value(12)}</td>
-                                    <td className="group-4-last">{value(13)}</td>
+                                    <td className="group-3">{findValue(element, 4)}</td>
+                                    <td className="group-3">{findValue(element, 5)}</td>
+                                    <td className="group-3">{findValue(element, 6)}</td>
+                                    <td className="group-3">{findValue(element, 7)}</td>
+                                    <td className="group-3">{findValue(element, 8)}</td>
+                                    <td className="group-4">{findValue(element, 9)}</td>
+                                    <td className="group-4">{findValue(element, 10)}</td>
+                                    <td className="group-4">{findValue(element, 11)}</td>
+                                    <td className="group-4">{findValue(element, 12)}</td>
+                                    <td className="group-4-last">{findValue(element, 13)}</td>
 
-                                    <td className="group-5">{value(14)}</td>
-                                    <td className="group-5">{value(15)}</td>
-                                    <td className="group-5">{value(16)}</td>
-                                    <td className="group-5">{value(17)}</td>
-                                    <td className="group-5">{value(18)}</td>
-                                    <td className="group-5">{value(19)}</td>
-                                    <td className="group-5">{value(20)}</td>
-                                    <td className="group-5">{value(21)}</td>
-                                    <td className="group-5">{value(22)}</td>
-                                    <td className="group-5">{value(23)}</td>
-                                    <td className="group-5">{value(24)}</td>
-                                    <td className="group-5-last">{value(25)}</td>
+                                    <td className="group-5">{findValue(element, 14)}</td>
+                                    <td className="group-5">{findValue(element, 15)}</td>
+                                    <td className="group-5">{findValue(element, 16)}</td>
+                                    <td className="group-5">{findValue(element, 17)}</td>
+                                    <td className="group-5">{findValue(element, 18)}</td>
+                                    <td className="group-5">{findValue(element, 19)}</td>
+                                    <td className="group-5">{findValue(element, 20)}</td>
+                                    <td className="group-5">{findValue(element, 21)}</td>
+                                    <td className="group-5">{findValue(element, 22)}</td>
+                                    <td className="group-5">{findValue(element, 23)}</td>
+                                    <td className="group-5">{findValue(element, 24)}</td>
+                                    <td className="group-5-last">{findValue(element, 25)}</td>
 
-                                    <td className="group-6">{value(26)}</td>
-                                    <td className="group-7">{value(27)}</td>
-                                    <td className="group-7">{value(28)}</td>
-                                    <td className="group-6">{value(29)}</td>
+                                    <td className="group-6">{findValue(element, 26)}</td>
+                                    <td className="group-7">{findValue(element, 27)}</td>
+                                    <td className="group-7">{findValue(element, 28)}</td>
+                                    <td className="group-6">{findValue(element, 29)}</td>
                                 </tr>
                             )
                         })
@@ -166,8 +165,7 @@ const Table = styled.table`
             height: 50px;
             background: #4A4D63;
             color: #fff;
-            /* border-right: 5px solid #fff; */
-            border: none;
+            border-right: 5px solid #fff;
             padding: 0;  
         }
 

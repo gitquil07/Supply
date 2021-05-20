@@ -1,26 +1,17 @@
-import { propEq, find } from "ramda";
-import { Link } from "react-router-dom";
-
-export const generateColumns = (url, list) => {
+export const generateColumns = (url) => {
     return [
         {
-            name: "public_id",
+            name: "publicId",
             label: "№",
             options: {
                 filter: true,
-                customBodyRender: (value, tableMeta, updateValue) => {
-                    const id = find(propEq("public_id", value))(list)
-                    return (
-                        <Link to={`${url}/create/${id?.id}`}>
-                            {value}
-                        </Link>
-                    );
-
+                customBodyRender: (value) => {
+                    return <a href={`${url}/edit/${value.id}`} onClick={() => false}>{value.publicId}</a> 
                 }
             }
         },
         {
-            name: "created_at",
+            name: "createdAt",
             label: "Дата создания заявки",
             options: {
                 filter: true,
@@ -44,7 +35,7 @@ export const generateColumns = (url, list) => {
             }
         },
         {
-            name: "amount",
+            name: "note",
             label: "Примечание",
             options: {
                 filter: true,

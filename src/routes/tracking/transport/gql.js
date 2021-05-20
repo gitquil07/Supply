@@ -1,39 +1,27 @@
 import { gql } from "@apollo/client";
 
 export const GET_TRACKING_TRANSPORTS = gql`
-query MyQuery($fromDate: Date, $toDate: Date) {
-  application {
-    applications(fromDate: $fromDate, toDate: $toDate) {
+query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $after: String, $before: String) {
+  tracking {
+    trackings(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before) {
       edges {
         node {
-          order {
-            vendorFactory {
-              vendor {
-                name
-                trackings {
-                  edges {
-                    node {
-                      locations {
-                        edges {
-                          node {
-                            name
-                          }
-                        }
-                      }
-                      transportNumber
-                      createdAt
-                      trDate
-                      amount
-                    }
-                  }
-                }
-              }
-            }
-            publicId
+          id
+          publicId
+          vendor {
+            name
           }
+          transportNumber
+          createdAt
+          currency
+          amount
+          brutto
+          netto
+          note
         }
       }
     }
   }
 }
 `;
+
