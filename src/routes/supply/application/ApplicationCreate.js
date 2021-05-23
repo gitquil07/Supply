@@ -19,7 +19,7 @@ import Switch from "@material-ui/core/Switch";
 import { useTemplate, useFormData, useCustomMutation, useToggleDialog } from "../../../hooks";
 import { useHistory } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import MenuItem from "@material-ui/core/MenuItem";
 import { getList, getValueOfProperty } from "../../../utils/functions";
 import moment from 'moment';
@@ -46,7 +46,7 @@ const initialState = {
     transportCount: "",
     shippingDate: new Date(),
     status: "",
-    transportMix: false
+    transportMix: true
 };
 
 const ApplicationCreate = ({ match }) => {
@@ -72,14 +72,14 @@ const ApplicationCreate = ({ match }) => {
           [getFirms, firmsRes] = useLazyQuery(GET_FIRMS);
 
 
-    const orders = getList(orderRes?.data) || [],
-          transportTypes = getList(transportTypesRes?.data) || [],
-          trackingUserType = getValueOfProperty(trackingUserTypesRes?.data, "role") || [],
+    const orders = useMemo(() => getList(orderRes?.data), [orderRes?.data]) || [],
+          transportTypes = useMemo(() => getList(transportTypesRes?.data), [transportTypesRes?.data]) || [],
+          trackingUserType = useMemo(() => getValueOfProperty(trackingUserTypesRes?.data, "role"), [trackingUserTypesRes?.data]) || [],
           pk = getValueOfProperty(applicationRes?.data, "pk"),
           
-          orderItems = getList(orderItemsRes?.data) || [],
-          invoices = getList(invoicesRes?.data) || [],
-          firms = getList(firmsRes?.data) || [];
+          orderItems = useMemo(() => getList(orderItemsRes?.data), [orderItemsRes?.data]) || [],
+          invoices = useMemo(() => getList(invoicesRes?.data), [invoicesRes?.data]) || [],
+          firms = useMemo(() => getList(firmsRes?.data), [firmsRes?.data]) || [];
 
    const templ = {
             orderItem: "",

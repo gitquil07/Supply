@@ -1,4 +1,5 @@
 import moment from "moment";
+import { useMemo } from "react";
 import { NotificationManager } from "react-notifications";
 
 export const TimeParser = (time) => moment(time).format('YYYY-MM-DD');
@@ -92,6 +93,7 @@ export const onResponseComplete = (data, type, entityName, callback) => {
 }
 
 export const getList = (data) => {
+    console.log("getList called");
     return getValueOfProperty(data, "edges");
 }
 

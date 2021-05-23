@@ -7,7 +7,6 @@ import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
 import { Pagination } from "../../../components/Pagination";
 import { ButtonWithIcon } from "../../../components/Buttons";
-import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { exceptKey } from "../../../utils/functions";
 import { usePagination } from "../../../hooks";
@@ -42,15 +41,14 @@ const VendorFactoriesList = ({ match }) => {
         setAmountOfElemsPerPage
     }
 
-    const vendorFactories = getList(dataPaginationRes?.data) || [];
-    const list = vendorFactories.map(({node}) => {
-        const obj = exceptKey(node, ["__typename"]);
+    const vendorFactories = useMemo(() => getList(dataPaginationRes?.data), [dataPaginationRes?.data]) || [];
+    const list = useMemo(() => vendorFactories.map(({node}) => {
         return {
-            ...obj,
+            ...exceptKey(node, ["__typename"]),
             vendor: node.vendor?.name,
             factory: node.factory?.name
         }
-    })
+    }), [vendorFactories]);
 
     const {url} = match;
     const columns = useMemo(() => generateColumns(url), []);
@@ -59,7 +57,6 @@ const VendorFactoriesList = ({ match }) => {
         <>
             <Helmet title={title} />
             <FlexForHeader>
-                <DatePickers mR="15px" />
                 <ButtonWithIcon name="Создать поставщика" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable

@@ -7,7 +7,6 @@ import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
 import { Pagination } from "../../../components/Pagination";
 import { ButtonWithIcon } from "../../../components/Buttons";
-import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { usePagination } from "../../../hooks";
 import { getList } from "../../../utils/functions";
@@ -62,7 +61,7 @@ const ProductsList = ({ match }) => {
         <>
             <Helmet title={title} />
             <FlexForHeader>
-                <DatePickers mR="15px" />
+                {/* <DatePickers mR="15px" /> */}
                 <ButtonWithIcon name="Создать продукт" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable

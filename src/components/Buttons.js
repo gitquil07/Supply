@@ -1,3 +1,4 @@
+import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import Add from "../assets/icons/add.svg";
@@ -5,7 +6,8 @@ import { CustomHeader } from "./CustomHeader";
 
 export const Button = ({ name, url, color, clickHandler }) => <IButton to={url} color={color} onClick={clickHandler}>{name}</IButton>
 
-export const ButtonWithIcon = ({ name, url, clicked }) => {
+export const ButtonWithIcon = React.memo(({ name, url, clicked }) => {
+    console.log("button rendered");
     return (
         <CustomHeader>
             <IIButton to={url} onClick={clicked}>
@@ -13,7 +15,7 @@ export const ButtonWithIcon = ({ name, url, clicked }) => {
             </IIButton>
         </CustomHeader >
     )
-}
+}, (prevProps, nextProps) => prevProps.clickHandler === nextProps.clickHandler && prevProps.url === nextProps.url && prevProps.name === nextProps.name);
 
 const IButton = styled(Link)`
     background: ${props => props.color ? props.color : "#08BB19"};

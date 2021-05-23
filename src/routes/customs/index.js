@@ -1,7 +1,7 @@
 import { Route } from "react-router-dom";
 
-import NewList from "./new/NewList";
-import NewCreate from "./new/NewCreate";
+// import NewList from "./new/NewList";
+// import NewCreate from "./new/NewCreate";
 
 import ReadyList from "./ready/ReadyList";
 import ReadyCreate from "./ready/ReadyCreate";
@@ -24,8 +24,8 @@ import ClosedDetail from "./closed/ClosedDetail";
 const Customs = ({ match }) => {
     return (
         <>
-            <Route path={`${match.url}/new`} component={NewList} />
-            <Route path={`${match.url}/new/create/:id`} component={NewCreate} />
+            {/* <Route path={`${match.url}/new`} component={NewList} />
+            <Route path={`${match.url}/new/create/:id`} component={NewCreate} /> */}
 
             <Route path={`${match.url}/ready`} component={ReadyList} />
             <Route path={`${match.url}/ready/create/:id`} component={ReadyCreate} />

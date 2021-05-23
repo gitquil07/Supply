@@ -17,7 +17,6 @@ import { UPDATE_PRODUCT, UPDATE_PRODUCT_GROUP } from "./gql";
 import { measureOptions, packagingTypes } from "../../../utils/static";
 import { recursiveFetch, addProp } from "../../../utils/functions"; 
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { getOne } from "../../../api";
 import { showNotification } from "../../../utils/functions";
 import { useHistory } from "react-router-dom";
 import { NotificationManager } from "react-notifications";

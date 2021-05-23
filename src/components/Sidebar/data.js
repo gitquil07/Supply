@@ -9,11 +9,7 @@ export const Supply = [
         url: "/supply/order"
     },
     {
-        name: "Поставщики",
-        url: "#"
-    },
-    {
-        name: "Заявки на транспортзы",
+        name: "Заявки на транспорты",
         url: "/supply/application"
     },
     {

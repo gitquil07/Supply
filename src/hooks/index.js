@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { NotificationManager } from "react-notifications";
 import { onResponseComplete } from "../utils/functions";
 import moment from "moment";
+import { ValidationMessage } from "components/ValidationMessage";
 
 export const useDateRange = (query) => {
 
@@ -54,6 +55,18 @@ export const useToggleDialog = () => {
 
 
     return [open, handleClose, handleOpen];
+
+}
+
+export const useGetOne = (data, propName) => {
+    const [uniqueVal, setUniqueVal] = useState(undefined);
+
+    const one = data.find(d => d.node[propName] === uniqueVal);
+
+    return {
+        one,
+        setUniqueVal
+    }
 
 }
 
@@ -305,9 +318,10 @@ export const useTemplate = (state, setState, template) => {
 
 }
 
-export const useCustomMutation = ({graphQlQuery: {queryCreate, queryUpdate}}, entityName, callback) => {
+export const useCustomMutation = ({graphQlQuery: {queryCreate, queryUpdate}}, entityName, callback, validationSchema, fieldsMessages) => {
 
     const handleError = (error) => NotificationManager.error(error.message);
+    const [validationMessages, setValidationMessages] = useState(fieldsMessages);
 
     const options = {};
           options.onError = handleError;
@@ -328,7 +342,7 @@ export const useCustomMutation = ({graphQlQuery: {queryCreate, queryUpdate}}, en
     }); 
 
     const submitData = (data, pk, id) => {
-
+        console.log("submit data pk", pk);
         const options = {
             variables: {
                 input: {
@@ -350,7 +364,26 @@ export const useCustomMutation = ({graphQlQuery: {queryCreate, queryUpdate}}, en
 
     }
 
+    const handleSubmit = (data, pk, id) => {
+        validationSchema.validate(data, {
+            abortEarly: false
+        })
+        .then(val => {
+            pk? submitData(val, pk, id) : submitData(val, id)
+        })
+        .catch(errObj => {
+            const messages = {};
+            for(let error of errObj.inner){
+                messages[error.path] = error.message;
+            }
+            setValidationMessages({...validationMessages, ...messages});
+        });
+    }
+
     return {
+        validationMessages,
+        setValidationMessages,
+        handleSubmit,
         submitData
     };
 

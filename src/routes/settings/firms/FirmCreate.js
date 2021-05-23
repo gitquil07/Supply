@@ -1,17 +1,29 @@
 import React, { useEffect } from "react";
 
 import { CREATE_FIRM, UPDATE_FIRM } from "./gql";
-import { Button } from "../../../components/Buttons";
-import SmallDialog from "../../../components/SmallDialog";
-import { CustomInput } from "../../../components/Inputs/CustomInput";
-import { CustomNumber } from "../../../components/Inputs/CustomNumber";
+import { Button } from "components/Buttons";
+import SmallDialog from "components/SmallDialog";
+import { CustomInput } from "components/Inputs/CustomInput";
+import { CustomNumber } from "components/Inputs/CustomNumber";
+import { ValidationMessage } from "components/ValidationMessage";
+import { object, string } from "yup";
 
-import { useCustomMutation, useFormData } from "../../../hooks";
+import { useCustomMutation, useFormData } from "hooks";
 
 const initialState = {
     name: "",
     inn: ""
 }
+
+const fieldsMessages = {
+    name: "",
+    inn: "",
+}
+
+const firmSchema = object({
+    name: string().typeError("Поле должно быть строкой").required("Поле 'Название фирмы' обязательно к заполнению"),
+    inn: string().typeError("Введите число").required("Поле 'ИНН' обязательно к заполнению")
+});
 
 const FirmCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOfElemsPerPage, paginatingState }) => {
 
@@ -36,12 +48,7 @@ const FirmCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
 
     }, [entry?.id]);
 
-    const handleClose = () => {
-        close();
-        setState(initialState);
-    }
-
-    const { submitData } = useCustomMutation({
+    const { handleSubmit, validationMessages, setValidationMessages } = useCustomMutation({
             graphQlQuery: {
                 queryCreate: CREATE_FIRM,
                 queryUpdate: UPDATE_FIRM,
@@ -61,16 +68,28 @@ const FirmCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
                     }
                 });
             }
-        }
+        },
+        firmSchema,
+        fieldsMessages
     );
 
-        console.log("pk", pk);
+    const handleClose = () => {
+        close();
+        setState(initialState);
+        setValidationMessages(fieldsMessages);
+    }
 
     return (
         <SmallDialog title={pk? "Изменить" : "Создать фирму"} isOpen={isOpen} close={handleClose}>
-            <CustomInput value={state.name} name="name" label="Название фирмы" stateChange={e => handleChange({fElem:e})} />
-            <CustomNumber value={state.inn} name="inn" label="Кол-во дней" stateChange={e => handleChange({fElem:e})} fullWidth />
-            <Button name={pk? "сохранить" : "Добавить фирму"} color="#5762B2" clickHandler={() => pk? submitData(state, pk) : submitData(state)}/>
+            <CustomInput value={state.name} name="name" label="Название фирмы" stateChange={e => handleChange({fElem:e})} errorVal={validationMessages.name.length? true : false} />
+            {
+                validationMessages.name.length? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
+            }
+            <CustomNumber value={state.inn} name="inn" label="Кол-во дней" stateChange={e => handleChange({fElem:e})} fullWidth errorVal={validationMessages.inn.length? true : false}/>
+            {
+                validationMessages.inn.length? <ValidationMessage>{validationMessages.inn}</ValidationMessage> : null
+            }
+            <Button name={pk? "сохранить" : "Добавить фирму"} color="#5762B2" clickHandler={() => pk? handleSubmit(state, pk) : handleSubmit(state)}/>
         </SmallDialog>
     );
 };

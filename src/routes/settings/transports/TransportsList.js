@@ -42,14 +42,17 @@ const TransportList = () => {
     }
 
     const transportTypes = getList(dataPaginationRes?.data) || [];
-    const list = transportTypes.map(({node}) => {
-        return {
-            id: node.id,
-            pk: node.pk,
-            name: node.name,
-            customDayCount: node.customDayCount
-        }
-    });
+    const list = useMemo(() => {
+            return transportTypes.map(({node}) => {
+                return {
+                    id: node.id,
+                    pk: node.pk,
+                    name: node.name,
+                    customDayCount: node.customDayCount
+                }
+            });
+        }, [transportTypes]
+    );
 
     const transportType = list.find(transportType => transportType.id === id);
 

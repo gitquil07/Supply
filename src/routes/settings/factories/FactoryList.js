@@ -4,7 +4,6 @@ import { generateColumns } from "./TableData";
 import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
 import { ButtonWithIcon } from "../../../components/Buttons";
-import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
 import { useState, useMemo } from "react";
@@ -41,22 +40,26 @@ const FactoryList = () => {
         setPaginatingState,
         amountOfElemsPerPage,
         getDataPagination,
-        setAmountOfElemsPerPage
+        setAmountOfElemsPerPage,
     }
 
 
     const factories = getList(dataPaginationRes?.data) || [];
-    const list = factories.map(({ node }) => {
-        return {
-            id: node.id,
-            pk: node.pk,
-            code: node.code,
-            name: node.name,
-            officialName: node.officialName,
-            position: node.position,
-            createdAt: node.createdAt
-        }
-    });
+
+    const list = useMemo(() => {
+        return factories?.map(({ node }) => {
+            return {
+                id: node.id,
+                pk: node.pk,
+                code: node.code,
+                name: node.name,
+                officialName: node.officialName,
+                position: node.position,
+                createdAt: node.createdAt
+            }
+        });
+    }, [factories]);
+
 
     const factory = list?.find(factory => factory.id === id);
 
@@ -78,7 +81,6 @@ const FactoryList = () => {
                            setMutateState={setMutateState}  getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
             <Helmet title={title} />
             <FlexForHeader>
-                <DatePickers mR="15px" />
                 <ButtonWithIcon name="Создать завод" clicked={() => setCreateOpen(true)} url="#" />
             </FlexForHeader>
             <CustomMUIDataTable

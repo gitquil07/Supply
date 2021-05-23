@@ -1,95 +1,52 @@
-import { propEq, find } from "ramda";
 import { Link } from "react-router-dom";
 
-export const generateColumns = (url, list) => {
+export const generateColumns = (url) => {
+    const options = {
+        filter: true,
+        sort: false
+    }
+
     return [
         {
-            name: "public_id",
-            label: "Номер заявки",
+            name: "publicId",
+            label: "№",
             options: {
                 filter: true,
-                customBodyRender: (value, tableMeta, updateValue) => {
-                    const id = find(propEq("public_id", value))(list)
-                    return (
-                        <Link to={`${url}/${id?.id}`}>
-                            {value}
-                        </Link>
-                    );
-
-                }
-            }
+                customBodyRender: (value) => {
+                    return <Link to={`${url}/edit/${value.id}`}>{value.publicId}</Link>;
+                },
+            },
         },
         {
-            name: "order",
-            label: "Поставщик",
-            options: {
-                filter: true,
-                sort: false,
-            }
+            name: "mode",
+            label: "Режим",
+            options
         },
         {
-            name: "degree_of_danger",
-            label: "Степень опасности",
-            options: {
-                filter: true,
-                sort: true,
-            }
+            name: "declarant",
+            label: "Декларант",
+            options: options
         },
         {
-            name: "delivery_condition",
-            label: "Способ доставки",
-            options: {
-                filter: true,
-                sort: true,
-            }
+            name: "contractor",
+            label: "Подрядчик",
+            options
         },
         {
-            name: "package_on_pallet",
-            label: "Кол-во Паддонов",
-            options: {
-                filter: true,
-                sort: true,
-            }
+            name: "post",
+            label: "Пост",
+            options
         },
         {
-            name: "transport_count",
-            label: "Кол-во транспорта",
-            options: {
-                filter: true,
-                sort: true,
-            }
+            name: "sst",
+            label: "сст",
+            options: options
         },
         {
             name: "status",
             label: "Статус",
-            options: {
-                filter: true,
-                sort: true,
-            }
-        },
-        {
-            name: "created_at",
-            label: "Дата создания заявки",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "updated_at",
-            label: "Дата поставки",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "type_of_packaging",
-            label: "Вид упаковки",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
+            options: options
+        }
     ];
+
 }

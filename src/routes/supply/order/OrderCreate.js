@@ -25,7 +25,7 @@ import { useHistory } from "react-router-dom";
 import { GET_ORDER } from "./gql";
 import { exceptKey } from "../../../utils/functions";
 import { useCustomMutation } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { getList, getValueOfProperty } from "../../../utils/functions";
 import { useTemplate } from "../../../hooks";
 
 
@@ -48,17 +48,18 @@ const OrderCreate = ({match}) => {
         }
     );
 
-    const factoriesQuerySet = useQuery(GET_FACTORIES_LIST),
+    const   [getFactories, factoriesRes] = useLazyQuery(GET_FACTORIES_LIST),
             [getOrder, orderRes] = useLazyQuery(GET_ORDER),
             [getVendorFactories, vendorFactoriesResp] = useLazyQuery(GET_VENDOR_FACTORIES),
             [getVendorFactoryProducts, vendorFactoryProductsResp] = useLazyQuery(GET_VENDOR_FACTORY_PRODUCTS);
 
     const [factory, setFactory] = useState("");
 
-    const factories = getList(factoriesQuerySet?.data) || [],
-          vendorFactories = getList(vendorFactoriesResp?.data) || [],
-          vendorProducts = getList(vendorFactoryProductsResp?.data) || [],
-          pk = orderRes?.data?.order?.order?.pk;
+    // console.log("factoriesQuerySet?.data", useMemo(() => getList(undefined?.undefined), [undefined]));
+    const factories = useMemo(() => getList(factoriesRes?.data), [factoriesRes?.data]) || [],
+          vendorFactories = useMemo(() => getList(vendorFactoriesResp?.data), [vendorFactoriesResp?.data]) || [],
+          vendorProducts = useMemo(() => getList(vendorFactoryProductsResp?.data), [vendorFactoryProductsResp?.data]) || [],
+          pk = useMemo(() => getValueOfProperty(orderRes?.data, "pk"), [orderRes?.data]);
 
 
     const [files, setFiles] = useState([]);
@@ -88,6 +89,10 @@ const OrderCreate = ({match}) => {
         invoiceDate: Date.now(),
         invoiceProforma: ""
     });
+
+    useEffect(() => {
+        getFactories();
+    }, []);
 
     useEffect(() => {
         if(id !== undefined){

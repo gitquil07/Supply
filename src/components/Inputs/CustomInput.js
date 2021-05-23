@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import TextField from '@material-ui/core/TextField';
 
-export const CustomInput = ({ name, value, label, type, required, stateChange, short, fullWidth}) => {
+export const CustomInput = ({ name, value, label, type, required, stateChange, short, fullWidth, errorVal}) => {
     return (
-        <Wrapper short={short} fullWidth={fullWidth}>
+        <Wrapper short={short} fullWidth={fullWidth} errorVal={errorVal}>
             <TextField type={type} required={required} name={name} value={value} label={label} variant="outlined" onChange={e => stateChange(e)} />
         </Wrapper>
     );
@@ -20,7 +20,7 @@ const Wrapper = styled.div`
         }
 
         fieldset {
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            border: 1px solid ${({errorVal}) => !errorVal? `rgba(0, 0, 0, 0.1) !important` : `red`};
         }
     }  
 `;

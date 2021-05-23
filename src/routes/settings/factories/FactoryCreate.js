@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
 
 import { CREATE_FACTORY, UPDATE_FACTORY } from "./gql";
-import { Button } from "../../../components/Buttons";
-import SmallDialog from "../../../components/SmallDialog";
-import { CustomInput } from "../../../components/Inputs/CustomInput";
-import { CustomNumber } from "../../../components/Inputs/CustomNumber";
+import { Button } from "components/Buttons";
+import SmallDialog from "components/SmallDialog";
+import { CustomInput } from "components/Inputs/CustomInput";
+import { CustomNumber } from "components/Inputs/CustomNumber";
+import { ValidationMessage } from "components/ValidationMessage"
 
-import { useCustomMutation, useFormData } from "../../../hooks";
+import { useCustomMutation, useFormData } from "hooks";
+import { object, string, number } from "yup";
 
 const initialState = {
     name: "",
@@ -14,6 +16,20 @@ const initialState = {
     code: "",
     position: ""
 }
+
+const fieldsMessages = {
+    name: "",
+    officialName: "",
+    code: "",
+    position: ""
+}
+
+const factorySchema = object({
+    name: string().typeError("Поле должно быть строкой").required("Поле 'Название' обязательно к заполнению"),
+    officialName: string().typeError("Поле должно быть строкой").required("Поле 'Официальное название' обязательо к заполнению"),
+    code: string().typeError("Поле должно быть строкой").required("Поле 'Код' обязательно к заполению"),
+    position: number().typeError("Введите число").required("Поле 'Позиция' обязательно к заполнению")
+});
 
 const FactoryCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOfElemsPerPage, paginatingState }) => {
     
@@ -40,12 +56,9 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, getEntries, amoun
 
     }, [entry?.id]);
 
-    const handleClose = () => {
-        close();
-        setState(initialState);
-    }
 
-    const { submitData } = useCustomMutation({
+
+    const { handleSubmit, validationMessages, setValidationMessages } = useCustomMutation({
             graphQlQuery: {
                 queryCreate: CREATE_FACTORY,
                 queryUpdate: UPDATE_FACTORY,
@@ -65,16 +78,36 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, getEntries, amoun
                     }
                 });
             }
-        }
+        },
+        factorySchema,
+        fieldsMessages
     );
+
+    const handleClose = () => {
+        close();
+        setState(initialState);
+        setValidationMessages(fieldsMessages);
+    }
 
     return (
         <SmallDialog title={pk? "Изменить" : "Создать Завод"} isOpen={isOpen} close={handleClose}>
-            <CustomInput value={state.name} name="name" label="Название завода" stateChange={e => handleChange({fElem:e})} />
-            <CustomInput value={state.officialName} name="officialName" label="Название завода" stateChange={e => handleChange({fElem:e})} />
-            <CustomInput value={state.code} name="code" label="Код" stateChange={e => handleChange({fElem:e})} />
-            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={e => handleChange({fElem:e})} fullWidth />
-            <Button name={pk? "сохранить" : "Добавить завод"} color="#5762B2" clickHandler={() => pk? submitData(state, pk) : submitData(state)}/>
+            <CustomInput value={state.name} name="name" label="Название" stateChange={e => handleChange({fElem:e})} errorVal={validationMessages.name.length? true : false} />
+            {
+                validationMessages.name.length? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null   
+            }
+            <CustomInput value={state.officialName} name="officialName" label="Официальное название" stateChange={e => handleChange({fElem:e})} errorVal={validationMessages.officialName.length? true : false} />
+            {
+                validationMessages.officialName.length? <ValidationMessage>{validationMessages.officialName}</ValidationMessage> : null
+            }
+            <CustomInput value={state.code} name="code" label="Код" stateChange={e => handleChange({fElem:e})} errorVal={validationMessages.code.length? true : false} />
+            {
+                validationMessages.code.length? <ValidationMessage>{validationMessages.code}</ValidationMessage> : null
+            }
+            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={e => handleChange({fElem:e})} fullWidth errorVal={validationMessages.position.length? true : false} />
+            {
+                validationMessages.position.length? <ValidationMessage>{validationMessages.position}</ValidationMessage> : null
+            }
+            <Button name={pk? "сохранить" : "Добавить завод"} color="#5762B2" clickHandler={() =>  pk? handleSubmit(state, pk) : handleSubmit(state)}/>
         </SmallDialog>
     );
 };

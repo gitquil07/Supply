@@ -5,7 +5,6 @@ import { generateColumns } from "./TableData";
 import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
 import { ButtonWithIcon } from "../../../components/Buttons";
-import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
 import UserCreate from "./UserCreate";
@@ -45,21 +44,22 @@ const UsersList = () => {
     }
 
     const users = getList(dataPaginationRes?.data) || [];
-    const list = users.map(({ node }) => {
-        return {
-            id: node.id,
-            pk: node.pk,
-            firstName: node.firstName,
-            lastName: node.lastName,
-            username: node.username,
-            phoneNumber: node.phoneNumber,
-            role: node.role?.displayName,
-            email: node?.email,
-            password: node?.password,
-            factories: (typeof node.pk === "object")? node.pk : [node.pk]
-        }
-    })
-
+    const list = useMemo(() => {
+        return users.map(({ node }) => {
+            return {
+                id: node.id,
+                pk: node.pk,
+                firstName: node.firstName,
+                lastName: node.lastName,
+                username: node.username,
+                phoneNumber: node.phoneNumber,
+                role: node.role?.displayName,
+                email: node?.email,
+                password: node?.password,
+                factories: (typeof node.pk === "object")? node.pk : [node.pk]
+            }
+        });
+    }, [users]); 
 
     const user = list?.find(user => user.id === id);
 
@@ -81,7 +81,6 @@ const UsersList = () => {
                         setMutateState={setMutateState}  getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
             <Helmet title={title} />
             <FlexForHeader>
-                <DatePickers mR="15px" />
                 <ButtonWithIcon name="Создать пользователя" clicked={() => setCreateOpen(true)} url="#" />
             </FlexForHeader>
             <CustomMUIDataTable

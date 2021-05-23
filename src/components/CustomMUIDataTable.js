@@ -1,3 +1,4 @@
+import React from "react"; 
 import MUIDataTable from "mui-datatables";
 import styled from "styled-components";
 
@@ -7,7 +8,9 @@ import DownloadIcon from '@material-ui/icons/GetApp';
 import ViewColumnIcon from '@material-ui/icons/DynamicFeed';
 import FilterIcon from '@material-ui/icons/GroupWork';
 
-export const CustomMUIDataTable = ({count, title, data, columns }) => {
+export const CustomMUIDataTable = React.memo(({count, title, data, columns }) => {
+
+    console.log("custom table rendered");
 
     const options = {
         filterType: 'dropdown',
@@ -34,7 +37,9 @@ export const CustomMUIDataTable = ({count, title, data, columns }) => {
             {...{ components }}
         />
     )
-}
+
+}, (prevProps, nextProps) => prevProps.count === nextProps.count && prevProps.title === nextProps.title && prevProps.data === nextProps.data && prevProps.columns === nextProps.columns);
+
 
 const StyledMUIDataTable = styled(MUIDataTable)`
 

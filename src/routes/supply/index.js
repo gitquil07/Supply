@@ -10,8 +10,8 @@ import ApplicationCreate from "./application/ApplicationCreate";
 import InfoRecordList from "./info-record/InfoRecordList";
 import InfoRecordDetail from "./info-record/InfoRecordDetail";
 
-import ArrivedList from "./arrived/ArrivedList"
 import CustomsList from "./customs/CustomsList";
+import ArrivedList from "./arrived/ArrivedList"
 import ReportTable from "./report/ReportTable";
 
 const Supply = ({ match }) => {

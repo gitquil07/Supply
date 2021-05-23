@@ -10,7 +10,7 @@ import { useState, useMemo } from "react";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
 
-const TransportList = () => {
+const FirmsList = () => {
     const title = useTitle("Фирмы"),
           [createOpen, setCreateOpen] = useState(false),
           [id, setId] = useState(undefined);
@@ -42,14 +42,17 @@ const TransportList = () => {
     }
 
     const firms = getList(dataPaginationRes?.data) || [];
-    const list = firms.map(({node}) => {
-        return {
-            id: node.id,
-            pk: node.pk,
-            name: node.name,
-            inn: node.inn
-        }
-    });
+    const list = useMemo(() => 
+    {
+        return firms.map(({node}) => {
+                return {
+                    id: node.id,
+                    pk: node.pk,
+                    name: node.name,
+                    inn: node.inn
+                }
+            });
+    }, [firms])
 
     const firm = list.find(firm => firm.id === id);
 
@@ -85,4 +88,4 @@ const TransportList = () => {
 
 }
 
-export default TransportList;
+export default FirmsList;

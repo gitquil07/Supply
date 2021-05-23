@@ -1,10 +1,24 @@
+import React from "react";
 import styled from "styled-components";
 import { SmallSelectForPagination } from "./Inputs/SmallSelectForPagination";
 import Arrow from "../assets/icons/arrow-for-pagination.svg";
 import moment from "moment";
 
-export const Pagination = (props) => {
+const isEqualPaginationProps = (prevProps, nextProps) => {
+    return (
+        prevProps.toDate === nextProps.toDate &&
+        prevProps.fromDate === nextProps.fromDate &&
+        prevProps.nextPageCursor === nextProps.nextPageCursor &&
+        prevProps.prevPageCursor === nextProps.prevPageCursor &&
+        prevProps.paginatingState === nextProps.paginatingState &&
+        prevProps.setPaginatingState === nextProps.setPaginatingState &&
+        prevProps.amountOfElemsPerPage === nextProps.amountOfElemsPerPage &&
+        prevProps.type === nextProps.type
+    );
+}
 
+export const Pagination = React.memo((props) => {
+    console.log("pagination rendered");
     const {
         toDate,
         fromDate,
@@ -96,7 +110,7 @@ export const Pagination = (props) => {
             </span>
         </Wrapper>
     );
-};
+}, isEqualPaginationProps);
 
 const Wrapper = styled.div`
     width: 100%;

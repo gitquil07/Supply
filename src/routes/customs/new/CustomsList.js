@@ -1,19 +1,19 @@
-import { useMemo } from "react";
-import { GET_TRACKING_TRANSPORTS } from "./gql";
-import { Helmet } from "react-helmet";
-
-import { usePagination, useTitle } from "../../../hooks";
-import { Pagination } from "../../../components/Pagination";
-
-import { generateColumns } from "./TableData";
-import { FlexForHeader } from "../../../components/Flex";
-import DatePickers from "../../../components/Inputs/DatePickers";
+import { Helmet } from 'react-helmet';
+import { useTitle } from '../../../hooks';
+import DatePickers from '../../../components/Inputs/DatePickers';
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { getList } from "../../../utils/functions";
+import { CUSTOMS } from './gql';
+import { generateColumns } from './TableData';
+import { useMemo } from 'react';
+import { FlexForHeader } from "../../../components/Flex";
 import { ButtonWithIcon } from "../../../components/Buttons";
+import { Pagination } from '../../../components/Pagination';
+import { usePagination } from "../../../hooks";
+import { getList } from "../../../utils/functions";
 
-const TransportList = ({ match }) => {
-    const title = useTitle("Слежение");
+
+const CustomsList = ({ match }) => {
+    const title = useTitle("Таможня");
     const {
         nextPageCursor,
         prevPageCursor,
@@ -35,9 +35,9 @@ const TransportList = ({ match }) => {
         handleDateApply
     } = usePagination({
         type: "dateFilter", 
-        qraphQlQuery: GET_TRACKING_TRANSPORTS,
-        singular: "tracking",
-        plural: "trackings"
+        qraphQlQuery: CUSTOMS,
+        singular: "application",
+        plural: "applications"
     });
 
 
@@ -59,8 +59,8 @@ const TransportList = ({ match }) => {
         return {
             ...node,
             publicId: {publicId: node.publicId, id: node.id},
-            vendor: `${node.vendor?.name} ${node.transportNumber}`,
-            amount: `${node.amount} ${node.currency} ${node.brutto} / ${node.netto}`,
+            declarant: node.declarant?.name,
+            contractor: node.contractor,
         }
     });
 
@@ -78,10 +78,10 @@ const TransportList = ({ match }) => {
                     changeTo={setToDateChange}
                     buttonClicked={handleDateApply}
                 />
-                <ButtonWithIcon name="создать слежение" url={`${match.url}/create`}/>
+                <ButtonWithIcon name="создать таможню" url={`${match.url}/create`}/>
             </FlexForHeader>
             <CustomMUIDataTable
-                title={"Список слежений"}
+                title={"Список заявок"}
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
@@ -91,4 +91,4 @@ const TransportList = ({ match }) => {
     );
 };
 
-export default TransportList;
+export default CustomsList;

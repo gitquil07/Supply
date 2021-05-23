@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { GET_FACTORIES, GET_ROLES } from "./gql";
 import SmallDialog from "../../../components/SmallDialog";
@@ -55,8 +55,8 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
     const [getFactories, getFactoriesRes] = useLazyQuery(GET_FACTORIES),
           [getRoles, getRolesRes] = useLazyQuery(GET_ROLES);
 
-    const factories = getList(getFactoriesRes?.data),
-          roles = getList(getRolesRes?.data);
+    const factories = useMemo(() => getList(getFactoriesRes?.data), [getFactoriesRes?.data]),
+          roles = useMemo(() => getList(getRolesRes?.data), [getRolesRes?.data]);
 
     const getFactoryNames = (selects) => {
         let names = [];
