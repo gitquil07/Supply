@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import moment from "moment";
 
 export const generateColumns = (url) => {
 
@@ -15,11 +16,12 @@ export const generateColumns = (url) => {
             }
         },
         {
-            name: "updatedAt",
-            label: "Дата изменения:",
+            name: "createdAt",
+            label: "Дата создания:",
             options: {
                 filter: true,
                 sort: true,
+                customBodyRender: value => moment(value).format("YYYY-MM-DD")
             }
         },
         {

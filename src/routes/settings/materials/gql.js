@@ -7,7 +7,7 @@ query nextPage($first: Int, $last: Int, $after: String, $before: String) {
       edges{
         node{
           id
-          updatedAt
+          createdAt
           vendorFactory{
             factory{
               name

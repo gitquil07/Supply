@@ -2,34 +2,50 @@ import { gql } from "@apollo/client";
 
 export const CUSTOMS = gql`
 query getCustoms($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $after: String, $before: String) {
-    custom {
-      customs(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before) {
-        edges {
-          node {
-            id
-            declarant {
-              username
+  custom {
+    customs(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before, isNew: true) {
+      edges {
+        node {
+          id
+          publicId
+          mode
+          declarantNote
+          contractorNote
+          createdAt
+          invoice {
+            application {
+              transportType {
+                name
+              }
+              orders {
+                edges {
+                  node {
+                    vendorFactory {
+                      vendor {
+                        name
+                      }
+                      factory {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
             }
-            contractor {
-              username
-            }
-            post
-            sst
-            publicId
-            status
-            mode
           }
+          pk
         }
-        pageInfo {
-          hasNextPage
-          hasPreviousPage
-          startCursor
-          endCursor
-        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
       }
     }
   }
-  
+}
+
 `;
 
 export const UPDATE_CUSTOM = gql`
@@ -59,3 +75,13 @@ query getCustom($id: ID!) {
     }
   }  
 `; 
+
+export const GET_PLAN = gql`
+query getTemplate {
+  core {
+    templates {
+      planProductTemplate
+    }
+  }
+}
+`;

@@ -14,6 +14,8 @@ import CustomsList from "./customs/CustomsList";
 import ArrivedList from "./arrived/ArrivedList"
 import ReportTable from "./report/ReportTable";
 
+import TestTable from "./report/test";
+
 const Supply = ({ match }) => {
 
     const url = (path) => `${match.url}${path}`;
@@ -36,7 +38,7 @@ const Supply = ({ match }) => {
 
             <Route path={url("/customs")} component={CustomsList} exact />
 
-            <Route path={url("/report")} component={ReportTable} exact />
+            <Route path={url("/report")} component={TestTable} exact />
         </Switch>
     );
 };

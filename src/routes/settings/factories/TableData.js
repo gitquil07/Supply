@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const generateColumns = (callback) => {
     return [
         {
@@ -52,6 +54,7 @@ export const generateColumns = (callback) => {
             options: {
                 filter: false,
                 sortL: false,
+                customBodyRender: value => moment(value).format("YYYY-MM-DD")
             }
         }
     ];

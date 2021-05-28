@@ -33,71 +33,24 @@ export const Table = () => {
     );
 };
 
-export const TableIII = () => {
-    return (
-        <Wrapper>
-            <RowIII>
-                <div>
-                    <span id="property">Завод:</span>
-                    <span id="value">Завод</span>
-                </div>
-                <div>
-                    <span id="property">Завод:</span>
-                    <span id="value">Завод</span>
-                </div>
-                <div>
-                    <span id="property">Завод:</span>
-                    <span id="value">Завод</span>
-                </div>
-            </RowIII>
-
-            <RowIII>
-                <div>
-                    <span id="property">Завод:</span>
-                    <span id="value">Завод</span>
-                </div>
-                <div>
-                    <span id="property">Завод:</span>
-                    <span id="value">Завод</span>
-                </div>
-                <div>
-                    <span id="property">Завод:</span>
-                    <span id="value">Завод</span>
-                </div>
-            </RowIII>
-
-            <RowIII>
-                <div>
-                    <span id="property">Завод:</span>
-                    <span id="value">Завод</span>
-                </div>
-                <div>
-                    <span id="property">Завод:</span>
-                    <span id="value">Завод</span>
-                </div>
-                <div>
-                    <span id="property">Завод:</span>
-                    <span id="value">Завод</span>
-                </div>
-            </RowIII>
-
-            <RowIII>
-                <div>
-                    <span id="property">Завод:</span>
-                    <span id="value">Завод</span>
-                </div>
-                <div>
-                    <span id="property">Завод:</span>
-                    <span id="value">Завод</span>
-                </div>
-                <div>
-                    <span id="property">Завод:</span>
-                    <span id="value">Завод</span>
-                </div>
-            </RowIII>
-
-        </Wrapper>
-    );
+export const TableIII = ({dataset}) => {
+    // return (
+    //     <Wrapper>
+    //         {
+    //             dataset.map(({node}) => {
+    //                 return <RowIII>
+    //                     {
+    //                         Object.keys(node).map(key => 
+    //                             <div>
+    //                                 <span>{node[key]}</span>
+    //                             </div>   
+    //                         )
+    //                     }
+    //                 </RowIII>
+    //             })
+    //         }
+    //     </Wrapper>
+    // );
 };
 
 const Wrapper = styled.div`

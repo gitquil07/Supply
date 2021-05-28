@@ -1,18 +1,19 @@
 import { Helmet } from 'react-helmet';
-import { useTitle } from '../../../hooks';
-import DatePickers from '../../../components/Inputs/DatePickers';
-import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
+import { useTitle } from 'hooks';
+import DatePickers from 'components/Inputs/DatePickers';
+import { CustomMUIDataTable } from "components/CustomMUIDataTable";
 import { CUSTOMS } from './gql';
 import { generateColumns } from './TableData';
 import { useMemo } from 'react';
-import { FlexForHeader } from "../../../components/Flex";
-import { ButtonWithIcon } from "../../../components/Buttons";
-import { Pagination } from '../../../components/Pagination';
-import { usePagination } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { FlexForHeader } from "components/Flex";
+import { ButtonWithIcon } from "components/Buttons";
+import { Pagination } from 'components/Pagination';
+import { usePagination } from "hooks";
+import { getList } from "utils/functions";
+import { modes } from "utils/static"; 
 
 
-const CustomsList = ({ match }) => {
+const NewList = ({ match }) => {
     const title = useTitle("Таможня");
     const {
         nextPageCursor,
@@ -55,14 +56,17 @@ const CustomsList = ({ match }) => {
     }
 
     const applications = getList(dataPaginationRes?.data) || [];
-    const list = applications.map(({ node }) => {
+    const list = useMemo(() => applications.map(({ node }) => {
         return {
-            ...node,
             publicId: {publicId: node.publicId, id: node.id},
-            declarant: node.declarant?.name,
-            contractor: node.contractor,
+            createdAt: node.createdAt,
+            vendorFactory: node.invoice?.application?.orders?.edges?.map(({node}) => {
+                return node.vendorFactory.factory.name + " / " + node.vendorFactory.vendor.name 
+            }),
+            trTypeAndMode: node.invoice?.application?.transportType?.name + " / " +  modes.find(mode => mode.value == node.mode)?.label,
+            invoices: {declarant: node.declarantNote, contractor: node.contractorNote}
         }
-    });
+    }), [applications]);
 
     const { url } = match;
     const columns = useMemo(() => generateColumns(url), []);
@@ -81,7 +85,7 @@ const CustomsList = ({ match }) => {
                 <ButtonWithIcon name="создать таможню" url={`${match.url}/create`}/>
             </FlexForHeader>
             <CustomMUIDataTable
-                title={"Список заявок"}
+                title={"Список новых таможен"}
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
@@ -91,4 +95,4 @@ const CustomsList = ({ match }) => {
     );
 };
 
-export default CustomsList;
+export default NewList;

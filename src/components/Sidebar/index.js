@@ -11,6 +11,9 @@ import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
 import { navElements } from "./data"
 import { Link } from "react-router-dom";
+import AssessmentIcon from '@material-ui/icons/Assessment';
+import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
+
 
 export const Sidebar = () => {
     const [state, setState] = useState({
@@ -46,6 +49,22 @@ export const Sidebar = () => {
                     </Collapse>
                 </Fragment>
             )}
+            <ListItem>
+                <ListItemIcon style={{color: "white"}}>
+                    <AssessmentIcon/>
+                </ListItemIcon>
+                <ListItemText>
+                    <StyledLink to="/stock-balance">Остатки на складе</StyledLink>
+                </ListItemText>
+            </ListItem>
+            <ListItem>
+                <ListItemIcon style={{color: "white"}}>
+                    <CalendarTodayIcon/>
+                </ListItemIcon>
+                <ListItemText>
+                    <StyledLink to="/plan-product">План</StyledLink>
+                </ListItemText>
+            </ListItem>
         </List>
     );
 };

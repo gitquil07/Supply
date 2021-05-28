@@ -273,27 +273,38 @@ export const modes = [
 
 export const customModes = [
     {
-        label: "готовые для оформления",
+        label: "readyForSigning",
         value: "готовые для оформления"
     },
     {
-        label: "нет документов",
+        label: "noDocuments",
         value: "нет документов"
     },
     {
-        label: "сертификат",
+        label: "sertificate",
         value: "сертификат"
     },
     {
-        label: "нет денег",
+        label: "noMoney",
         value: "нет денег"
     },
     {
-        label: "ждет льготы",
+        label: "waitExemption",
         value: "ждет льготы"
     },
     {
-        label: "оформлен",
+        label: "signed",
         value: "оформлен"
+    }
+];
+
+export const trackingStatuses = [
+    {
+        label: "в ожидании",
+        value: "V_OZHIDANII"
+    },
+    {
+        label: "передано",
+        value: "PEREDANO"
     }
 ];

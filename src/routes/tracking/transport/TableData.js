@@ -1,3 +1,7 @@
+import { Link } from "react-router-dom";
+import { Row } from "components/Row";
+import moment  from "moment";
+
 export const generateColumns = (url) => {
     return [
         {
@@ -6,7 +10,7 @@ export const generateColumns = (url) => {
             options: {
                 filter: true,
                 customBodyRender: (value) => {
-                    return <a href={`${url}/edit/${value.id}`} onClick={() => false}>{value.publicId}</a> 
+                    return <Link to={`${url}/edit/${value.id}`}>{value.publicId}</Link> 
                 }
             }
         },
@@ -16,6 +20,7 @@ export const generateColumns = (url) => {
             options: {
                 filter: true,
                 sort: false,
+                customBodyRender: value => moment(value).format("YYYY-MM-DD")
             }
         },
         {
@@ -24,6 +29,16 @@ export const generateColumns = (url) => {
             options: {
                 filter: true,
                 sort: false,
+                customBodyRender: (value) => {
+                    return (
+                        <>
+                            <Row>
+                                <b>{value.vendor}</b>
+                            </Row>
+                            {value.trNumber}
+                        </>
+                    )
+                }
             }
         },
         {

@@ -374,6 +374,7 @@ export const useCustomMutation = ({graphQlQuery: {queryCreate, queryUpdate}}, en
         .catch(errObj => {
             const messages = {};
             for(let error of errObj.inner){
+                console.log(error);
                 messages[error.path] = error.message;
             }
             setValidationMessages({...validationMessages, ...messages});

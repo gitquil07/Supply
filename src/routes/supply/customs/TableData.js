@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const generateColumns = (callback) => {
     const options = {
         filter: true,
@@ -21,7 +23,10 @@ export const generateColumns = (callback) => {
         {
             name: "createdAt",
             label: "Дата создание",
-            options: options
+            options: {
+                ...options,
+                customBodyRender: value => moment(value).format("YYYY-DD-MM")
+            }
         },
         {
             name: "transportType",

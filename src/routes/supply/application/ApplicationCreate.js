@@ -294,7 +294,6 @@ const ApplicationCreate = ({ match }) => {
 
                 <Header>
                     <Title>Материал</Title>
-                    <MenuItem>asdasd</MenuItem>
                     <Button name="Добавить материал" color="#5762B2" clickHandler={addTempl} />
                 </Header>
                 {

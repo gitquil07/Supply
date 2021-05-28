@@ -1,18 +1,20 @@
 import React, { useEffect, useMemo } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { GET_FACTORIES, GET_ROLES } from "./gql";
-import SmallDialog from "../../../components/SmallDialog";
-import { CustomInput } from "../../../components/Inputs/CustomInput";
-import { CustomSelector } from "../../../components/Inputs/CustomSelector";
-import { Button } from "../../../components/Buttons";
+import SmallDialog from "components/SmallDialog";
+import { CustomInput } from "components/Inputs/CustomInput";
+import { CustomSelector } from "components/Inputs/CustomSelector";
+import { Button } from "components/Buttons";
 import MenuItem from "@material-ui/core/MenuItem";
 import { CREATE_USER, UPDATE_USER } from "./gql";
 
 import Checkbox from "@material-ui/core/Checkbox";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
-import { useCustomMutation, useFormData } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { useCustomMutation, useFormData } from "hooks";
+import { getList } from "utils/functions";
+import { ValidationMessage } from "components/ValidationMessage";
+import { object, string, number, array } from "yup";
 
 
 const initialState = { 
@@ -25,6 +27,28 @@ const initialState = {
     phoneNumber: "",
     factories: []
 }
+
+const fieldsMessages = {
+    firstName: "",
+    lastName: "",
+    username: "",
+    password: "",
+    role: "",
+    email: "",
+    phoneNumber: "",
+    factories: ""
+};
+
+const userSchema = object({
+    firstName: string().typeError("Поле должно быть строкой").required("Поле 'Имя' обязательно к заполнению"),
+    lastName: string().typeError("Поле должно быть строкой").required("Поле 'Фамилия' обязательно к заполнению"),
+    username: string().typeError("Поле должно быть строкой").required("Поле 'Username' обязательно к заполнению"),
+    password: string().typeError("Поле должно быть строкой").required("Поле 'Пароль' обязательно к заполнению"),
+    role: string().typeError("Поле должно быть строкой").required("Поле 'Роль' обязательно к заполнению"),
+    email: string().email("Некорректный email адрес").required("Поле 'Email' обязательно к заполнению"),
+    phoneNumber: string().required("Поле 'Номер телефона' обязательно к заполнению"),
+    factories: array().of(number().required("Выберите завод"))
+});
 
 const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOfElemsPerPage, paginatingState}) => {
 
@@ -58,14 +82,6 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
     const factories = useMemo(() => getList(getFactoriesRes?.data), [getFactoriesRes?.data]),
           roles = useMemo(() => getList(getRolesRes?.data), [getRolesRes?.data]);
 
-    const getFactoryNames = (selects) => {
-        let names = [];
-        for(let selectPk of selects){
-            names.push(factories.find(({node}) => node.pk === selectPk)?.node?.name)
-        }
-
-        return names;
-    }
 
     useEffect(() => {
         getFactories();
@@ -84,9 +100,10 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
     const handleClose = () => {
         close();
         setState(initialState);
+        setValidationMessages(fieldsMessages);
     }
 
-    const { submitData } = useCustomMutation({
+    const { handleSubmit, validationMessages, setValidationMessages } = useCustomMutation({
             graphQlQuery: {
                 queryCreate: CREATE_USER,
                 queryUpdate: UPDATE_USER
@@ -106,23 +123,41 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
                     }
                 });
             }
-        }
+        },
+        userSchema,
+        fieldsMessages
     );
 
     return (
         <SmallDialog title={pk? "Изменить пользователя" : "Создать пользователя"} isOpen={isOpen} close={handleClose}>
             {
-                !pk && <CustomInput name="username" value={state.username} label="Username" stateChange={e => handleChange({fElem: e})} />
+                !pk && (
+                    <>
+                        <CustomInput name="username" value={state.username} label="Username" stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.username.length? true : false}/>
+                        {
+                            validationMessages.username.length? <ValidationMessage>{validationMessages.username}</ValidationMessage> : null
+                        }
+                    </>
+                )
             }
             {
-                inputs.map((e, i) =>
-                    <CustomInput
-                        key={i}
-                        value={state[e.name]}
-                        name={e.name}
-                        label={e.label}
-                        stateChange={e => handleChange({fElem: e})}
-                    />
+                inputs.map((e, i) => {
+                    console.log("NAME", typeof validationMessages[e.name]);
+                 return <>    
+                        <CustomInput
+                            key={i}
+                            value={state[e.name]}
+                            name={e.name}
+                            label={e.label}
+                            stateChange={e => handleChange({fElem: e})}
+                            errorVal={validationMessages[e.name].length? true : false}
+                        />
+                        {
+                            validationMessages[e.name].length? <ValidationMessage>{validationMessages[e.name]}</ValidationMessage> : null
+                        }
+                    </>
+                }
+
                 )
             }
             
@@ -133,6 +168,9 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
                     })
                 }
             </CustomSelector>
+            {
+                validationMessages.role.length? <ValidationMessage>{validationMessages.role}</ValidationMessage> : null
+            }
             <CustomSelector 
                 multiple 
                 label="Завод" 
@@ -151,9 +189,9 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
                 }
             </CustomSelector>
             {
-                getFactoryNames(state.factories).join(", ")
+                validationMessages.factories.length? <ValidationMessage>{validationMessages.factories}</ValidationMessage> : null
             }
-            <Button name={pk? "Сохранить" :  "Добавить пользователя"} color="#5762B2" clickHandler={() => pk? submitData(state, pk) : submitData(state)}/>
+            <Button name={pk? "Сохранить" :  "Добавить пользователя"} color="#5762B2" clickHandler={() => pk? handleSubmit(state, pk) : handleSubmit(state)}/>
         </SmallDialog>
     )
 }

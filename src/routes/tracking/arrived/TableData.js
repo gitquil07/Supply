@@ -1,58 +1,66 @@
-import { propEq, find } from "ramda";
-import { Link } from "react-router-dom";
+import { Row } from "components/Row";
+import moment from "moment";
 
-export const generateColumns = (url, list) => {
+export const generateColumns = (callback) => {
     return [
         {
-          name: "public_id",
-          label: "Номер слежки",
-          options: {
-            filter: true,
-            customBodyRender: (value, tableMeta, updateValue) => {
-              const id = find(propEq("public_id", value))(list);
-              return <Link to={`${url}/create/${id?.id}`}>{value}</Link>;
-            },
-          },
+            name: "publicId",
+            label: "№",
+            options: {
+                filter: true,
+                customBodyRender: (value) => {
+                    return <a href="#" onClick={() => {
+                        callback(value.id)
+                        return false
+                    }}>{value.publicId}</a>;
+                }
+            }
         },
         {
-          name: "vendor",
-          label: "Поставщик",
-          options: {
-            filter: true,
-            sort: false,
-          },
+            name: "createdAt",
+            label: "Дата создания заявки",
+            options: {
+                filter: true,
+                sort: false,
+                customBodyRender: value => {
+                    return moment(value).format("YYYY-MM-DD")
+                }
+            }
         },
         {
-          name: "location",
-          label: "Место нахождений",
-          options: {
-            filter: true,
-            sort: true,
-          },
+            name: "vendor",
+            label: "Транспортировщик",
+            options: {
+                filter: true,
+                sort: false,
+                customBodyRender: (value) => {
+                    return (
+                        <>
+                            <Row>
+                                <b>{value.vendor}</b>
+                            </Row>
+                            {value.trNumber}
+                        </>
+                    )
+                }
+            }
         },
         {
-          name: "transport_number",
-          label: "Номер транспорта",
-          options: {
-            filter: true,
-            sort: true,
-          },
+            name: "amount",
+            label: "Сумма",
+            options: {
+                filter: true,
+                sort: false,
+            }
         },
         {
-          name: "created_at",
-          label: "Дата создания заявки",
-          options: {
-            filter: true,
-            sort: false,
-          },
-        },
-        {
-          name: "updated_at",
-          label: "Дата поставки",
-          options: {
-            filter: true,
-            sort: false,
-          },
+            name: "note",
+            label: "Примечание",
+            options: {
+                filter: true,
+                sort: false,
+            }
         },
     ];
+
 }

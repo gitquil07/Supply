@@ -74,6 +74,10 @@ const FactoryList = () => {
     }
 
     const columns = useMemo(() => generateColumns(editEntry), []); 
+    const options = {
+        responsive: "scrollFullHeight"
+    }
+
 
     return (
         <>
@@ -88,6 +92,7 @@ const FactoryList = () => {
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                options={options}
             />
             <Pagination {...paginationParams}/>
         </>

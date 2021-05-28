@@ -59,7 +59,7 @@ const TransportList = ({ match }) => {
         return {
             ...node,
             publicId: {publicId: node.publicId, id: node.id},
-            vendor: `${node.vendor?.name} ${node.transportNumber}`,
+            vendor: {vendor: node.vendor?.name, trNumber: node.transportNumber},
             amount: `${node.amount} ${node.currency} ${node.brutto} / ${node.netto}`,
         }
     });
@@ -78,7 +78,7 @@ const TransportList = ({ match }) => {
                     changeTo={setToDateChange}
                     buttonClicked={handleDateApply}
                 />
-                <ButtonWithIcon name="создать слежение" url={`${match.url}/create`}/>
+                {/* <ButtonWithIcon name="создать слежение" url={`${match.url}/create`}/> */}
             </FlexForHeader>
             <CustomMUIDataTable
                 title={"Список слежений"}

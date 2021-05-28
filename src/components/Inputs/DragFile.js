@@ -9,7 +9,7 @@ export const DragFile = ({ receivedFile, files, removeClicked }) => {
             <Form>
                 <span>Перащите файл или выберите</span>
                 <label for="upload-photo">Выбрать файл</label>
-                <input type="file" name="photo" id="upload-photo" onChange={({ target }) => receivedFile(target.files[0])} />
+                <input type="file" name="photo" id="upload-photo" onChange={({ target }) => receivedFile(target.files[0])} accept="application/*"/>
             </Form>
             <List>
                 {files?.map((e, i) => <File key={i}>

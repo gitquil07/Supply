@@ -116,6 +116,8 @@ export function getValueOfProperty(obj, propName) {
 
 export const exceptKey = (obj, keysToExcept) => {
 
+    if(!obj) return undefined;
+
     const keys = Object.keys(obj),
         tmp = {};
 
@@ -133,7 +135,7 @@ export const exceptKey = (obj, keysToExcept) => {
 export const findValue = (element, num) => {
     if (element[num]) {
         if (element[num].includes("\n")) {
-            return element[num].split("\n").map((e, i) => <p key={i} style={{ margin: "0", lineHeight: "1.5" }}>{e}</p>)
+            return element[num].split("\n").map((e, i) => <p key={i} style={{ margin: "0", lineHeight: "1.5", fontSize:"14px" }}>{e}</p>)
         }
         else if (element[num].length > 20 && !element[num].includes("\n")) {
             return element[num].substring(0, 25) + "..."
@@ -143,4 +145,8 @@ export const findValue = (element, num) => {
     } else {
         return null
     }
+}
+
+export const goToNewLine = (element) => {
+    return element.split("\n").map((e, i) => <p key={i} style={{margin: "0", lineHeight: "1.5"}}>{e}</p>);
 }
