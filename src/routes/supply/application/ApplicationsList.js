@@ -6,7 +6,7 @@ import { APPLICATIONS } from './gql';
 import { generateColumns } from './TableData';
 import { useMemo } from 'react';
 import { FlexForHeader } from "../../../components/Flex";
-import { ButtonWithIcon } from "../../../components/Buttons"
+import { ButtonWithIcon } from "../../../components/Buttons";
 import { Pagination } from '../../../components/Pagination';
 import { usePagination } from "../../../hooks";
 import { getList } from "../../../utils/functions";
@@ -35,7 +35,9 @@ const ApplicationList = ({ match }) => {
         handleDateApply
     } = usePagination({
         type: "dateFilter", 
-        qraphQlQuery: APPLICATIONS
+        qraphQlQuery: APPLICATIONS,
+        singular: "application",
+        plural: "applications"
     });
 
 

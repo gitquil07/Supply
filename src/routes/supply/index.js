@@ -10,9 +10,11 @@ import ApplicationCreate from "./application/ApplicationCreate";
 import InfoRecordList from "./info-record/InfoRecordList";
 import InfoRecordDetail from "./info-record/InfoRecordDetail";
 
-import ArrivedList from "./arrived/ArrivedList"
 import CustomsList from "./customs/CustomsList";
+import ArrivedList from "./arrived/ArrivedList"
 import ReportTable from "./report/ReportTable";
+
+import TestTable from "./report/test";
 
 const Supply = ({ match }) => {
 
@@ -27,6 +29,7 @@ const Supply = ({ match }) => {
 
             <Route path={url("/application")} component={ApplicationList} exact />
             <Route path={url("/application/create")} component={ApplicationCreate} />
+            <Route path={url("/application/edit/:id")} component={ApplicationCreate} />
 
             <Route path={url("/info-record")} component={InfoRecordList} exact />
             <Route path={url("/info-record/detail/:id")} component={InfoRecordDetail} />
@@ -35,7 +38,7 @@ const Supply = ({ match }) => {
 
             <Route path={url("/customs")} component={CustomsList} exact />
 
-            <Route path={url("/report")} component={ReportTable} exact />
+            <Route path={url("/report")} component={TestTable} exact />
         </Switch>
     );
 };

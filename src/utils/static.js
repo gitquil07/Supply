@@ -43,32 +43,59 @@ export const measureOptions = [
 
 export const packagingTypes = [
     {
-        value: "BOX",
+        value: "KOROBKA",
         label: "коробка"
     },
     {
-        value: "BAG",
+        value: "MESHOK",
         label: "мешок"
     },
     {
-        value: "PALLET",
+        value: "PODDON",
         label: "поддон"
     },
     {
-        value: "CASE",
+        value: "IASHCHIK",
         label: "ящик"
     },
     {
-        value: "CONTAINER",
+        value: "TARA",
         label: "тара"
     },
     {
-        value: "BARREL",
+        value: "BOCHKA",
         label: "бочка"
     },
     {
-        value: "ROLL",
+        value: "RULON",
         label: "рулон"
+    }
+];
+
+export const deliveryCondition = [
+    {
+        value: "EXW",
+        label: "EXW"
+    },
+    {
+        value: "FCA",
+        label: "FCA"
+    },
+    {
+        value: "FOB",
+        label: "FOB"
+    },
+    {
+        value: "DAP",
+        label: "DAP"
+    },
+    {
+        value: "CIP",
+        label: "CIP"
+    },
+    {
+        value: "CPT",
+        label: "CPT"
     }
 ];
 
@@ -149,7 +176,7 @@ export const statuses = [
     },
     {
         label: "в растаможке",
-        value: "V_RAZTAMOZHKE"
+        value: "V_RASTAMOZHKE"
     },
     {
         label: "поступлено",
@@ -160,3 +187,165 @@ export const statuses = [
         value: "UDALEN"
     }
 ];
+
+export const modes = [
+    {
+        label:"экспорт",
+        value:10
+    },
+
+    {
+        label:"реэкспорт",
+        value:11
+    },
+
+    {
+        label:" временный вывоз",
+        value:12
+    },
+
+    {
+        label:"выпуск для свободного обращения (импорт)",
+        value:40
+    },
+
+    {
+        label:"реиморт",
+        value:41
+    },
+
+    {
+        label:"временный ввоз",
+        value:42
+    },
+
+    {
+        label:"переработка на таможенной территории",
+        value:51
+    },
+
+    {
+        label:"переработка вне таможенной территории",
+        value:61
+    },
+
+    {
+        label:"временное хранение",
+        value:70
+    },
+
+    {
+        label:"свободная таможенная зона",
+        value:71
+    },
+
+    {
+        label:"беспошлинная торговля",
+        value:72
+    },
+
+    {
+        label:"свободный склад",
+        value:73
+    },
+
+    {
+        label:"таможенный склад",
+        value:74
+    },
+
+    {
+        label:"отказ в пользу государства",
+        value:75
+    },
+
+    {
+        label:"уничтожение",
+        value:76
+    },
+
+    {
+        label:"таможенный транзит",
+        value:80
+    }
+];
+
+
+export const customModes = [
+    {
+        label: "readyForSigning",
+        value: "готовые для оформления"
+    },
+    {
+        label: "noDocuments",
+        value: "нет документов"
+    },
+    {
+        label: "sertificate",
+        value: "сертификат"
+    },
+    {
+        label: "noMoney",
+        value: "нет денег"
+    },
+    {
+        label: "waitExemption",
+        value: "ждет льготы"
+    },
+    {
+        label: "signed",
+        value: "оформлен"
+    }
+];
+
+export const trackingStatuses = [
+    {
+        label: "в ожидании",
+        value: "V_OZHIDANII"
+    },
+    {
+        label: "передано",
+        value: "PEREDANO"
+    }
+];
+
+export const invoiceStatuses = [
+    {
+        label: "в ожидании",
+        value: "V_OZHIDANII"
+    },
+    {
+        label: "в растаможке",
+        value: "V_RASTAMOZHKE"
+    },
+    {
+        label: "удален",
+        value: "UDALEN"
+    }
+];
+
+
+export const generalReportColorSchema = {
+    "Дата": {
+        single: {
+            colorClass: "white" 
+        },
+    },
+    "Общие данные": {
+        combination:{
+            colorClasses: "red yellow",
+            type: "simple-devision" 
+        }   
+    },
+    "Танспортировка": {
+        single: {
+            colorClass: "white"
+        }
+    },
+    "Планируемый прогноз": {
+        combination: {
+            colorClasses: "yellow red",
+            type: "outline"
+        }
+    }
+}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { AddibleInput } from "../../../components/Flex";
 import { Form } from "../../../components/Form";
@@ -50,20 +50,36 @@ const SuppliersCreate = ({ match }) => {
           [getVendorProductHistory, vendorProductHistoryRes] = useLazyQuery(GET_VENDOR_PRODUCT_HISTORY);
 
 
-    const factories = getList(factoriesRes?.data) || [],
-          vendorFactories = getList(vendorFactoriesRes?.data) || [],
-          products = getList(productsRes?.data) || [],
-          pk = getList(vendorProductRes?.data) || [],
-          vendorProductHistoriesFull = getList(vendorProductHistoryRes?.data) || [],
-          vendorProductHistories = vendorProductHistoriesFull.map(({node}) => {
-            const obj = exceptKey(node, ["vendorFactory", "__typename"]);
-            return {
-                ...obj,
-                factory: node.vendorFactory.factory.name,
-                vendor: node.vendorFactory.vendor.name,
-                product: node.product.name
-            }
-          });
+    // const factories = getList(factoriesRes?.data) || [],
+    //       vendorFactories = getList(vendorFactoriesRes?.data) || [],
+    //       products = getList(productsRes?.data) || [],
+    //       pk = getList(vendorProductRes?.data) || [],
+    //       vendorProductHistoriesFull = getList(vendorProductHistoryRes?.data) || [],
+    //       vendorProductHistories = vendorProductHistoriesFull.map(({node}) => {
+    //         const obj = exceptKey(node, ["vendorFactory", "__typename"]);
+    //         return {
+    //             ...obj,
+    //             factory: node.vendorFactory.factory.name,
+    //             vendor: node.vendorFactory.vendor.name,
+    //             product: node.product.name
+    //         }
+    //       });
+
+    
+    const factories = useMemo(() => getList(factoriesRes?.data), [factoriesRes?.data]) || [],
+          vendorFactories = useMemo(() => getList(vendorFactoriesRes?.data), [vendorFactoriesRes?.data]) || [],
+          products = useMemo(() => getList(productsRes?.data), [productsRes?.data]) || [],
+          pk = useMemo(() => getList(vendorProductRes?.data), [vendorProductRes?.data]) || undefined,
+          vendorProductHistoriesFull = useMemo(() => getList(vendorProductHistoryRes?.data), [vendorProductHistoryRes?.data]) || [],
+          vendorProductHistories = useMemo(() => vendorProductHistoriesFull.map(({node}) => {
+                    return {
+                        ...exceptKey(node, ["vendorFactory", "__typename"]),
+                        factory: node.vendorFactory.factory.name,
+                        vendor: node.vendorFactory.vendor.name,
+                        product: node.product.name
+                    }
+                }), [vendorProductHistoriesFull]);
+
 
 
     useEffect(() => {
@@ -125,6 +141,8 @@ const SuppliersCreate = ({ match }) => {
 
     const handleSubmit = () => {
         const data = exceptKey(state, ["factory"]);
+
+        console.log("pk", pk);
 
         pk? submitData(exceptKey(data, ["vendorFactory", "product"]), pk) : submitData(data);
     }

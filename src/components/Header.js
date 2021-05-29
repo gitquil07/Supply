@@ -7,12 +7,24 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import { Title } from "./Title";
+import { useHistory } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
+import { useContext } from "react";
+
 
 export const Header = ({ menuIconClicked }) => {
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const title = useSelector(state => state.title);
+    const history = useHistory();
+    const { setAuth } = useContext(UserContext);
+
+    const logout = () => {
+        localStorage.removeItem("supply_token");
+        history.push("/login");
+        setAuth("");
+    }
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -29,7 +41,7 @@ export const Header = ({ menuIconClicked }) => {
                     <MenuIcon />
                 </IconButton>
 
-                <Title name={title} />
+                <Title size="24">{title}</Title>
             </span>
 
             <Account>
@@ -40,7 +52,7 @@ export const Header = ({ menuIconClicked }) => {
                     open={open}
                     onClose={handleClose}
                 >
-                    <MenuItem onClick={handleClose}>Выйти</MenuItem>
+                    <MenuItem onClick={logout}>Выйти sad</MenuItem>
                     <MenuItem onClick={handleClose}>Мой аккаунт</MenuItem>
                 </Menu>
             </Account>

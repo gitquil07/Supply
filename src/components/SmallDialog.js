@@ -32,6 +32,21 @@ import CloseIcon from "@material-ui/icons/Close";
         padding:10px;
         box-sizing:border-box;
         border-radius:10px;
+
+        ::-webkit-scrollbar{
+            width:10px;
+        }   
+
+        ::-webkit-scrollbar-thumb{
+            border-radius:5px;
+            background:#5762B2;
+        }
+
+        ::-webkit-scrollbar-track{
+            background:#f1f1f1;
+            border-top-right-radius:5px;
+            border-bottom-right-radius:5px;
+        }
         
 
         .MuiDialogTitle-root{

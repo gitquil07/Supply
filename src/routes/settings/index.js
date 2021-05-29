@@ -16,6 +16,9 @@ import ProductCreate from "./products/ProductCreate";
 import VendorFactoriesList from "./vendorFactories/VendorFactoriesList";
 import VendorFactoryCreate from "./vendorFactories/VendorFactoryCreate";
 
+import TransportsList from "./transports/TransportsList";
+import FirmsList from "./firms/FirmsList"; 
+
 const Settings = ({ match }) => {
 
     const url = (path) => `${match.url}/${path}`;
@@ -25,6 +28,10 @@ const Settings = ({ match }) => {
             <Route path={url("users")} component={UsersList} exact />
 
             <Route path={url("factories")} component={FactoryList} exact />
+
+            <Route path={url("transports")} component={TransportsList} exact/>
+
+            <Route path={url("firms")} component={FirmsList} exact />
 
             <Route path={url("suppliers")} component={SuppliersList} exact />
             <Route path={url("suppliers/create")} component={SuppliersCreate} />

@@ -1,4 +1,5 @@
 import moment from "moment";
+import { useMemo } from "react";
 import { NotificationManager } from "react-notifications";
 
 export const TimeParser = (time) => moment(time).format('YYYY-MM-DD');
@@ -7,7 +8,7 @@ export const setTitleWithDateRange = (name, fromDate, toDate, format) => {
     const dateFormat = format || "DD.MM.YYYY";
 
     const from = moment(fromDate).format(dateFormat),
-          to = moment(toDate).format(dateFormat)
+        to = moment(toDate).format(dateFormat)
 
     return `Заявки на ${name} c ${from} по ${to}`;
 }
@@ -26,21 +27,15 @@ export const setTitleWithDateRange = (name, fromDate, toDate, format) => {
 
 // } 
 
-export const recursiveFetch = (data, mutateFunc) => {
+export const recursiveFetch = (amount, mutateFunc) => {
     let i = 0;
-    return function fetch(){
-        if(i < data.length){
+    return function fetch() {
+        if (i < amount) {
             console.log("i", i);
-            mutateFunc({
-                variables: {
-                    input: {
-                        data: data[i]
-                    }
-                }
-            })
+            mutateFunc(i)
             i++;
-           fetch(); 
-        }else{
+            fetch();
+        } else {
             return
         }
     }
@@ -59,9 +54,9 @@ export const addProp = (data, propName, val) => {
 
 export const showNotification = (data, name, action, message) => {
 
-    if(data[name][action].ok){
+    if (data[name][action].ok) {
         NotificationManager.success(message);
-    }else{
+    } else {
         data[name][action].errors.forEach((message) => {
             const msg = message.split(": ")[1];
             NotificationManager.error(msg);
@@ -72,16 +67,17 @@ export const showNotification = (data, name, action, message) => {
 export const onResponseComplete = (data, type, entityName, callback) => {
     const responseResult = getValueOfProperty(data, "ok");
 
-    if(responseResult){
+    if (responseResult) {
 
         let message = entityName;
         if(type === "create") message += " создан";
         if(type === "update") message += " изменен";
+        if(type === "auth") message += "Добро пожаловать"
 
         NotificationManager.success(message);
 
         callback();
-    }else{
+    } else {
         const errors = getValueOfProperty(data, "errors");
         errors.forEach((errorMessage) => {
             const message = errorMessage.split(": ")[1];
@@ -91,37 +87,65 @@ export const onResponseComplete = (data, type, entityName, callback) => {
 }
 
 export const getList = (data) => {
+    console.log("getList called");
     return getValueOfProperty(data, "edges");
 }
 
-export function getValueOfProperty(obj, propName){
-    if(typeof obj === "object" && obj !== null){
+export function getValueOfProperty(obj, propName) {
+    if (typeof obj === "object" && obj !== null) {
         const keys = Object.keys(obj);
 
         const filteredKeys = keys.filter(key => key !== "__typename");
 
         const found = filteredKeys.find(key => key === propName);
-        if(found !== undefined){
+        if (found !== undefined) {
             return obj[found];
-        }else{
-            return getValueOfProperty(obj[filteredKeys[0]], propName);   
+        } else {
+            return getValueOfProperty(obj[filteredKeys[0]], propName);
         }
-    }else{
+    } else {
         return;
     }
 }
 
 export const exceptKey = (obj, keysToExcept) => {
 
+    if(!obj) return undefined;
+
     const keys = Object.keys(obj),
-          tmp = {};
+        tmp = {};
 
-          for(let key of keys){
-              if(keysToExcept.indexOf(key) === -1){
-                  tmp[key] = obj[key]
-              }
-          }
+    for (let key of keys) {
+        if (keysToExcept.indexOf(key) === -1) {
+            tmp[key] = obj[key]
+        }
+    }
 
-          return tmp
+    return tmp
 
-} 
+}
+
+
+export const findValue = (element, num) => {
+    if (element[num]) {
+        if (element[num].includes("\n")) {
+            return element[num].split("\n").map((e, i) => <p key={i} style={{ margin: "0", lineHeight: "1.5", fontSize:"14px" }}>{e}</p>)
+        }
+        else if (element[num].length > 20 && !element[num].includes("\n")) {
+            return element[num].substring(0, 25) + "..."
+        } else {
+            return element[num]
+        }
+    } else {
+        return null
+    }
+}
+
+export const goToNewLine = (element) => {
+    return element.split("\n").map((e, i) => <p key={i} style={{margin: "0", lineHeight: "1.5"}}>
+        {
+            // (element.length > 20 && !element.includes("\n")) ?  element.substring(0, 25) + "..." : element
+            element                
+         }
+    </p>);
+}

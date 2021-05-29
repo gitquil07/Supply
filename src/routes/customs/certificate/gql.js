@@ -1,27 +1,48 @@
 import { gql } from "@apollo/client";
 
-export const GET_CERTIFICATE_CUSTOMS = gql`
-query MyQuery($fromDate: Date, $toDate: Date) {
-    application {
-      applications(fromDate: $fromDate, toDate: $toDate) {
-        edges {
-          node {
-            publicId
-            status
-            invoices {
-              edges {
-                node {
-                  number
+export const CERTIFICATE_CUSTOMS = gql`
+query getCustoms($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $after: String, $before: String) {
+  custom {
+    customs(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before, status: "сертификат") {
+      edges {
+        node {
+          id
+          publicId
+          mode
+          declarantNote
+          contractorNote
+          createdAt
+          invoice {
+            application {
+              transportType {
+                name
+              }
+              orders{
+                edges{
+                  node{
+                    vendorFactory{
+                      vendor{
+                        name
+                      }
+                      factory{
+                        name
+                      }
+                    }
+                  }
                 }
               }
             }
-            createdAt
-            transportType {
-              name
-            }
           }
+        	pk
         }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
       }
     }
   }
+}
 `;

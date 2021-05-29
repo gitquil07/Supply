@@ -10,18 +10,223 @@ import { RemoveIcon } from '../../../components/RemoveIcon';
 import { DragFile } from '../../../components/Inputs/DragFile';
 import { CustomInput } from '../../../components/Inputs/CustomInput';
 import { CustomSelector } from '../../../components/Inputs/CustomSelector';
-import { CustomLongInput } from '../../../components/Inputs/CustomLongInput';
-// import CustomSelectorWithAdds, { SelectorBody } from "../../../components/Inputs/CustomSelectorWithAdds";
 import { CustomSelectorAdd } from "../../../components/Inputs/CustomSelector";
-import { EditableMenuItem } from "../../../components/Inputs/CustomSelector";
+import { GET_ORDERS, GET_TRANSPORT_TYPES, GET_TRACKING_USER, GET_APPLICATION, CREATE_APPLICATION, UPDATE_APPLICATION } from "./gql";
+import { GET_ORDER_ITEMS, GET_FIRMS, GET_INVOICES, CREATE_INVOICE, UPDATE_INVOICE } from "./gql";
+import CustomPicker from "../../../components/Inputs/DatePicker";
+import { CustomNumber } from "../../../components/Inputs/CustomNumber";
+import Switch from "@material-ui/core/Switch";
+import { useTemplate, useFormData, useCustomMutation, useToggleDialog } from "../../../hooks";
+import { useHistory } from "react-router-dom";
+import { useLazyQuery } from "@apollo/client";
+import { useState, useEffect, useMemo } from 'react';
+import MenuItem from "@material-ui/core/MenuItem";
+import { getList, getValueOfProperty } from "../../../utils/functions";
+import moment from 'moment';
+import { packagingTypes, deliveryCondition, statuses } from "../../../utils/static";
+import Checkbox from "@material-ui/core/Checkbox";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import { exceptKey } from "../../../utils/functions";
+import SmallDialog from "../../../components/SmallDialog";
+import CheckMarkIcon from "../../../assets/icons/checkmark.svg";
+import EditDefaultIcon from "../../../assets/icons/editDefault.svg";
+import EditSelectedIcon from "../../../assets/icons/editSelected.svg";
+import EditHoveredIcon from "../../../assets/icons/editHovered.svg";
 
-const vals = ["sadasds", "sadasdsadfg", "gferfgre"];
+
+const initialState = {
+    orders: [],
+    trackingUser: "",
+    transportType: "",
+    deliveryCondition: "",
+    degreeOfDanger: "",
+    typeOfPackaging: "",
+    packageOnPallet: "",
+    transportCount: "",
+    shippingDate: new Date(),
+    status: "",
+    transportMix: true
+};
+
+const ApplicationCreate = ({ match }) => {
+    const title = useTitle("Создание новой Заявки"),
+          {
+            state,
+            setState,
+            handleChange
+          } = useFormData(initialState),
+          [open, handleClose, handleOpen] = useToggleDialog(),
+          { id } = match.params,
+          history = useHistory();
 
 
-const ApplicationCreate = () => {
-    const title = useTitle("Создание новой Заявки");
 
+    const [getTrackingUserTypes, trackingUserTypesRes] = useLazyQuery(GET_TRACKING_USER),
+          [getTransportTypes, transportTypesRes] = useLazyQuery(GET_TRANSPORT_TYPES),
+          [getApplication, applicationRes] = useLazyQuery(GET_APPLICATION),
+          [getOrders, orderRes] = useLazyQuery(GET_ORDERS),
+
+          [getOrderItems, orderItemsRes] = useLazyQuery(GET_ORDER_ITEMS),
+          [getInvoices, invoicesRes] = useLazyQuery(GET_INVOICES),
+          [getFirms, firmsRes] = useLazyQuery(GET_FIRMS);
+
+
+    const orders = useMemo(() => getList(orderRes?.data), [orderRes?.data]) || [],
+          transportTypes = useMemo(() => getList(transportTypesRes?.data), [transportTypesRes?.data]) || [],
+          trackingUserType = useMemo(() => getValueOfProperty(trackingUserTypesRes?.data, "role"), [trackingUserTypesRes?.data]) || [],
+          pk = getValueOfProperty(applicationRes?.data, "pk"),
+          
+          orderItems = useMemo(() => getList(orderItemsRes?.data), [orderItemsRes?.data]) || [],
+          invoices = useMemo(() => getList(invoicesRes?.data), [invoicesRes?.data]) || [],
+          firms = useMemo(() => getList(firmsRes?.data), [firmsRes?.data]) || [];
+
+   const templ = {
+            orderItem: "",
+            firm: "",
+            invoice: "",
+            count: "",
+            weight: "",
+            size: "",
+            invoicePrice: ""
+        };
+
+    const [items, setItems] = useState([templ]),
+          [invoiceNumber, setInvoiceNumber] = useState(""),
+          [invoicePk, setInvoicePk] = useState(undefined);
+
+    useEffect(() => {
+        console.log("invoiceCreate", invoiceNumber);
+    }, [invoiceNumber]);
     
+    const {
+            addTempl,
+            removeTempl
+          } = useTemplate(items, setItems, templ);
+
+
+    const {
+        submitData
+    } = useCustomMutation({
+            graphQlQuery: {
+                queryCreate: CREATE_APPLICATION,
+                queryUpdate: UPDATE_APPLICATION
+            }
+        },
+        "Заявка",
+        () => {
+            history.push("/supply/application");
+        }
+    );
+
+    const {
+        submitData: submitInvoiceData
+        } = useCustomMutation({
+            graphQlQuery: {
+                queryCreate: CREATE_INVOICE,
+                queryUpdate: UPDATE_INVOICE
+            }
+        },
+        "Инвойс",
+        () => {
+            handleClose();
+        }
+    )
+
+    useEffect(() => {
+        getFirms();
+        getOrders();
+        getTransportTypes();
+        getTrackingUserTypes();
+    }, []);
+
+    useEffect(() => {
+        if(id !== undefined){
+            getApplication({
+                variables: {
+                    id
+                }
+            });
+            getInvoices({
+                variables: {
+                    id
+                }
+            });
+        }
+    }, [id]);
+
+    useEffect(() => {
+        const application = applicationRes?.data?.application?.application;
+        
+        if(application !== undefined){
+            setState({
+                ...exceptKey(application, ["applicationItems", "__typename", "pk"]),
+                trackingUser: application.trackingUser.pk,
+                transportType: application.transportType.pk,
+                orders: application.orders.edges.map(({node}) => node.pk)
+            });
+
+            const items = getList(application.applicationItems).map(({node}) => ({
+                ...exceptKey(node, ["__typename"]),
+                firm: node?.firm?.pk,
+                invoice: node?.invoice?.pk,
+                orderItem: node?.orderItem?.pk
+            }))
+            setItems(items);
+        }
+    }, [applicationRes?.data?.application]);
+
+    useEffect(() => {
+        getOrderItems({
+            variables: {
+                orders: state.orders
+            }
+        });
+    }, [state.orders]);
+
+    const editInvoice = (id) => {
+        const invoiceToEdit = invoices.find(({node}) => node.id === id).node;
+        setInvoiceNumber(invoiceToEdit.number);
+        setInvoicePk(invoiceToEdit.pk);
+        handleOpen();
+    }
+
+    const handleInvoiceEditClose = () => {
+        setInvoiceNumber("");
+        setInvoicePk(undefined);
+        handleClose();
+    }
+
+    const handleDateChange = date => {
+        setState({...state, shippingDate: date});
+    }
+
+    const handleItemChange = (e, idx) => {
+        const tmp = items.slice(0);
+        tmp[idx][e.target.name] = e.target.value;
+        setItems(tmp);
+    }
+
+    const submitInvoice = () => {
+        invoicePk? submitInvoiceData({number: invoiceNumber}, invoicePk, id) : submitInvoiceData({number: invoiceNumber, application: pk}, undefined, id);
+    }
+
+    const handleSubmit = () => {
+        let requestBody = {
+            ...state,
+            shippingDate: moment(state.shippingDate).format("YYYY-MM-DD"),
+            typeOfPackaging: packagingTypes.find(packaging => packaging.value === state.typeOfPackaging)?.label,
+            status: statuses.find(status => status.value === state.status)?.label
+        }
+
+        requestBody.applicationItems = !pk? items.map(item => exceptKey(item, "invoice")) : items; 
+
+        if(pk){
+            submitData(exceptKey(requestBody, ["orders"]), pk)
+        }else{
+            submitData(requestBody)
+        }
+    }
 
     return (
         <>
@@ -30,60 +235,167 @@ const ApplicationCreate = () => {
                 <Title>Данные транспорта</Title>
 
                 <AddibleInput>
-                    <CustomSelector label="Тип транспорта" />
-                    <CustomInput label="Количество транспота" />
-                    <CustomSelector label="Вид упаковки" />
-                    <CustomInput label="Степнь опасности" />
-                    <CustomInput label="Количество упаковки" />
-                    <CustomInput label="Количество упаковки" />
-                    <CustomSelector label="Условие доставки" />
-                    <CustomSelector label="Человек для слежения" />
+                    <CustomSelector label="Заказы" value={state.orders} name="orders" stateChange={e => handleChange({fElem: e})} disabled={pk? true : false} multiple>
+                        {
+                            orders.map(({node}) => 
+                                <MenuItem key={node.pk} value={node.pk}>
+                                    <ListItemIcon>
+                                        <Checkbox checked={state.orders.indexOf(node.pk) > -1}/>
+                                    </ListItemIcon>
+                                    <ListItemText>{node.publicId}</ListItemText>
+                                </MenuItem>    
+                            )
+                        }
+                    </CustomSelector>
+                    <CustomSelector label="Роль" value={state.trackingUser} name="trackingUser" stateChange={e => handleChange({fElem: e})}>
+                            <MenuItem key={trackingUserType.pk} value={trackingUserType.pk} selected={true}>{trackingUserType.displayName}</MenuItem>    
+                    </CustomSelector>
+                    <CustomSelector label="Тип транспорта" value={state.transportType} name="transportType" stateChange={e => handleChange({fElem: e})}>
+                        {
+                            transportTypes.map(({node}) => 
+                                <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.transportType}>{node.name}</MenuItem>    
+                            )
+                        }
+                    </CustomSelector>
+                    <CustomSelector label="Условия доставки" value={state.deliveryCondition} name="deliveryCondition" stateChange={e => handleChange({fElem: e})}>
+                        {
+                            deliveryCondition.map(condition => 
+                                <MenuItem key={condition.value} value={condition.label} selected={state.deliveryCondition === condition.value}>{condition.label}</MenuItem>    
+                            )
+                        }
+                    </CustomSelector>
+                    <CustomSelector label="Тип упаковки" name="typeOfPackaging" value={state.typeOfPackaging} stateChange={e => handleChange({fElem: e})}>
+                        {
+                            packagingTypes.map(packaging => {
+                                    return <MenuItem key={packaging.value} value={packaging.value} selected={state.typeOfPackaging === packaging.value}>{packaging.label}</MenuItem>    
+                                }
+                            )
+                        }
+                    </CustomSelector>
+                    <CustomInput label="уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({fElem: e})}/>
+                    <CustomNumber label="Кол-во на поддоне" value={state.packageOnPallet} name="packageOnPallet" stateChange={e => handleChange({fElem: e})} />
+                    <CustomNumber label="Кол-во транспорта" value={state.transportCount} name="transportCount" stateChange={e => handleChange({fElem: e})} />
+                    <CustomPicker label="Дата отгрузки" date={state.shippingDate} name="shippingDate" stateChange={date => handleDateChange(date)} />
+                    <CustomSelector label="Статус" name="status" value={state.status} stateChange={e => handleChange({fElem: e})}>
+                        {
+                            statuses.map(status => {
+                                    return <MenuItem key={status.label} value={status.value} selected={state.status === status.value}>{status.label}</MenuItem>    
+                                }
+                            )
+                        }
+                    </CustomSelector>
                 </AddibleInput>
+                <p>
+                    <label htmlFor="transportMix">Комбинированный транспорт</label>
+                    <Switch id="transportMix" name="transportMix" onChange={e => handleChange({fElem: e, type: "choice"})} checked={state.transportMix} />
+                </p>
 
                 <DragFile />
 
                 <Header>
                     <Title>Материал</Title>
-                    <Button name="Добавить материал" color="#5762B2" />
+                    <Button name="Добавить материал" color="#5762B2" clickHandler={addTempl} />
                 </Header>
+                {
+                    items?.map((item, index) => {
 
-                <Material>
-                    <CustomLongInput label="Выберите материал" />
-                    <RowWrapper>
-                        <Row>
-                            <CustomSelectorAdd label="Номер инвойса">
-                                <EditableMenuItem stateChange={() => {}} override={{value: 1, selected: false}}>
-                                        saSDADSAD
-                                </EditableMenuItem>
-                                <EditableMenuItem stateChange={() => {}} override={{value: 2, selected: true}}>
-                                        DFGDFGDF
-                                </EditableMenuItem>
-                            </CustomSelectorAdd>
-                            <CustomInput label="Отгружаемое кол-во" />
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomSelector label="Получатель" />
-                        </Row>
+                    return  <Material>
+                                <RowWrapper>
+                                    <Row>
+                                        <CustomSelector label="Мат, заказа"  value={item.orderItem} name="orderItem" stateChange={e => handleItemChange(e, index)}>
+                                            {
+                                                orderItems.map(({node}) => 
+                                                    <MenuItem key={node.pk} value={node.pk} selected={node.pk === item.orderItem}>{node.vendorProduct?.product?.name}</MenuItem>    
+                                                )
+                                            }
+                                        </CustomSelector>
+                                        <CustomSelector label="Фирма"  value={item.firm} name="firm" stateChange={e => handleItemChange(e, index)}>
+                                            {
+                                                firms.map(({node}) => 
+                                                    <MenuItem key={node.pk} value={node.pk} selected={node.pk === item.firm}>{node.name}</MenuItem>
+                                                )
+                                            }
+                                        </CustomSelector>
+                                        <CustomSelectorAdd label="Номер инвойса" value={item.invoice} name="invoice" stateChange={e => handleItemChange(e, index)} disabled={!pk? true : false} openModal={handleOpen}>
+                                            {
+                                                invoices.map(({node}) => 
+                                                    <CheckedMenuItem key={node.pk} value={node.pk} selected={node.pk === item.invoice}>
+                                                        {node.number}    
+                                                        <button className="editBtn" onClick={() => editInvoice(node.id)}></button>
+                                                    </CheckedMenuItem>
+                                                )
+                                            }
+                                        </CustomSelectorAdd>
+                                        <CustomInput label="Кол-во" value={item.count} name="count" stateChange={e => handleItemChange(e, index)} />
+                                    </Row>
 
-                        <Row>
-                            <CustomInput label="Цена" />
-                            <CustomInput label="Отгружаемое кол-во" />
-                            <CustomSelector label="Номер инвойса" />
-                            <CustomSelector label="Получатель" />
-                        </Row>
-                    </RowWrapper>
-                    <RemoveIcon />
-                </Material>
+                                    <Row>
+                                        <CustomNumber fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} />
+                                        <CustomNumber fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} />
+                                        <CustomNumber fullWidth label="Цена инвойса"  value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
+                                    </Row>
+                                </RowWrapper>
+                                <RemoveIcon clicked={() => removeTempl(index)}/>
+                            </Material>
+                    })
+                }
             </Form>
+            <SmallDialog title="Cоздание нового инвойса" close={handleInvoiceEditClose} isOpen={open}>
+                <CustomInput label="Номер инвойса" value={invoiceNumber} name="number" stateChange={e => setInvoiceNumber(e.target.value)} />
+                <Button name={invoicePk? "сохранить" : "создать"} color="#5762B2" clickHandler={submitInvoice} />
+            </SmallDialog>
 
             <Footer>
-                <span>Кол-во материалов: 6</span>
-                <Button name="Создать Заявки" />
+                <span>Кол-во материалов: {items?.length}</span>
+                <Button name={pk? "Сохранить" : "Создать"} clickHandler={handleSubmit} />
             </Footer>
         </>
     )
 }
 
 export default ApplicationCreate;
+
+const CheckedMenuItem = styled(MenuItem)`
+    color: ${({selected}) => selected? "#5762B2" : "rgba(0, 0, 0, .5)"} !important;
+    font-weight:normal !important;
+    transition:color .3s linear !important;
+
+    &::after{
+        content: "";
+        background-image:${({selected}) => selected? `url(${CheckMarkIcon})` : "none"};
+        position:absolute;
+        top:calc(50%-16px);
+        right:35px;
+        z-index:5;
+        display:inline-block;
+        width:20px;
+        height:20px;
+    }
+
+    &:hover{
+        color:#000 !important;
+    }
+
+    &:hover .editBtn{
+        background-image: url(${EditHoveredIcon});
+    }
+
+    .editBtn{
+        width:20px;
+        height:20px;
+        display:inline-block;
+        position:absolute;
+        top:calc(50% - 10px);
+        z-index:9999;
+        right:5px;
+        background-color:transparent;
+        background-image: ${({selected}) => selected? `url(${EditSelectedIcon})` : `url(${EditDefaultIcon})`};
+        background-size:cover;
+        border:none;
+        outline:none;
+        transition:background-image .3s linear;
+    }
+`;
 
 const Title = styled.div`
     font-size: 18px;

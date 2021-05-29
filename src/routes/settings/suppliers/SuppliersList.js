@@ -5,7 +5,6 @@ import { generateColumns } from "./TableData";
 import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
 import { ButtonWithIcon } from "../../../components/Buttons";
-import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
 import { useMemo } from "react";
@@ -42,20 +41,20 @@ const SuppliersList = ({ match }) => {
 
     const vendors = getList(dataPaginationRes?.data) || [];
     const list = vendors.map(({ node }) => {
-        return {
-           id: node.id,
-           name: node.name,
-           companyName: node.companyName,
-           sapCountry: node.sapCountry?.name,
-           sapAccountGroup: node.sapAccountGroup?.name,
-           phoneNumber: node.phoneNumber,
-           street: node.street,
-           house: node.house,
-           postcode: node.postcode,
-           sapOkonkh: node.sapOkonkh,
-           sapCity: node.sapCity
-        }
-    });
+            return {
+               id: node.id,
+               name: node.name,
+               companyName: node.companyName,
+               sapCountry: node.sapCountry?.name,
+               sapAccountGroup: node.sapAccountGroup?.name,
+               phoneNumber: node.phoneNumber,
+               street: node.street,
+               house: node.house,
+               postcode: node.postcode,
+               sapOkonkh: node.sapOkonkh,
+               sapCity: node.sapCity
+            }
+        });
 
     const { url } = match;
     const columns = useMemo(() => generateColumns(url) , []);
@@ -64,8 +63,7 @@ const SuppliersList = ({ match }) => {
         <>
             <Helmet title={title} />
             <FlexForHeader>
-                <DatePickers mR="15px" />
-                <ButtonWithIcon name="Создать партнерв" url={`${match.url}/create`} />
+                <ButtonWithIcon name="Создать партнера" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable
                 title={"Список всех партнеров"}

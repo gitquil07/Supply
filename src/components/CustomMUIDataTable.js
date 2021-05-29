@@ -1,4 +1,6 @@
+import React from "react"; 
 import MUIDataTable from "mui-datatables";
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import styled from "styled-components";
 
 import SearchIcon from '@material-ui/icons/YoutubeSearchedFor';
@@ -6,8 +8,21 @@ import PrintIcon from '@material-ui/icons/Receipt';
 import DownloadIcon from '@material-ui/icons/GetApp';
 import ViewColumnIcon from '@material-ui/icons/DynamicFeed';
 import FilterIcon from '@material-ui/icons/GroupWork';
+import { Height } from "@material-ui/icons";
 
-export const CustomMUIDataTable = ({count, title, data, columns }) => {
+export const CustomMUIDataTable = React.memo(({count, title, data, columns }) => {
+
+    const getMuiTheme = () => createMuiTheme({
+        overrides: {
+            MUIDataTable: {
+                responsiveBase: {
+                    maxHeight:"693px"
+                }
+          }
+        }
+      })
+
+    console.log("custom table rendered");
 
     const options = {
         filterType: 'dropdown',
@@ -26,15 +41,19 @@ export const CustomMUIDataTable = ({count, title, data, columns }) => {
         }
     };
     return (
-        <StyledMUIDataTable
-            title={title}
-            data={data}
-            columns={columns}
-            options={options}
-            {...{ components }}
-        />
+        <MuiThemeProvider theme={getMuiTheme()}>
+            <StyledMUIDataTable
+                title={title}
+                data={data}
+                columns={columns}
+                options={options}
+                {...{ components }}
+            />
+        </MuiThemeProvider>
     )
-}
+
+}, (prevProps, nextProps) => prevProps.count === nextProps.count && prevProps.title === nextProps.title && prevProps.data === nextProps.data && prevProps.columns === nextProps.columns);
+
 
 const StyledMUIDataTable = styled(MUIDataTable)`
 
@@ -65,7 +84,6 @@ const StyledMUIDataTable = styled(MUIDataTable)`
             }
         }
     }
- 
 
     .MUIDataTableSelectCell-root-35 {
         display: none;
@@ -96,6 +114,7 @@ const StyledMUIDataTable = styled(MUIDataTable)`
             }
         }
     }
+
 
     tbody tr td {
         padding: 15px 10px; 

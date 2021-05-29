@@ -17,7 +17,6 @@ import { UPDATE_PRODUCT, UPDATE_PRODUCT_GROUP } from "./gql";
 import { measureOptions, packagingTypes } from "../../../utils/static";
 import { recursiveFetch, addProp } from "../../../utils/functions"; 
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { getOne } from "../../../api";
 import { showNotification } from "../../../utils/functions";
 import { useHistory } from "react-router-dom";
 import { NotificationManager } from "react-notifications";
@@ -30,25 +29,23 @@ const ProductCreate = ({match}) => {
     const { id } = match.params,
           history = useHistory();
 
-    const memoizedTempl = useMemo(() => {
-        return   {
+    const templ = {
             name: "",
             code: "",
             codeTnved: "",
             measure: "",
             typeOfPackaging: "",
             group: ""
-        }
-    }, []);
+        };
     
     const [products, setProducts] = useState([
-        memoizedTempl
+        templ
     ]);
 
     const {
         addTempl,
         removeTempl
-    } = useTemplate(products, setProducts, memoizedTempl);
+    } = useTemplate(products, setProducts, templ);
     
     const [groupCreate, setGroupCreate] = useState({
         name: "",
@@ -139,7 +136,14 @@ const ProductCreate = ({match}) => {
     // Will launch after (save) button clicked
     function launchProductsCreate(data){
         const res = addProp(products, "group", data.product.productGroupCreate.productGroup.pk),
-              recursiveMutation = recursiveFetch(res, createProduct);
+              recursiveMutation = recursiveFetch(res.length, (turn) => createProduct({
+                variables: {
+                    input: {
+                        data: data[turn]
+                    }
+                }
+            })
+        );
         recursiveMutation();
     }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {  useEffect, useMemo } from "react";
 import { CustomSelector } from "../../../components/Inputs/CustomSelector";
 import CustomPicker from "../../../components/Inputs/DatePicker";
 import { Form } from "../../../components/Form";
@@ -46,29 +46,28 @@ const FactoryCreate = ({ match }) => {
           [getVendorFactory, vendorFactoryRes] = useLazyQuery(GET_VENDOR_FACTORY),
           [getDependentMaterials, dependentMaterialsRes] = useLazyQuery(GET_VENDOR_DEPENDENT_PRODUCT);
 
-    const factoriesFull = getList(factoriesRes?.data) || [], 
-          factories = factoriesFull.map(({node}) => {
+    const factoriesFull = useMemo(() => getList(factoriesRes?.data), [factoriesRes?.data]) || [], 
+          factories = useMemo(() => factoriesFull.map(({node}) => {
               const obj = exceptKey(node, ["__typename"]);
               return obj;
-          });
+          }), [factoriesFull]);
 
-    const vendorsFull = getList(vendorsRes?.data) || [],
-          vendors = vendorsFull.map(({node}) => {
+    const vendorsFull = useMemo(() => getList(vendorsRes?.data), [vendorsRes?.data]) || [],
+          vendors = useMemo(() => vendorsFull.map(({node}) => {
               const obj = exceptKey(node, ["__typename"]);
               return obj; 
-          });
+          }), [vendorsFull]);
 
     const vendorFactory = vendorFactoryRes?.data?.vendor?.vendorFactory,
           pk = vendorFactory?.pk;
 
-    const dependentMaterials = dependentMaterialsRes?.data?.vendor?.vendorProducts?.edges.map(({node}) => {
-            const obj = exceptKey(node, ["__typename", "vendorFactory"]);
+    const dependentMaterials = useMemo(() => getList(dependentMaterialsRes?.data)?.map(({node}) => {
             return {
-                ...obj,
+                ...exceptKey(node, ["__typename", "vendorFactory"]),
                 factory: node.vendorFactory.factory?.name,
                 product: node.product?.name
             }
-    });
+    }), [dependentMaterialsRes?.data]);
 
     const { submitData } = useCustomMutation({
             graphQlQuery: {

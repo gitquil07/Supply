@@ -9,11 +9,7 @@ export const Supply = [
         url: "/supply/order"
     },
     {
-        name: "Поставщики",
-        url: "#"
-    },
-    {
-        name: "Заявки на транспортзы",
+        name: "Заявки на транспорты",
         url: "/supply/application"
     },
     {
@@ -108,6 +104,14 @@ export const Settings = [
     {
         name: "Поставщики",
         url: "/settings/vendor-factories"
+    },
+    {
+        name: "Транспорт",
+        url: "/settings/transports"
+    },
+    {
+        name: "Фирмы",
+        url: "/settings/firms"
     }
 ];
 

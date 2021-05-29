@@ -3,14 +3,25 @@ import Customs from "./customs";
 import Settings from "./settings";
 import Supply from "./supply";
 import Tracking from "./tracking";
+import StockBalance from "./stockBalance";
+import Plan from "./plan";
+
+console.log("Plan", Plan);
 
 const Routes = () => {
+
     return (
         <Switch>
+            <Route path="/" exact>
+                saas
+            </Route>
             <Route path="/tracking" component={Tracking} />
             <Route path="/supply" component={Supply} />
             <Route path="/customs" component={Customs} />
             <Route path="/settings" component={Settings} />
+            <Route path="/stock-balance" component={StockBalance} />
+            <Route path="/plan-product" component={Plan} />
+            <Route render={() => <h1>Page not found</h1>} />
         </Switch>
     );
 };

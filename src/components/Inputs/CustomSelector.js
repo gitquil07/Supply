@@ -6,36 +6,42 @@ import Select from '@material-ui/core/Select';
 import Arrow from "../../assets/icons/arrow.svg";
 import MenuItem from "@material-ui/core/MenuItem";
 
-export const CustomSelector = ({ name, label, disabled, fullWidth, short, value, stateChange, children }) => {
+export const CustomSelector = ({ name, label, disabled, defaultValue, fullWidth, short, value, stateChange, children, multiple, errorVal}) => {
+
+    const props = {
+        labelId: "demo-simple-select-outlined-label",
+        id: "demo-simple-select-outlined",
+        name,
+        value,
+        disabled,
+        defaultValue,
+        onChange: stateChange
+    };
+
+    if(multiple){
+        props.multiple = true;
+        props.renderValue = selected => selected.join(", ");
+    }
 
     return (
-        <Wrapper short={short} fullWidth={fullWidth}>
+        <Wrapper short={short} fullWidth={fullWidth} errorVal={errorVal}>
             <FormControl variant="outlined" id="formControl">
                 <img src={Arrow} alt="arrow" id="arrow" />
                 <InputLabel id="label">{label}</InputLabel>
-                <Select
-                    labelId="demo-simple-select-outlined-label"
-                    id="demo-simple-select-outlined"
-                    value={value}
-                    label="Age"
-                    name={name}
-                    onChange={stateChange}
-                    disabled={disabled}
-                >
-                    {children}
-                </Select>
+                    <Select {...props} >{children}</Select>
             </FormControl>
         </Wrapper>
     );
+
 };
 
 
-export const CustomSelectorAdd = ({ name, label, disabled, fullWidth, short, value, stateChange, children }) => {
+export const CustomSelectorAdd = ({ name, label, disabled, fullWidth, short, value, stateChange, openModal, children, errorVal}) => {
     return (
-        <Wrapper short={short} fullWidth={fullWidth}>
+        <Wrapper short={short} fullWidth={fullWidth} errorVal={errorVal} >
             <FormControl variant="outlined" id="formControl">
                 <img src={Arrow} alt="arrow" id="arrowSec" />
-                <button className="add" >
+                <button className="add" disabled={disabled} onClick={openModal}>
                     <span className="circle"></span>
                 </button>
                 <InputLabel id="label">{label}</InputLabel>
@@ -143,6 +149,11 @@ const Wrapper = styled.div`
         right:45px;
     }
 
+    .add:disabled{
+        cursor: auto;
+        background-color: rgba(87, 98, 178, 0.2);
+    }   
+
     .add{
         position:absolute;
         width:30px;
@@ -202,8 +213,12 @@ const Wrapper = styled.div`
             background: #fff;
         }
 
+        .MuiInputBase-root .MuiSelect-root .editBtn {
+            display:none;
+        }
+
         fieldset {  
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            border: 1px solid ${({errorVal}) => !errorVal? `rgba(0, 0, 0, 0.1) !important` : `red`};
         }    
 
         .MuiInputBase-root svg {

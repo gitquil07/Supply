@@ -1,7 +1,6 @@
-import { propEq, find } from "ramda";
-import { Link } from "react-router-dom";
+import moment from "moment";
 
-export const generateColumns = (url, list) => {
+export const generateColumns = (callback) => {
     const options = {
         filter: true,
         sort: false
@@ -9,33 +8,38 @@ export const generateColumns = (url, list) => {
 
     return [
         {
-            name: "public_id",
+            name: "publicId",
             label: "№",
             options: {
                 filter: true,
-                customBodyRender: (value, tableMeta, updateValue) => {
-                    const id = find(propEq("public_id", value))(list);
-                    return <Link to={`${url}/create/${id?.id}`}>{value}</Link>;
+                customBodyRender: (value) => {
+                    return <a href="#" onClick={() => {
+                        callback(value.id)
+                        return false
+                    }}>{value.publicId}</a>;
                 },
             },
         },
         {
-            name: "",
+            name: "createdAt",
             label: "Дата создание",
-            options: options
+            options: {
+                ...options,
+                customBodyRender: value => moment(value).format("YYYY-MM-DD")
+            }
         },
         {
-            name: "",
-            label: "Тип транспорта / Кол-во",
-            options: options
+            name: "transportType",
+            label: "Тип транспортировки",
+            options
         },
         {
-            name: "",
+            name: "typeOfPackaging",
             label: "Вид упаковки / Кол-во",
-            options: options,
+            options
         },
         {
-            name: "",
+            name: "trackingUser",
             label: "Человек для слежения",
             options: options
         }

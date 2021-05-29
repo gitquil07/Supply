@@ -1,30 +1,26 @@
-import { propEq, find } from "ramda";
 import { Link } from "react-router-dom";
+import { Row } from "components/Row";
+import moment  from "moment";
 
-export const generateColumns = (url, list) => {
+export const generateColumns = (url) => {
     return [
         {
-            name: "public_id",
+            name: "publicId",
             label: "№",
             options: {
                 filter: true,
-                customBodyRender: (value, tableMeta, updateValue) => {
-                    const id = find(propEq("public_id", value))(list)
-                    return (
-                        <Link to={`${url}/create/${id?.id}`}>
-                            {value}
-                        </Link>
-                    );
-
+                customBodyRender: (value) => {
+                    return <Link to={`${url}/edit/${value.id}`}>{value.publicId}</Link> 
                 }
             }
         },
         {
-            name: "created_at",
+            name: "createdAt",
             label: "Дата создания заявки",
             options: {
                 filter: true,
                 sort: false,
+                customBodyRender: value => moment(value).format("YYYY-MM-DD")
             }
         },
         {
@@ -33,6 +29,16 @@ export const generateColumns = (url, list) => {
             options: {
                 filter: true,
                 sort: false,
+                customBodyRender: (value) => {
+                    return (
+                        <>
+                            <Row>
+                                <b>{value.vendor}</b>
+                            </Row>
+                            {value.trNumber}
+                        </>
+                    )
+                }
             }
         },
         {
@@ -44,7 +50,7 @@ export const generateColumns = (url, list) => {
             }
         },
         {
-            name: "amount",
+            name: "note",
             label: "Примечание",
             options: {
                 filter: true,

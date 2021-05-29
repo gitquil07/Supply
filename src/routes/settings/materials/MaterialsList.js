@@ -7,7 +7,6 @@ import { useTitle } from "../../../hooks";
 import { FlexForHeader } from "../../../components/Flex";
 import { Pagination } from "../../../components/Pagination";
 import { ButtonWithIcon } from "../../../components/Buttons";
-import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { exceptKey } from "../../../utils/functions";
 import { usePagination } from "../../../hooks";
@@ -47,7 +46,6 @@ const MaterialsList = ({ match }) => {
     const vendorProducts = getList(dataPaginationRes?.data) || [];
     const list = vendorProducts.map(({node}) => {
         const obj = exceptKey(node, ["__typename", "vendorFactory", "product", "productionDayCount", "deliveryDayCount"]);
-        console.log(obj);
         return {
             ...obj,
             vendorFactoryProduct: node.vendorFactory?.factory?.name  + " / " + node.vendorFactory?.vendor?.name + "\n" + node.product?.name,  
@@ -63,7 +61,7 @@ const MaterialsList = ({ match }) => {
         <>
             <Helmet title={title} />
             <FlexForHeader>
-                <DatePickers mR="15px" />
+                {/* <DatePickers mR="15px" /> */}
                 <ButtonWithIcon name="Создать материал" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable

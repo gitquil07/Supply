@@ -1,24 +1,87 @@
 import { gql } from "@apollo/client";
 
-export const GET_NEW_CUSTOMS = gql`
-query MyQuery($fromDate: Date, $toDate: Date) {
-    application {
-      applications(fromDate: $fromDate, toDate: $toDate) {
-        edges {
-          node {
-            publicId
-            degreeOfDanger
-            deliveryCondition
-            packageOnPallet
-            transportCount
-            status
-            createdAt
-            updatedAt
-            typeOfPackaging
+export const CUSTOMS = gql`
+query getCustoms($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $after: String, $before: String) {
+  custom {
+    customs(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before, isNew: true) {
+      edges {
+        node {
+          id
+          publicId
+          mode
+          declarantNote
+          contractorNote
+          createdAt
+          invoice {
+            application {
+              transportType {
+                name
+              }
+              orders {
+                edges {
+                  node {
+                    vendorFactory {
+                      vendor {
+                        name
+                      }
+                      factory {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
+          pk
         }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
       }
     }
   }
-  
+}
+
+`;
+
+export const UPDATE_CUSTOM = gql`
+mutation updateVendor($input: CustomUpdateMutationInput!) {
+    custom {
+      customUpdate(input: $input) {
+        ok
+        errors
+      }
+    }
+  }
+`;
+
+export const GET_CUSTOM = gql`
+query getCustom($id: ID!) {
+    custom {
+      custom(id: $id) {
+        pk
+        mode
+        post
+        sst
+        registrationAmount
+        status
+        declarantNote
+        contractorNote
+      }
+    }
+  }  
+`; 
+
+export const GET_PLAN = gql`
+query getTemplate {
+  core {
+    templates {
+      planProductTemplate
+    }
+  }
+}
 `;
