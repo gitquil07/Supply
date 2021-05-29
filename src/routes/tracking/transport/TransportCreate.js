@@ -23,15 +23,18 @@ import { GrayishBackground, MiniForm } from "components/ComponentsForForm/MiniFo
 import { InputsWrapper } from "components/ComponentsForForm/InputsWrapper";
 import { Title } from "components/Title";
 import { CustomizableInputs } from "components/ComponentsForForm/CustomizableInputs";
-import { GET_TRACKING, GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS, GET_VENDORS, GET_INVOICES } from "./gql";
+import { GET_TRACKING, GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS, GET_VENDORS, GET_INVOICES, INVOICE_UPDATE } from "./gql";
 import { useLazyQuery } from "@apollo/client";
-import { exceptKey } from "utils/functions";
+import { recursiveFetch, exceptKey } from "utils/functions";
 import { trackingStatuses } from "utils/static";
 import { useFormData, useCustomMutation } from "hooks";
 import { useHistory } from "react-router-dom";
 import { UPDATE_TRACKING } from "./gql"
+import { invoiceStatuses } from "utils/static";
 import MenuItem from "@material-ui/core/MenuItem";
 import moment from "moment";
+import { useMutation } from "@apollo/client";
+import { NotificationManager } from "react-notifications";
 
 
 const initialState = {
@@ -96,13 +99,35 @@ const TrackingTransportCreate = ({ match }) => {
         },
         "Данные",
         () => {}
+    );
+
+
+    const [updateTracking] = useMutation(UPDATE_TRACKING, {
+        refetchQueries: [{
+            query: GET_TRACKING
+        }],
+        onCompleted: () => NotificationManager.success("Стату слежения изменен"),
+        onError: (error) => NotificationManager.error(error.message) 
+    });
+
+    const {
+        submitData: submitInvoiceUpdate
+    } = useCustomMutation({
+            graphQlQuery: {
+                queryCreate: INVOICE_UPDATE,
+                queryUpdate: INVOICE_UPDATE
+            }
+        },
+        "Инвойс",
+        () => {}
     )
+
 
     
     const [getTrackingInfo, trackingInfoRes] = useLazyQuery(GET_TRACKING),
           [getVendors, vendorsRes] = useLazyQuery(GET_VENDORS),
           [getApplicationItemsGroupedByOrder, applicationItemsGroupedByOrderRes] = useLazyQuery(GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS),
-          [getInvoices, invpoicesRes] = useLazyQuery(GET_INVOICES),
+          [getInvoices, invoicesRes] = useLazyQuery(GET_INVOICES),
 
 
           vendors = vendorsRes?.data?.vendor?.vendors.edges || [],
@@ -113,7 +138,6 @@ const TrackingTransportCreate = ({ match }) => {
             return obj;
           }) || [],
           applicationInfo = trackingInfoRes?.data?.tracking?.tracking?.application,
-          invoices = invpoicesRes?.data?.edges?.node || [],
           pk = trackingInfoRes?.data?.tracking?.tracking?.pk,
           applicationItems = applicationItemsGroupedByOrderRes?.data?.application?.application?.orders?.edges?.map(({node}) => {
               return {
@@ -125,7 +149,6 @@ const TrackingTransportCreate = ({ match }) => {
                   })
               }
           });
-
 
 
     useEffect(() => {
@@ -186,8 +209,34 @@ const TrackingTransportCreate = ({ match }) => {
                         }]
                     };
                     submitAdditionalData(requestBody, pk);
+                    // console.log("sad");
+                    // updateTracking({
+                    //     variables: {
+                    //         data: requestBody,
+                    //         pk
+                    //     }
+                    // });
+
         }else{
             console.log("requestBody", state);
+
+
+            const invoicesToUpdate = invoiceList.map(invoice => {
+                return {
+                    ...exceptKey(invoice, ["pk"]),
+                    status: invoiceStatuses.find(invoiceStatus => invoiceStatus.value == invoice.status).label
+                }
+            });
+
+            
+            const invoicesPk = invoiceList.map(invoice => invoice.pk);
+            
+            const recursiveMutation = recursiveFetch(invoicesToUpdate.length, (turn) => {
+                submitInvoiceUpdate(invoicesToUpdate[turn], invoicesPk[turn])   
+            });
+
+            recursiveMutation();
+            
             submitData(exceptKey(state, ["note", "pk", "status"]), pk);
             getTrackingInfo({
                 variables: {
@@ -198,6 +247,31 @@ const TrackingTransportCreate = ({ match }) => {
     }
 
 
+    const [invoiceList, setInvoiceList] = useState([]);
+
+    useEffect(() => {
+        const list = invoicesRes?.data?.application?.application?.invoices.edges || [];
+        console.log("list", list);
+        if(list.length > 0){
+            const obj = list.map(({node}) => {
+                return {
+                    ...exceptKey(node, ["__typename"]),
+                }
+            }) 
+
+            setInvoiceList(obj);
+        }
+    }, [invoicesRes?.data?.application?.application?.invoices?.edges.length]);
+
+    useEffect(() => {
+        console.log("invoice list", invoiceList);
+    }, [invoiceList]);
+
+    const handleInvoiceFieldsChange = (e, idx) => {
+        const tmp = invoiceList.slice(0);
+        tmp[idx][e.target.name] = e.target.value;
+        setInvoiceList(tmp);
+    }
 
     const expand = (index) => {
         const oldState = [...applications];
@@ -237,7 +311,20 @@ const TrackingTransportCreate = ({ match }) => {
                 <MiniForm>
                     <Title size="18">Инвойсы</Title>
                     {
-                        invoices.map(({node}) => <p>{node.number}</p>)
+                        invoiceList.map((invoice, idx) => 
+                            <CustomizableInputs t="1fr 1fr 1fr">
+                                <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
+                                <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
+                                    {
+                                        invoiceStatuses.map(invoiceStatus => 
+                                            <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status == invoiceStatus.value}>{invoiceStatus.label}</MenuItem>    
+                                        )
+                                    }
+                                </CustomSelector>
+                                <CustomInput name="destination" label="Место" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination} />
+                            </CustomizableInputs>
+
+                        )
                     }
 
                     {/* <CustomizableInputs t="1fr 1fr 2fr">
@@ -250,9 +337,9 @@ const TrackingTransportCreate = ({ match }) => {
                         <CustomInput label="Вид оплаты" />
                     </CustomizableInputs> */}
 
-                    <Title size="18">Статус слежения: <span>873264923</span></Title>
+                    <Title size="18">Статус слежения: <span>{trackingInfo?.publicId}</span></Title>
 
-                    <CustomizableInputs t="1fr 1fr 2fr .5fr">
+                    <CustomizableInputs t="1fr 1fr 1fr 1fr">
                         <CustomSelector name="status" value={additionalData.status} stateChange={e => setAdditionalData({...additionalData, status: e.target.value})}  label="Статус">
                             {
                                 trackingStatuses.map(status => 
@@ -262,7 +349,7 @@ const TrackingTransportCreate = ({ match }) => {
                         </CustomSelector>
                         <CustomPicker date={additionalData.trDate} name="trDate" stateChange={date => setAdditionalData({...additionalData, trDate: date})} label="Дата" />
                         <CustomInput value={additionalData.location} name="location" stateChange={e => setAdditionalData({...additionalData, locations: e.target.value})} label="Местонахождение" />
-                        <Button value={additionalData.status} name="Добавить статус" color="#5762B2" clickHandler={() => handleAdditionalDataSubmit(true)} />
+                        <Button value={additionalData.status} name="Добавить местонахождение" color="#5762B2" clickHandler={() => handleAdditionalDataSubmit(true)} />
                     </CustomizableInputs>
 
                     <Container>
@@ -275,7 +362,7 @@ const TrackingTransportCreate = ({ match }) => {
                                     </ContainerColumn>
                                     <ContainerColumn>
                                         <b>Дата:</b>
-                                        <span>{location.createdAt}</span>
+                                        <span>{moment(location.createdAt).format("YYYY-MM-DD")}</span>
                                     </ContainerColumn>
                                     <ContainerColumn>
                                         <b>Местонахождение:</b>
@@ -451,7 +538,7 @@ const TrackingTransportCreate = ({ match }) => {
                                 <Button name="Добавить статус" color="#5762B2" />
                             </Inputs>
 
-                            // <TableIII />
+                            // <TableIII />,
 
                             <Material>
                                 <FlexForHeader m="20px 0">
@@ -481,8 +568,7 @@ const TrackingTransportCreate = ({ match }) => {
 
             </Form>
 
-            <Footer>
-                <span>Кол-во материалов: 6</span>
+            <Footer justify="flex-end">
                 <Button name="сохранить" clickHandler={() => handleAdditionalDataSubmit()} />
             </Footer>
 

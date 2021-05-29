@@ -136,7 +136,14 @@ const ProductCreate = ({match}) => {
     // Will launch after (save) button clicked
     function launchProductsCreate(data){
         const res = addProp(products, "group", data.product.productGroupCreate.productGroup.pk),
-              recursiveMutation = recursiveFetch(res, createProduct);
+              recursiveMutation = recursiveFetch(res.length, (turn) => createProduct({
+                variables: {
+                    input: {
+                        data: data[turn]
+                    }
+                }
+            })
+        );
         recursiveMutation();
     }
 

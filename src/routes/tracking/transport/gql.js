@@ -31,6 +31,7 @@ query getTrackingInfo($id: ID!) {
   tracking {
     tracking(id: $id) {
       pk
+      publicId
       vendor {
         name
         pk
@@ -146,10 +147,23 @@ query getInvoices($id: ID!) {
       invoices(application: $id) {
         edges {
           node {
+            pk
             number
+            destination
+            status
           }
         }
       }
+    }
+  }
+}`;
+
+export const INVOICE_UPDATE = gql`
+mutation updateInvoice($input: InvoiceUpdateMutationInput!){
+  application{
+    invoiceUpdate(input: $input){
+      ok
+      errors
     }
   }
 }`;

@@ -308,3 +308,44 @@ export const trackingStatuses = [
         value: "PEREDANO"
     }
 ];
+
+export const invoiceStatuses = [
+    {
+        label: "в ожидании",
+        value: "V_OZHIDANII"
+    },
+    {
+        label: "в растаможке",
+        value: "V_RASTAMOZHKE"
+    },
+    {
+        label: "удален",
+        value: "UDALEN"
+    }
+];
+
+
+export const generalReportColorSchema = {
+    "Дата": {
+        single: {
+            colorClass: "white" 
+        },
+    },
+    "Общие данные": {
+        combination:{
+            colorClasses: "red yellow",
+            type: "simple-devision" 
+        }   
+    },
+    "Танспортировка": {
+        single: {
+            colorClass: "white"
+        }
+    },
+    "Планируемый прогноз": {
+        combination: {
+            colorClasses: "yellow red",
+            type: "outline"
+        }
+    }
+}

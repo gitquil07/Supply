@@ -27,18 +27,12 @@ export const setTitleWithDateRange = (name, fromDate, toDate, format) => {
 
 // } 
 
-export const recursiveFetch = (data, mutateFunc) => {
+export const recursiveFetch = (amount, mutateFunc) => {
     let i = 0;
     return function fetch() {
-        if (i < data.length) {
+        if (i < amount) {
             console.log("i", i);
-            mutateFunc({
-                variables: {
-                    input: {
-                        data: data[i]
-                    }
-                }
-            })
+            mutateFunc(i)
             i++;
             fetch();
         } else {
@@ -148,5 +142,10 @@ export const findValue = (element, num) => {
 }
 
 export const goToNewLine = (element) => {
-    return element.split("\n").map((e, i) => <p key={i} style={{margin: "0", lineHeight: "1.5"}}>{e}</p>);
+    return element.split("\n").map((e, i) => <p key={i} style={{margin: "0", lineHeight: "1.5"}}>
+        {
+            // (element.length > 20 && !element.includes("\n")) ?  element.substring(0, 25) + "..." : element
+            element                
+         }
+    </p>);
 }

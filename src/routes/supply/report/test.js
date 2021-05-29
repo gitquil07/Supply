@@ -1,12 +1,16 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { useLazyQuery } from '@apollo/client';
-import { GET_TABLE_BODY } from "./gql"
+import { GET_TABLE_BODY } from "./gql";
+import { generalReportColorSchema } from "utils/static";
+import { goToNewLine } from "utils/functions";
+import { useTitle } from "hooks";
 
 const TestTable = () => {
     const [getTableData, tableData] = useLazyQuery(GET_TABLE_BODY);
     const body = tableData?.data?.report?.generalReport?.data?.body || [];
     const columns = tableData?.data?.report?.generalReport?.data?.columns || [];
+    const title = useTitle("Отчёт");
 
     useEffect(() => {
         getTableData();
@@ -17,6 +21,19 @@ const TestTable = () => {
             {/* <TableHeader columns={columns} />
             <TableBody tableData={body} /> */}
         </ReportTable>
+    )
+}
+
+const WithBadge = (str) => {
+
+    const endIndex = str.indexOf("закупке") > -1?  str.indexOf("закупке") + "закупке".length : str.indexOf("прогноз") > -1?  str.indexOf("прогноз") + "прогноз".length : undefined, 
+          desc = endIndex? str.slice(0, endIndex) : str,
+          date = endIndex && str.slice(endIndex);
+
+    return (
+        <>
+            {desc} {date && <span className="badge">{date}</span>}
+        </>
     )
 }
 
@@ -37,7 +54,7 @@ const ReportTable = ({columns, tableData}) => {
                                         row.map((col, colIdx) => {
                                             const rep =  pos == 0? row.filter(r => r == col).length - 1 : row.filter(r => r == col).length;
                                             if(colIdx == rep + pos){
-                                                const res = <td colspan={pos == 0? rep + 2 : rep} className="first">{col}</td>
+                                                const res = <td colspan={pos == 0? rep + 2 : rep} className="first">{WithBadge(col)}</td>
                                                 flags.push(rep + pos+1);
                                                 pos = pos + rep;
                                                 return res;
@@ -53,10 +70,19 @@ const ReportTable = ({columns, tableData}) => {
                                     <td rowspan="2">№</td>
                                     {
                                         row.map((col, colIdx) => {
-                                            if(row.indexOf(columns[idx+1][colIdx]) != -1){
-                                                return <td rowspan={2} className={flags.indexOf(colIdx) > -1? "first" : ""}>{col}</td>
+                                            let cageClasses = "";
+
+                                            if(flags.indexOf(colIdx + 1) > -1){
+                                                cageClasses += " lastHead";
+                                            }
+                                            if(flags.indexOf(colIdx) > -1){
+                                                cageClasses += " first";
+                                            }
+
+                                            if(row.indexOf(columns[idx+1][colIdx]) != -1){   
+                                                return <td rowspan={2} className={cageClasses}>{col}</td>
                                             }else{
-                                                return <td className={flags.indexOf(colIdx) > -1? "first" : ""}>{col}</td>
+                                                return <td className={cageClasses}>{col}</td>
                                             }
                                         })
                                     }
@@ -68,7 +94,15 @@ const ReportTable = ({columns, tableData}) => {
                                 {
                                     row.map((col, colIdx) => {
                                         if(row.indexOf(columns[idx-1][colIdx]) == -1){
-                                            return <td className={flags.indexOf(colIdx) > -1? "first" : ""}>{col}</td>
+                                            let cageClasses = "";
+
+                                            if(flags.indexOf(colIdx + 1) > -1){
+                                                cageClasses += " lastHead";
+                                            }
+                                            if(flags.indexOf(colIdx) > -1){
+                                                cageClasses += " first";
+                                            }
+                                            return <td className={cageClasses}>{col}</td>
                                         }
                                     })
                                 }
@@ -81,18 +115,95 @@ const ReportTable = ({columns, tableData}) => {
                 {
                     tableData.map((row, rowIdx) => {
                         return <tr>
-                            <td>{rowIdx+1}</td>
+                            <td className="blue">{rowIdx+1}</td>
                             {
                                 row.map((col, colIdx)=> {
-                                    if(flags.indexOf(colIdx + 1) > -1){
-                                        return <td className="last">{col}</td>    
-                                    }
-                                    else if(flags.indexOf(colIdx) > -1){
-                                        return <td className="first">{col}</td>
-                                    }
-                                    else{
-                                        return <td>{col}</td>
-                                    }
+                                    // let cageClasses = generalReportColorSchema[colIdx].columnColorClass;
+                                    // if(flags.indexOf(colIdx + 1) > -1){
+                                    //     cageClasses += " last";
+                                    // }
+                                    // if(flags.indexOf(colIdx) > -1){
+                                    //     cageClasses += " first";
+                                    // }
+                                    // return <td className={cageClasses}>{col}</td>
+                                    
+                                    let cageClasses = "";
+                                    const columnName = columns[0][colIdx],
+                                          schemaColNames =  Object.keys(generalReportColorSchema);
+
+                                          let has = false;
+                                          for(let name of schemaColNames){
+                                              if((columnName.indexOf(name) > -1) || (columnName.indexOf(name) == -1 && name == "Дата")){
+                                                has = name
+                                              }
+                                          }
+                                          
+
+                                          if(has){
+                                              let columnScheme = generalReportColorSchema[has],
+                                              schemeType = Object.getOwnPropertyNames(columnScheme)[0];
+                            
+                                                    switch(schemeType){
+                                                        case "single":
+                                                            cageClasses += columnScheme[schemeType].colorClass;
+                                                        break;
+                                                        case "combination":
+                                                            let colorClasses = columnScheme[schemeType].colorClasses.split(" "),
+                                                                start = columns[0].indexOf(columnName),
+                                                                colReps = columns[0].filter(col => col == columnName).length,
+                                                                end = start + colReps;
+
+                                                                
+                                                                if(columnScheme[schemeType].type == "simple-devision"){
+                                                                    // console.log("start", start);
+                                                                    // console.log("end", end);
+                                                                    // console.log("colReps", colReps);
+                                                                    // console.log("columnScheme[schemeType].type", columnScheme[schemeType].type);
+                                                                    // // debugger;
+
+                                                                let middle = Math.floor(start + end) / 2;
+
+                                                                
+                                                                if(colIdx >= start && colIdx <= middle){
+                                                                    cageClasses += colorClasses[0];
+                                                                }
+                                                                
+                                                                if(colIdx > middle && colIdx <= end){
+                                                                    cageClasses += colorClasses[1];                                                                    
+                                                                }
+                                                                
+                                                                
+                                                            }else if(columnScheme[schemeType].type == "outline"){
+                                                                
+                                                                // console.log("colIdx == end", colIdx == end);
+                                                                // console.log("end", end);
+                                                                // console.log("colIdx", colIdx);
+                                                                // debugger
+                                                                if(colIdx == end-1 || colIdx == start){
+                                                                    cageClasses += colorClasses[1];
+                                                                }
+                                                                
+                                                                if(colIdx > start && colIdx < end-1 ){
+                                                                    cageClasses += colorClasses[0];
+                                                                }
+                                                                
+                                                            }
+                                                        break;
+                                                    }     
+                                            }
+                                                    
+                                        // console.log("cageClasses", cageClasses);
+                                        // debugger;
+                                        if(flags.indexOf(colIdx + 1) > -1){
+                                            cageClasses += " last";
+                                        }
+                                        if(flags.indexOf(colIdx) > -1){
+                                            cageClasses += " first";
+                                        }
+
+                                        // console.log("cage classes", cageClasses);
+                                        return <td className={cageClasses}>{goToNewLine(col)}</td>
+                                        // return <td className={cageClasses}>{col}</td>
                                 })
                             }
                         </tr>
@@ -144,6 +255,10 @@ const Table = styled.table`
         }
     }
 
+    .lastHead{
+        border-right:none;
+    }
+
     .first {
         overflow: hidden;
 
@@ -178,6 +293,7 @@ const Table = styled.table`
     .last-col {
         border-right: none;
     }
+
 
     thead{
         width: 100%;
@@ -266,8 +382,8 @@ const Table = styled.table`
             } 
 
             :nth-child(even) {
-                .red, .white, .yellow {
-                    box-shadow: inset -300px 0px 0px rgba(0, 0, 0, 0.15);
+                .red, .white, .yellow, .blue {
+                    box-shadow: inset -5000px 0px 0px rgba(0, 0, 0, 0.15);
                 }
             }
         }
