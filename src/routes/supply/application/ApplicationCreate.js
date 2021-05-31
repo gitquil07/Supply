@@ -235,7 +235,16 @@ const ApplicationCreate = ({ match }) => {
                 <Title>Данные транспорта</Title>
 
                 <AddibleInput>
-                    <CustomSelector label="Заказы" value={state.orders} name="orders" stateChange={e => handleChange({fElem: e})} disabled={pk? true : false} multiple>
+                    <CustomSelector label="Заказы" value={state.orders} name="orders" stateChange={e => handleChange({fElem: e})} disabled={pk? true : false} multiple
+                        renderValue={selected => {
+                            let arr = [];
+
+                            selected.forEach(pk => {
+                                arr.push(orders.find(({node}) => node.pk == pk)?.node?.publicId)
+                            })
+
+                            return arr.join(", "); 
+                        }}>
                         {
                             orders.map(({node}) => 
                                 <MenuItem key={node.pk} value={node.pk}>

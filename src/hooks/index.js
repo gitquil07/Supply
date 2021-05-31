@@ -94,7 +94,9 @@ export const usePagination = ({type, qraphQlQuery, singular, plural}) => {
 
     const [mutate, setMutateState] = useState("");
 
-    const [ getDataPagination, dataPaginationRes] = useLazyQuery(qraphQlQuery);
+    const [ getDataPagination, dataPaginationRes] = useLazyQuery(qraphQlQuery, {
+        fetchPolicy: "network-only"
+    });
 
     const [amountOfElemsPerPage, setAmountOfElemsPerPage] = useState(30);
     

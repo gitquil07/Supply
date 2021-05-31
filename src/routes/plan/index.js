@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet";
 import { BulkUpload } from "components/BulkUpload";
 import { useTitle } from "hooks";
-import { GET_PLAN_PRODUCT } from "./gql";
+import { GET_PLAN_PRODUCT, CREATE_PLAN_PRODUCT_FILE } from "./gql";
 
 const Plan = () => {
 
@@ -10,7 +10,11 @@ const Plan = () => {
     return (
         <>
             <Helmet title={title}/>
-            <BulkUpload query={GET_PLAN_PRODUCT} key="planProductTemplate" />
+            <BulkUpload  
+                keyName="planProductTemplate"
+                message="Данные"
+                query={GET_PLAN_PRODUCT}  
+                mutation={CREATE_PLAN_PRODUCT_FILE} />
         </>
     );
 

@@ -101,15 +101,6 @@ const TrackingTransportCreate = ({ match }) => {
         () => {}
     );
 
-
-    const [updateTracking] = useMutation(UPDATE_TRACKING, {
-        refetchQueries: [{
-            query: GET_TRACKING
-        }],
-        onCompleted: () => NotificationManager.success("Стату слежения изменен"),
-        onError: (error) => NotificationManager.error(error.message) 
-    });
-
     const {
         submitData: submitInvoiceUpdate
     } = useCustomMutation({
@@ -124,7 +115,9 @@ const TrackingTransportCreate = ({ match }) => {
 
 
     
-    const [getTrackingInfo, trackingInfoRes] = useLazyQuery(GET_TRACKING),
+    const [getTrackingInfo, trackingInfoRes] = useLazyQuery(GET_TRACKING, {
+        fetchPolicy: "network-only"
+    }),
           [getVendors, vendorsRes] = useLazyQuery(GET_VENDORS),
           [getApplicationItemsGroupedByOrder, applicationItemsGroupedByOrderRes] = useLazyQuery(GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS),
           [getInvoices, invoicesRes] = useLazyQuery(GET_INVOICES),
@@ -150,6 +143,18 @@ const TrackingTransportCreate = ({ match }) => {
               }
           });
 
+    
+    const [updateTracking] = useMutation(UPDATE_TRACKING, {
+        onCompleted: () => {
+            getTrackingInfo({
+                variables: {
+                    id
+                }
+            });
+            NotificationManager.success("Статуc слежения изменен")
+        },
+        onError: (error) => NotificationManager.error(error.message) 
+    });
 
     useEffect(() => {
         getVendors();
@@ -202,20 +207,24 @@ const TrackingTransportCreate = ({ match }) => {
 
         if(additional){
             const requestBody = {
+                        ...exceptKey(state, ["pk", "publicId"]),
                         status: trackingStatuses.find(status => status.value === additionalData.status).label, 
                         trDate: moment(additionalData.trDate).format("YYYY-MM-DD"),
                         locations: [{
                             name: additionalData.locations
                         }]
                     };
-                    submitAdditionalData(requestBody, pk);
-                    // console.log("sad");
-                    // updateTracking({
-                    //     variables: {
-                    //         data: requestBody,
-                    //         pk
-                    //     }
-                    // });
+                    // submitAdditionalData(requestBody, pk);
+                    // console.log("sad", requestBody);
+                    // console.log("pk", pk);
+                    updateTracking({
+                        variables: {
+                            input: {
+                                data: requestBody,
+                                pk
+                            }
+                        }
+                    });
 
         }else{
             console.log("requestBody", state);
@@ -237,12 +246,16 @@ const TrackingTransportCreate = ({ match }) => {
 
             recursiveMutation();
             
-            submitData(exceptKey(state, ["note", "pk", "status"]), pk);
-            getTrackingInfo({
-                variables: {
-                    id
-                }
-            });
+            console.log("state", exceptKey(state, ["pk", "publicId"]));
+
+            submitData({
+                ...exceptKey(state, ["pk", "publicId", "status"])
+            }, pk);
+            // getTrackingInfo({
+            //     variables: {
+            //         id
+            //     }
+            // });
         }
     }
 
@@ -292,8 +305,8 @@ const TrackingTransportCreate = ({ match }) => {
             <Form>
                 <MiniForm>
                     <Title>Данные транспорта</Title>
-                    <CustomizableInputs t="2fr 2fr 1fr 2fr 1fr 1fr 1fr">
-                        <CustomSelector label="Тип транспорта" value={state?.vendor} name="vendor" stateChange={e => handleChange({fElem: e})}>
+                    <CustomizableInputs t="2fr 2fr 2fr 2fr 1fr 1fr 1fr">
+                        <CustomSelector label="Транспортировщики" value={state?.vendor} name="vendor" stateChange={e => handleChange({fElem: e})}>
                             {
                                 vendors.map(({node}) => 
                                     <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.vendor}>{node.name}</MenuItem>    
@@ -302,7 +315,9 @@ const TrackingTransportCreate = ({ match }) => {
                         </CustomSelector>
                         <CustomNumber name="transportNumber" label="Номер транспорта" value={state?.transportNumber}  stateChange={e => handleChange({fElem: e})} />
                         <CustomNumber name="amount" label="Сумма" value={state?.amount}  stateChange={e => handleChange({fElem: e})} />
-                        <CustomInput name="currency" label="Валюта" value={state?.currency}  stateChange={e => handleChange({fElem: e})} />
+                        <CustomSelector name="currency" label="Валюта" value={state?.currency}  stateChange={e => handleChange({fElem: e})}>
+                            <MenuItem key="UZS" value="UZS" selected={state.currency == "UZS"}>UZS</MenuItem>
+                        </CustomSelector>
                         <CustomNumber name="netto" label="Нетто" value={state?.netto}  stateChange={e => handleChange({fElem: e})} />
                         <CustomNumber name="brutto" label="Бруто" value={state?.brutto}  stateChange={e => handleChange({fElem: e})} />
                     </CustomizableInputs>

@@ -89,7 +89,7 @@ const OrderList = ({ match }) => {
                 <ButtonWithIcon name="Создать заказ" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable
-                title={"Список всех сотрудников"}
+                title={"Список всех заказов"}
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}

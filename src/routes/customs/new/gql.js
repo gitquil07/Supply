@@ -76,12 +76,22 @@ query getCustom($id: ID!) {
   }  
 `; 
 
-export const GET_PLAN = gql`
+export const GET_CUSTOM_TEMPLATE = gql`
 query getTemplate {
   core {
     templates {
-      planProductTemplate
+      customsTemplate
     }
   }
 }
 `;
+
+export const CUSTOM_FILE_CREATE = gql`
+mutation customFileCreate($input: CustomFileCreateMutationInput!){
+	custom{
+    customFileCreate(input: $input){
+      ok
+      errors
+    }
+  }  
+}`;

@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet";
 import { useTitle } from "hooks";
 import { BulkUpload } from "components/BulkUpload";
-import { GET_STOCK_BALANCE_TEMPLATE } from "./gql";
+import { GET_STOCK_BALANCE_TEMPLATE, CREATE_STOCK_BALANCE_FILE } from "./gql";
 
 
 const StockBalance = () => {
@@ -11,7 +11,11 @@ const StockBalance = () => {
     return (
         <>
             <Helmet title={title}/>
-            <BulkUpload query={GET_STOCK_BALANCE_TEMPLATE} key="stockBalanceTemplate" />
+            <BulkUpload 
+                keyName="stockBalanceTemplate"
+                message="Данные"
+                query={GET_STOCK_BALANCE_TEMPLATE} 
+                mutation={CREATE_STOCK_BALANCE_FILE} />
         </>
     );
 

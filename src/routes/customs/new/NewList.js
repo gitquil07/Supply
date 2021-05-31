@@ -61,7 +61,7 @@ const NewList = ({ match }) => {
             publicId: {publicId: node.publicId, id: node.id},
             createdAt: node.createdAt,
             vendorFactory: node.invoice?.application?.orders?.edges?.map(({node}) => {
-                return node.vendorFactory.factory.name + " / " + node.vendorFactory.vendor.name 
+                return node.vendorFactory?.factory?.name + " / " + node.vendorFactory?.vendor?.name 
             }),
             trTypeAndMode: node.invoice?.application?.transportType?.name + " / " +  modes.find(mode => mode.value == node.mode)?.label,
             invoices: {declarant: node.declarantNote, contractor: node.contractorNote}

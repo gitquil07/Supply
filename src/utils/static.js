@@ -44,30 +44,37 @@ export const measureOptions = [
 export const packagingTypes = [
     {
         value: "KOROBKA",
+        valueEnglish: "BOX",
         label: "коробка"
     },
     {
         value: "MESHOK",
+        valueEnglish: "BAG",
         label: "мешок"
     },
     {
         value: "PODDON",
+        valueEnglish: "PALLET",
         label: "поддон"
     },
     {
         value: "IASHCHIK",
+        valueEnglish: "CASE",
         label: "ящик"
     },
     {
         value: "TARA",
+        valueEnglish: "CONTAINER",
         label: "тара"
     },
     {
         value: "BOCHKA",
+        valueEnglish: "BARREL",
         label: "бочка"
     },
     {
         value: "RULON",
+        valueEnglish: "ROLL",
         label: "рулон"
     }
 ];
