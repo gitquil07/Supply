@@ -68,7 +68,6 @@ const OrderCreate = ({match}) => {
     const templ = {
             vendorProduct: "",
             dateOfDelivery: Date.now(),
-            productionDayCount: "",
             count: "",
             currency : "", 
             price: ""
@@ -186,8 +185,11 @@ const OrderCreate = ({match}) => {
         orderRequestBody.invoiceDate = moment(orderRequestBody.invoiceDate).format("YYYY-MM-DD");
 
         orderRequestBody.orderItems = formedOrderMaterials;
+        if(pk){
+            orderRequestBody.status = statuses.find(status => status.value == orderRequestBody.status).label;
+        }
 
-        pk? submitData(orderRequestBody, pk) : submitData(orderRequestBody);
+        pk? submitData(orderRequestBody, pk) : submitData(exceptKey(orderRequestBody, ["status"]));
 
 
         if(files.length > 0){
@@ -221,15 +223,16 @@ const OrderCreate = ({match}) => {
                             }
                         </CustomSelector>
 
-
-                        <CustomSelector label="Статус"  name="status" value={orderData.status} stateChange={e => handleDataChange(e, "order")}>
-                            {
-                                statuses.map(status => {
-                                        return <MenuItem key={status.value} value={status.label} selected={orderData.status === status.value}>{status.label}</MenuItem>    
-                                    }
-                                )
-                            }
-                        </CustomSelector>
+                        {
+                            pk &&   <CustomSelector label="Статус"  name="status" value={orderData.status} stateChange={e => handleDataChange(e, "order")}>
+                                        {
+                                            statuses.map(status => {
+                                                    return <MenuItem key={status.value} value={status.value} selected={orderData.status === status.value}>{status.label}</MenuItem>    
+                                                }
+                                            )
+                                        }
+                                    </CustomSelector>
+                        }
                         <CustomPicker label="Дата создание" name="invoiceDate" date={orderData.invoiceDate} stateChange={(date) => setOrderData({...orderData, invoiceDate: date})} />
                         <CustomInput label="Инвойс заказа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} />
                     </AddibleInput>
@@ -252,7 +255,6 @@ const OrderCreate = ({match}) => {
                                             })
                                         }
                                     </CustomSelector>
-                                    <CustomNumber  name="productionDayCount" label="Срок изготовление" value={e.productionDayCount}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomPicker name="dateOfDelivery" label="Дата отгрузки" date={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
                                     <CustomInput name="count" label="Кол-во" value={e.count}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomInput name="price" label="Цена" value={e.price}  stateChange={(e) => handleDataChange(e, "material", index)} />

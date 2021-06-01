@@ -22,6 +22,14 @@ export const generateColumns = (callback) => {
                 sort:true,
                 filter:true,
             }            
+        },
+        {
+            name: "customsDayCount",
+            label: "Кол-во дней",
+            options: {
+                sort: true,
+                filter: true
+            }            
         }
     ];
 

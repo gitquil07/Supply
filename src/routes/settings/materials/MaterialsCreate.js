@@ -176,7 +176,7 @@ const SuppliersCreate = ({ match }) => {
                             )
                         }
                     </CustomSelector>
-                    <CustomSelector label="Ед.изм" name="currency" value={state.currency} stateChange={e => handleChange({fElem: e})}>
+                    <CustomSelector label="Валюта" name="currency" value={state.currency} stateChange={e => handleChange({fElem: e})}>
                         {
                             currencies.map((currency) => 
                                 <MenuItem value={currency.value} selected={currency.value === state.currency}>{currency.label}</MenuItem> 

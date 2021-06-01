@@ -13,6 +13,7 @@ import { getList } from "../../../utils/functions";
 import { modes } from "utils/static"; 
 import SmallDialog from "components/SmallDialog";
 import { DetailedInfo } from "components/DetailedInfo";
+import moment from "moment";
 
 
 const CertificateList = () => {
@@ -67,7 +68,7 @@ const CertificateList = () => {
     const list = useMemo(() => customs.map(({ node }) => {
         return {
             publicId: {publicId: node.publicId, id: node.id},
-            createdAt: node.createdAt,
+            createdAt: moment(node.createdAt).format("YYYY-MM-DD"),
             vendorFactory: node.invoice?.application?.orders?.edges?.map(({node}) => {
                 return node.vendorFactory.factory.name + " / " + node.vendorFactory.vendor.name 
             }),

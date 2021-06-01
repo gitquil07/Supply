@@ -235,27 +235,24 @@ const ApplicationCreate = ({ match }) => {
                 <Title>Данные транспорта</Title>
 
                 <AddibleInput>
-                    <CustomSelector label="Заказы" value={state.orders} name="orders" stateChange={e => handleChange({fElem: e})} disabled={pk? true : false} multiple
-                        renderValue={selected => {
-                            let arr = [];
 
-                            selected.forEach(pk => {
-                                arr.push(orders.find(({node}) => node.pk == pk)?.node?.publicId)
-                            })
-
-                            return arr.join(", "); 
-                        }}>
-                        {
-                            orders.map(({node}) => 
-                                <MenuItem key={node.pk} value={node.pk}>
-                                    <ListItemIcon>
-                                        <Checkbox checked={state.orders.indexOf(node.pk) > -1}/>
-                                    </ListItemIcon>
-                                    <ListItemText>{node.publicId}</ListItemText>
-                                </MenuItem>    
-                            )
-                        }
-                    </CustomSelector>
+                    {
+                        pk? <CustomInput value={state.orders.join(", ")} label="Заказы" disabled={true} /> :
+                            <CustomSelector label="Заказы" value={state.orders} name="orders" stateChange={e => handleChange({fElem: e})} multiple
+                                renderValue={selected => selected.join(", ")}
+                                >
+                                {
+                                    orders.map(({node}) => 
+                                        <MenuItem key={node.pk} value={node.pk}>
+                                            <ListItemIcon>
+                                                <Checkbox checked={state.orders.indexOf(node.pk) > -1}/>
+                                            </ListItemIcon>
+                                            <ListItemText>{node.pk}</ListItemText>
+                                        </MenuItem>    
+                                    )
+                                }
+                            </CustomSelector>
+                    }
                     <CustomSelector label="Роль" value={state.trackingUser} name="trackingUser" stateChange={e => handleChange({fElem: e})}>
                             <MenuItem key={trackingUserType.pk} value={trackingUserType.pk} selected={true}>{trackingUserType.displayName}</MenuItem>    
                     </CustomSelector>

@@ -48,7 +48,7 @@ const TransportList = () => {
                     id: node.id,
                     pk: node.pk,
                     name: node.name,
-                    customDayCount: node.customDayCount
+                    customsDayCount: node.customsDayCount
                 }
             });
         }, [transportTypes]

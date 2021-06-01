@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 export const PAGINATE_USERS = gql`
 query nextPage($first: Int, $last: Int, $after: String, $before: String) {
   account {
-      users (first: $first, last: $last, after: $after, before: $before){
+      users (first: $first, last: $last, after: $after, before: $before, orderBy: "-createdAt"){
         edges {
           node {
             id,

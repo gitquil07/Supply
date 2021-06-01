@@ -15,7 +15,7 @@ export const generateColumns = (url) => {
         },
         {
             name: "name",
-            label: "Название",
+            label: "Контактное лицо",
             options: {
                 filter: true,
                 sort: true,

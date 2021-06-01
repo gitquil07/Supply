@@ -48,8 +48,9 @@ const MaterialsList = ({ match }) => {
         const obj = exceptKey(node, ["__typename", "vendorFactory", "product", "productionDayCount", "deliveryDayCount"]);
         return {
             ...obj,
-            vendorFactoryProduct: node.vendorFactory?.factory?.name  + " / " + node.vendorFactory?.vendor?.name + "\n" + node.product?.name,  
-            deliveryAndProductionDayCount: node.deliveryDayCount + " / " + node.productionDayCount  + "\n"
+            vendorFactoryProduct: {factory: node.vendorFactory?.factory?.name, vendor: node.vendorFactory?.vendor?.name, product: node.product?.name},  
+            deliveryAndProductionDayCount: {deliveryDayCount: node.deliveryDayCount,  productionDayCount: node.productionDayCount, price: node.price,  measure: node.product.measure}
+
         }
     });
 

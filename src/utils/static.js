@@ -106,11 +106,11 @@ export const deliveryCondition = [
     }
 ];
 
-export const vendorRole = [
+export const vendorRoles = [
 
     {
         value: "POSTAVSHCHIK",
-        label: "поставшик"
+        label: "поставщик"
     },
     {
         value: "TRANSPORTNAIA_KOMPANIIA",

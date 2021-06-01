@@ -40,7 +40,7 @@ export const generateColumns = (url) => {
         },
         {
             name: "codeTnved",
-            label: "Код Тн ВЭД",
+            label: "Код тн вэд",
             options: {
                 filter: true,
                 sort: false,

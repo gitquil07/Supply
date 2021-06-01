@@ -9,12 +9,12 @@ export const generateColumns = (url) => {
 
     return [
         {
-            name: "public_id",
+            name: "pk",
             label: "Номер заказа",
             options: {
                 filter: true,
                 customBodyRender: (value) => {
-                    return <Link to={`${url}/edit/${value.id}`}>{value.publicId}</Link>
+                    return <Link to={`${url}/edit/${value.id}`}>{value.pk}</Link>
                 },
             },
         },

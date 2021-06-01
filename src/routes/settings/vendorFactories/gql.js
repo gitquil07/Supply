@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 export const PAGINATE_VENDOR_FACTORIES = gql`
 query getVendorFactories($first: Int, $last: Int, $after: String, $before: String){
   vendor{
-    vendorFactories(first: $first, last: $last, after: $after, before: $before){
+    vendorFactories(first: $first, last: $last, after: $after, before: $before, orderBy: "-createdAt"){
       edges{
         node{
           id

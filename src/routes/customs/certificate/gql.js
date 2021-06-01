@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 export const CERTIFICATE_CUSTOMS = gql`
 query getCustoms($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $after: String, $before: String) {
   custom {
-    customs(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before, status: "сертификат") {
+    customs(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before, status: "сертификат", orderBy: "-createdAt") {
       edges {
         node {
           id

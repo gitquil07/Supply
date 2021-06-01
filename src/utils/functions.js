@@ -58,8 +58,10 @@ export const showNotification = (data, name, action, message) => {
         NotificationManager.success(message);
     } else {
         data[name][action].errors.forEach((message) => {
-            const msg = message.split(": ")[1];
-            NotificationManager.error(msg);
+            const msgObj = JSON.parse(message);
+            const [key, value] = Object.entries(message);
+
+            NotificationManager.error(`${value}`);
         })
     }
 }
@@ -80,8 +82,9 @@ export const onResponseComplete = (data, type, entityName, callback) => {
     } else {
         const errors = getValueOfProperty(data, "errors");
         errors.forEach((errorMessage) => {
-            const message = errorMessage.split(": ")[1];
-            NotificationManager.error(message);
+            // let msg = errorMessage.split(": ")[1];
+                //   msg = msg.slice(0, msg.indexOf("}"));
+            NotificationManager.error(errorMessage);
         })
     }
 }

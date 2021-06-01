@@ -12,6 +12,7 @@ import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { usePagination } from "../../../hooks";
 import { Pagination } from "../../../components/Pagination";
 import { getList } from "../../../utils/functions";
+import { statuses } from "utils/static";
 
 const OrderList = ({ match }) => {
 
@@ -61,10 +62,10 @@ const OrderList = ({ match }) => {
     const orders = getList(dataPaginationRes?.data) || [];
     const list = orders.map(({ node }) => {
         return {
-            public_id: { publicId: node.publicId, id: node.id},
+            pk: { pk: node.pk, id: node.id},
             factory: node.vendorFactory?.factory.name,
             vendor: node.vendorFactory?.vendor.name,
-            status: node.status,
+            status: statuses.find(status => status.value == node.status).label,
             invoice_proforma: node.invoiceProforma,
             invoice_date: node.invoiceDate,
             created_at: TimeParser(node.createdAt),

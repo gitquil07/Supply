@@ -194,7 +194,7 @@ const TestTable2 = () => {
                                         }
 
                                         // console.log("cage classes", cageClasses);
-                                        return <td className={cageClasses}>{goToNewLine(col)}</td>
+                                        return <td className={cageClasses}>{col}</td>
                                         // return <td className={cageClasses}>{col}</td>
                                 })
                             }

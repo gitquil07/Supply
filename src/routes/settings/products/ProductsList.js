@@ -47,7 +47,7 @@ const ProductsList = ({ match }) => {
         return {
             id: node.id,
             name: node.name,
-            group: node.group.name,
+            group: node.group?.name,
             measure: node.measure,
             codeTnved: node.codeTnved,
             typeOfPackaging: node.typeOfPackaging

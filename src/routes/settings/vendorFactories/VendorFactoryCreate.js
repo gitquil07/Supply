@@ -164,7 +164,7 @@ const FactoryCreate = ({ match }) => {
                     </CustomSelector>
                     <CustomPicker
                         name="partnerStartDate"
-                        label="Дата"
+                        label="Начало сотрудничества"
                         date={state.partnerStartDate}
                         stateChange={date => handleDateChange(date)}
                     />

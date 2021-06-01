@@ -85,7 +85,7 @@ const FirmCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
             {
                 validationMessages.name.length? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
             }
-            <CustomNumber value={state.inn} name="inn" label="Кол-во дней" stateChange={e => handleChange({fElem:e})} fullWidth errorVal={validationMessages.inn.length? true : false}/>
+            <CustomNumber value={state.inn} name="inn" label="ИНН" stateChange={e => handleChange({fElem:e})} fullWidth errorVal={validationMessages.inn.length? true : false}/>
             {
                 validationMessages.inn.length? <ValidationMessage>{validationMessages.inn}</ValidationMessage> : null
             }
