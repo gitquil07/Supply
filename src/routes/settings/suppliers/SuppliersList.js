@@ -9,7 +9,7 @@ import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
 import { useMemo } from "react";
 import { usePagination } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { CustomRowGenerator, getList } from "../../../utils/functions";
 
 const SuppliersList = ({ match }) => {
     const title = useTitle("Партнеры");
@@ -24,8 +24,8 @@ const SuppliersList = ({ match }) => {
         setAmountOfElemsPerPage,
         dataPaginationRes
     } = usePagination({
-        qraphQlQuery: PAGINATE_VENDORS, 
-        singular: "vendor", 
+        qraphQlQuery: PAGINATE_VENDORS,
+        singular: "vendor",
         plural: "vendors"
     });
 
@@ -41,23 +41,23 @@ const SuppliersList = ({ match }) => {
 
     const vendors = getList(dataPaginationRes?.data) || [];
     const list = vendors.map(({ node }) => {
-            return {
-               id: node.id,
-               name: node.name,
-               companyName: node.companyName,
-               sapCountry: node.sapCountry?.name,
-               sapAccountGroup: node.sapAccountGroup?.name,
-               phoneNumber: node.phoneNumber,
-               street: node.street,
-               house: node.house,
-               postcode: node.postcode,
-               sapOkonkh: node.sapOkonkh,
-               sapCity: node.sapCity
-            }
-        });
+        return {
+            id: node.id,
+            name: node.name,
+            companyName: node.companyName,
+            sapCountry: node.sapCountry?.name,
+            sapAccountGroup: node.sapAccountGroup?.name,
+            phoneNumber: node.phoneNumber,
+            street: node.street,
+            house: node.house,
+            postcode: node.postcode,
+            sapOkonkh: node.sapOkonkh,
+            sapCity: node.sapCity
+        }
+    });
 
     const { url } = match;
-    const columns = useMemo(() => generateColumns(url) , []);
+    const columns = useMemo(() => generateColumns(url), []);
 
     return (
         <>
@@ -70,6 +70,7 @@ const SuppliersList = ({ match }) => {
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGenerator(url)}
             />
             <Pagination {...paginationParams} />
         </>

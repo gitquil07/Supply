@@ -10,13 +10,13 @@ import { Pagination } from "../../../components/Pagination";
 import UserCreate from "./UserCreate";
 import { useState, useMemo } from "react";
 import { usePagination } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { CustomRowGenerator, CustomRowGeneratorForModal, getList } from "../../../utils/functions";
 
 const UsersList = () => {
     const title = useTitle("Пользователи");
     const [createOpen, setCreateOpen] = useState(false);
     const [id, setId] = useState(undefined);
-    
+
     const {
         nextPageCursor,
         prevPageCursor,
@@ -28,8 +28,8 @@ const UsersList = () => {
         dataPaginationRes,
         setMutateState
     } = usePagination({
-        qraphQlQuery: PAGINATE_USERS, 
-        singular: "account", 
+        qraphQlQuery: PAGINATE_USERS,
+        singular: "account",
         plural: "users"
     });
 
@@ -56,10 +56,10 @@ const UsersList = () => {
                 role: node.role?.displayName,
                 email: node?.email,
                 password: node?.password,
-                factories: (typeof node.pk === "object")? node.pk : [node.pk]
+                factories: (typeof node.pk === "object") ? node.pk : [node.pk]
             }
         });
-    }, [users]); 
+    }, [users]);
 
     const user = list?.find(user => user.id === id);
 
@@ -78,7 +78,7 @@ const UsersList = () => {
     return (
         <>
             <UserCreate isOpen={createOpen} close={close} entry={user}
-                        setMutateState={setMutateState}  getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
+                setMutateState={setMutateState} getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
             <Helmet title={title} />
             <FlexForHeader>
                 <ButtonWithIcon name="Создать пользователя" clicked={() => setCreateOpen(true)} url="#" />
@@ -88,8 +88,9 @@ const UsersList = () => {
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGeneratorForModal(editEntry)}
             />
-            <Pagination {...paginationParams}/>
+            <Pagination {...paginationParams} />
         </>
     );
 };

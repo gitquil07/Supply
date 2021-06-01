@@ -1,15 +1,11 @@
-export const generateColumns = (editEntry) => {
+export const generateColumns = () => {
 
     return [
         {
             name: "id",
             label: "ID",
             options: {
-                filter: false,
-                sort: false,
-                customBodyRender: (value) => {
-                    return <a href="#" onClick={(() => editEntry(value))}>{value}</a>
-                }
+                display: "none"
             }
         },
         {
@@ -59,7 +55,7 @@ export const generateColumns = (editEntry) => {
                 filter: true,
                 sort: false,
                 customBodyRender: (value) => {
-                    return  value.join(", ");
+                    return value.join(", ");
                 }
             }
         },
@@ -73,16 +69,16 @@ export const generateColumns = (editEntry) => {
             }
         },
         // {
-    //     name: "Actions",
-    //     options: {
-    //         customBodyRender: (value, tableMeta, updateValue) => {
-    //             return (
-    //                 <MatButton variant="outlined" className="btn-danger text-white" onClick={() => resetUserPassword(tableMeta.rowData[6], tableMeta.rowData[2], tableMeta.rowData[7])}>
-    //                     {`RESET`}
-    //                 </MatButton>
-    //             );
-    //         }
-    //     }
-    // }
+        //     name: "Actions",
+        //     options: {
+        //         customBodyRender: (value, tableMeta, updateValue) => {
+        //             return (
+        //                 <MatButton variant="outlined" className="btn-danger text-white" onClick={() => resetUserPassword(tableMeta.rowData[6], tableMeta.rowData[2], tableMeta.rowData[7])}>
+        //                     {`RESET`}
+        //                 </MatButton>
+        //             );
+        //         }
+        //     }
+        // }
     ];
 }

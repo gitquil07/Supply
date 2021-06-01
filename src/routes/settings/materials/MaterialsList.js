@@ -8,14 +8,14 @@ import { FlexForHeader } from "../../../components/Flex";
 import { Pagination } from "../../../components/Pagination";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { exceptKey } from "../../../utils/functions";
+import { CustomRowGenerator, exceptKey } from "../../../utils/functions";
 import { usePagination } from "../../../hooks";
 import { getList } from "../../../utils/functions";
 
 
 const MaterialsList = ({ match }) => {
     const title = useTitle("Материалы");
- 
+
     const {
         nextPageCursor,
         prevPageCursor,
@@ -26,8 +26,8 @@ const MaterialsList = ({ match }) => {
         setAmountOfElemsPerPage,
         dataPaginationRes
     } = usePagination({
-        qraphQlQuery: PAGINATE_VENDOR_PRODUCTS, 
-        singular: "vendor", 
+        qraphQlQuery: PAGINATE_VENDOR_PRODUCTS,
+        singular: "vendor",
         plural: "vendorProducts"
     });
 
@@ -44,18 +44,18 @@ const MaterialsList = ({ match }) => {
 
 
     const vendorProducts = getList(dataPaginationRes?.data) || [];
-    const list = vendorProducts.map(({node}) => {
+    const list = vendorProducts.map(({ node }) => {
         const obj = exceptKey(node, ["__typename", "vendorFactory", "product", "productionDayCount", "deliveryDayCount"]);
         return {
             ...obj,
-            vendorFactoryProduct: node.vendorFactory?.factory?.name  + " / " + node.vendorFactory?.vendor?.name + "\n" + node.product?.name,  
-            deliveryAndProductionDayCount: node.deliveryDayCount + " / " + node.productionDayCount  + "\n"
+            vendorFactoryProduct: node.vendorFactory?.factory?.name + " / " + node.vendorFactory?.vendor?.name + "\n" + node.product?.name,
+            deliveryAndProductionDayCount: node.deliveryDayCount + " / " + node.productionDayCount + "\n"
         }
     });
 
 
     const { url } = match;
-    const columns =  useMemo(() => generateColumns(url), [])
+    const columns = useMemo(() => generateColumns(url), [])
 
     return (
         <>
@@ -69,8 +69,9 @@ const MaterialsList = ({ match }) => {
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGenerator(url)}
             />
-             <Pagination {...paginationParams}/>
+            <Pagination {...paginationParams} />
         </>
     );
 };

@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import moment from "moment";
 
 export const generateColumns = (url) => {
@@ -8,11 +7,7 @@ export const generateColumns = (url) => {
             name: "id",
             label: "ID",
             options: {
-                filter: true,
-                sort: false,
-                customBodyRender: (value) => {
-                    return <Link to={`${url}/edit/${value}`}>{value}</Link>
-                }
+                display: "none"
             }
         },
         {

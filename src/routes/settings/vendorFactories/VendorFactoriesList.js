@@ -8,14 +8,14 @@ import { FlexForHeader } from "../../../components/Flex";
 import { Pagination } from "../../../components/Pagination";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { exceptKey } from "../../../utils/functions";
+import { CustomRowGenerator, exceptKey } from "../../../utils/functions";
 import { usePagination } from "../../../hooks";
 import { getList } from "../../../utils/functions";
 
 const VendorFactoriesList = ({ match }) => {
 
     const title = useTitle("Поставщики");
-    
+
     const {
         nextPageCursor,
         prevPageCursor,
@@ -27,7 +27,7 @@ const VendorFactoriesList = ({ match }) => {
         dataPaginationRes
     } = usePagination({
         qraphQlQuery: PAGINATE_VENDOR_FACTORIES,
-        singular: "vendor", 
+        singular: "vendor",
         plural: "vendorFactories"
     });
 
@@ -42,7 +42,7 @@ const VendorFactoriesList = ({ match }) => {
     }
 
     const vendorFactories = useMemo(() => getList(dataPaginationRes?.data), [dataPaginationRes?.data]) || [];
-    const list = useMemo(() => vendorFactories.map(({node}) => {
+    const list = useMemo(() => vendorFactories.map(({ node }) => {
         return {
             ...exceptKey(node, ["__typename"]),
             vendor: node.vendor?.name,
@@ -50,7 +50,7 @@ const VendorFactoriesList = ({ match }) => {
         }
     }), [vendorFactories]);
 
-    const {url} = match;
+    const { url } = match;
     const columns = useMemo(() => generateColumns(url), []);
 
     return (
@@ -64,6 +64,7 @@ const VendorFactoriesList = ({ match }) => {
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGenerator(url)}
             />
             <Pagination {...paginationParams} />
         </>
