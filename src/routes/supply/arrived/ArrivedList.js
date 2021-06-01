@@ -10,9 +10,12 @@ import { FlexForHeader } from "components/Flex";
 import { ButtonWithIcon } from "components/Buttons";
 import { Pagination } from 'components/Pagination';
 import { usePagination, useToggleDialog, useGetOne } from "hooks";
-import { getList } from "utils/functions";
+import { CustomRowGeneratorForModal, getList } from "utils/functions";
 import SmallDialog from "components/SmallDialog";
 import { DetailedInfo } from "components/DetailedInfo";
+
+import { TableRow } from '@material-ui/core';
+import { TableCell } from '@material-ui/core';
 
 
 const ApplicationList = () => {
@@ -38,7 +41,7 @@ const ApplicationList = () => {
         setToDateChange,
         handleDateApply
     } = usePagination({
-        type: "dateFilter", 
+        type: "dateFilter",
         qraphQlQuery: APPLICATIONS,
         singular: "application",
         plural: "applications"
@@ -62,16 +65,16 @@ const ApplicationList = () => {
         type: "dateFilter"
     }
 
-    
-    
+
+
     const applications = useMemo(() => getList(dataPaginationRes?.data), [dataPaginationRes?.data]) || [];
-    const {one, setUniqueVal} = useGetOne(applications, "id");
+    const { one, setUniqueVal } = useGetOne(applications, "id");
     const list = useMemo(() => applications.map(({ node }) => {
         return {
             ...node,
-            publicId: {publicId: node.publicId, id: node.id},
+            id: node.id,
             transportType: node.transportType.name,
-            typeOfPackaging: node.typeOfPackaging + " / " +  node.count,
+            typeOfPackaging: node.typeOfPackaging + " / " + node.count,
             trackingUser: node.trackingUser.firstName + " " + node.trackingUser.lastName
         }
     }), [applications]);
@@ -102,6 +105,7 @@ const ApplicationList = () => {
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGeneratorForModal(openDialog)}
             />
             <SmallDialog title={`Заявка ${one?.node?.publicId}`} close={handleClose} isOpen={open}>
                 {
@@ -128,11 +132,11 @@ const ApplicationList = () => {
                         </fieldset>
                         <fieldset>
                             <legend>Активность: </legend>
-                            <span>{one.node.isActive? "Активный" : "Неактивый"}</span>
+                            <span>{one.node.isActive ? "Активный" : "Неактивый"}</span>
                         </fieldset>
                         <fieldset>
                             <legend>Комбинированная транспортировка: </legend>
-                            <span>{one.node.transportMix? "Да" : "Нет"}</span>
+                            <span>{one.node.transportMix ? "Да" : "Нет"}</span>
                         </fieldset>
                         <fieldset>
                             <legend>Условия доставки: </legend>

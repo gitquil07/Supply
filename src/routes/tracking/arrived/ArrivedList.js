@@ -9,7 +9,7 @@ import { generateColumns } from "./TableData";
 import { FlexForHeader } from "../../../components/Flex";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { getList } from "../../../utils/functions";
+import { CustomRowGenerator, CustomRowGeneratorForModal, getList } from "../../../utils/functions";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import SmallDialog from "components/SmallDialog";
 import { DetailedInfo } from "components/DetailedInfo";
@@ -36,7 +36,7 @@ const ArrivedList = ({ match }) => {
         setToDateChange,
         handleDateApply
     } = usePagination({
-        type: "dateFilter", 
+        type: "dateFilter",
         qraphQlQuery: GET_TRACKING_ARRIVINGS,
         singular: "tracking",
         plural: "trackings"
@@ -63,12 +63,12 @@ const ArrivedList = ({ match }) => {
     }
 
     const applications = getList(dataPaginationRes?.data) || [];
-    const {one, setUniqueVal} = useGetOne(applications, "id");
+    const { one, setUniqueVal } = useGetOne(applications, "id");
     const list = applications.map(({ node }) => {
         return {
             ...node,
-            publicId: {publicId: node.publicId, id: node.id},
-            vendor: {vendor: node.vendor?.name, trNumber: node.transportNumber},
+            publicId: node.id,
+            vendor: { vendor: node.vendor?.name, trNumber: node.transportNumber },
             amount: `${node.amount} ${node.currency} ${node.brutto} / ${node.netto}`,
         }
     });
@@ -98,6 +98,7 @@ const ArrivedList = ({ match }) => {
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGeneratorForModal(openDialog)}
             />
             <SmallDialog title={`Заявка ${one?.node?.publicId}`} close={handleClose} isOpen={open}>
                 {

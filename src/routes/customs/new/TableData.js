@@ -1,8 +1,7 @@
-import { Link } from "react-router-dom";
-import { Row }   from "components/Row";
+import { Row } from "components/Row";
 import moment from "moment";
 
-export const generateColumns = (url) => {
+export const generateColumns = () => {
     const options = {
         filter: true,
         sort: false
@@ -13,10 +12,7 @@ export const generateColumns = (url) => {
             name: "publicId",
             label: "№",
             options: {
-                filter: true,
-                customBodyRender: (value) => {
-                    return <Link to={`${url}/edit/${value.id}`}>{value.publicId}</Link>;
-                },
+                display: "none"
             },
         },
         {
@@ -32,12 +28,12 @@ export const generateColumns = (url) => {
             label: "Название завода / Поставщик",
             options: {
                 customBodyRender: value => {
-                    if(typeof value === "object"){
+                    if (typeof value === "object") {
                         return (
                             <>
-                              {
-                                  value.map(v => <Row>{v}</Row>)
-                              }  
+                                {
+                                    value.map(v => <Row>{v}</Row>)
+                                }
                             </>
                         );
                     }
@@ -56,11 +52,11 @@ export const generateColumns = (url) => {
             options: {
                 customBodyRender: value => {
                     console.log("invoices", value);
-                    if(typeof value === "object"){
+                    if (typeof value === "object") {
                         return (
                             <>
-                               <Row>Декларант: {value.declarant}</Row>
-                               <Row>Контрактор: {value.contractor}</Row>
+                                <Row>Декларант: {value.declarant}</Row>
+                                <Row>Контрактор: {value.contractor}</Row>
                             </>
                         )
                     }

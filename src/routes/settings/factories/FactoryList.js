@@ -9,7 +9,7 @@ import { Pagination } from "../../../components/Pagination";
 import { useState, useMemo } from "react";
 import FactoryCreate from "./FactoryCreate";
 import { usePagination } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { CustomRowGeneratorForModal, getList } from "../../../utils/functions";
 
 const FactoryList = () => {
     const title = useTitle("Заводы");
@@ -28,7 +28,7 @@ const FactoryList = () => {
         setMutateState
     } = usePagination({
         qraphQlQuery: PAGINATE_FACTORIES,
-        singular: "factory", 
+        singular: "factory",
         plural: "factories"
     });
 
@@ -73,7 +73,7 @@ const FactoryList = () => {
         setCreateOpen(false);
     }
 
-    const columns = useMemo(() => generateColumns(editEntry), []); 
+    const columns = useMemo(() => generateColumns(editEntry), []);
     const options = {
         responsive: "scrollFullHeight"
     }
@@ -81,8 +81,8 @@ const FactoryList = () => {
 
     return (
         <>
-            <FactoryCreate isOpen={createOpen} close={close} entry={factory} 
-                           setMutateState={setMutateState}  getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
+            <FactoryCreate isOpen={createOpen} close={close} entry={factory}
+                setMutateState={setMutateState} getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
             <Helmet title={title} />
             <FlexForHeader>
                 <ButtonWithIcon name="Создать завод" clicked={() => setCreateOpen(true)} url="#" />
@@ -93,8 +93,9 @@ const FactoryList = () => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 options={options}
+                customRowOptions={CustomRowGeneratorForModal(editEntry)}
             />
-            <Pagination {...paginationParams}/>
+            <Pagination {...paginationParams} />
         </>
     );
 };

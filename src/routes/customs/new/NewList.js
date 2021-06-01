@@ -9,8 +9,8 @@ import { FlexForHeader } from "components/Flex";
 import { ButtonWithIcon } from "components/Buttons";
 import { Pagination } from 'components/Pagination';
 import { usePagination } from "hooks";
-import { getList } from "utils/functions";
-import { modes } from "utils/static"; 
+import { CustomRowGenerator, getList } from "utils/functions";
+import { modes } from "utils/static";
 
 
 const NewList = ({ match }) => {
@@ -35,7 +35,7 @@ const NewList = ({ match }) => {
         setToDateChange,
         handleDateApply
     } = usePagination({
-        type: "dateFilter", 
+        type: "dateFilter",
         qraphQlQuery: CUSTOMS,
         singular: "application",
         plural: "applications"
@@ -58,13 +58,13 @@ const NewList = ({ match }) => {
     const applications = getList(dataPaginationRes?.data) || [];
     const list = useMemo(() => applications.map(({ node }) => {
         return {
-            publicId: {publicId: node.publicId, id: node.id},
+            publicId: node.id,
             createdAt: node.createdAt,
-            vendorFactory: node.invoice?.application?.orders?.edges?.map(({node}) => {
-                return node.vendorFactory?.factory?.name + " / " + node.vendorFactory?.vendor?.name 
+            vendorFactory: node.invoice?.application?.orders?.edges?.map(({ node }) => {
+                return node.vendorFactory?.factory?.name + " / " + node.vendorFactory?.vendor?.name
             }),
-            trTypeAndMode: node.invoice?.application?.transportType?.name + " / " +  modes.find(mode => mode.value == node.mode)?.label,
-            invoices: {declarant: node.declarantNote, contractor: node.contractorNote}
+            trTypeAndMode: node.invoice?.application?.transportType?.name + " / " + modes.find(mode => mode.value == node.mode)?.label,
+            invoices: { declarant: node.declarantNote, contractor: node.contractorNote }
         }
     }), [applications]);
 
@@ -82,13 +82,14 @@ const NewList = ({ match }) => {
                     changeTo={setToDateChange}
                     buttonClicked={handleDateApply}
                 />
-                <ButtonWithIcon name="создать таможню" url={`${match.url}/create`}/>
+                <ButtonWithIcon name="создать таможню" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable
                 title={"Список новых таможен"}
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGenerator(url)}
             />
             <Pagination {...paginationParams} />
         </>

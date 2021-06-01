@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { ORDERS } from "./gql";
 import { useTitle } from '../../../hooks';
 import { generateColumns } from './TableData';
-import { TimeParser } from "../../../utils/functions";
+import { CustomRowGenerator, TimeParser } from "../../../utils/functions";
 import { FlexForHeader } from '../../../components/Flex';
 import { ButtonWithIcon } from "../../../components/Buttons";
 import DatePickers from '../../../components/Inputs/DatePickers';
@@ -38,7 +38,7 @@ const OrderList = ({ match }) => {
         setToDateChange,
         handleDateApply
     } = usePagination({
-        type: "dateFilter", 
+        type: "dateFilter",
         qraphQlQuery: ORDERS,
         singular: "order",
         plural: "orders"
@@ -60,9 +60,11 @@ const OrderList = ({ match }) => {
 
 
     const orders = getList(dataPaginationRes?.data) || [];
+
     const list = orders.map(({ node }) => {
         return {
-            pk: { pk: node.pk, id: node.id},
+            id: node.id,
+            pk: node.pk,
             factory: node.vendorFactory?.factory.name,
             vendor: node.vendorFactory?.vendor.name,
             status: statuses.find(status => status.value == node.status).label,
@@ -94,6 +96,7 @@ const OrderList = ({ match }) => {
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGenerator(url)}
             />
             <Pagination {...paginationParams} />
         </>

@@ -9,7 +9,7 @@ import { Pagination } from "../../../components/Pagination";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { usePagination } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { CustomRowGenerator, getList } from "../../../utils/functions";
 
 const ProductsList = ({ match }) => {
 
@@ -25,8 +25,8 @@ const ProductsList = ({ match }) => {
         setAmountOfElemsPerPage,
         dataPaginationRes
     } = usePagination({
-        qraphQlQuery:PAGINATE_PRODUCTS,
-        singular: "product", 
+        qraphQlQuery: PAGINATE_PRODUCTS,
+        singular: "product",
         plural: "products"
     });
 
@@ -41,9 +41,9 @@ const ProductsList = ({ match }) => {
         setAmountOfElemsPerPage
     }
 
-    const products = getList(dataPaginationRes?.data) || []; 
+    const products = getList(dataPaginationRes?.data) || [];
 
-    const list = products.map(({node}) => {
+    const list = products.map(({ node }) => {
         return {
             id: node.id,
             name: node.name,
@@ -54,7 +54,7 @@ const ProductsList = ({ match }) => {
         }
     })
 
-    const {url} = match;
+    const { url } = match;
     const columns = useMemo(() => generateColumns(url), []);
 
     return (
@@ -69,6 +69,7 @@ const ProductsList = ({ match }) => {
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGenerator(url)}
             />
             <Pagination {...paginationParams} />
         </>

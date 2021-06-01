@@ -5,14 +5,7 @@ export const generateColumns = (callback) => {
             name: "id",
             label: "ID",
             options: {
-                sort:true,
-                filter:true,
-                customBodyRender: (value) => {
-                    return <a href="#" onClick={() => {
-                        callback(value);
-                        return false;
-                    }}>{value}</a>
-                }
+                display: "none"
             }
         },
         {

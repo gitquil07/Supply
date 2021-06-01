@@ -50,7 +50,7 @@ const TrackingTransportCreate = ({ match }) => {
     console.log("tracking transport rendered");
 
     const { id } = match.params;
-    const title = useTitle("Создание нового Слежения");
+    const title = useTitle("Изменение Слежения");
     const [additionalData, setAdditionalData] = useState({
         status:"",
         trDate:new Date(),

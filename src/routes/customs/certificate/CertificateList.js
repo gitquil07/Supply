@@ -9,8 +9,8 @@ import { FlexForHeader } from "../../../components/Flex";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import { Pagination } from '../../../components/Pagination';
 import { usePagination, useToggleDialog, useGetOne } from "../../../hooks";
-import { getList } from "../../../utils/functions";
-import { modes } from "utils/static"; 
+import { CustomRowGeneratorForModal, getList } from "../../../utils/functions";
+import { modes } from "utils/static";
 import SmallDialog from "components/SmallDialog";
 import { DetailedInfo } from "components/DetailedInfo";
 import moment from "moment";
@@ -38,7 +38,7 @@ const CertificateList = () => {
         setToDateChange,
         handleDateApply
     } = usePagination({
-        type: "dateFilter", 
+        type: "dateFilter",
         qraphQlQuery: CERTIFICATE_CUSTOMS,
         singular: "custom",
         plural: "customs"
@@ -64,16 +64,16 @@ const CertificateList = () => {
     }
 
     const customs = getList(dataPaginationRes?.data) || [];
-    const {one, setUniqueVal} = useGetOne(customs, "id");
+    const { one, setUniqueVal } = useGetOne(customs, "id");
     const list = useMemo(() => customs.map(({ node }) => {
         return {
-            publicId: {publicId: node.publicId, id: node.id},
-            createdAt: moment(node.createdAt).format("YYYY-MM-DD"),
-            vendorFactory: node.invoice?.application?.orders?.edges?.map(({node}) => {
-                return node.vendorFactory.factory.name + " / " + node.vendorFactory.vendor.name 
+            publicId: node.id,
+            createdAt: node.createdAt,
+            vendorFactory: node.invoice?.application?.orders?.edges?.map(({ node }) => {
+                return node.vendorFactory.factory.name + " / " + node.vendorFactory.vendor.name
             }),
-            trTypeAndMode: node.invoice?.application?.transportType?.name + " / " +  modes.find(mode => mode.value == node.mode).label,
-            invoices: {declarant: node.declarantNote, contractor: node.contractorNote}
+            trTypeAndMode: node.invoice?.application?.transportType?.name + " / " + modes.find(mode => mode.value == node.mode).label,
+            invoices: { declarant: node.declarantNote, contractor: node.contractorNote }
         }
     }), [customs]);
 
@@ -101,6 +101,7 @@ const CertificateList = () => {
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGeneratorForModal(openDialog)}
             />
             <SmallDialog title={`Заявка ${one?.node?.publicId}`} close={handleClose} isOpen={open}>
                 {
