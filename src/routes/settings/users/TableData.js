@@ -59,15 +59,7 @@ export const generateColumns = () => {
                 }
             }
         },
-        {
-            name: "id",
-            label: "Id",
-            options: {
-                filter: false,
-                sort: false,
-                display: false,
-            }
-        },
+        
         // {
         //     name: "Actions",
         //     options: {

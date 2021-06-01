@@ -48,7 +48,6 @@ const UsersList = () => {
         return users.map(({ node }) => {
             return {
                 id: node.id,
-                pk: node.pk,
                 firstName: node.firstName,
                 lastName: node.lastName,
                 username: node.username,

@@ -1,38 +1,39 @@
 import { Helmet } from 'react-helmet';
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
-import { useTitle } from '../../../hooks';
-import { Form } from '../../../components/Form';
-import { Footer } from '../../../components/Footer';
-import { Button } from '../../../components/Buttons';
-import { AddibleInput } from '../../../components/Flex';
-import { RemoveIcon } from '../../../components/RemoveIcon';
-import { DragFile } from '../../../components/Inputs/DragFile';
-import { CustomInput } from '../../../components/Inputs/CustomInput';
-import { CustomSelector } from '../../../components/Inputs/CustomSelector';
-import { CustomSelectorAdd } from "../../../components/Inputs/CustomSelector";
+import { useTitle } from 'hooks';
+import { Form } from 'components/Form';
+import { Footer } from 'components/Footer';
+import { Button } from 'components/Buttons';
+import { AddibleInput } from 'components/Flex';
+import { RemoveIcon } from 'components/RemoveIcon';
+import { DragFile } from 'components/Inputs/DragFile';
+import { CustomInput } from 'components/Inputs/CustomInput';
+import { CustomInputWithComponent } from "components/Inputs/CustomInput";
+import { CustomSelector } from 'components/Inputs/CustomSelector';
+import { CustomSelectorAdd } from "components/Inputs/CustomSelector";
 import { GET_ORDERS, GET_TRANSPORT_TYPES, GET_TRACKING_USER, GET_APPLICATION, CREATE_APPLICATION, UPDATE_APPLICATION } from "./gql";
 import { GET_ORDER_ITEMS, GET_FIRMS, GET_INVOICES, CREATE_INVOICE, UPDATE_INVOICE } from "./gql";
-import CustomPicker from "../../../components/Inputs/DatePicker";
-import { CustomNumber } from "../../../components/Inputs/CustomNumber";
+import CustomPicker from "components/Inputs/DatePicker";
+import { CustomNumber } from "components/Inputs/CustomNumber";
 import Switch from "@material-ui/core/Switch";
-import { useTemplate, useFormData, useCustomMutation, useToggleDialog } from "../../../hooks";
+import { useTemplate, useFormData, useCustomMutation, useToggleDialog } from "hooks";
 import { useHistory } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
 import { useState, useEffect, useMemo } from 'react';
 import MenuItem from "@material-ui/core/MenuItem";
-import { getList, getValueOfProperty } from "../../../utils/functions";
+import { getList, getValueOfProperty } from "utils/functions";
 import moment from 'moment';
-import { packagingTypes, deliveryCondition, statuses } from "../../../utils/static";
+import { packagingTypes, deliveryCondition, statuses, degreeOfDanger } from "utils/static";
 import Checkbox from "@material-ui/core/Checkbox";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import { exceptKey } from "../../../utils/functions";
-import SmallDialog from "../../../components/SmallDialog";
-import CheckMarkIcon from "../../../assets/icons/checkmark.svg";
-import EditDefaultIcon from "../../../assets/icons/editDefault.svg";
-import EditSelectedIcon from "../../../assets/icons/editSelected.svg";
-import EditHoveredIcon from "../../../assets/icons/editHovered.svg";
+import { exceptKey } from "utils/functions";
+import SmallDialog from "components/SmallDialog";
+import CheckMarkIcon from "assets/icons/checkmark.svg";
+import EditDefaultIcon from "assets/icons/editDefault.svg";
+import EditSelectedIcon from "assets/icons/editSelected.svg";
+import EditHoveredIcon from "assets/icons/editHovered.svg";
 
 
 const initialState = {
@@ -41,7 +42,7 @@ const initialState = {
     transportType: "",
     deliveryCondition: "",
     degreeOfDanger: "",
-    typeOfPackaging: "",
+    // typeOfPackaging: "",
     packageOnPallet: "",
     transportCount: "",
     shippingDate: new Date(),
@@ -60,6 +61,7 @@ const ApplicationCreate = ({ match }) => {
           { id } = match.params,
           history = useHistory();
 
+    const [requiredCounts, setRequiredCounts] = useState({});
 
 
     const [getTrackingUserTypes, trackingUserTypesRes] = useLazyQuery(GET_TRACKING_USER),
@@ -72,9 +74,10 @@ const ApplicationCreate = ({ match }) => {
           [getFirms, firmsRes] = useLazyQuery(GET_FIRMS);
 
 
+
     const orders = useMemo(() => getList(orderRes?.data), [orderRes?.data]) || [],
           transportTypes = useMemo(() => getList(transportTypesRes?.data), [transportTypesRes?.data]) || [],
-          trackingUserType = useMemo(() => getValueOfProperty(trackingUserTypesRes?.data, "role"), [trackingUserTypesRes?.data]) || [],
+          trackingUserType = useMemo(() => getList(trackingUserTypesRes?.data), [trackingUserTypesRes?.data]) || [],
           pk = getValueOfProperty(applicationRes?.data, "pk"),
           
           orderItems = useMemo(() => getList(orderItemsRes?.data), [orderItemsRes?.data]) || [],
@@ -204,6 +207,16 @@ const ApplicationCreate = ({ match }) => {
     const handleItemChange = (e, idx) => {
         const tmp = items.slice(0);
         tmp[idx][e.target.name] = e.target.value;
+
+        if(e.target.name == "orderItem"){
+            const requiredCount = orderItems.find(({node}) => node.pk == e.target.value).node.requiredCount;
+            let tmp = {...requiredCounts};
+            tmp[idx] = requiredCount;
+            console.log("here", tmp);
+
+            setRequiredCounts(tmp);
+
+        }
         setItems(tmp);
     }
 
@@ -215,11 +228,12 @@ const ApplicationCreate = ({ match }) => {
         let requestBody = {
             ...state,
             shippingDate: moment(state.shippingDate).format("YYYY-MM-DD"),
-            typeOfPackaging: packagingTypes.find(packaging => packaging.value === state.typeOfPackaging)?.label,
+            // typeOfPackaging: packagingTypes.find(packaging => packaging.value === state.typeOfPackaging)?.label,
             status: statuses.find(status => status.value === state.status)?.label
         }
 
         requestBody.applicationItems = !pk? items.map(item => exceptKey(item, "invoice")) : items; 
+        // console.log("requestBody", requestBody);
 
         if(pk){
             submitData(exceptKey(requestBody, ["orders"]), pk)
@@ -227,6 +241,10 @@ const ApplicationCreate = ({ match }) => {
             submitData(requestBody)
         }
     }
+
+    useEffect(() => {
+        console.log("requiredCounts", requiredCounts);
+    }, [requiredCounts]);
 
     return (
         <>
@@ -253,8 +271,12 @@ const ApplicationCreate = ({ match }) => {
                                 }
                             </CustomSelector>
                     }
-                    <CustomSelector label="Роль" value={state.trackingUser} name="trackingUser" stateChange={e => handleChange({fElem: e})}>
-                            <MenuItem key={trackingUserType.pk} value={trackingUserType.pk} selected={true}>{trackingUserType.displayName}</MenuItem>    
+                    <CustomSelector label="Логист" value={state.trackingUser} name="trackingUser" stateChange={e => handleChange({fElem: e})}>
+                        {
+                            trackingUserType.map(({node}) => 
+                                <MenuItem key={node.pk} value={node.pk}>{node.username}</MenuItem>    
+                            )
+                        }
                     </CustomSelector>
                     <CustomSelector label="Тип транспорта" value={state.transportType} name="transportType" stateChange={e => handleChange({fElem: e})}>
                         {
@@ -270,16 +292,23 @@ const ApplicationCreate = ({ match }) => {
                             )
                         }
                     </CustomSelector>
-                    <CustomSelector label="Тип упаковки" name="typeOfPackaging" value={state.typeOfPackaging} stateChange={e => handleChange({fElem: e})}>
+                    {/* <CustomSelector label="Тип упаковки" name="typeOfPackaging" value={state.typeOfPackaging} stateChange={e => handleChange({fElem: e})}>
                         {
                             packagingTypes.map(packaging => {
                                     return <MenuItem key={packaging.value} value={packaging.value} selected={state.typeOfPackaging === packaging.value}>{packaging.label}</MenuItem>    
                                 }
                             )
                         }
+                    </CustomSelector> */}
+                    <CustomSelector label="Уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({fElem: e})}>
+                        {
+                            degreeOfDanger.map(level => 
+                                <MenuItem key={level.value} value={level.value} selected={state.degreeOfDanger == level.value} >{level.label}</MenuItem>    
+                            )
+                        }
                     </CustomSelector>
-                    <CustomInput label="уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({fElem: e})}/>
-                    <CustomNumber label="Кол-во на поддоне" value={state.packageOnPallet} name="packageOnPallet" stateChange={e => handleChange({fElem: e})} />
+                    {/* <CustomInput label="уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({fElem: e})}/> */}
+                    <CustomNumber label="Кол-во мест" value={state.packageOnPallet} name="packageOnPallet" stateChange={e => handleChange({fElem: e})} />
                     <CustomNumber label="Кол-во транспорта" value={state.transportCount} name="transportCount" stateChange={e => handleChange({fElem: e})} />
                     <CustomPicker label="Дата отгрузки" date={state.shippingDate} name="shippingDate" stateChange={date => handleDateChange(date)} />
                     <CustomSelector label="Статус" name="status" value={state.status} stateChange={e => handleChange({fElem: e})}>
@@ -297,6 +326,10 @@ const ApplicationCreate = ({ match }) => {
                 </p>
 
                 <DragFile />
+                
+                {
+                    requiredCounts[0]
+                }
 
                 <Header>
                     <Title>Материал</Title>
@@ -332,12 +365,14 @@ const ApplicationCreate = ({ match }) => {
                                                 )
                                             }
                                         </CustomSelectorAdd>
-                                        <CustomInput label="Кол-во" value={item.count} name="count" stateChange={e => handleItemChange(e, index)} />
+                                        <CustomInputWithComponent type="text" label="Кол-во" value={item.count} name="count" stateChange={e => handleItemChange(e, index)} component={requiredCounts[index] && <Badge>{requiredCounts[index]}</Badge>}/>
                                     </Row>
 
                                     <Row>
-                                        <CustomNumber fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} />
-                                        <CustomNumber fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} />
+                                        <CustomInputWithComponent type="text"  fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} component={<Measure>кг</Measure>} />
+                                        <CustomInputWithComponent  type="text" fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} component={<Measure value="3" index>м</Measure>} />
+                                        {/* <CustomNumber fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} />
+                                        <CustomNumber fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} /> */}
                                         <CustomNumber fullWidth label="Цена инвойса"  value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
                                     </Row>
                                 </RowWrapper>
@@ -360,6 +395,36 @@ const ApplicationCreate = ({ match }) => {
 }
 
 export default ApplicationCreate;
+
+const Badge = styled.span`
+    padding:5px;
+    border-radius:5px;
+    background-color:rgba(87, 98, 178, 0.5);
+    color:#fff;
+    font-size:14px;
+    font-weight:bold;
+`;
+
+const Measure = styled.span`
+    color: #5762B2;
+
+    ${({index}) => {
+        console.log(index)
+        return index? css`
+            position:relative;
+
+            &::after{
+                content: "${({value}) => value}";
+                display:inline-block;
+                font-size:11px;
+                position:absolute;
+                font-weight:bold;
+                top:-2px;
+                right:-7px;
+            }
+        ` : ""
+    }}
+`;
 
 const CheckedMenuItem = styled(MenuItem)`
     color: ${({selected}) => selected? "#5762B2" : "rgba(0, 0, 0, .5)"} !important;

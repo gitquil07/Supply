@@ -19,7 +19,7 @@ import { TableCell } from '@material-ui/core';
 
 
 const ApplicationList = () => {
-    const title = useTitle("Заявки на Логистику");
+    const title = useTitle("Прибывшие");
 
     const {
         nextPageCursor,

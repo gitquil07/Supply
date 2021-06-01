@@ -164,14 +164,6 @@ export const paymentOptions = [
     }
 ];
 
-
-export const currencies = [
-    {
-        value: "USD",
-        label: "USD"
-    }
-];
-
 export const statuses = [
     {
         label: "создано",
@@ -313,6 +305,10 @@ export const trackingStatuses = [
     {
         label: "передано",
         value: "PEREDANO"
+    },
+    {
+        label: "в пути",
+        value: "V_PUTI"
     }
 ];
 
@@ -328,6 +324,44 @@ export const invoiceStatuses = [
     {
         label: "удален",
         value: "UDALEN"
+    }
+];
+
+
+export const degreeOfDanger = [
+    {
+        label: "опасный",
+        value: "dangerous"
+    },
+    {
+        label: "не опасный",
+        value: "not dangerous"
+    }
+];
+
+export const destinationOptions = [
+    {
+        label: "в офис",
+        value: "V_OFIS"
+    }
+];
+
+export const currencyOptions = [
+    {
+        label: "$",
+        value: "USD"
+    },
+    {
+        label: "¥",
+        value: "YUAN"
+    },
+    {
+        label: "€",
+        value: "EURO"
+    },
+    {
+        label: "₽",
+        value: "RUB"
     }
 ];
 

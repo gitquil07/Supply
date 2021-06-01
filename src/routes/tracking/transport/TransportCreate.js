@@ -26,11 +26,11 @@ import { CustomizableInputs } from "components/ComponentsForForm/CustomizableInp
 import { GET_TRACKING, GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS, GET_VENDORS, GET_INVOICES, INVOICE_UPDATE } from "./gql";
 import { useLazyQuery } from "@apollo/client";
 import { recursiveFetch, exceptKey } from "utils/functions";
-import { trackingStatuses } from "utils/static";
+import { currencyOptions, trackingStatuses, Валю } from "utils/static";
 import { useFormData, useCustomMutation } from "hooks";
 import { useHistory } from "react-router-dom";
 import { UPDATE_TRACKING } from "./gql"
-import { invoiceStatuses } from "utils/static";
+import { invoiceStatuses, destinationOptions } from "utils/static";
 import MenuItem from "@material-ui/core/MenuItem";
 import moment from "moment";
 import { useMutation } from "@apollo/client";
@@ -316,7 +316,11 @@ const TrackingTransportCreate = ({ match }) => {
                         <CustomNumber name="transportNumber" label="Номер транспорта" value={state?.transportNumber}  stateChange={e => handleChange({fElem: e})} />
                         <CustomNumber name="amount" label="Сумма" value={state?.amount}  stateChange={e => handleChange({fElem: e})} />
                         <CustomSelector name="currency" label="Валюта" value={state?.currency}  stateChange={e => handleChange({fElem: e})}>
-                            <MenuItem key="UZS" value="UZS" selected={state.currency == "UZS"}>UZS</MenuItem>
+                            {
+                                currencyOptions.map(currency => 
+                                    <MenuItem key={currency.value} value={currency.value} selected={state.currency == currency.value}>{currency.label}</MenuItem>
+                                )
+                            }
                         </CustomSelector>
                         <CustomNumber name="netto" label="Нетто" value={state?.netto}  stateChange={e => handleChange({fElem: e})} />
                         <CustomNumber name="brutto" label="Бруто" value={state?.brutto}  stateChange={e => handleChange({fElem: e})} />
@@ -324,22 +328,33 @@ const TrackingTransportCreate = ({ match }) => {
                 </MiniForm>
 
                 <MiniForm>
-                    <Title size="18">Инвойсы</Title>
                     {
-                        invoiceList.map((invoice, idx) => 
-                            <CustomizableInputs t="1fr 1fr 1fr">
-                                <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
-                                <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
-                                    {
-                                        invoiceStatuses.map(invoiceStatus => 
-                                            <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status == invoiceStatus.value}>{invoiceStatus.label}</MenuItem>    
-                                        )
-                                    }
-                                </CustomSelector>
-                                <CustomInput name="destination" label="Место" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination} />
-                            </CustomizableInputs>
-
-                        )
+                        invoiceList.length? <>
+                            <Title size="18">Инвойсы</Title>
+                            {
+                                invoiceList.map((invoice, idx) => 
+                                    <CustomizableInputs t="1fr 1fr 1fr">
+                                        <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
+                                        <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
+                                            {
+                                                invoiceStatuses.map(invoiceStatus => 
+                                                    <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status == invoiceStatus.value}>{invoiceStatus.label}</MenuItem>    
+                                                )
+                                            }
+                                        </CustomSelector>
+                                        <CustomSelector name="destination" label="место оплаты" stateChaneg={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination}>
+                                            {
+                                                destinationOptions.map(destination => 
+                                                    <MenuItem key={destination.value} value={destination.value} selected={destination.value == invoice.destination} >{destination.label}</MenuItem>
+                                                )
+                                            }
+                                        </CustomSelector>
+                                        {/* <CustomInput name="destination" label="место назначения" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination} /> */}
+                                    </CustomizableInputs>
+        
+                                )
+                            }
+                        </> : null
                     }
 
                     {/* <CustomizableInputs t="1fr 1fr 2fr">
@@ -367,38 +382,40 @@ const TrackingTransportCreate = ({ match }) => {
                         <Button value={additionalData.status} name="Добавить местонахождение" color="#5762B2" clickHandler={() => handleAdditionalDataSubmit(true)} />
                     </CustomizableInputs>
 
-                    <Container>
-                        {
-                            locations.map(location => 
-                                <ContainerRow>
-                                    <ContainerColumn>
-                                        <b>Статус:</b>
-                                        <span>{location.status}</span>
-                                    </ContainerColumn>
-                                    <ContainerColumn>
-                                        <b>Дата:</b>
-                                        <span>{moment(location.createdAt).format("YYYY-MM-DD")}</span>
-                                    </ContainerColumn>
-                                    <ContainerColumn>
-                                        <b>Местонахождение:</b>
-                                        <span>{location.name}</span>
-                                    </ContainerColumn>
-                                </ContainerRow>
-                            )
-                        }
+                    {
+                        locations.length? <Container>
+                            {
+                                locations.map(location => 
+                                    <ContainerRow>
+                                        <ContainerColumn>
+                                            <b>Статус:</b>
+                                            <span>{location.status}</span>
+                                        </ContainerColumn>
+                                        <ContainerColumn>
+                                            <b>Дата:</b>
+                                            <span>{moment(location.createdAt).format("YYYY-MM-DD")}</span>
+                                        </ContainerColumn>
+                                        <ContainerColumn>
+                                            <b>Местонахождение:</b>
+                                            <span>{location.name}</span>
+                                        </ContainerColumn>
+                                    </ContainerRow>
+                                )
+                            }
 
-                    </Container>
+                        </Container> : null
+                    }
 
                 </MiniForm>
                 <MiniForm>
-                    <Title size="18">Данные транспорта</Title>
+                    {/* <Title size="18">Данные транспорта</Title>
 
                     <List>
                         <Item>
                             <h4>Транспортировщик</h4>
                             <span>
                                 {
-                                    trackingInfo?.vendor?.name
+                                    trackingInfo?.vendor?.name || vendors.find(({node}) => node.pk == state.vendor)?.node?.name
                                 }
                             </span>
                         </Item>
@@ -406,7 +423,7 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Номер транспорта</h4>
                             <span>
                                 {
-                                    trackingInfo?.transportNumber
+                                    trackingInfo?.transportNumber || state.transportNumber
                                 }
                             </span>
                         </Item>
@@ -414,7 +431,7 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Сумма</h4>
                             <span>
                                 {
-                                    trackingInfo?.amount
+                                    trackingInfo?.amount || state.amount
                                 }
                             </span>
                         </Item>
@@ -422,7 +439,7 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Нетто вес</h4>
                             <span>
                                 {
-                                    trackingInfo?.netto
+                                    trackingInfo?.netto || state.netto
                                 }
                             </span>
                         </Item>
@@ -430,7 +447,7 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Брутто вес</h4>
                             <span>
                                 {
-                                    trackingInfo?.brutto
+                                    trackingInfo?.brutto || state.brutto
                                 }
                             </span>
                         </Item>
@@ -438,11 +455,11 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Примечание</h4>
                             <span>
                                 {
-                                    trackingInfo?.note
+                                    trackingInfo?.note || state.note
                                 }
                             </span>
                         </Item>
-                    </List>
+                    </List> */}
                     
                     <Title size="18">Информация заявки</Title>
 
@@ -450,6 +467,10 @@ const TrackingTransportCreate = ({ match }) => {
                         <Item>
                             <h4>Тип транспорта</h4>
                             <span>{ applicationInfo?.transportType?.name }</span>
+                        </Item>
+                        <Item>
+                            <h4>Тип заявки</h4>
+                            <span>{ applicationInfo?.transportMix ? "Сборная" : "Обычная" }</span>
                         </Item>
                         <Item>
                             <h4>

@@ -43,6 +43,14 @@ export const generateColumns = () => {
             options: {
                 filter: true,
                 sort: false,
+                customBodyRender: value => {
+                    return (
+                        <>
+                            {value.amount} {value.currency}
+                            <Row>{value.netto} кг / {value.brutto} кг</Row>
+                        </>
+                    );
+                }
             }
         },
         {

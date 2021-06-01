@@ -53,6 +53,14 @@ query getTrackingInfo($id: ID!) {
       }
       application {
         id
+        transportMix
+        files {
+          edges {
+            node {
+              file
+            }
+          }
+        }
         invoices{
           edges{
             node{

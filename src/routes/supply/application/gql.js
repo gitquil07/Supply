@@ -64,16 +64,16 @@ query getTransportTypes {
 }
 `;
 
-export const GET_TRACKING_USER = gql`
-query getTrackingUser {
-  account {
-    role(id: "Um9sZU5vZGU6NQ==") {
-      pk
-      displayName
-    }
-  }
-}
-`;
+// export const GET_TRACKING_USER = gql`
+// query getTrackingUser {
+//   account {
+//     role(id: "Um9sZU5vZGU6NQ==") {
+//       pk
+//       displayName
+//     }
+//   }
+// }
+// `;
 
 export const GET_APPLICATION = gql`
 query getApplication($id : ID!){
@@ -160,6 +160,7 @@ query getOrderItems($orders: [ID]!) {
               name
             }
           }
+          requiredCount
         }
       }
     }
@@ -246,4 +247,17 @@ mutation updateInvoice($input: InvoiceUpdateMutationInput!, $id: ID!) {
 }
 `;
 
-
+export const GET_TRACKING_USER = gql`
+query getTrackingUsers {
+  account {
+    users(role: "Um9sZU5vZGU6NQ==") {
+      edges {
+        node {
+          pk
+          username
+        }
+      }
+    }
+  }
+}
+`;
