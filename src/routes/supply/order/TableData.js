@@ -1,7 +1,4 @@
-import { propEq, find } from "ramda";
-import { Link } from "react-router-dom";
-
-export const generateColumns = (url) => {
+export const generateColumns = () => {
     const options = {
         filter: true,
         sort: false
@@ -9,14 +6,11 @@ export const generateColumns = (url) => {
 
     return [
         {
-            name: "public_id",
+            name: "id",
             label: "Номер заказа",
             options: {
-                filter: true,
-                customBodyRender: (value) => {
-                    return <Link to={`${url}/edit/${value.id}`}>{value.publicId}</Link>
-                },
-            },
+                display: "none"
+            }
         },
         {
             name: "factory",

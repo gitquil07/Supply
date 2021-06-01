@@ -8,16 +8,10 @@ export const generateColumns = (callback) => {
 
     return [
         {
-            name: "publicId",
+            name: "id",
             label: "№",
             options: {
-                filter: true,
-                customBodyRender: (value) => {
-                    return <a href="#" onClick={() => {
-                        callback(value.id)
-                        return false
-                    }}>{value.publicId}</a>;
-                },
+                display: "none"
             },
         },
         {

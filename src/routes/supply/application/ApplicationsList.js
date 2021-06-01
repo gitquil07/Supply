@@ -9,7 +9,7 @@ import { FlexForHeader } from "../../../components/Flex";
 import { ButtonWithIcon } from "../../../components/Buttons";
 import { Pagination } from '../../../components/Pagination';
 import { usePagination } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { CustomRowGenerator, getList } from "../../../utils/functions";
 
 
 const ApplicationList = ({ match }) => {
@@ -34,7 +34,7 @@ const ApplicationList = ({ match }) => {
         setToDateChange,
         handleDateApply
     } = usePagination({
-        type: "dateFilter", 
+        type: "dateFilter",
         qraphQlQuery: APPLICATIONS,
         singular: "application",
         plural: "applications"
@@ -55,12 +55,13 @@ const ApplicationList = ({ match }) => {
     }
 
     const applications = getList(dataPaginationRes?.data) || [];
+
     const list = applications.map(({ node }) => {
         return {
             ...node,
-            publicId: {publicId: node.publicId, id: node.id},
+            id: node.id,
             transportType: node.transportType.name,
-            typeOfPackaging: node.typeOfPackaging + " / " +  node.count,
+            typeOfPackaging: node.typeOfPackaging + " / " + node.count,
             trackingUser: node.trackingUser.firstName + " " + node.trackingUser.lastName
         }
     });
@@ -79,13 +80,14 @@ const ApplicationList = ({ match }) => {
                     changeTo={setToDateChange}
                     buttonClicked={handleDateApply}
                 />
-                <ButtonWithIcon name="создать заявку" url={`${match.url}/create`}/>
+                <ButtonWithIcon name="создать заявку" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable
                 title={"Список заявок"}
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGenerator(url)}
             />
             <Pagination {...paginationParams} />
         </>
