@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import moment from "moment";
+import { Row } from "components/Row";
 
 export const generateColumns = (url) => {
 
@@ -8,10 +8,22 @@ export const generateColumns = (url) => {
             name: "id",
             label: "ID",
             options: {
+                display: "none"
+            }
+        },
+        {
+            name: "vendorFactoryProduct",
+            label: "Завод / Поставщик ",
+            options: {
                 filter: true,
                 sort: false,
                 customBodyRender: (value) => {
-                    return <Link to={`${url}/edit/${value}`}>{value}</Link>
+                    return (
+                        <>
+                            {value.factory} / {value.vendor}
+                            <Row>{ value.product }</Row>
+                        </>
+                    )
                 }
             }
         },
@@ -25,19 +37,19 @@ export const generateColumns = (url) => {
             }
         },
         {
-            name: "vendorFactoryProduct",
-            label: "Завод / Поставщик ",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
             name: "deliveryAndProductionDayCount",
             label: "Дни изгот. / Дни дост.",
             options: {
                 filter: true,
                 sort: false,
+                customBodyRender: (value) => {
+                    return(
+                        <>
+                            {value.deliveryDayCount} дн. / {value.productionDayCount} дн.
+                            <Row>{value.price} / {value.measure}</Row>
+                        </>
+                    );
+                }
             }
         }
     ];

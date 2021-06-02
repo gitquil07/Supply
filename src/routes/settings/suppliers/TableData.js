@@ -1,21 +1,15 @@
-import { Link } from "react-router-dom";
-
 export const generateColumns = (url) => {
     return [
         {
             name: "id",
             label: "ID",
             options: {
-                filter: true,
-                sort: false,
-                customBodyRender: (value) => {
-                    return <Link to={`${url}/edit/${value}`}>{value}</Link>
-                }
+                display: "none"
             }
         },
         {
             name: "name",
-            label: "Название",
+            label: "Контактное лицо",
             options: {
                 filter: true,
                 sort: true,
@@ -42,7 +36,7 @@ export const generateColumns = (url) => {
             label: "Номер телефона",
             options: {
                 filter: true,
-                sort:false
+                sort: false
             }
         },
         {
@@ -50,7 +44,7 @@ export const generateColumns = (url) => {
             label: "Улица",
             options: {
                 filter: true,
-                sort:false
+                sort: false
             }
         },
         {
@@ -58,7 +52,7 @@ export const generateColumns = (url) => {
             label: "Дом",
             options: {
                 filter: true,
-                sort:false
+                sort: false
             }
         },
         {
@@ -66,8 +60,8 @@ export const generateColumns = (url) => {
             label: "Почтовый индекс",
             options: {
                 filter: true,
-                sort:false
+                sort: false
             }
         },
     ];
-} 
+}

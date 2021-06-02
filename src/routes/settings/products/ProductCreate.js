@@ -135,11 +135,17 @@ const ProductCreate = ({match}) => {
 
     // Will launch after (save) button clicked
     function launchProductsCreate(data){
-        const res = addProp(products, "group", data.product.productGroupCreate.productGroup.pk),
-              recursiveMutation = recursiveFetch(res.length, (turn) => createProduct({
+        let res = addProp(products, "group", data.product.productGroupCreate.productGroup.pk);
+        // res = res.map((product, idx) => {
+        //     return {
+        //         ...product,
+        //         typeOfPackaging: packagingTypes.find(type => type.value === res[idx].typeOfPackaging).label
+        //     }
+        // })
+        const recursiveMutation = recursiveFetch(res.length, (turn) => createProduct({
                 variables: {
                     input: {
-                        data: data[turn]
+                        data: res[turn]
                     }
                 }
             })
@@ -223,7 +229,7 @@ const ProductCreate = ({match}) => {
                                 </CustomSelector>
                                 <CustomSelector label="Тип упаковки" name="typeOfPackaging" value={e.typeOfPackaging} stateChange={e => handleDataChange(e, "product", index)}>
                                     {   
-                                        packagingTypes.map(type => <MenuItem value={type.value} selected={type === e.typeOfPackaging}>{type.label}</MenuItem>)
+                                        packagingTypes.map(type => <MenuItem value={type.valueEnglish} selected={type === e.typeOfPackaging}>{type.label}</MenuItem>)
                                     }
                                 </CustomSelector>
                             </InputsWrapper>

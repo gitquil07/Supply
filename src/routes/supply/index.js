@@ -15,6 +15,7 @@ import ArrivedList from "./arrived/ArrivedList"
 import ReportTable from "./report/ReportTable";
 
 import TestTable from "./report/test";
+import TestTable2 from "./report/test2";
 
 const Supply = ({ match }) => {
 
@@ -38,7 +39,7 @@ const Supply = ({ match }) => {
 
             <Route path={url("/customs")} component={CustomsList} exact />
 
-            <Route path={url("/report")} component={TestTable} exact />
+            <Route path={url("/report")} component={TestTable2} exact />
         </Switch>
     );
 };

@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { ORDERS } from "./gql";
 import { useTitle } from '../../../hooks';
 import { generateColumns } from './TableData';
-import { TimeParser } from "../../../utils/functions";
+import { CustomRowGenerator, TimeParser } from "../../../utils/functions";
 import { FlexForHeader } from '../../../components/Flex';
 import { ButtonWithIcon } from "../../../components/Buttons";
 import DatePickers from '../../../components/Inputs/DatePickers';
@@ -12,6 +12,7 @@ import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { usePagination } from "../../../hooks";
 import { Pagination } from "../../../components/Pagination";
 import { getList } from "../../../utils/functions";
+import { statuses } from "utils/static";
 
 const OrderList = ({ match }) => {
 
@@ -37,7 +38,7 @@ const OrderList = ({ match }) => {
         setToDateChange,
         handleDateApply
     } = usePagination({
-        type: "dateFilter", 
+        type: "dateFilter",
         qraphQlQuery: ORDERS,
         singular: "order",
         plural: "orders"
@@ -59,12 +60,14 @@ const OrderList = ({ match }) => {
 
 
     const orders = getList(dataPaginationRes?.data) || [];
+
     const list = orders.map(({ node }) => {
         return {
-            public_id: { publicId: node.publicId, id: node.id},
+            id: node.id,
+            pk: node.pk,
             factory: node.vendorFactory?.factory.name,
             vendor: node.vendorFactory?.vendor.name,
-            status: node.status,
+            status: statuses.find(status => status.value == node.status).label,
             invoice_proforma: node.invoiceProforma,
             invoice_date: node.invoiceDate,
             created_at: TimeParser(node.createdAt),
@@ -89,10 +92,11 @@ const OrderList = ({ match }) => {
                 <ButtonWithIcon name="Создать заказ" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable
-                title={"Список всех сотрудников"}
+                title={"Список всех заказов"}
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGenerator(url)}
             />
             <Pagination {...paginationParams} />
         </>

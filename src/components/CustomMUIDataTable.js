@@ -1,4 +1,4 @@
-import React from "react"; 
+import React from "react";
 import MUIDataTable from "mui-datatables";
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import styled from "styled-components";
@@ -10,24 +10,25 @@ import ViewColumnIcon from '@material-ui/icons/DynamicFeed';
 import FilterIcon from '@material-ui/icons/GroupWork';
 import { Height } from "@material-ui/icons";
 
-export const CustomMUIDataTable = React.memo(({count, title, data, columns }) => {
+export const CustomMUIDataTable = React.memo(({ count, title, data, columns, customRowOptions }) => {
 
     const getMuiTheme = () => createMuiTheme({
         overrides: {
             MUIDataTable: {
                 responsiveBase: {
-                    maxHeight:"693px"
+                    maxHeight: "693px"
                 }
-          }
+            }
         }
-      })
+    })
 
     console.log("custom table rendered");
 
     const options = {
         filterType: 'dropdown',
         selectableRows: "none",
-        rowsPerPage: count
+        rowsPerPage: count,
+        ...customRowOptions
     };
 
 

@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 export const APPLICATIONS = gql`
 query getApplication($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $after: String, $before: String) {
   application {
-    applications(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before, status: "в растаможке") {
+    applications(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before, status: "в растаможке", orderBy: "-createdAt") {
       edges {
         node {
           id

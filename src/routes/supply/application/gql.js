@@ -3,11 +3,12 @@ import { gql } from "@apollo/client";
 export const APPLICATIONS = gql`
 query getApplication($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $after: String, $before: String) {
   application {
-    applications(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before) {
+    applications(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before, orderBy: "-createdAt") {
       edges {
         node {
           id
           publicId
+          pk
           status
           transportType {
             name
@@ -30,6 +31,7 @@ query getApplication($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $a
     }
   }
 }
+
 `;
 
 export const GET_ORDERS = gql`
@@ -62,22 +64,29 @@ query getTransportTypes {
 }
 `;
 
-export const GET_TRACKING_USER = gql`
-query getTrackingUser {
-  account {
-    role(id: "Um9sZU5vZGU6NQ==") {
-      pk
-      displayName
-    }
-  }
-}
-`;
+// export const GET_TRACKING_USER = gql`
+// query getTrackingUser {
+//   account {
+//     role(id: "Um9sZU5vZGU6NQ==") {
+//       pk
+//       displayName
+//     }
+//   }
+// }
+// `;
 
 export const GET_APPLICATION = gql`
 query getApplication($id : ID!){
   application{
     application(id: $id){
       pk
+      files {
+        edges {
+          node {
+            file
+          }
+        }
+      }
       orders{
         edges{
           node{
@@ -158,6 +167,7 @@ query getOrderItems($orders: [ID]!) {
               name
             }
           }
+          requiredCount
         }
       }
     }
@@ -244,4 +254,17 @@ mutation updateInvoice($input: InvoiceUpdateMutationInput!, $id: ID!) {
 }
 `;
 
-
+export const GET_TRACKING_USER = gql`
+query getTrackingUsers {
+  account {
+    users(role: "Um9sZU5vZGU6NQ==") {
+      edges {
+        node {
+          pk
+          username
+        }
+      }
+    }
+  }
+}
+`;

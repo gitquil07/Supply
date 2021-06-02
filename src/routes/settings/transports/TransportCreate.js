@@ -12,17 +12,17 @@ import { useCustomMutation, useFormData } from "hooks";
 
 const initialState = {
     name: "",
-    customDayCount: ""
+    customsDayCount: ""
 }
 
 const fieldsMessages = {
     name: "",
-    customDayCount: ""
+    customsDayCount: ""
 }
 
 const transportSchema = object({
     name: string().typeError("Поле должно быть строкой").required("Поле 'Название транспорта' обязательно к заполнению"),
-    customDayCount: number().typeError("Поле должно быть строкой").required("Поле 'Кол-во дней' обязательно к заполнению")
+    customsDayCount: number().typeError("Поле должно быть строкой").required("Поле 'Кол-во дней' обязательно к заполнению")
 });
 
 
@@ -42,7 +42,7 @@ const TransportCreate = ({ isOpen, close, entry, setMutateState, getEntries, amo
 
             setState({
                 name: entry.name,
-                customDayCount: entry.customDayCount
+                customsDayCount: entry.customsDayCount
             });
 
         }
@@ -87,9 +87,9 @@ const TransportCreate = ({ isOpen, close, entry, setMutateState, getEntries, amo
             {
                 validationMessages.name.length? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
             }
-            <CustomNumber value={state.customDayCount} name="customDayCount" label="Кол-во дней" stateChange={e => handleChange({fElem:e})} fullWidth errorVal={validationMessages.name.length? true : false} />
+            <CustomNumber value={state.customsDayCount} name="customsDayCount" label="Кол-во дней" stateChange={e => handleChange({fElem:e})} fullWidth errorVal={validationMessages.name.length? true : false} />
             {
-                validationMessages.customDayCount.length? <ValidationMessage>{validationMessages.customDayCount}</ValidationMessage> : null
+                validationMessages.customsDayCount.length? <ValidationMessage>{validationMessages.customsDayCount}</ValidationMessage> : null
             }
             <Button name={pk? "сохранить" : "Добавить транспорт"} color="#5762B2" clickHandler={() => pk? handleSubmit(state, pk) : handleSubmit(state)}/>
         </SmallDialog>

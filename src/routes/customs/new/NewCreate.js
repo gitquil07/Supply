@@ -8,7 +8,7 @@ import { Footer } from "components/Footer";
 import { Button } from "components/Buttons";
 
 import { useLazyQuery } from "@apollo/client";
-import { UPDATE_CUSTOM, GET_CUSTOM, GET_PLAN } from "./gql";
+import { UPDATE_CUSTOM, GET_CUSTOM, GET_CUSTOM_TEMPLATE, CUSTOM_FILE_CREATE } from "./gql";
 import { useEffect } from "react";
 import MenuItem from "@material-ui/core/MenuItem";
 import { useHistory } from "react-router-dom";
@@ -148,7 +148,13 @@ const NewCreate = ({ match }) => {
                         )
                     }
                 </Block>
-                <BulkUpload query={GET_PLAN} key="planProductTemplate"/>
+                <BulkUpload 
+                    query={GET_CUSTOM_TEMPLATE} 
+                    keyName="customsTemplate"
+                    message="Данные"
+                    mutation={CUSTOM_FILE_CREATE}   
+                    withoutSelection={true} 
+                />
             </Form>
             <Footer justify="flex-end">
                     <Button name={pk? "Сохранить" : "Создать"} clickHandler={() => handleSubmitData()} /> 

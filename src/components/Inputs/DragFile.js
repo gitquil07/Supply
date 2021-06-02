@@ -1,23 +1,30 @@
 import styled from "styled-components";
 import Doc from "../../assets/icons/file.svg";
 import Remove from "../../assets/icons/deleteFile.svg";
+import { downloadFile } from "../../utils/functions";
 
-
-export const DragFile = ({ receivedFile, files, removeClicked }) => {
+export const DragFile = ({ receivedFile, fetchedFiles, uploadedFiles, removeClicked }) => {
     return (
         <Wrapper>
             <Form>
                 <span>Перащите файл или выберите</span>
                 <label for="upload-photo">Выбрать файл</label>
-                <input type="file" name="photo" id="upload-photo" onChange={({ target }) => receivedFile(target.files[0])} accept="application/*"/>
+                <input type="file" name="photo" id="upload-photo" onChange={({ target }) => receivedFile(target.files[0])} accept="application/*" />
             </Form>
-            <List>
-                {files?.map((e, i) => <File key={i}>
+            <FilesList>
+                {fetchedFiles?.map((e, i) =>
+                    <FileElement key={i} onClick={() => downloadFile(e.file)}>
+                        <img src={Doc} alt="doc" />
+                        {e.file_name}
+                    </FileElement>)}
+
+                {uploadedFiles?.map((e, i) => <FileElement key={i}>
                     <img src={Doc} alt="doc" />
                     {e.name}
                     <img src={Remove} alt="remove" id="remove" onClick={() => removeClicked(i)} />
-                </File>)}
-            </List>
+                </FileElement>
+                )}
+            </FilesList>
         </Wrapper>
     )
 }
@@ -65,7 +72,7 @@ const Form = styled.form`
     }
 `;
 
-const List = styled.div`
+export const FilesList = styled.div`
     width: 100%;
     display: flex;
     flex-wrap: wrap;
@@ -73,7 +80,7 @@ const List = styled.div`
     margin-top: 10px;
 `;
 
-const File = styled.div`
+export const FileElement = styled.div`
     background: #5762B3;
     border-radius: 30px;
     padding: 5px 10px;

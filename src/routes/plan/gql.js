@@ -9,3 +9,14 @@ query getTemplate {
     }
   }
 `;
+
+export const CREATE_PLAN_PRODUCT_FILE = gql`
+mutation planProductFileCreate($input: PlanProductFileCreateMutationInput!) {
+  stock {
+    planProductFileCreate (input: $input){
+      ok
+      errors
+    }
+  }
+}
+`;

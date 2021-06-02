@@ -1,17 +1,10 @@
-import { Link } from "react-router-dom";
-
-export const generateColumns = (url) => {
-
+export const generateColumns = () => {
     return [
         {
             name: "id",
             label: "ID",
             options: {
-                filter: false,
-                sort: false,
-                customBodyRender: (value) => {
-                    return <Link to={`${url}/edit/${value}`}>{value}</Link>
-                }
+                display: "none"
             }
         },
         {
@@ -32,7 +25,7 @@ export const generateColumns = (url) => {
         },
         {
             name: "paymentCondition",
-            label: "Условия оплаты", 
+            label: "Условия оплаты",
             options: {
                 filter: true,
                 sort: false,
@@ -53,7 +46,7 @@ export const generateColumns = (url) => {
                 filter: true,
                 sort: false,
                 customBodyRender: (value) => {
-                    return  value? "Активнвый" : "Не активный"
+                    return value ? "Активнвый" : "Не активный"
                 }
             }
         },
@@ -67,16 +60,16 @@ export const generateColumns = (url) => {
             }
         },
         // {
-    //     name: "Actions",
-    //     options: {
-    //         customBodyRender: (value, tableMeta, updateValue) => {
-    //             return (
-    //                 <MatButton variant="outlined" className="btn-danger text-white" onClick={() => resetUserPassword(tableMeta.rowData[6], tableMeta.rowData[2], tableMeta.rowData[7])}>
-    //                     {`RESET`}
-    //                 </MatButton>
-    //             );
-    //         }
-    //     }
-    // }
+        //     name: "Actions",
+        //     options: {
+        //         customBodyRender: (value, tableMeta, updateValue) => {
+        //             return (
+        //                 <MatButton variant="outlined" className="btn-danger text-white" onClick={() => resetUserPassword(tableMeta.rowData[6], tableMeta.rowData[2], tableMeta.rowData[7])}>
+        //                     {`RESET`}
+        //                 </MatButton>
+        //             );
+        //         }
+        //     }
+        // }
     ];
 }

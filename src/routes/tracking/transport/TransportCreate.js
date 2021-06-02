@@ -25,16 +25,18 @@ import { Title } from "components/Title";
 import { CustomizableInputs } from "components/ComponentsForForm/CustomizableInputs";
 import { GET_TRACKING, GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS, GET_VENDORS, GET_INVOICES, INVOICE_UPDATE } from "./gql";
 import { useLazyQuery } from "@apollo/client";
-import { recursiveFetch, exceptKey } from "utils/functions";
-import { trackingStatuses } from "utils/static";
+import { recursiveFetch, exceptKey, downloadFile } from "utils/functions";
+import { currencyOptions, trackingStatuses, Валю } from "utils/static";
 import { useFormData, useCustomMutation } from "hooks";
 import { useHistory } from "react-router-dom";
 import { UPDATE_TRACKING } from "./gql"
-import { invoiceStatuses } from "utils/static";
+import { invoiceStatuses, destinationOptions } from "utils/static";
 import MenuItem from "@material-ui/core/MenuItem";
 import moment from "moment";
 import { useMutation } from "@apollo/client";
 import { NotificationManager } from "react-notifications";
+import { FileElement, FilesList } from "components/Inputs/DragFile";
+import { indexOf } from "ramda";
 
 
 const initialState = {
@@ -50,11 +52,11 @@ const TrackingTransportCreate = ({ match }) => {
     console.log("tracking transport rendered");
 
     const { id } = match.params;
-    const title = useTitle("Создание нового Слежения");
+    const title = useTitle("Изменение Слежения");
     const [additionalData, setAdditionalData] = useState({
-        status:"",
-        trDate:new Date(),
-        locations:""
+        status: "",
+        trDate: new Date(),
+        locations: ""
     });
     const [applications, setApplications] = useState([
         {
@@ -63,12 +65,12 @@ const TrackingTransportCreate = ({ match }) => {
         {
             expand: true
         },
-        
+
     ]);
 
     const history = useHistory();
 
-    const { 
+    const {
         state,
         setState,
         handleChange
@@ -78,11 +80,11 @@ const TrackingTransportCreate = ({ match }) => {
     const {
         submitData
     } = useCustomMutation({
-            graphQlQuery: {
-                queryCreate: UPDATE_TRACKING,
-                queryUpdate: UPDATE_TRACKING
-            }
-        },
+        graphQlQuery: {
+            queryCreate: UPDATE_TRACKING,
+            queryUpdate: UPDATE_TRACKING
+        }
+    },
         "Слежение",
         () => {
             history.push("/tracking/transport");
@@ -92,71 +94,78 @@ const TrackingTransportCreate = ({ match }) => {
     const {
         submitData: submitAdditionalData
     } = useCustomMutation({
-            graphQlQuery: {
-                queryCreate: UPDATE_TRACKING,
-                queryUpdate: UPDATE_TRACKING
-            }
-        },
+        graphQlQuery: {
+            queryCreate: UPDATE_TRACKING,
+            queryUpdate: UPDATE_TRACKING
+        }
+    },
         "Данные",
-        () => {}
+        () => { }
     );
-
-
-    const [updateTracking] = useMutation(UPDATE_TRACKING, {
-        refetchQueries: [{
-            query: GET_TRACKING
-        }],
-        onCompleted: () => NotificationManager.success("Стату слежения изменен"),
-        onError: (error) => NotificationManager.error(error.message) 
-    });
 
     const {
         submitData: submitInvoiceUpdate
     } = useCustomMutation({
-            graphQlQuery: {
-                queryCreate: INVOICE_UPDATE,
-                queryUpdate: INVOICE_UPDATE
-            }
-        },
+        graphQlQuery: {
+            queryCreate: INVOICE_UPDATE,
+            queryUpdate: INVOICE_UPDATE
+        }
+    },
         "Инвойс",
-        () => {}
+        () => { }
     )
 
 
-    
-    const [getTrackingInfo, trackingInfoRes] = useLazyQuery(GET_TRACKING),
-          [getVendors, vendorsRes] = useLazyQuery(GET_VENDORS),
-          [getApplicationItemsGroupedByOrder, applicationItemsGroupedByOrderRes] = useLazyQuery(GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS),
-          [getInvoices, invoicesRes] = useLazyQuery(GET_INVOICES),
+
+    const [getTrackingInfo, trackingInfoRes] = useLazyQuery(GET_TRACKING, {
+        fetchPolicy: "network-only"
+    }),
+        [getVendors, vendorsRes] = useLazyQuery(GET_VENDORS),
+        [getApplicationItemsGroupedByOrder, applicationItemsGroupedByOrderRes] = useLazyQuery(GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS),
+        [getInvoices, invoicesRes] = useLazyQuery(GET_INVOICES),
 
 
-          vendors = vendorsRes?.data?.vendor?.vendors.edges || [],
-          trackingInfo = trackingInfoRes?.data? exceptKey(trackingInfoRes?.data?.tracking.tracking, ["application", "__typename", "locations"]) : null,
-          locations = trackingInfoRes?.data?.tracking.tracking.locations.edges.map(({node}) => {
+        vendors = vendorsRes?.data?.vendor?.vendors.edges || [],
+        trackingInfo = trackingInfoRes?.data ? exceptKey(trackingInfoRes?.data?.tracking.tracking, ["application", "__typename", "locations"]) : null,
+        locations = trackingInfoRes?.data?.tracking.tracking.locations.edges.map(({ node }) => {
             const obj = exceptKey(node, ["__typename"]);
             obj.status = trackingStatuses.find(trackStatus => trackingInfoRes?.data?.tracking.tracking.status == trackStatus.value).label;
             return obj;
-          }) || [],
-          applicationInfo = trackingInfoRes?.data?.tracking?.tracking?.application,
-          pk = trackingInfoRes?.data?.tracking?.tracking?.pk,
-          applicationItems = applicationItemsGroupedByOrderRes?.data?.application?.application?.orders?.edges?.map(({node}) => {
-              return {
-                  orderPublicId: node?.publicId,
-                  applicationItems: node?.orderItems?.edges?.map(({node}) => {
-                      return node?.applicationItems?.edges?.map(({node}) => {
-                          return node;
-                      })
-                  })
-              }
-          });
+        }) || [],
+        applicationInfo = trackingInfoRes?.data?.tracking?.tracking?.application,
+        pk = trackingInfoRes?.data?.tracking?.tracking?.pk,
+        applicationItems = applicationItemsGroupedByOrderRes?.data?.application?.application?.orders?.edges?.map(({ node }) => {
+            return {
+                orderPublicId: node?.publicId,
+                applicationItems: node?.orderItems?.edges?.map(({ node }) => {
+                    return node?.applicationItems?.edges?.map(({ node }) => {
+                        return node;
+                    })
+                })
+            }
+        }),
+        ApplicationFiles = applicationInfo?.files?.edges;
 
+    console.log("applicationInfo", applicationInfo)
+
+    const [updateTracking] = useMutation(UPDATE_TRACKING, {
+        onCompleted: () => {
+            getTrackingInfo({
+                variables: {
+                    id
+                }
+            });
+            NotificationManager.success("Статуc слежения изменен")
+        },
+        onError: (error) => NotificationManager.error(error.message)
+    });
 
     useEffect(() => {
         getVendors();
     }, []);
 
     useEffect(() => {
-        if(id !== undefined){
+        if (id !== undefined) {
             getTrackingInfo({
                 variables: {
                     id
@@ -167,9 +176,9 @@ const TrackingTransportCreate = ({ match }) => {
 
     useEffect(() => {
         const id = trackingInfoRes?.data?.tracking?.tracking?.application.id;
-        if(id !== undefined){
+        if (id !== undefined) {
             getApplicationItemsGroupedByOrder({
-                variables:{
+                variables: {
                     id
                 }
             });
@@ -195,29 +204,33 @@ const TrackingTransportCreate = ({ match }) => {
     }, [state]);
 
     useEffect(() => {
-        console.log("additionalData", additionalData); 
+        console.log("additionalData", additionalData);
     }, [additionalData]);
 
     const handleAdditionalDataSubmit = (additional) => {
 
-        if(additional){
+        if (additional) {
             const requestBody = {
-                        status: trackingStatuses.find(status => status.value === additionalData.status).label, 
-                        trDate: moment(additionalData.trDate).format("YYYY-MM-DD"),
-                        locations: [{
-                            name: additionalData.locations
-                        }]
-                    };
-                    submitAdditionalData(requestBody, pk);
-                    // console.log("sad");
-                    // updateTracking({
-                    //     variables: {
-                    //         data: requestBody,
-                    //         pk
-                    //     }
-                    // });
+                ...exceptKey(state, ["pk", "publicId"]),
+                status: trackingStatuses.find(status => status.value === additionalData.status).label,
+                trDate: moment(additionalData.trDate).format("YYYY-MM-DD"),
+                locations: [{
+                    name: additionalData.locations
+                }]
+            };
+            // submitAdditionalData(requestBody, pk);
+            // console.log("sad", requestBody);
+            // console.log("pk", pk);
+            updateTracking({
+                variables: {
+                    input: {
+                        data: requestBody,
+                        pk
+                    }
+                }
+            });
 
-        }else{
+        } else {
             console.log("requestBody", state);
 
 
@@ -228,36 +241,41 @@ const TrackingTransportCreate = ({ match }) => {
                 }
             });
 
-            
+
             const invoicesPk = invoiceList.map(invoice => invoice.pk);
-            
+
             const recursiveMutation = recursiveFetch(invoicesToUpdate.length, (turn) => {
-                submitInvoiceUpdate(invoicesToUpdate[turn], invoicesPk[turn])   
+                submitInvoiceUpdate(invoicesToUpdate[turn], invoicesPk[turn])
             });
 
             recursiveMutation();
-            
-            submitData(exceptKey(state, ["note", "pk", "status"]), pk);
-            getTrackingInfo({
-                variables: {
-                    id
-                }
-            });
+
+            console.log("state", exceptKey(state, ["pk", "publicId"]));
+
+            submitData({
+                ...exceptKey(state, ["pk", "publicId", "status"])
+            }, pk);
+            // getTrackingInfo({
+            //     variables: {
+            //         id
+            //     }
+            // });
         }
     }
 
+    console.log("STATE", state)
 
     const [invoiceList, setInvoiceList] = useState([]);
 
     useEffect(() => {
         const list = invoicesRes?.data?.application?.application?.invoices.edges || [];
         console.log("list", list);
-        if(list.length > 0){
-            const obj = list.map(({node}) => {
+        if (list.length > 0) {
+            const obj = list.map(({ node }) => {
                 return {
                     ...exceptKey(node, ["__typename"]),
                 }
-            }) 
+            })
 
             setInvoiceList(obj);
         }
@@ -292,39 +310,56 @@ const TrackingTransportCreate = ({ match }) => {
             <Form>
                 <MiniForm>
                     <Title>Данные транспорта</Title>
-                    <CustomizableInputs t="2fr 2fr 1fr 2fr 1fr 1fr 1fr">
-                        <CustomSelector label="Тип транспорта" value={state?.vendor} name="vendor" stateChange={e => handleChange({fElem: e})}>
+                    <CustomizableInputs t="2fr 2fr 2fr 2fr 1fr 1fr 1fr">
+                        <CustomSelector label="Транспортировщики" value={state?.vendor} name="vendor" stateChange={e => handleChange({ fElem: e })}>
                             {
-                                vendors.map(({node}) => 
-                                    <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.vendor}>{node.name}</MenuItem>    
+                                vendors.map(({ node }) =>
+                                    <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.vendor}>{node.name}</MenuItem>
                                 )
                             }
                         </CustomSelector>
-                        <CustomNumber name="transportNumber" label="Номер транспорта" value={state?.transportNumber}  stateChange={e => handleChange({fElem: e})} />
-                        <CustomNumber name="amount" label="Сумма" value={state?.amount}  stateChange={e => handleChange({fElem: e})} />
-                        <CustomInput name="currency" label="Валюта" value={state?.currency}  stateChange={e => handleChange({fElem: e})} />
-                        <CustomNumber name="netto" label="Нетто" value={state?.netto}  stateChange={e => handleChange({fElem: e})} />
-                        <CustomNumber name="brutto" label="Бруто" value={state?.brutto}  stateChange={e => handleChange({fElem: e})} />
+                        <CustomNumber name="transportNumber" label="Номер транспорта" value={state?.transportNumber} stateChange={e => handleChange({ fElem: e })} />
+                        <CustomNumber name="amount" label="Сумма" value={state?.amount} stateChange={e => handleChange({ fElem: e })} />
+                        <CustomSelector name="currency" label="Валюта" value={state?.currency} stateChange={e => handleChange({ fElem: e })}>
+                            {
+                                currencyOptions.map(currency =>
+                                    <MenuItem key={currency.value} value={currency.value} selected={state.currency === currency.value}>{currency.label}</MenuItem>
+                                )
+                            }
+                        </CustomSelector>
+                        <CustomNumber name="netto" label="Нетто" value={state?.netto} stateChange={e => handleChange({ fElem: e })} />
+                        <CustomNumber name="brutto" label="Бруто" value={state?.brutto} stateChange={e => handleChange({ fElem: e })} />
                     </CustomizableInputs>
                 </MiniForm>
 
                 <MiniForm>
-                    <Title size="18">Инвойсы</Title>
                     {
-                        invoiceList.map((invoice, idx) => 
-                            <CustomizableInputs t="1fr 1fr 1fr">
-                                <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
-                                <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
-                                    {
-                                        invoiceStatuses.map(invoiceStatus => 
-                                            <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status == invoiceStatus.value}>{invoiceStatus.label}</MenuItem>    
-                                        )
-                                    }
-                                </CustomSelector>
-                                <CustomInput name="destination" label="Место" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination} />
-                            </CustomizableInputs>
+                        invoiceList.length ? <>
+                            <Title size="18">Инвойсы</Title>
+                            {
+                                invoiceList.map((invoice, idx) =>
+                                    <CustomizableInputs t="1fr 1fr 1fr">
+                                        <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
+                                        <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
+                                            {
+                                                invoiceStatuses.map(invoiceStatus =>
+                                                    <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status === invoiceStatus.value}>{invoiceStatus.label}</MenuItem>
+                                                )
+                                            }
+                                        </CustomSelector>
+                                        <CustomSelector name="destination" label="место оплаты" stateChaneg={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination}>
+                                            {
+                                                destinationOptions.map(destination =>
+                                                    <MenuItem key={destination.value} value={destination.value} selected={destination.value == invoice.destination} >{destination.label}</MenuItem>
+                                                )
+                                            }
+                                        </CustomSelector>
+                                        {/* <CustomInput name="destination" label="место назначения" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination} /> */}
+                                    </CustomizableInputs>
 
-                        )
+                                )
+                            }
+                        </> : null
                     }
 
                     {/* <CustomizableInputs t="1fr 1fr 2fr">
@@ -340,50 +375,52 @@ const TrackingTransportCreate = ({ match }) => {
                     <Title size="18">Статус слежения: <span>{trackingInfo?.publicId}</span></Title>
 
                     <CustomizableInputs t="1fr 1fr 1fr 1fr">
-                        <CustomSelector name="status" value={additionalData.status} stateChange={e => setAdditionalData({...additionalData, status: e.target.value})}  label="Статус">
+                        <CustomSelector name="status" value={additionalData.status} stateChange={e => setAdditionalData({ ...additionalData, status: e.target.value })} label="Статус">
                             {
-                                trackingStatuses.map(status => 
-                                    <MenuItem key={status.value} value={status.value} selected={status.value == additionalData.status}>{status.label}</MenuItem>    
+                                trackingStatuses.map(status =>
+                                    <MenuItem key={status.value} value={status.value} selected={status.value === additionalData.status}>{status.label}</MenuItem>
                                 )
                             }
                         </CustomSelector>
-                        <CustomPicker date={additionalData.trDate} name="trDate" stateChange={date => setAdditionalData({...additionalData, trDate: date})} label="Дата" />
-                        <CustomInput value={additionalData.location} name="location" stateChange={e => setAdditionalData({...additionalData, locations: e.target.value})} label="Местонахождение" />
+                        <CustomPicker date={additionalData.trDate} name="trDate" stateChange={date => setAdditionalData({ ...additionalData, trDate: date })} label="Дата" />
+                        <CustomInput value={additionalData.location} name="location" stateChange={e => setAdditionalData({ ...additionalData, locations: e.target.value })} label="Местонахождение" />
                         <Button value={additionalData.status} name="Добавить местонахождение" color="#5762B2" clickHandler={() => handleAdditionalDataSubmit(true)} />
                     </CustomizableInputs>
 
-                    <Container>
-                        {
-                            locations.map(location => 
-                                <ContainerRow>
-                                    <ContainerColumn>
-                                        <b>Статус:</b>
-                                        <span>{location.status}</span>
-                                    </ContainerColumn>
-                                    <ContainerColumn>
-                                        <b>Дата:</b>
-                                        <span>{moment(location.createdAt).format("YYYY-MM-DD")}</span>
-                                    </ContainerColumn>
-                                    <ContainerColumn>
-                                        <b>Местонахождение:</b>
-                                        <span>{location.name}</span>
-                                    </ContainerColumn>
-                                </ContainerRow>
-                            )
-                        }
+                    {
+                        locations.length ? <Container>
+                            {
+                                locations.map(location =>
+                                    <ContainerRow>
+                                        <ContainerColumn>
+                                            <b>Статус:</b>
+                                            <span>{location.status}</span>
+                                        </ContainerColumn>
+                                        <ContainerColumn>
+                                            <b>Дата:</b>
+                                            <span>{moment(location.createdAt).format("YYYY-MM-DD")}</span>
+                                        </ContainerColumn>
+                                        <ContainerColumn>
+                                            <b>Местонахождение:</b>
+                                            <span>{location.name}</span>
+                                        </ContainerColumn>
+                                    </ContainerRow>
+                                )
+                            }
 
-                    </Container>
+                        </Container> : null
+                    }
 
                 </MiniForm>
                 <MiniForm>
-                    <Title size="18">Данные транспорта</Title>
+                    {/* <Title size="18">Данные транспорта</Title>
 
                     <List>
                         <Item>
                             <h4>Транспортировщик</h4>
                             <span>
                                 {
-                                    trackingInfo?.vendor?.name
+                                    trackingInfo?.vendor?.name || vendors.find(({node}) => node.pk == state.vendor)?.node?.name
                                 }
                             </span>
                         </Item>
@@ -391,7 +428,7 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Номер транспорта</h4>
                             <span>
                                 {
-                                    trackingInfo?.transportNumber
+                                    trackingInfo?.transportNumber || state.transportNumber
                                 }
                             </span>
                         </Item>
@@ -399,7 +436,7 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Сумма</h4>
                             <span>
                                 {
-                                    trackingInfo?.amount
+                                    trackingInfo?.amount || state.amount
                                 }
                             </span>
                         </Item>
@@ -407,7 +444,7 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Нетто вес</h4>
                             <span>
                                 {
-                                    trackingInfo?.netto
+                                    trackingInfo?.netto || state.netto
                                 }
                             </span>
                         </Item>
@@ -415,7 +452,7 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Брутто вес</h4>
                             <span>
                                 {
-                                    trackingInfo?.brutto
+                                    trackingInfo?.brutto || state.brutto
                                 }
                             </span>
                         </Item>
@@ -423,25 +460,29 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Примечание</h4>
                             <span>
                                 {
-                                    trackingInfo?.note
+                                    trackingInfo?.note || state.note
                                 }
                             </span>
                         </Item>
-                    </List>
-                    
+                    </List> */}
+
                     <Title size="18">Информация заявки</Title>
 
                     <List>
                         <Item>
                             <h4>Тип транспорта</h4>
-                            <span>{ applicationInfo?.transportType?.name }</span>
+                            <span>{applicationInfo?.transportType?.name}</span>
+                        </Item>
+                        <Item>
+                            <h4>Тип заявки</h4>
+                            <span>{applicationInfo?.transportMix ? "Сборная" : "Обычная"}</span>
                         </Item>
                         <Item>
                             <h4>
                                 Вид упаковки
                             </h4>
                             <span>
-                                { applicationInfo?.typeOfPackaging }
+                                {applicationInfo?.typeOfPackaging}
                             </span>
                         </Item>
                         <Item>
@@ -449,7 +490,7 @@ const TrackingTransportCreate = ({ match }) => {
                                 Степень опасности
                             </h4>
                             <span>
-                                { applicationInfo?.degreeOfDanger }
+                                {applicationInfo?.degreeOfDanger}
                             </span>
                         </Item>
                         <Item>
@@ -457,69 +498,76 @@ const TrackingTransportCreate = ({ match }) => {
                                 Количество упаковки
                             </h4>
                             <span>
-                                { applicationInfo?.count }
+                                {applicationInfo?.count}
                             </span>
                         </Item>
                     </List>
 
-                <Title size="18">Материалы</Title>
-                
+                    <FilesList>
+                        {ApplicationFiles?.map(({ node }, i) =>
+                            <FileElement key={i} onClick={() => downloadFile(node.file)}>
+                                {node.name}
+                            </FileElement>)}
+                    </FilesList>
 
-                {
-                    applicationItems?.map(item => {
-                    return <List direction="column">
-                        Номер заказа {item?.orderPublicId}
-                        {
-                            item.applicationItems.map(applicationItem => { 
-                                if(applicationItem.length > 0){
-                                    return <List>
-                                        <Item>
-                                            <h4>
-                                                Название материала
+                    <Title size="18">Материалы</Title>
+
+
+                    {
+                        applicationItems?.map(item => {
+                            return <List direction="column">
+                                Номер заказа {item?.orderPublicId}
+                                {
+                                    item.applicationItems.map(applicationItem => {
+                                        if (applicationItem.length > 0) {
+                                            return <List>
+                                                <Item>
+                                                    <h4>
+                                                        Название материала
                                             </h4>
-                                            <span>
-                                                {applicationItem[0]?.orderItem?.vendorProduct?.product?.name}
-                                            </span>
-                                        </Item>
-                                        <Item>
-                                            <h4>
-                                                OOO “trade solution”
+                                                    <span>
+                                                        {applicationItem[0]?.orderItem?.vendorProduct?.product?.name}
+                                                    </span>
+                                                </Item>
+                                                <Item>
+                                                    <h4>
+                                                        OOO “trade solution”
                                             </h4>
-                                            <span>
-                                                {applicationItem[0]?.firm?.name}
-                                            </span>
-                                        </Item>
-                                        <Item>
-                                            <h4>
-                                                Брутто вес
+                                                    <span>
+                                                        {applicationItem[0]?.firm?.name}
+                                                    </span>
+                                                </Item>
+                                                <Item>
+                                                    <h4>
+                                                        Брутто вес
                                             </h4>
-                                            <span>
-                                                {applicationItem[0]?.weight}
-                                            </span>
-                                        </Item>
-                                        <Item>
-                                            <h4>
-                                                Обем
+                                                    <span>
+                                                        {applicationItem[0]?.weight}
+                                                    </span>
+                                                </Item>
+                                                <Item>
+                                                    <h4>
+                                                        Обем
                                             </h4>
-                                            <span>
-                                                {applicationItem[0]?.size}
-                                            </span>
-                                        </Item>
-                                        <Item>
-                                            <h4>
-                                                Отгружаемое кол-во
+                                                    <span>
+                                                        {applicationItem[0]?.size}
+                                                    </span>
+                                                </Item>
+                                                <Item>
+                                                    <h4>
+                                                        Отгружаемое кол-во
                                             </h4>
-                                            <span>
-                                                {applicationItem[0]?.count}
-                                            </span>
-                                        </Item>
-                                    </List>  
+                                                    <span>
+                                                        {applicationItem[0]?.count}
+                                                    </span>
+                                                </Item>
+                                            </List>
+                                        }
+                                    })
                                 }
-                            })
-                        }
-                    </List>
-                    })
-                }
+                            </List>
+                        })
+                    }
                 </MiniForm>
 
                 {/* 
@@ -588,7 +636,7 @@ const TrackingTransportCreate = ({ match }) => {
 
 export default TrackingTransportCreate;
 
-const Container= styled.div`
+const Container = styled.div`
     padding:10px;
     background-color:#fff;
     border-radius:5px;
@@ -679,8 +727,8 @@ const List = styled.div`
     display:flex;
     justify-content:space-between;
 
-    ${({direction}) => 
-        direction? css`
+    ${({ direction }) =>
+        direction ? css`
             flex-direction:column;
             row-gap:10px;
         ` : ""

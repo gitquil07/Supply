@@ -3,12 +3,14 @@ import { gql } from "@apollo/client";
 export const PAGINATE_VENDOR_PRODUCTS = gql`
 query nextPage($first: Int, $last: Int, $after: String, $before: String) {
   vendor {
-    vendorProducts(first: $first, last: $last, after: $after, before: $before) {
+    vendorProducts(first: $first, last: $last, after: $after, before: $before, orderBy: "-createdAt") {
       edges{
         node{
           id
           createdAt
+          price
           vendorFactory{
+            paymentCondition
             factory{
               name
             }
@@ -18,10 +20,12 @@ query nextPage($first: Int, $last: Int, $after: String, $before: String) {
           }
           product {
             name
+            measure
           }
           productionDayCount
           deliveryDayCount
           currency
+          
         }
       }
       pageInfo {

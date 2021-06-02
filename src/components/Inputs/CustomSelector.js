@@ -6,7 +6,7 @@ import Select from '@material-ui/core/Select';
 import Arrow from "../../assets/icons/arrow.svg";
 import MenuItem from "@material-ui/core/MenuItem";
 
-export const CustomSelector = ({ name, label, disabled, defaultValue, fullWidth, short, value, stateChange, children, multiple, errorVal}) => {
+export const CustomSelector = ({ name, label, disabled, defaultValue, fullWidth, short, value, stateChange, children, multiple, errorVal, renderValue}) => {
 
     const props = {
         labelId: "demo-simple-select-outlined-label",
@@ -18,9 +18,11 @@ export const CustomSelector = ({ name, label, disabled, defaultValue, fullWidth,
         onChange: stateChange
     };
 
+    console.log("renderValue", renderValue);
+
     if(multiple){
         props.multiple = true;
-        props.renderValue = selected => selected.join(", ");
+        props.renderValue = selected => renderValue(selected);
     }
 
     return (

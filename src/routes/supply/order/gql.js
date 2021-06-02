@@ -3,10 +3,11 @@ import { gql } from "@apollo/client";
 export const ORDERS = gql`
 query getOrders($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $before: String, $after: String) {
   order {
-    orders(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, before: $before, after: $after) {
+    orders(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, before: $before, after: $after, orderBy: "-createdAt") {
       edges {
         node {
           publicId
+          pk
           id
           status
           invoiceDate
@@ -119,6 +120,13 @@ query getOrder($id: ID!){
           name
         }
       }
+      files {
+        edges {
+          node {
+            file
+          }
+        }
+      }
       status
       invoiceDate
       invoiceProforma
@@ -135,7 +143,6 @@ query getOrder($id: ID!){
             dateOfDelivery
             price
             currency
-            productionDayCount
           }
         }
       }

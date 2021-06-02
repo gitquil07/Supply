@@ -6,14 +6,7 @@ export const generateColumns = (callback) => {
             name: "id",
             label: "ID",
             options: {
-                filter: true,
-                sort: false,
-                customBodyRender: (value) => {
-                    return <a href="#" onClick={() => {
-                        callback(value);
-                        return false;
-                    }}>{value}</a>
-                }
+                display: "none"
             }
         },
         {
@@ -58,4 +51,4 @@ export const generateColumns = (callback) => {
             }
         }
     ];
-} 
+}

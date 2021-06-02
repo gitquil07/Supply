@@ -176,7 +176,17 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
                 label="Завод" 
                 name="factories"
                 value={state.factories}
-                stateChange={e => handleChange({fElem: e})} >
+                stateChange={e => handleChange({fElem: e})} 
+                renderValue={selected => {
+                    let arr = [];
+
+                    selected.forEach(pk => {
+                        arr.push(factories.find(({node}) => node.pk == pk)?.node?.name)
+                    })
+
+                    return arr.join(", "); 
+                }}
+                >
                 {
                     factories?.map(({node}) => (
                         <MenuItem value={node.pk}>

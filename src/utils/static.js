@@ -44,30 +44,37 @@ export const measureOptions = [
 export const packagingTypes = [
     {
         value: "KOROBKA",
+        valueEnglish: "BOX",
         label: "коробка"
     },
     {
         value: "MESHOK",
+        valueEnglish: "BAG",
         label: "мешок"
     },
     {
         value: "PODDON",
+        valueEnglish: "PALLET",
         label: "поддон"
     },
     {
         value: "IASHCHIK",
+        valueEnglish: "CASE",
         label: "ящик"
     },
     {
         value: "TARA",
+        valueEnglish: "CONTAINER",
         label: "тара"
     },
     {
         value: "BOCHKA",
+        valueEnglish: "BARREL",
         label: "бочка"
     },
     {
         value: "RULON",
+        valueEnglish: "ROLL",
         label: "рулон"
     }
 ];
@@ -99,11 +106,11 @@ export const deliveryCondition = [
     }
 ];
 
-export const vendorRole = [
+export const vendorRoles = [
 
     {
         value: "POSTAVSHCHIK",
-        label: "поставшик"
+        label: "поставщик"
     },
     {
         value: "TRANSPORTNAIA_KOMPANIIA",
@@ -157,14 +164,6 @@ export const paymentOptions = [
     }
 ];
 
-
-export const currencies = [
-    {
-        value: "USD",
-        label: "USD"
-    }
-];
-
 export const statuses = [
     {
         label: "создано",
@@ -190,85 +189,87 @@ export const statuses = [
 
 export const modes = [
     {
-        label:"экспорт",
-        value:10
+        label: "экспорт",
+        value: 10
     },
 
     {
-        label:"реэкспорт",
-        value:11
+        label: "реэкспорт",
+        value: 11
     },
 
     {
-        label:" временный вывоз",
-        value:12
+        label: " временный вывоз",
+        value: 12
     },
 
     {
-        label:"выпуск для свободного обращения (импорт)",
-        value:40
+        label: "выпуск для свободного обращения (импорт)",
+        value: 40
     },
 
     {
-        label:"реиморт",
-        value:41
+        label: "реиморт",
+        value: 41
     },
 
     {
-        label:"временный ввоз",
-        value:42
+        label: "временный ввоз",
+        value: 42
     },
 
     {
-        label:"переработка на таможенной территории",
-        value:51
+        label: "переработка на таможенной территории",
+        value: 51
     },
 
     {
-        label:"переработка вне таможенной территории",
-        value:61
+        label: "переработка вне таможенной территории",
+        value: 61
     },
 
     {
-        label:"временное хранение",
-        value:70
+        label: "временное хранение",
+        value: 70
     },
 
     {
-        label:"свободная таможенная зона",
-        value:71
+        label: "свободная таможенная зона",
+        value: 71
     },
 
     {
-        label:"беспошлинная торговля",
-        value:72
+        label: "беспошлинная торговля",
+        value: 72
     },
 
     {
-        label:"свободный склад",
-        value:73
+        label: "свободный склад",
+        value: 73
     },
 
     {
-        label:"таможенный склад",
-        value:74
+        label: "таможенный склад",
+        value: 74
     },
 
     {
-        label:"отказ в пользу государства",
-        value:75
+        label: "отказ в пользу государства",
+        value: 75
     },
 
     {
-        label:"уничтожение",
-        value:76
+        label: "уничтожение",
+        value: 76
     },
 
     {
-        label:"таможенный транзит",
-        value:80
+        label: "таможенный транзит",
+        value: 80
     }
 ];
+
+
 
 
 export const customModes = [
@@ -306,6 +307,10 @@ export const trackingStatuses = [
     {
         label: "передано",
         value: "PEREDANO"
+    },
+    {
+        label: "в пути",
+        value: "V_PUTI"
     }
 ];
 
@@ -325,17 +330,55 @@ export const invoiceStatuses = [
 ];
 
 
+export const degreeOfDanger = [
+    {
+        label: "Опасно",
+        value: "OPASNO"
+    },
+    {
+        label: "Не опасно",
+        value: "NE_OPASNO"
+    }
+];
+
+export const destinationOptions = [
+    {
+        label: "в офис",
+        value: "V_OFIS"
+    }
+];
+
+export const currencyOptions = [
+    {
+        label: "$",
+        value: "USD"
+    },
+    {
+        label: "¥",
+        value: "YUAN"
+    },
+    {
+        label: "€",
+        value: "EURO"
+    },
+    {
+        label: "₽",
+        value: "RUB"
+    }
+];
+
+
 export const generalReportColorSchema = {
     "Дата": {
         single: {
-            colorClass: "white" 
+            colorClass: "white"
         },
     },
     "Общие данные": {
-        combination:{
+        combination: {
             colorClasses: "red yellow",
-            type: "simple-devision" 
-        }   
+            type: "simple-devision"
+        }
     },
     "Танспортировка": {
         single: {

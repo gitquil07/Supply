@@ -1,27 +1,31 @@
-import React, { useEffect } from 'react'
-import styled from 'styled-components'
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect } from "react";
+import { useLazyQuery } from "@apollo/client";
 import { GET_TABLE_BODY } from "./gql";
+import { getValueOfProperty } from "utils/functions";
+import styled from "styled-components"; 
 import { generalReportColorSchema } from "utils/static";
 import { goToNewLine } from "utils/functions";
-import { useTitle } from "hooks";
 
-const TestTable = () => {
-    const [getTableData, tableData] = useLazyQuery(GET_TABLE_BODY);
-    const body = tableData?.data?.report?.generalReport?.data?.body || [];
-    const columns = tableData?.data?.report?.generalReport?.data?.columns || [];
-    const title = useTitle("Отчёт");
 
-    useEffect(() => {
-        getTableData();
-    }, []);
+const allowedHeadersToRepeat = [ 
+    "Остаток на начало\nмесяца ",
+    "Приход на месяц\n",
+    "Расход на месяц\n",
+    "Остаток на конец\nмесяца",
+    "Хватает, дней"
+];
 
-    return (
-        <ReportTable border="1px" columns={columns} tableData={body} >
-            {/* <TableHeader columns={columns} />
-            <TableBody tableData={body} /> */}
-        </ReportTable>
-    )
+
+const shallowCheckingForExisting = (val, arr) => {
+    let contains = false;
+
+    for(let value of arr){
+
+        if(value.indexOf(val) > -1) contains = true;
+    
+    }
+
+    return contains;
 }
 
 const WithBadge = (str) => {
@@ -38,81 +42,86 @@ const WithBadge = (str) => {
 }
 
 
-const ReportTable = ({columns, tableData}) => {
+const TestTable2 = () => {
 
+    const [getReport, reportRes] = useLazyQuery(GET_TABLE_BODY),
+          tableData = getValueOfProperty(reportRes?.data, "body") || [],
+          columns = getValueOfProperty(reportRes?.data, "columns") || [];
+
+    useEffect(() => {
+        getReport();
+    }, []);
+
+    let renderedValues = [];
+    let repeatedRenderedValues = [];
+    let repeatedColsAmount = columns[0]? columns[0].filter(column => column.indexOf("Планируемый прогноз") > -1).length / 4: 0;
     let flags = [];
     return(
-        <Table>
+        <Table border="1px">
             <thead>
-                    {
-                        columns.map((row, idx) => {
-                        if(idx == 0){
-                            let pos = 0;
-                            return (
-                                <tr>
-                                    {
-                                        row.map((col, colIdx) => {
-                                            const rep =  pos == 0? row.filter(r => r == col).length - 1 : row.filter(r => r == col).length;
-                                            if(colIdx == rep + pos){
-                                                const res = <td colspan={pos == 0? rep + 2 : rep} className="first">{WithBadge(col)}</td>
-                                                flags.push(rep + pos+1);
-                                                pos = pos + rep;
-                                                return res;
-                                            }         
-                                        })
+                {
+                    columns.map((row, rowIdx) => {
+                        let pos = 0;
+                        return <tr key={rowIdx}>
+                            {
+                                rowIdx == 1? <td rowspan={columns.length-1}>№</td> : null
+                            }
+                            {
+                                row.map((col, colIdx) => {
+                                    const colspan = row.filter(value => value == col).length;
+                                          if(rowIdx == 0){
+                                              let reps = colspan - 1;
+                                            if(colIdx == pos + reps){
+                                                pos += reps + 1;
+                                                flags.push(pos);
+                                            }
+                                          }
+                                          let duplicatesInRows = 0;
+                                          for(let i = 0; i < columns.length; i++){
+                                              if(columns[i][colIdx] == col){
+                                                duplicatesInRows++;
+                                              }
+                                          }              
+                                        
+                                    const rowspan = duplicatesInRows;
+                                    
+                                    let cageClasses = "";
+                                    if(flags.indexOf(colIdx + 1) > -1){
+                                        cageClasses = "last" 
+                                    }else if (flags.indexOf(colIdx) > -1){
+                                        cageClasses = "first";
                                     }
-                                </tr>
-                            )
-                        }
-                        if(idx == 1){
-                            return (
-                                <tr>
-                                    <td rowspan="2">№</td>
-                                    {
-                                        row.map((col, colIdx) => {
-                                            let cageClasses = "";
 
-                                            if(flags.indexOf(colIdx + 1) > -1){
-                                                cageClasses += " lastHead";
-                                            }
-                                            if(flags.indexOf(colIdx) > -1){
-                                                cageClasses += " first";
-                                            }
-
-                                            if(row.indexOf(columns[idx+1][colIdx]) != -1){   
-                                                return <td rowspan={2} className={cageClasses}>{col}</td>
-                                            }else{
-                                                return <td className={cageClasses}>{col}</td>
-                                            }
-                                        })
-                                    }
-                                </tr>
-                            );
-                        }
-                        if(idx == 2){
-                            return <tr>
-                                {
-                                    row.map((col, colIdx) => {
-                                        if(row.indexOf(columns[idx-1][colIdx]) == -1){
-                                            let cageClasses = "";
-
-                                            if(flags.indexOf(colIdx + 1) > -1){
-                                                cageClasses += " lastHead";
-                                            }
-                                            if(flags.indexOf(colIdx) > -1){
-                                                cageClasses += " first";
-                                            }
-                                            return <td className={cageClasses}>{col}</td>
+                                    if(renderedValues.indexOf(col) == -1 || (renderedValues.indexOf(col) > -1 && shallowCheckingForExisting(col, allowedHeadersToRepeat))){
+                                        renderedValues.push(col);
+                                        let attrs = {
+                                            key: colIdx,
+                                            className: cageClasses,
+                                            rowspan
                                         }
-                                    })
-                                }
-                            </tr>
-                        }
-                        })
-                    }
+                                        if(shallowCheckingForExisting(col, allowedHeadersToRepeat) && (repeatedRenderedValues.filter(v => v.indexOf(col) > -1).length < repeatedColsAmount)){
+                                            repeatedRenderedValues.push(col);
+                                            if(rowIdx == 2 && col == "Хватает, дней"){
+                                                return null;
+                                            }else{
+                                                return <td {...attrs} >{WithBadge(col)}</td>
+                                            }
+                                        }
+                                        if(!shallowCheckingForExisting(col, allowedHeadersToRepeat)){
+                                            let isFirst = !!(rowIdx == 0 && colIdx == 0);
+                                            attrs.colspan = isFirst? colspan + 1 : colspan;
+                                            return <td {...attrs} colspan={isFirst? colspan + 1 : colspan}>{WithBadge(col)}</td>
+                                        }
+                                    }
+
+                                })
+                            }
+                        </tr>
+                    })
+                }
             </thead>
             <tbody>
-                {
+            {
                     tableData.map((row, rowIdx) => {
                         return <tr>
                             <td className="blue">{rowIdx+1}</td>
@@ -185,7 +194,7 @@ const ReportTable = ({columns, tableData}) => {
                                         }
 
                                         // console.log("cage classes", cageClasses);
-                                        return <td className={cageClasses}>{goToNewLine(col)}</td>
+                                        return <td className={cageClasses}>{col}</td>
                                         // return <td className={cageClasses}>{col}</td>
                                 })
                             }
@@ -198,28 +207,7 @@ const ReportTable = ({columns, tableData}) => {
 
 }
 
-// const TableBody = ({tableData}) => {
-
-//     return(
-//         <tbody>
-//             {
-//                 tableData.map((row, colIdx) => {
-//                     return <tr>
-//                         <td>{colIdx+1}</td>
-//                         {
-//                             row.map(col => {
-//                                 return <td>{col}</td>    
-//                             })
-//                         }
-//                     </tr>
-//                 })
-//             }
-//         </tbody>
-//     );
-
-// }
-
-export default TestTable;
+export default TestTable2;
 
 const Table = styled.table`
     width: 100%;

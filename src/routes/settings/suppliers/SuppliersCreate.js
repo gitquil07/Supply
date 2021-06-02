@@ -1,12 +1,12 @@
 import { Helmet } from "react-helmet";
-import { AddibleInput } from "../../../components/Flex";
-import { Form } from "../../../components/Form";
-import { CustomInput } from "../../../components/Inputs/CustomInput";
-import { CustomSelector } from "../../../components/Inputs/CustomSelector";
-import { useTitle } from "../../../hooks";
+import { AddibleInput } from "components/Flex";
+import { Form } from "components/Form";
+import { CustomInput } from "components/Inputs/CustomInput";
+import { CustomSelector } from "components/Inputs/CustomSelector";
+import { useTitle } from "hooks";
 import styled from "styled-components"
-import { Footer } from "../../../components/Footer";
-import { Button } from "../../../components/Buttons";
+import { Footer } from "components/Footer";
+import { Button } from "components/Buttons";
 
 import { useLazyQuery } from "@apollo/client";
 import { GET_SAP_COUNTRIES } from "./gql";
@@ -14,9 +14,9 @@ import { CREATE_VENDOR, UPDATE_VENDOR, GET_VENDOR } from "./gql";
 import { useEffect } from "react";
 import MenuItem from "@material-ui/core/MenuItem";
 import { useHistory } from "react-router-dom";
-import { vendorRole } from "../../../utils/static";
-import { useCustomMutation, useFormData } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { vendorRoles } from "utils/static";
+import { useCustomMutation, useFormData } from "hooks";
+import { getList } from "utils/functions";
 import { useState } from"react";
 
 
@@ -89,19 +89,27 @@ const SuppliersCreate = ({ match }) => {
 
     }, [vendorRes.data?.vendor?.vendor])
 
+    const handleSubmit = () => {
+        const requestBody = {
+            ...state,
+            role: vendorRoles.find(vendorRole => vendorRole.value == state.role).label
+        }
+        pk? submitData(requestBody, pk) : submitData(requestBody)
+    }
+
     return (
         <>
             <Helmet title={title} />
             <Form>
                 <p>Информация о Партнере</p>
                 <AddibleInput>
-                    <CustomInput name="name" label="Имя" value={state.name} stateChange={e => handleChange({fElem: e})} />
+                    <CustomInput name="name" label="Контактное лицо" value={state.name} stateChange={e => handleChange({fElem: e})} />
                     <CustomInput name="phoneNumber" label="Номер телефона" value={state.phoneNumber} stateChange={e => handleChange({fElem: e})} />
                     <CustomInput name="companyName" label="Фирма" value={state.companyName} stateChange={e => handleChange({fElem: e})} />
                     <CustomInput name="email" label="Email" value={state.email} stateChange={e => handleChange({fElem: e})} />
                     <CustomSelector name="role" label="Роль" value={state.role} stateChange={e => handleChange({fElem: e})}>
                         {
-                            vendorRole.map(role => (
+                            vendorRoles.map(role => (
                                 <MenuItem value={role.value}>{role.label}</MenuItem>
                             ))
                         }
@@ -126,7 +134,7 @@ const SuppliersCreate = ({ match }) => {
                 </Header>
             </Form>
             <Footer justify="flex-end">
-                    <Button name={pk? "Сохранить" : "создать"} clickHandler={() => pk? submitData(state, pk) : submitData(state)} /> 
+                    <Button name={pk? "Сохранить" : "создать"} clickHandler={handleSubmit} /> 
             </Footer>
         </>
     )

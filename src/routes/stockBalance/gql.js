@@ -9,3 +9,13 @@ query getTemplate {
     }
 }
 `;
+
+export const CREATE_STOCK_BALANCE_FILE = gql`
+mutation stockBalanceFileCreate($input: StockBalanceFileCreateMutationInput!){
+  stock{
+    stockBalanceFileCreate(input: $input){
+      ok
+      errors
+    }
+  }
+}`;

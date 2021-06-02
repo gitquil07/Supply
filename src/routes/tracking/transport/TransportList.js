@@ -9,7 +9,7 @@ import { generateColumns } from "./TableData";
 import { FlexForHeader } from "../../../components/Flex";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { getList } from "../../../utils/functions";
+import { CustomRowGenerator, getList } from "../../../utils/functions";
 import { ButtonWithIcon } from "../../../components/Buttons";
 
 const TransportList = ({ match }) => {
@@ -34,7 +34,7 @@ const TransportList = ({ match }) => {
         setToDateChange,
         handleDateApply
     } = usePagination({
-        type: "dateFilter", 
+        type: "dateFilter",
         qraphQlQuery: GET_TRACKING_TRANSPORTS,
         singular: "tracking",
         plural: "trackings"
@@ -58,9 +58,9 @@ const TransportList = ({ match }) => {
     const list = applications.map(({ node }) => {
         return {
             ...node,
-            publicId: {publicId: node.publicId, id: node.id},
-            vendor: {vendor: node.vendor?.name, trNumber: node.transportNumber},
-            amount: `${node.amount} ${node.currency} ${node.brutto} / ${node.netto}`,
+            publicId: { publicId: node.publicId, id: node.id },
+            vendor: { vendor: node.vendor?.name, trNumber: node.transportNumber },
+            amount: { amount: node.amount, currency: node.currency, brutto: node.brutto, netto: node.netto },
         }
     });
 
@@ -85,6 +85,7 @@ const TransportList = ({ match }) => {
                 data={list}
                 columns={columns}
                 count={amountOfElemsPerPage}
+                customRowOptions={CustomRowGenerator(url)}
             />
             <Pagination {...paginationParams} />
         </>

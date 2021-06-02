@@ -1,17 +1,13 @@
-import { Link } from "react-router-dom";
 import { Row } from "components/Row";
-import moment  from "moment";
+import moment from "moment";
 
-export const generateColumns = (url) => {
+export const generateColumns = () => {
     return [
         {
-            name: "publicId",
+            name: "id",
             label: "№",
             options: {
-                filter: true,
-                customBodyRender: (value) => {
-                    return <Link to={`${url}/edit/${value.id}`}>{value.publicId}</Link> 
-                }
+                display: "none"
             }
         },
         {
@@ -47,6 +43,14 @@ export const generateColumns = (url) => {
             options: {
                 filter: true,
                 sort: false,
+                customBodyRender: value => {
+                    return (
+                        <>
+                            {value.amount} {value.currency}
+                            <Row>{value.netto} кг / {value.brutto} кг</Row>
+                        </>
+                    );
+                }
             }
         },
         {

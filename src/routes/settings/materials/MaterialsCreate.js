@@ -11,7 +11,7 @@ import { Button } from "../../../components/Buttons";
 import MenuItem from "@material-ui/core/MenuItem";
 import { useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
-import { currencies } from "../../../utils/static";
+import { currencyOptions } from "../../../utils/static";
 import Switch from "@material-ui/core/Switch";
 import { CustomNumber } from "../../../components/Inputs/CustomNumber";
 
@@ -176,9 +176,9 @@ const SuppliersCreate = ({ match }) => {
                             )
                         }
                     </CustomSelector>
-                    <CustomSelector label="Ед.изм" name="currency" value={state.currency} stateChange={e => handleChange({fElem: e})}>
+                    <CustomSelector label="Валюта" name="currency" value={state.currency} stateChange={e => handleChange({fElem: e})}>
                         {
-                            currencies.map((currency) => 
+                            currencyOptions.map((currency) => 
                                 <MenuItem value={currency.value} selected={currency.value === state.currency}>{currency.label}</MenuItem> 
                             )
                         }

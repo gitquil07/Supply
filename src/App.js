@@ -59,7 +59,7 @@ const Wrapper = styled.div`
 
 const Main = styled.div`
   min-height: 100vh;
-  margin-left: ${props => props.open ? "270px" : "20px"};
+  margin-left: ${props => props.open ? "270px" : "0"};
   position: relative;
 `;
 

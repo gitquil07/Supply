@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 export const PAGINATE_FACTORIES = gql`
 query nextPage($first: Int, $last: Int, $after: String, $before: String) {
   factory {
-    factories(first: $first, last: $last, after: $after, before: $before) {
+    factories(first: $first, last: $last, after: $after, before: $before, orderBy: "-createdAt") {
       edges {
         node {
           id

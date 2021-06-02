@@ -2,6 +2,11 @@ import moment from "moment";
 import { useMemo } from "react";
 import { NotificationManager } from "react-notifications";
 
+import { TableRow } from '@material-ui/core';
+import { TableCell } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
+
+
 export const TimeParser = (time) => moment(time).format('YYYY-MM-DD');
 
 export const setTitleWithDateRange = (name, fromDate, toDate, format) => {
@@ -58,8 +63,10 @@ export const showNotification = (data, name, action, message) => {
         NotificationManager.success(message);
     } else {
         data[name][action].errors.forEach((message) => {
-            const msg = message.split(": ")[1];
-            NotificationManager.error(msg);
+            const msgObj = JSON.parse(message);
+            const [key, value] = Object.entries(message);
+
+            NotificationManager.error(`${value}`);
         })
     }
 }
@@ -70,9 +77,9 @@ export const onResponseComplete = (data, type, entityName, callback) => {
     if (responseResult) {
 
         let message = entityName;
-        if(type === "create") message += " создан";
-        if(type === "update") message += " изменен";
-        if(type === "auth") message += "Добро пожаловать"
+        if (type === "create") message += " создан";
+        if (type === "update") message += " изменен";
+        if (type === "auth") message += "Добро пожаловать"
 
         NotificationManager.success(message);
 
@@ -80,8 +87,9 @@ export const onResponseComplete = (data, type, entityName, callback) => {
     } else {
         const errors = getValueOfProperty(data, "errors");
         errors.forEach((errorMessage) => {
-            const message = errorMessage.split(": ")[1];
-            NotificationManager.error(message);
+            // let msg = errorMessage.split(": ")[1];
+            //   msg = msg.slice(0, msg.indexOf("}"));
+            NotificationManager.error(errorMessage);
         })
     }
 }
@@ -110,7 +118,7 @@ export function getValueOfProperty(obj, propName) {
 
 export const exceptKey = (obj, keysToExcept) => {
 
-    if(!obj) return undefined;
+    if (!obj) return undefined;
 
     const keys = Object.keys(obj),
         tmp = {};
@@ -129,7 +137,7 @@ export const exceptKey = (obj, keysToExcept) => {
 export const findValue = (element, num) => {
     if (element[num]) {
         if (element[num].includes("\n")) {
-            return element[num].split("\n").map((e, i) => <p key={i} style={{ margin: "0", lineHeight: "1.5", fontSize:"14px" }}>{e}</p>)
+            return element[num].split("\n").map((e, i) => <p key={i} style={{ margin: "0", lineHeight: "1.5", fontSize: "14px" }}>{e}</p>)
         }
         else if (element[num].length > 20 && !element[num].includes("\n")) {
             return element[num].substring(0, 25) + "..."
@@ -142,10 +150,54 @@ export const findValue = (element, num) => {
 }
 
 export const goToNewLine = (element) => {
-    return element.split("\n").map((e, i) => <p key={i} style={{margin: "0", lineHeight: "1.5"}}>
+    return element.split("\n").map((e, i) => <p key={i} style={{ margin: "0", lineHeight: "1.5" }}>
         {
             // (element.length > 20 && !element.includes("\n")) ?  element.substring(0, 25) + "..." : element
-            element                
-         }
+            element
+        }
     </p>);
+}
+
+
+
+export const CustomRowGenerator = (url) => {
+    let history = useHistory();
+
+    return {
+        customRowRender: (data) => {
+            return (
+                <TableRow onClick={() => history.push(`${url}/edit/${data[0]}`)} style={{ cursor: "pointer" }}>
+                    {data.slice(1).map((e, i) =>
+                        <TableCell key={i}>
+                            {e}
+                        </TableCell>
+                    )}
+                </TableRow>
+            );
+        }
+    }
+};
+
+
+export const CustomRowGeneratorForModal = (openDialog) => {
+    return {
+        customRowRender: (data) => {
+            return (
+                <TableRow onClick={() => openDialog(data[0])} style={{ cursor: "pointer" }}>
+                    {data.slice(1).map((e, i) =>
+                        <TableCell key={i}>
+                            {e}
+                        </TableCell>
+                    )}
+                </TableRow>
+            );
+        }
+    }
+};
+
+export const downloadFile = (url) => {
+    const a = window.document.createElement("a");
+    a.href = url;
+    a.setAttribute("download");
+    a.click();
 }

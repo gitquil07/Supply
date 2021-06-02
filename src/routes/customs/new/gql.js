@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 export const CUSTOMS = gql`
 query getCustoms($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $after: String, $before: String) {
   custom {
-    customs(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before, isNew: true) {
+    customs(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before, isNew: true, orderBy: "-createdAt") {
       edges {
         node {
           id
@@ -76,12 +76,22 @@ query getCustom($id: ID!) {
   }  
 `; 
 
-export const GET_PLAN = gql`
+export const GET_CUSTOM_TEMPLATE = gql`
 query getTemplate {
   core {
     templates {
-      planProductTemplate
+      customsTemplate
     }
   }
 }
 `;
+
+export const CUSTOM_FILE_CREATE = gql`
+mutation customFileCreate($input: CustomFileCreateMutationInput!){
+	custom{
+    customFileCreate(input: $input){
+      ok
+      errors
+    }
+  }  
+}`;

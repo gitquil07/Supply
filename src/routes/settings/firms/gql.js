@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 export const PAGINATE_FIRMS = gql`
 query getFirms($first: Int, $last: Int, $before: String, $after: String) {
   factory {
-    firms(first: $first, last: $last, before: $before, after: $after) {
+    firms(first: $first, last: $last, before: $before, after: $after, orderBy: "-createdAt") {
       edges {
         node {
           id
