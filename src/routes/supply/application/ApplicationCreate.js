@@ -34,6 +34,7 @@ import CheckMarkIcon from "assets/icons/checkmark.svg";
 import EditDefaultIcon from "assets/icons/editDefault.svg";
 import EditSelectedIcon from "assets/icons/editSelected.svg";
 import EditHoveredIcon from "assets/icons/editHovered.svg";
+import { uploadFile } from 'api';
 
 
 const initialState = {
@@ -63,6 +64,10 @@ const ApplicationCreate = ({ match }) => {
 
     const [requiredCounts, setRequiredCounts] = useState({});
 
+    const [files, setFiles] = useState({
+        fetched: [],
+        uploaded: []
+    });
 
     const [getTrackingUserTypes, trackingUserTypesRes] = useLazyQuery(GET_TRACKING_USER),
         [getTransportTypes, transportTypesRes] = useLazyQuery(GET_TRANSPORT_TYPES),
@@ -169,6 +174,19 @@ const ApplicationCreate = ({ match }) => {
                 orders: application.orders.edges.map(({ node }) => node.pk)
             });
 
+            setFiles({
+                ...files,
+                fetched: [
+                    ...files.fetched,
+                    applicationRes?.data?.application?.application?.files?.edges.map(({ node }) => {
+                        return {
+                            file: node.file,
+                            file_name: node.file_name
+                        }
+                    })
+                ]
+            })
+
             const items = getList(application.applicationItems).map(({ node }) => ({
                 ...exceptKey(node, ["__typename"]),
                 firm: node?.firm?.pk,
@@ -209,7 +227,7 @@ const ApplicationCreate = ({ match }) => {
         tmp[idx][e.target.name] = e.target.value;
 
         if (e.target.name === "orderItem") {
-            const requiredCount = orderItems.find(({ node }) => node.pk == e.target.value).node.requiredCount;
+            const requiredCount = orderItems.find(({ node }) => node.pk === e.target.value).node.requiredCount;
             let tmp = { ...requiredCounts };
             tmp[idx] = requiredCount;
             console.log("here", tmp);
@@ -229,11 +247,18 @@ const ApplicationCreate = ({ match }) => {
             ...state,
             shippingDate: moment(state.shippingDate).format("YYYY-MM-DD"),
             // typeOfPackaging: packagingTypes.find(packaging => packaging.value === state.typeOfPackaging)?.label,
-            status: statuses.find(status => status.value === state.status)?.label
+            status: statuses.find(status => status.value === state.status)?.label,
+            degreeOfDanger: degreeOfDanger.find(degree => degree.value === state.degreeOfDanger)?.label
         }
 
         requestBody.applicationItems = !pk ? items.map(item => exceptKey(item, "invoice")) : items;
         // console.log("requestBody", requestBody);
+
+        if (files.uploaded.length > 0) {
+            uploadFile('/api-file/documents/', files.uploaded)
+                .then(resp => console.log(resp))
+                .catch(err => console.log(err));
+        }
 
         if (pk) {
             submitData(exceptKey(requestBody, ["orders"]), pk)
@@ -303,7 +328,7 @@ const ApplicationCreate = ({ match }) => {
                     <CustomSelector label="Уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({ fElem: e })}>
                         {
                             degreeOfDanger.map(level =>
-                                <MenuItem key={level.value} value={level.value} selected={state.degreeOfDanger == level.value} >{level.label}</MenuItem>
+                                <MenuItem key={level.value} value={level.value} selected={state.degreeOfDanger === level.value} >{level.label}</MenuItem>
                             )
                         }
                     </CustomSelector>
@@ -325,7 +350,12 @@ const ApplicationCreate = ({ match }) => {
                     <Switch id="transportMix" name="transportMix" onChange={e => handleChange({ fElem: e, type: "choice" })} checked={state.transportMix} />
                 </p>
 
-                <DragFile />
+                <DragFile
+                    fetchedFiles={files.fetched}
+                    uploadedFiles={files.uploaded}
+                    receivedFile={(file) => setFiles({ ...files, uploaded: [...files.uploaded, file] })}
+                    removeClicked={(index) => setFiles({ ...files, uploaded: files.uploaded.filter((e, i) => i !== index) })}
+                />
 
                 {
                     requiredCounts[0]

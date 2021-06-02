@@ -207,7 +207,7 @@ const OrderCreate = ({ match }) => {
         pk ? submitData(orderRequestBody, pk) : submitData(exceptKey(orderRequestBody, ["status"]));
 
 
-        if (files.length > 0) {
+        if (files.uploaded.length > 0) {
             uploadFile('/api-file/documents/', files)
                 .then(resp => console.log(resp))
                 .catch(err => console.log(err));
@@ -259,7 +259,7 @@ const OrderCreate = ({ match }) => {
                         fetchedFiles={files.fetched}
                         uploadedFiles={files.uploaded}
                         receivedFile={(file) => setFiles({ ...files, uploaded: [...files.uploaded, file] })}
-                        removeClicked={(index) => setFiles(files.filter((e, i) => i !== index))}
+                        removeClicked={(index) => setFiles({ ...files, uploaded: files.uploaded.filter((e, i) => i !== index) })}
                     />
 
                     <Header>
