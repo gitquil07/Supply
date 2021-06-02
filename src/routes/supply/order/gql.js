@@ -120,6 +120,13 @@ query getOrder($id: ID!){
           name
         }
       }
+      files {
+        edges {
+          node {
+            file
+          }
+        }
+      }
       status
       invoiceDate
       invoiceProforma

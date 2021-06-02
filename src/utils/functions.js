@@ -88,7 +88,7 @@ export const onResponseComplete = (data, type, entityName, callback) => {
         const errors = getValueOfProperty(data, "errors");
         errors.forEach((errorMessage) => {
             // let msg = errorMessage.split(": ")[1];
-                //   msg = msg.slice(0, msg.indexOf("}"));
+            //   msg = msg.slice(0, msg.indexOf("}"));
             NotificationManager.error(errorMessage);
         })
     }
@@ -194,3 +194,10 @@ export const CustomRowGeneratorForModal = (openDialog) => {
         }
     }
 };
+
+export const downloadFile = (url) => {
+    const a = window.document.createElement("a");
+    a.href = url;
+    a.setAttribute("download");
+    a.click();
+}

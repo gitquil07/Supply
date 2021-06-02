@@ -147,7 +147,7 @@ export const usePagination = ({type, qraphQlQuery, singular, plural}) => {
             });
         }
 
-        if((hasNextPage == true && hasPreviousPage == false && paginatingState.prevPage === false) || (hasNextPage == false && hasPreviousPage == true && paginatingState.nextPage === false)){
+        if((hasNextPage === true && hasPreviousPage === false && paginatingState.prevPage === false) || (hasNextPage === false && hasPreviousPage == true && paginatingState.nextPage === false)){
             console.log("here second condition");
             setPaginatingState({
                 ...paginatingState,
@@ -167,7 +167,7 @@ export const usePagination = ({type, qraphQlQuery, singular, plural}) => {
             });
         }
 
-        if(paginatingState.direction == "backward" && hasNextPage === false && hasPreviousPage === false){
+        if(paginatingState.direction === "backward" && hasNextPage === false && hasPreviousPage === false){
             console.log("here fourth condition");
             setPaginatingState({
                 ...paginatingState,
