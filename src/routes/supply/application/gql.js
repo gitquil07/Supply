@@ -80,6 +80,13 @@ query getApplication($id : ID!){
   application{
     application(id: $id){
       pk
+      files {
+        edges {
+          node {
+            file
+          }
+        }
+      }
       orders{
         edges{
           node{

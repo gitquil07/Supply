@@ -31,48 +31,51 @@ import { Day } from "@material-ui/pickers";
 
 
 
-const OrderCreate = ({match}) => {
+const OrderCreate = ({ match }) => {
 
     const { id } = match.params,
-          title = useTitle("Создать Заказ"),
-          history = useHistory();
+        title = useTitle("Создать Заказ"),
+        history = useHistory();
 
     const { submitData } = useCustomMutation({
-            graphQlQuery: {
-                queryCreate: ORDER_CREATE,
-                queryUpdate: ORDER_UPDATE
-            }
-        },
+        graphQlQuery: {
+            queryCreate: ORDER_CREATE,
+            queryUpdate: ORDER_UPDATE
+        }
+    },
         "Заказ",
         () => {
             history.push('/supply/order');
         }
     );
 
-    const   [getFactories, factoriesRes] = useLazyQuery(GET_FACTORIES_LIST),
-            [getOrder, orderRes] = useLazyQuery(GET_ORDER),
-            [getVendorFactories, vendorFactoriesResp] = useLazyQuery(GET_VENDOR_FACTORIES),
-            [getVendorFactoryProducts, vendorFactoryProductsResp] = useLazyQuery(GET_VENDOR_FACTORY_PRODUCTS);
+    const [getFactories, factoriesRes] = useLazyQuery(GET_FACTORIES_LIST),
+        [getOrder, orderRes] = useLazyQuery(GET_ORDER),
+        [getVendorFactories, vendorFactoriesResp] = useLazyQuery(GET_VENDOR_FACTORIES),
+        [getVendorFactoryProducts, vendorFactoryProductsResp] = useLazyQuery(GET_VENDOR_FACTORY_PRODUCTS);
 
     const [factory, setFactory] = useState("");
 
     // console.log("factoriesQuerySet?.data", useMemo(() => getList(undefined?.undefined), [undefined]));
     const factories = useMemo(() => getList(factoriesRes?.data), [factoriesRes?.data]) || [],
-          vendorFactories = useMemo(() => getList(vendorFactoriesResp?.data), [vendorFactoriesResp?.data]) || [],
-          vendorProducts = useMemo(() => getList(vendorFactoryProductsResp?.data), [vendorFactoryProductsResp?.data]) || [],
-          pk = useMemo(() => getValueOfProperty(orderRes?.data, "pk"), [orderRes?.data]);
+        vendorFactories = useMemo(() => getList(vendorFactoriesResp?.data), [vendorFactoriesResp?.data]) || [],
+        vendorProducts = useMemo(() => getList(vendorFactoryProductsResp?.data), [vendorFactoryProductsResp?.data]) || [],
+        pk = useMemo(() => getValueOfProperty(orderRes?.data, "pk"), [orderRes?.data]);
 
 
-    const [files, setFiles] = useState([]);
+    const [files, setFiles] = useState({
+        fetched: [],
+        uploaded: []
+    });
 
 
     const templ = {
-            vendorProduct: "",
-            dateOfDelivery: Date.now(),
-            count: "",
-            currency : "", 
-            price: ""
-        };
+        vendorProduct: "",
+        dateOfDelivery: Date.now(),
+        count: "",
+        currency: "",
+        price: ""
+    };
 
     const [materials, setMaterials] = useState([
         templ
@@ -95,7 +98,7 @@ const OrderCreate = ({match}) => {
     }, []);
 
     useEffect(() => {
-        if(id !== undefined){
+        if (id !== undefined) {
             getOrder({
                 variables: {
                     id
@@ -105,7 +108,7 @@ const OrderCreate = ({match}) => {
     }, [id]);
 
     useEffect(() => {
-        if(orderRes?.data !== undefined){
+        if (orderRes?.data !== undefined) {
             const order = orderRes?.data.order.order;
             setFactory(order.vendorFactory.factory.pk);
             setOrderData({
@@ -114,15 +117,27 @@ const OrderCreate = ({match}) => {
                 invoiceDate: order.invoiceDate,
                 invoiceProforma: order.invoiceProforma
             });
-            const orderItems = order.orderItems.edges.map(({node}) => {
+            setFiles({
+                ...files,
+                fetched: [
+                    ...files.fetched,
+                    orderRes?.data?.order?.order?.files?.edges.map(({ node }) => {
+                        return {
+                            file: node.file,
+                            file_name: node.file_name
+                        }
+                    })
+                ]
+            })
+            const orderItems = order.orderItems.edges.map(({ node }) => {
                 return {
-                        ...exceptKey(node, "__typename"),
-                        vendorProduct: node.vendorProduct.pk 
-                    }
+                    ...exceptKey(node, "__typename"),
+                    vendorProduct: node.vendorProduct.pk
+                }
             });
             setMaterials(orderItems);
         }
-  
+
     }, [orderRes?.data]);
 
     useEffect(() => {
@@ -148,52 +163,52 @@ const OrderCreate = ({match}) => {
         console.log("vendorFactory", vendorFactory);
         getVendorFactoryProducts({
             variables: {
-                vendorFactory        
+                vendorFactory
             }
         });
 
     }, [vendorFactory]);
 
     const handleDataChange = (event, dataType, index) => {
-        if(dataType === "order"){
-            setOrderData({...orderData, [event.target.name] : event.target.value});
+        if (dataType === "order") {
+            setOrderData({ ...orderData, [event.target.name]: event.target.value });
         }
 
-        if(dataType === "material"){
+        if (dataType === "material") {
             const materialsCopy = materials.slice(0);
-            materialsCopy[index] = {...materialsCopy[index], [event.target.name] : event.target.value}
+            materialsCopy[index] = { ...materialsCopy[index], [event.target.name]: event.target.value }
             setMaterials(materialsCopy);
         }
     }
 
     const handleDateChange = (dateFieldName, date, index) => {
         const materialsCopy = materials.slice(0);
-        materialsCopy[index] = {...materialsCopy[index], [dateFieldName] : date};
+        materialsCopy[index] = { ...materialsCopy[index], [dateFieldName]: date };
         setMaterials(materialsCopy);
     }
 
     const handleSubmit = () => {
-        const orderRequestBody = {...orderData};
+        const orderRequestBody = { ...orderData };
         let orderMaterials = materials.slice(0);
 
         const formedOrderMaterials = orderMaterials.map(orderMaterial => {
             return {
-                        ...orderMaterial,
-                        dateOfDelivery: moment(orderMaterial.dateOfDelivery).format("YYYY-MM-DD"),
-                    }
+                ...orderMaterial,
+                dateOfDelivery: moment(orderMaterial.dateOfDelivery).format("YYYY-MM-DD"),
+            }
         });
 
         orderRequestBody.invoiceDate = moment(orderRequestBody.invoiceDate).format("YYYY-MM-DD");
 
         orderRequestBody.orderItems = formedOrderMaterials;
-        if(pk){
+        if (pk) {
             orderRequestBody.status = statuses.find(status => status.value == orderRequestBody.status).label;
         }
 
-        pk? submitData(orderRequestBody, pk) : submitData(exceptKey(orderRequestBody, ["status"]));
+        pk ? submitData(orderRequestBody, pk) : submitData(exceptKey(orderRequestBody, ["status"]));
 
 
-        if(files.length > 0){
+        if (files.uploaded.length > 0) {
             uploadFile('/api-file/documents/', files)
                 .then(resp => console.log(resp))
                 .catch(err => console.log(err));
@@ -209,6 +224,9 @@ const OrderCreate = ({match}) => {
     }
 
 
+    console.log(files)
+
+
     return (
         <>
             <Helmet title={title} />
@@ -219,34 +237,39 @@ const OrderCreate = ({match}) => {
                     <AddibleInput>
                         <CustomSelector label="Выберите завод" name="factory" value={factory} stateChange={(e) => setFactory(e.target.value)}>
                             {
-                                factories?.map(({node}) => {
+                                factories?.map(({ node }) => {
                                     return <MenuItem key={node.pk} value={node.pk} selected={factory === node.pk}>{node.name}</MenuItem>
                                 })
                             }
                         </CustomSelector>
                         <CustomSelector label="Выберите поставщика" name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")}>
                             {
-                                vendorFactories?.map(({node}) => {
-                                    return <MenuItem key={node.pk} value={node.pk} selected={orderData.vendorFactory ===  node.pk}>{node?.vendor?.name}</MenuItem>
+                                vendorFactories?.map(({ node }) => {
+                                    return <MenuItem key={node.pk} value={node.pk} selected={orderData.vendorFactory === node.pk}>{node?.vendor?.name}</MenuItem>
                                 })
                             }
                         </CustomSelector>
 
                         {
-                            pk &&   <CustomSelector label="Статус"  name="status" value={orderData.status} stateChange={e => handleDataChange(e, "order")}>
-                                        {
-                                            statuses.map(status => {
-                                                    return <MenuItem key={status.value} value={status.value} selected={orderData.status === status.value}>{status.label}</MenuItem>    
-                                                }
-                                            )
-                                        }
-                                    </CustomSelector>
+                            pk && <CustomSelector label="Статус" name="status" value={orderData.status} stateChange={e => handleDataChange(e, "order")}>
+                                {
+                                    statuses.map(status => {
+                                        return <MenuItem key={status.value} value={status.value} selected={orderData.status === status.value}>{status.label}</MenuItem>
+                                    }
+                                    )
+                                }
+                            </CustomSelector>
                         }
-                        <CustomPicker label="Дата создание" name="invoiceDate" date={orderData.invoiceDate} stateChange={(date) => setOrderData({...orderData, invoiceDate: date})} />
+                        <CustomPicker label="Дата создание" name="invoiceDate" date={orderData.invoiceDate} stateChange={(date) => setOrderData({ ...orderData, invoiceDate: date })} />
                         <CustomInput label="Инвойс заказа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} />
                     </AddibleInput>
 
-                    <DragFile receivedFile={(file) => setFiles([...files, file])} files={files} removeClicked={(index) => setFiles(files.filter((e, i) => i !== index))} />
+                    <DragFile
+                        fetchedFiles={files.fetched}
+                        uploadedFiles={files.uploaded}
+                        receivedFile={(file) => setFiles({ ...files, uploaded: [...files.uploaded, file] })}
+                        removeClicked={(index) => setFiles({ ...files, uploaded: files.uploaded.filter((e, i) => i !== index) })}
+                    />
 
                     <Header>
                         <Title>Материал</Title>
@@ -259,7 +282,7 @@ const OrderCreate = ({match}) => {
                                 <InputsWrapper>
                                     <CustomSelector name="vendorProduct" label="Выберите материал" value={e.vendorProduct} stateChange={(e) => handleDataChange(e, "material", index)}>
                                         {
-                                            vendorProducts?.map(({node}) => {
+                                            vendorProducts?.map(({ node }) => {
                                                 return <MenuItem key={node.pk} value={node.pk} selected={materials[index].vendorProduct === node.pk}>{node.product.name}</MenuItem>
                                             })
                                         }
@@ -278,7 +301,7 @@ const OrderCreate = ({match}) => {
 
                 <Footer>
                     <span>Кол-во материалов: {materials.length}</span>
-                    <Button name={pk? "Изменить заказ" : "Создать заказ"} clickHandler={handleSubmit}/>
+                    <Button name={pk ? "Изменить заказ" : "Создать заказ"} clickHandler={handleSubmit} />
                 </Footer>
             </Wrapper>
         </>

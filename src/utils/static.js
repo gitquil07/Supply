@@ -189,85 +189,87 @@ export const statuses = [
 
 export const modes = [
     {
-        label:"экспорт",
-        value:10
+        label: "экспорт",
+        value: 10
     },
 
     {
-        label:"реэкспорт",
-        value:11
+        label: "реэкспорт",
+        value: 11
     },
 
     {
-        label:" временный вывоз",
-        value:12
+        label: " временный вывоз",
+        value: 12
     },
 
     {
-        label:"выпуск для свободного обращения (импорт)",
-        value:40
+        label: "выпуск для свободного обращения (импорт)",
+        value: 40
     },
 
     {
-        label:"реиморт",
-        value:41
+        label: "реиморт",
+        value: 41
     },
 
     {
-        label:"временный ввоз",
-        value:42
+        label: "временный ввоз",
+        value: 42
     },
 
     {
-        label:"переработка на таможенной территории",
-        value:51
+        label: "переработка на таможенной территории",
+        value: 51
     },
 
     {
-        label:"переработка вне таможенной территории",
-        value:61
+        label: "переработка вне таможенной территории",
+        value: 61
     },
 
     {
-        label:"временное хранение",
-        value:70
+        label: "временное хранение",
+        value: 70
     },
 
     {
-        label:"свободная таможенная зона",
-        value:71
+        label: "свободная таможенная зона",
+        value: 71
     },
 
     {
-        label:"беспошлинная торговля",
-        value:72
+        label: "беспошлинная торговля",
+        value: 72
     },
 
     {
-        label:"свободный склад",
-        value:73
+        label: "свободный склад",
+        value: 73
     },
 
     {
-        label:"таможенный склад",
-        value:74
+        label: "таможенный склад",
+        value: 74
     },
 
     {
-        label:"отказ в пользу государства",
-        value:75
+        label: "отказ в пользу государства",
+        value: 75
     },
 
     {
-        label:"уничтожение",
-        value:76
+        label: "уничтожение",
+        value: 76
     },
 
     {
-        label:"таможенный транзит",
-        value:80
+        label: "таможенный транзит",
+        value: 80
     }
 ];
+
+
 
 
 export const customModes = [
@@ -369,14 +371,14 @@ export const currencyOptions = [
 export const generalReportColorSchema = {
     "Дата": {
         single: {
-            colorClass: "white" 
+            colorClass: "white"
         },
     },
     "Общие данные": {
-        combination:{
+        combination: {
             colorClasses: "red yellow",
-            type: "simple-devision" 
-        }   
+            type: "simple-devision"
+        }
     },
     "Танспортировка": {
         single: {
