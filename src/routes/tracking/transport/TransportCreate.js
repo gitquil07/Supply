@@ -232,7 +232,7 @@ const TrackingTransportCreate = ({ match }) => {
 
             const invoicesToUpdate = invoiceList.map(invoice => {
                 return {
-                    ...exceptKey(invoice, ["pk"]),
+                    ...exceptKey(invoice, ["pk", "relativeWeight"]),
                     status: invoiceStatuses.find(invoiceStatus => invoiceStatus.value == invoice.status).label
                 }
             });
@@ -333,22 +333,23 @@ const TrackingTransportCreate = ({ match }) => {
                             <Title size="18">Инвойсы</Title>
                             {
                                 invoiceList.map((invoice, idx) => 
-                                    <CustomizableInputs t="1fr 1fr 1fr">
+                                    <CustomizableInputs t="1fr 1fr 1fr 1fr">
                                         <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
                                         <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
                                             {
                                                 invoiceStatuses.map(invoiceStatus => 
                                                     <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status == invoiceStatus.value}>{invoiceStatus.label}</MenuItem>    
-                                                )
-                                            }
+                                                    )
+                                                }
                                         </CustomSelector>
                                         <CustomSelector name="destination" label="место оплаты" stateChaneg={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination}>
                                             {
                                                 destinationOptions.map(destination => 
                                                     <MenuItem key={destination.value} value={destination.value} selected={destination.value == invoice.destination} >{destination.label}</MenuItem>
-                                                )
-                                            }
+                                                    )
+                                                }
                                         </CustomSelector>
+                                        <CustomInput label="Относительный вес" value={invoice.relativeWeight} stateChange={() => {}} disabled={true} />
                                         {/* <CustomInput name="destination" label="место назначения" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination} /> */}
                                     </CustomizableInputs>
         
@@ -472,14 +473,14 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Тип заявки</h4>
                             <span>{ applicationInfo?.transportMix ? "Сборная" : "Обычная" }</span>
                         </Item>
-                        <Item>
+                        {/* <Item>
                             <h4>
                                 Вид упаковки
                             </h4>
                             <span>
                                 { applicationInfo?.typeOfPackaging }
                             </span>
-                        </Item>
+                        </Item> */}
                         <Item>
                             <h4>
                                 Степень опасности
@@ -490,10 +491,10 @@ const TrackingTransportCreate = ({ match }) => {
                         </Item>
                         <Item>
                             <h4>
-                                Количество упаковки
+                                Количество мест
                             </h4>
                             <span>
-                                { applicationInfo?.count }
+                                { applicationInfo?.packageOnPallet.slice(0, applicationInfo?.packageOnPallet.indexOf("."))  }
                             </span>
                         </Item>
                     </List>

@@ -1,25 +1,27 @@
 import { useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet";
-import { AddibleInput } from "../../../components/Flex";
-import { Form } from "../../../components/Form";
-import { CustomSelector } from "../../../components/Inputs/CustomSelector";
-import { useTitle } from "../../../hooks";
+import { AddibleInput } from "components/Flex";
+import { Form } from "components/Form";
+import { CustomSelector } from "components/Inputs/CustomSelector";
+import { CustomInput } from "components/Inputs/CustomInput"
+import { useTitle } from "hooks";
 import styled from "styled-components"
-import { Footer } from "../../../components/Footer";
-import { Button } from "../../../components/Buttons";
+import { Footer } from "components/Footer";
+import { Button } from "components/Buttons";
 
 import MenuItem from "@material-ui/core/MenuItem";
 import { useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
-import { currencyOptions } from "../../../utils/static";
+import { currencyOptions } from "utils/static";
 import Switch from "@material-ui/core/Switch";
-import { CustomNumber } from "../../../components/Inputs/CustomNumber";
+import { CustomNumber } from "components/Inputs/CustomNumber";
 
 
 import { GET_FACTORIES, GET_VENDOR_FACTORIES, GET_PRODUCTS, CREATE_VENDOR_PRODUCT, UPDATE_VENDOR_PRODUCT, GET_VENDOR_PRODUCT, GET_VENDOR_PRODUCT_HISTORY } from "./gql";
-import { exceptKey } from "../../../utils/functions";
-import { useCustomMutation, useFormData } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { exceptKey, getValueOfProperty } from "utils/functions";
+import { useCustomMutation, useFormData } from "hooks";
+import { getList } from "utils/functions";
+import moment from "moment";
 
 const initialState = {
     "factory": "",
@@ -34,7 +36,7 @@ const initialState = {
 
 const SuppliersCreate = ({ match }) => {
     const {id} = match.params,
-          title = useTitle("Создание нового материала"),
+          title = useTitle("Создание новой базы данных"),
           history = useHistory();
     
     const {
@@ -69,7 +71,7 @@ const SuppliersCreate = ({ match }) => {
     const factories = useMemo(() => getList(factoriesRes?.data), [factoriesRes?.data]) || [],
           vendorFactories = useMemo(() => getList(vendorFactoriesRes?.data), [vendorFactoriesRes?.data]) || [],
           products = useMemo(() => getList(productsRes?.data), [productsRes?.data]) || [],
-          pk = useMemo(() => getList(vendorProductRes?.data), [vendorProductRes?.data]) || undefined,
+          pk = useMemo(() => getValueOfProperty(vendorProductRes?.data, "pk"), [vendorProductRes?.data]) || undefined,
           vendorProductHistoriesFull = useMemo(() => getList(vendorProductHistoryRes?.data), [vendorProductHistoryRes?.data]) || [],
           vendorProductHistories = useMemo(() => vendorProductHistoriesFull.map(({node}) => {
                     return {
@@ -147,35 +149,48 @@ const SuppliersCreate = ({ match }) => {
         pk? submitData(exceptKey(data, ["vendorFactory", "product"]), pk) : submitData(data);
     }
 
+    // const factory = factories.find(({node}) => node.pk == state.factor)?.name,
+    //       vendor = vendorFactories.find(({node}) => node.pk == state.vendorFactory)?.name,
+    //       product = products.find(({node}) => node.pk == state.product)?.name;
+
     return (
         <>
             <Helmet title={title} />
             <Form>
                 <p>Информация о материале</p>
                 <AddibleInput>
-                    <CustomSelector disabled={id? true : false} name="factory" value={state.factory} stateChange={e => handleChange({fElem: e})} label="Завод">
-                        {
-                            factories?.map(({node}) => {
-                                    return <MenuItem value={node.pk} selected={node.pk === state.factory}>{node.name}</MenuItem>    
-                                }
-                            )
-                        }
-                    </CustomSelector>
-                    <CustomSelector disabled={id? true : false} name="vendorFactory" value={state.vendorFactory} stateChange={e => handleChange({fElem: e})} label="Поставщик">
-                        {
-                            vendorFactories?.map(({node}) => {
-                                    return <MenuItem value={node.pk} selected={node.pk === state.vendorFactory}>{node.vendor.name}</MenuItem>
-                                }
-                            )
-                        }
-                    </CustomSelector>
-                    <CustomSelector disabled={id? true : false} name="product" value={state.product} stateChange={e => handleChange({fElem: e})} label="Продукт">
-                        {
-                            products?.map(({node}) => 
-                                <MenuItem value={node.pk} selected={node.pk === state.product}>{node.name}</MenuItem>
-                            )
-                        }
-                    </CustomSelector>
+                    {
+                        pk? <CustomInput label="Завод" name="factory" value={factories.find(({node}) => node.pk == state.factory)?.node?.name} disabled /> : 
+                        <CustomSelector name="factory" value={state.factory} stateChange={e => handleChange({fElem: e})} label="Завод">
+                            {
+                                factories?.map(({node}) => {
+                                        return <MenuItem value={node.pk} selected={node.pk === state.factory}>{node.name}</MenuItem>    
+                                    }
+                                )
+                            }
+                        </CustomSelector>
+                    }
+                    {
+                        pk? <CustomInput label="Поставщик" name="vendorFactory" value={vendorFactories.find(({node}) => node.pk == state.vendorFactory)?.node?.vendor?.name} disabled /> : 
+                        <CustomSelector name="vendorFactory" value={state.vendorFactory} stateChange={e => handleChange({fElem: e})} label="Поставщик">
+                            {
+                                vendorFactories?.map(({node}) => {
+                                        return <MenuItem value={node.pk} selected={node.pk === state.vendorFactory}>{node.vendor.name}</MenuItem>
+                                    }
+                                )
+                            }
+                        </CustomSelector>
+                    }
+                    {
+                        pk? <CustomInput label="Продукт" name="product" value={products.find(({node}) => node.pk == state.product)?.node?.name} disabled /> : 
+                        <CustomSelector disabled={id? true : false} name="product" value={state.product} stateChange={e => handleChange({fElem: e})} label="Продукт">
+                            {
+                                products?.map(({node}) => 
+                                    <MenuItem value={node.pk} selected={node.pk === state.product}>{node.name}</MenuItem>
+                                )
+                            }
+                        </CustomSelector>
+                    }
                     <CustomSelector label="Валюта" name="currency" value={state.currency} stateChange={e => handleChange({fElem: e})}>
                         {
                             currencyOptions.map((currency) => 
@@ -224,7 +239,7 @@ const SuppliersCreate = ({ match }) => {
                                                 <span>{history.currency}</span>
                                                 <span>{history.productionDayCount}</span>
                                                 <span>{history.deliveryDayCount}</span>
-                                                <span>{history.updatedAt}</span>
+                                                <span>{moment(history.updatedAt).format("YYYY-MM-DD")}</span>
                                                 <span>{history.isActive? "Активный" : "Неактивный"}</span> 
                                             </List>
                                         )

@@ -5,7 +5,8 @@ import { getValueOfProperty } from "utils/functions";
 import styled from "styled-components"; 
 import { generalReportColorSchema } from "utils/static";
 import { goToNewLine } from "utils/functions";
-
+import { useTitle } from "hooks"
+import Helmet from "react-helmet";
 
 const allowedHeadersToRepeat = [ 
     "Остаток на начало\nмесяца ",
@@ -44,6 +45,8 @@ const WithBadge = (str) => {
 
 const TestTable2 = () => {
 
+    const title = useTitle("Отчёт");
+
     const [getReport, reportRes] = useLazyQuery(GET_TABLE_BODY),
           tableData = getValueOfProperty(reportRes?.data, "body") || [],
           columns = getValueOfProperty(reportRes?.data, "columns") || [];
@@ -57,152 +60,160 @@ const TestTable2 = () => {
     let repeatedColsAmount = columns[0]? columns[0].filter(column => column.indexOf("Планируемый прогноз") > -1).length / 4: 0;
     let flags = [];
     return(
-        <Table border="1px">
-            <thead>
-                {
-                    columns.map((row, rowIdx) => {
-                        let pos = 0;
-                        return <tr key={rowIdx}>
-                            {
-                                rowIdx == 1? <td rowspan={columns.length-1}>№</td> : null
-                            }
-                            {
-                                row.map((col, colIdx) => {
-                                    const colspan = row.filter(value => value == col).length;
-                                          if(rowIdx == 0){
-                                              let reps = colspan - 1;
-                                            if(colIdx == pos + reps){
-                                                pos += reps + 1;
-                                                flags.push(pos);
+        <>
+        <Helmet title={title} />
+            <Table border="1px">
+                <thead>
+                    {
+                        columns.map((row, rowIdx) => {
+                            let pos = 0;
+                            return <tr key={rowIdx}>
+                                {
+                                    rowIdx == 1? <td rowspan={columns.length-1}>№</td> : null
+                                }
+                                {
+                                    row.map((col, colIdx) => {
+                                        const colspan = row.filter(value => value == col).length;
+                                            if(rowIdx == 0){
+                                                let reps = colspan - 1;
+                                                if(colIdx == pos + reps){
+                                                    pos += reps + 1;
+                                                    flags.push(pos);
+                                                }
                                             }
-                                          }
-                                          let duplicatesInRows = 0;
-                                          for(let i = 0; i < columns.length; i++){
-                                              if(columns[i][colIdx] == col){
-                                                duplicatesInRows++;
-                                              }
-                                          }              
+                                            let duplicatesInRows = 0;
+                                            for(let i = 0; i < columns.length; i++){
+                                                if(columns[i][colIdx] == col){
+                                                    duplicatesInRows++;
+                                                }
+                                            }              
+                                            
+                                        const rowspan = duplicatesInRows;
                                         
-                                    const rowspan = duplicatesInRows;
-                                    
-                                    let cageClasses = "";
-                                    if(flags.indexOf(colIdx + 1) > -1){
-                                        cageClasses = "last" 
-                                    }else if (flags.indexOf(colIdx) > -1){
-                                        cageClasses = "first";
-                                    }
-
-                                    if(renderedValues.indexOf(col) == -1 || (renderedValues.indexOf(col) > -1 && shallowCheckingForExisting(col, allowedHeadersToRepeat))){
-                                        renderedValues.push(col);
-                                        let attrs = {
-                                            key: colIdx,
-                                            className: cageClasses,
-                                            rowspan
-                                        }
-                                        if(shallowCheckingForExisting(col, allowedHeadersToRepeat) && (repeatedRenderedValues.filter(v => v.indexOf(col) > -1).length < repeatedColsAmount)){
-                                            repeatedRenderedValues.push(col);
-                                            if(rowIdx == 2 && col == "Хватает, дней"){
-                                                return null;
-                                            }else{
-                                                return <td {...attrs} >{WithBadge(col)}</td>
-                                            }
-                                        }
-                                        if(!shallowCheckingForExisting(col, allowedHeadersToRepeat)){
-                                            let isFirst = !!(rowIdx == 0 && colIdx == 0);
-                                            attrs.colspan = isFirst? colspan + 1 : colspan;
-                                            return <td {...attrs} colspan={isFirst? colspan + 1 : colspan}>{WithBadge(col)}</td>
-                                        }
-                                    }
-
-                                })
-                            }
-                        </tr>
-                    })
-                }
-            </thead>
-            <tbody>
-            {
-                    tableData.map((row, rowIdx) => {
-                        return <tr>
-                            <td className="blue">{rowIdx+1}</td>
-                            {
-                                row.map((col, colIdx)=> {
-                                    
-                                    let cageClasses = "";
-                                    const columnName = columns[0][colIdx],
-                                          schemaColNames =  Object.keys(generalReportColorSchema);
-
-                                          let has = false;
-                                          for(let name of schemaColNames){
-                                              if((columnName.indexOf(name) > -1) || (columnName.indexOf(name) == -1 && name == "Дата")){
-                                                has = name
-                                              }
-                                          }
-                                          
-
-                                          if(has){
-                                              let columnScheme = generalReportColorSchema[has],
-                                              schemeType = Object.getOwnPropertyNames(columnScheme)[0];
-                            
-                                                    switch(schemeType){
-                                                        case "single":
-                                                            cageClasses += columnScheme[schemeType].colorClass;
-                                                        break;
-                                                        case "combination":
-                                                            let colorClasses = columnScheme[schemeType].colorClasses.split(" "),
-                                                                start = columns[0].indexOf(columnName),
-                                                                colReps = columns[0].filter(col => col == columnName).length,
-                                                                end = start + colReps;
-
-                                                                
-                                                                if(columnScheme[schemeType].type == "simple-devision"){
-
-                                                                let middle = Math.floor(start + end) / 2;
-
-                                                                
-                                                                if(colIdx >= start && colIdx <= middle){
-                                                                    cageClasses += colorClasses[0];
-                                                                }
-                                                                
-                                                                if(colIdx > middle && colIdx <= end){
-                                                                    cageClasses += colorClasses[1];                                                                    
-                                                                }
-                                                                
-                                                                
-                                                            }else if(columnScheme[schemeType].type == "outline"){
-                                                                
-                                                                if(colIdx == end-1 || colIdx == start){
-                                                                    cageClasses += colorClasses[1];
-                                                                }
-                                                                
-                                                                if(colIdx > start && colIdx < end-1 ){
-                                                                    cageClasses += colorClasses[0];
-                                                                }
-                                                                
-                                                            }
-                                                        break;
-                                                    }     
-                                            }
-                                                    
-                                        // console.log("cageClasses", cageClasses);
-                                        // debugger;
+                                        let cageClasses = "";
                                         if(flags.indexOf(colIdx + 1) > -1){
-                                            cageClasses += " last";
-                                        }
-                                        if(flags.indexOf(colIdx) > -1){
-                                            cageClasses += " first";
+                                            cageClasses = "last" 
+                                        }else if (flags.indexOf(colIdx) > -1){
+                                            cageClasses = "first";
                                         }
 
-                                        // console.log("cage classes", cageClasses);
-                                        return <td className={cageClasses}>{col}</td>
-                                        // return <td className={cageClasses}>{col}</td>
-                                })
-                            }
-                        </tr>
-                    })
-                }
-            </tbody>
-        </Table>
+                                        if(renderedValues.indexOf(col) == -1 || (renderedValues.indexOf(col) > -1 && shallowCheckingForExisting(col, allowedHeadersToRepeat))){
+                                            renderedValues.push(col);
+                                            let attrs = {
+                                                key: colIdx,
+                                                className: cageClasses,
+                                                rowspan
+                                            }
+                                            if(shallowCheckingForExisting(col, allowedHeadersToRepeat) && (repeatedRenderedValues.filter(v => v.indexOf(col) > -1).length < repeatedColsAmount)){
+                                                repeatedRenderedValues.push(col);
+                                                if(rowIdx == 2 && col == "Хватает, дней"){
+                                                    return null;
+                                                }else{
+                                                    return <td {...attrs} >{WithBadge(col)}</td>
+                                                }
+                                            }
+                                            if(!shallowCheckingForExisting(col, allowedHeadersToRepeat)){
+                                                let isFirst = !!(rowIdx == 0 && colIdx == 0);
+                                                attrs.colspan = isFirst? colspan + 1 : colspan;
+                                                return <td {...attrs} colspan={isFirst? colspan + 1 : colspan}>{WithBadge(col)}</td>
+                                            }
+                                        }
+
+                                    })
+                                }
+                            </tr>
+                        })
+                    }
+                </thead>
+                <tbody>
+                {
+                        tableData.map((row, rowIdx) => {
+                            return <tr>
+                                <td className="blue">{rowIdx+1}</td>
+                                {
+                                    row.map((col, colIdx)=> {
+                                        
+                                        let cageClasses = "";
+                                        const columnName = columns[0][colIdx],
+                                            schemaColNames =  Object.keys(generalReportColorSchema);
+
+                                            let has = false;
+                                            for(let name of schemaColNames){
+                                                if((columnName.indexOf(name) > -1) || (columnName.indexOf(name) == -1 && name == "Дата")){
+                                                    has = name
+                                                }
+                                            }
+                                            
+
+                                            if(has){
+                                                let columnScheme = generalReportColorSchema[has],
+                                                schemeType = Object.getOwnPropertyNames(columnScheme)[0];
+                                
+                                                        switch(schemeType){
+                                                            case "single":
+                                                                cageClasses += columnScheme[schemeType].colorClass;
+                                                            break;
+                                                            case "combination":
+                                                                let colorClasses = columnScheme[schemeType].colorClasses.split(" "),
+                                                                    start = columns[0].indexOf(columnName),
+                                                                    colReps = columns[0].filter(col => col == columnName).length,
+                                                                    end = start + colReps;
+
+                                                                    
+                                                                    if(columnScheme[schemeType].type == "simple-devision"){
+
+                                                                    let middle = Math.floor(start + end) / 2;
+
+                                                                    
+                                                                    if(colIdx >= start && colIdx <= middle){
+                                                                        cageClasses += colorClasses[0];
+                                                                    }
+                                                                    
+                                                                    if(colIdx > middle && colIdx <= end){
+                                                                        cageClasses += colorClasses[1];                                                                    
+                                                                    }
+                                                                    
+                                                                    
+                                                                }else if(columnScheme[schemeType].type == "outline"){
+                                                                    
+                                                                    if(colIdx == end-1 || colIdx == start){
+                                                                        cageClasses += colorClasses[1];
+                                                                    }
+                                                                    
+                                                                    if(colIdx > start && colIdx < end-1 ){
+                                                                        cageClasses += colorClasses[0];
+                                                                    }
+                                                                    
+                                                                }
+                                                            break;
+                                                        }     
+                                                }
+                                                        
+                                            // console.log("cageClasses", cageClasses);
+                                            // debugger;
+                                            if(flags.indexOf(colIdx + 1) > -1){
+                                                cageClasses += " last";
+                                            }
+                                            if(flags.indexOf(colIdx) > -1){
+                                                cageClasses += " first";
+                                            }
+
+                                            if(+col < 0){
+                                                console.log("cageClasses", col);
+                                                cageClasses += " reddest";
+                                            }
+
+                                            // console.log("cage classes", cageClasses);
+                                            return <td className={cageClasses}>{col}</td>
+                                            // return <td className={cageClasses}>{col}</td>
+                                    })
+                                }
+                            </tr>
+                        })
+                    }
+                </tbody>
+            </Table>
+        </>
     );
 
 }
@@ -219,6 +230,11 @@ const Table = styled.table`
     display: block;
     border-radius: 10px;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.30);
+
+    .reddest{
+        background-color:red !important;
+        color:#fff !important;
+    }
 
     .last {
         ::after {

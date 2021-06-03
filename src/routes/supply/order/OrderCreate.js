@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useQuery, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import moment from "moment";
 import { Helmet } from 'react-helmet';
 import styled from "styled-components";
@@ -27,6 +27,7 @@ import { exceptKey } from "../../../utils/functions";
 import { useCustomMutation } from "../../../hooks";
 import { getList, getValueOfProperty } from "../../../utils/functions";
 import { useTemplate } from "../../../hooks";
+import { Day } from "@material-ui/pickers";
 
 
 
@@ -199,6 +200,14 @@ const OrderCreate = ({match}) => {
         }
     }
 
+    const getAproximateDeliveryDate = (date) => {
+        const dateInMilliseconds = (typeof date == "number")? date : new Date(date).getTime(),
+              twoDays = 1000 * 60 * 60 * 24 * 2,
+              aproximateDeliveryDate = moment(new Date(dateInMilliseconds + twoDays).toISOString()).format("DD.MM.YYYY");
+        return aproximateDeliveryDate;     
+        // return  new Day(dateInMilliseconds + twoDays);
+    }
+
 
     return (
         <>
@@ -256,6 +265,7 @@ const OrderCreate = ({match}) => {
                                         }
                                     </CustomSelector>
                                     <CustomPicker name="dateOfDelivery" label="Дата отгрузки" date={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
+                                    <CustomInput label="Примерная дата прибытия" value={getAproximateDeliveryDate(e.dateOfDelivery)} disabled /> 
                                     <CustomInput name="count" label="Кол-во" value={e.count}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomInput name="price" label="Цена" value={e.price}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                 </InputsWrapper>

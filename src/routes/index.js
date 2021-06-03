@@ -9,7 +9,6 @@ import Plan from "./plan";
 console.log("Plan", Plan);
 
 const Routes = () => {
-
     return (
         <Switch>
             <Route path="/" exact>

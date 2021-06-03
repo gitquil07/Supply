@@ -61,6 +61,7 @@ const FactoryCreate = ({ match }) => {
     const vendorFactory = vendorFactoryRes?.data?.vendor?.vendorFactory,
           pk = vendorFactory?.pk;
 
+
     const dependentMaterials = useMemo(() => getList(dependentMaterialsRes?.data)?.map(({node}) => {
             return {
                 ...exceptKey(node, ["__typename", "vendorFactory"]),
@@ -68,6 +69,7 @@ const FactoryCreate = ({ match }) => {
                 product: node.product?.name
             }
     }), [dependentMaterialsRes?.data]);
+
 
     const { submitData } = useCustomMutation({
             graphQlQuery: {
@@ -99,12 +101,24 @@ const FactoryCreate = ({ match }) => {
     }, [id]);
 
     useEffect(() => {
+        if(pk != undefined){
+            console.log("pk useEffect", pk);
+            getDependentMaterials({
+                variables: {
+                    vendorFactory: pk
+                }
+            })
+
+        }
+    }, [pk]);
+
+    useEffect(() => {
 
         getFactories();
         getVendors();
-        getDependentMaterials();
 
     }, []);
+
 
     useEffect(() => {
 
@@ -180,31 +194,36 @@ const FactoryCreate = ({ match }) => {
                     {
                         id && (
                             <>
-                                <p>Список зависимых материалов</p>
-                                <GreyTable>
-                                    <Head>
-                                        <span> Завод: </span>
-                                        <span> Продукт: </span>
-                                        <span> Цена: </span>
-                                        <span> Дни изготовления: </span>
-                                        <span> Дни доставки: </span>
-                                        <span> Дата изменения: </span>
-                                    </Head>
-                                    <Body>
-                                        {
-                                            dependentMaterials?.map(material => 
-                                                <List>
-                                                      <span>{material.factory}</span>
-                                                      <span>{material.product}</span>
-                                                      <span>{material.price}</span>
-                                                      <span>{material.deliveryDayCount}</span>
-                                                      <span>{material.productionDayCount}</span>
-                                                      <span>{material.updatedAt}</span>
-                                                </List>    
-                                            )
-                                        }
-                                    </Body>
-                                </GreyTable>
+                                {
+                                    dependentMaterials?.length? 
+                                    <>
+                                        <p>Список зависимых материалов</p>
+                                        <GreyTable>
+                                            <Head>
+                                                <span> Завод: </span>
+                                                <span> Продукт: </span>
+                                                <span> Цена: </span>
+                                                <span> Дни изготовления: </span>
+                                                <span> Дни доставки: </span>
+                                                <span> Дата изменения: </span>
+                                            </Head>
+                                            <Body>
+                                                {
+                                                    dependentMaterials.map(material => 
+                                                        <List>
+                                                            <span>{material.factory}</span>
+                                                            <span>{material.product}</span>
+                                                            <span>{material.price}</span>
+                                                            <span>{material.deliveryDayCount}</span>
+                                                            <span>{material.productionDayCount}</span>
+                                                            <span>{material.updatedAt}</span>
+                                                        </List>    
+                                                    )
+                                                }
+                                            </Body>
+                                        </GreyTable>
+                                    </> : null
+                                }
                             </>
                         )
                     }

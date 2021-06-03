@@ -74,7 +74,7 @@ query getTrackingInfo($id: ID!) {
         }
         typeOfPackaging
         degreeOfDanger
-        count
+        packageOnPallet
         createdAt
       }
     }
@@ -159,6 +159,7 @@ query getInvoices($id: ID!) {
             number
             destination
             status
+            relativeWeight
           }
         }
       }

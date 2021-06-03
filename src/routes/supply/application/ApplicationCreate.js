@@ -229,17 +229,27 @@ const ApplicationCreate = ({ match }) => {
             ...state,
             shippingDate: moment(state.shippingDate).format("YYYY-MM-DD"),
             // typeOfPackaging: packagingTypes.find(packaging => packaging.value === state.typeOfPackaging)?.label,
-            status: statuses.find(status => status.value === state.status)?.label
+            status: statuses.find(status => status.value === state.status)?.label,
+            degreeOfDanger: degreeOfDanger.find(degree => degree.value === state.degreeOfDanger).label
         }
 
         requestBody.applicationItems = !pk? items.map(item => exceptKey(item, "invoice")) : items; 
         // console.log("requestBody", requestBody);
+
+        console.log("requestBody", requestBody);
 
         if(pk){
             submitData(exceptKey(requestBody, ["orders"]), pk)
         }else{
             submitData(requestBody)
         }
+    }
+
+    const remove = (idx) => {
+        const tmp =  {...requiredCounts};
+        delete tmp[idx];
+        setRequiredCounts(tmp);
+        removeTempl(idx);
     }
 
     useEffect(() => {
@@ -376,7 +386,7 @@ const ApplicationCreate = ({ match }) => {
                                         <CustomNumber fullWidth label="Цена инвойса"  value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
                                     </Row>
                                 </RowWrapper>
-                                <RemoveIcon clicked={() => removeTempl(index)}/>
+                                <RemoveIcon clicked={() => remove(index)}/>
                             </Material>
                     })
                 }

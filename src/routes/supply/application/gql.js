@@ -115,7 +115,6 @@ query getApplication($id : ID!){
       }
       deliveryCondition
       degreeOfDanger
-      typeOfPackaging
       packageOnPallet
       transportCount
       shippingDate,

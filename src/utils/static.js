@@ -330,12 +330,12 @@ export const invoiceStatuses = [
 
 export const degreeOfDanger = [
     {
-        label: "опасный",
-        value: "dangerous"
+        label: "опасно",
+        value: "OPASNO"
     },
     {
-        label: "не опасный",
-        value: "not dangerous"
+        label: "не опасно",
+        value: "NE_OPASNO"
     }
 ];
 
@@ -353,11 +353,11 @@ export const currencyOptions = [
     },
     {
         label: "¥",
-        value: "YUAN"
+        value: "CNA"
     },
     {
         label: "€",
-        value: "EURO"
+        value: "EUR"
     },
     {
         label: "₽",
