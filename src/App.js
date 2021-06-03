@@ -12,14 +12,15 @@ import { Header } from './components/Header';
 
 const App = () => {
 
-  const [auth, setAuth] = useState(""),
+  const [role, setRole] = useState(""),
         token = localStorage.getItem("supply_token");
 
   return (
     <>
       <NotificationContainer/>
       <UserContext.Provider value={{
-        setAuth
+        role,
+        setRole
       }}>
         {
           token?  <ProtectedPages /> : <Auth />

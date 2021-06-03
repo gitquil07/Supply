@@ -4,7 +4,6 @@ import { UserContext } from "context/UserContext";
 import { RolesAuthority } from "./roles";
 import { toCamelCase } from "utils/functions";
 
-
 const AuthorityRoute = ({component: Component, roles, ...props}) => {
 
     // const {role} = useContext(UserContext);

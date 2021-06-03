@@ -99,6 +99,7 @@ query MyQuery($vendorFactory : ID) {
           product {
             name
           }
+          productionDayCount
           pk
         }
       }

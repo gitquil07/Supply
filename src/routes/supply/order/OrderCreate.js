@@ -287,7 +287,7 @@ const OrderCreate = ({ match }) => {
                                             })
                                         }
                                     </CustomSelector>
-                                    <CustomPicker name="dateOfDelivery" label="Дата отгрузки" date={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
+                                    <CustomPicker name="dateOfDelivery" label="Дата доставки" date={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
                                     <CustomInput label="Примерная дата прибытия" value={getAproximateDeliveryDate(e.dateOfDelivery)} disabled /> 
                                     <CustomInput name="count" label="Кол-во" value={e.count}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomInput name="price" label="Цена" value={e.price}  stateChange={(e) => handleDataChange(e, "material", index)} />

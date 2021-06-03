@@ -23,15 +23,15 @@ const Login = () => {
     });
 
     const history = useHistory(); 
-    const {setAuth} = useContext(UserContext);
+    const {setRole} = useContext(UserContext);
 
     const [ auth ] = useMutation(TOKEN_AUTH, {
         onCompleted: data => {
             onResponseComplete(data, "auth", "", () => {
-                const token = getValueOfProperty(data, "token");
+                const token = getValueOfProperty(data, "role");
                       localStorage.setItem("supply_token", token);
                       history.push("/");
-                      setAuth(token);
+                      setRole(token);
             })
         },
         onError: error => {
