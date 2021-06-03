@@ -17,29 +17,32 @@ import ReportTable from "./report/ReportTable";
 import TestTable from "./report/test";
 import TestTable2 from "./report/test2";
 
+import { ProtectedRoute } from "authorization/routes";
+
 const Supply = ({ match }) => {
 
+    // console.log("props sad", props);
     const url = (path) => `${match.url}${path}`;
 
     return (
         <Switch>
-            <Route path={url("/order")} component={OrderList} exact />
-            <Route path={url("/order/detail")} component={OrderDetail} />
-            <Route path={url("/order/create")} component={OrderCreate} />
-            <Route path={url("/order/edit/:id")} component={OrderCreate} />
+            <ProtectedRoute path={url("/order")} component={OrderList} exact />
+            <ProtectedRoute path={url("/order/detail")} component={OrderDetail} />
+            <ProtectedRoute path={url("/order/create")} component={OrderCreate} />
+            <ProtectedRoute path={url("/order/edit/:id")} component={OrderCreate} />
 
-            <Route path={url("/application")} component={ApplicationList} exact />
-            <Route path={url("/application/create")} component={ApplicationCreate} />
-            <Route path={url("/application/edit/:id")} component={ApplicationCreate} />
+            <ProtectedRoute path={url("/application")} component={ApplicationList} exact />
+            <ProtectedRoute path={url("/application/create")} component={ApplicationCreate} />
+            <ProtectedRoute path={url("/application/edit/:id")} component={ApplicationCreate} />
 
-            <Route path={url("/info-record")} component={InfoRecordList} exact />
-            <Route path={url("/info-record/detail/:id")} component={InfoRecordDetail} />
+            <ProtectedRoute path={url("/info-record")} component={InfoRecordList} exact />
+            <ProtectedRoute path={url("/info-record/detail/:id")} component={InfoRecordDetail} />
 
-            <Route path={url("/arrived")} component={ArrivedList} exact />
+            <ProtectedRoute path={url("/arrived")} component={ArrivedList} exact />
 
-            <Route path={url("/customs")} component={CustomsList} exact />
+            <ProtectedRoute path={url("/customs")} component={CustomsList} exact />
 
-            <Route path={url("/report")} component={TestTable2} exact />
+            <ProtectedRoute path={url("/report")} component={TestTable2} exact />
         </Switch>
     );
 };
