@@ -13,16 +13,16 @@ import { Header } from './components/Header';
 const App = () => {
 
   const [auth, setAuth] = useState(""),
-        token = localStorage.getItem("supply_token");
+    token = localStorage.getItem("supply_token");
 
   return (
     <>
-      <NotificationContainer/>
+      <NotificationContainer />
       <UserContext.Provider value={{
         setAuth
       }}>
         {
-          token?  <ProtectedPages /> : <Auth />
+          token ? <ProtectedPages /> : <Auth />
         }
       </UserContext.Provider>
     </>

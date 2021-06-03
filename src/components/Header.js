@@ -41,7 +41,7 @@ export const Header = ({ menuIconClicked }) => {
                     <MenuIcon />
                 </IconButton>
 
-                <Title size="24">{title}</Title>
+                <Title size="24">{title === "Supply" ? "" : title}</Title>
             </span>
 
             <Account>
