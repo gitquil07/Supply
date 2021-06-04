@@ -36,7 +36,7 @@ export const RolesAuthority = {
         allowRoute: false,
         useSupplyNavigation: false,
         useCustomNavigation: false,
-        useTrackingNavigation: false,
+        useTrackingNavigation: true,
         useUserNavigation: false
     },
     contractor: {

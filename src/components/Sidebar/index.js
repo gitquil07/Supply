@@ -25,8 +25,8 @@ export const Sidebar = () => {
         settings: false
     });
 
-    // const { role } = useContext(UserContext);
-    const role = "ADMIN";
+    const { role } = useContext(UserContext);
+    // const role = "ADMIN";
 
     const handleExpand = (name) => setState({ ...state, supply: false, logistics: false, customs: false, settings: false, [name]: !state[name] });
 

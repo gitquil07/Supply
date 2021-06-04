@@ -12,7 +12,9 @@ import { Header } from './components/Header';
 
 const App = () => {
 
-  const [role, setRole] = useState(""),
+  const s_role = localStorage.getItem("supply_role");
+  console.log("role from app", s_role);
+  const [role, setRole] = useState(s_role? s_role : ""),
         token = localStorage.getItem("supply_token");
 
   return (

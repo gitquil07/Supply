@@ -22,6 +22,7 @@ export const Header = ({ menuIconClicked }) => {
 
     const logout = () => {
         localStorage.removeItem("supply_token");
+        localStorage.removeItem("supply_role");
         history.push("/login");
         setRole("");
     }

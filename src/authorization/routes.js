@@ -6,9 +6,11 @@ import { toCamelCase } from "utils/functions";
 
 const AuthorityRoute = ({component: Component, roles, ...props}) => {
 
-    // const {role} = useContext(UserContext);
-    let role = "ADMIN",
-        trRole = toCamelCase(role);
+    const {role}= useContext(UserContext),
+          trRole = toCamelCase(role);
+
+          console.log("role routes", role);
+    // let role = "ADMIN",
 
     return <Route {...props} render={props => roles[trRole].allowRoute? <Component {...props} /> : "Page not found"}></Route>
 }
@@ -36,6 +38,7 @@ export const ProtectedRoute = (props) => {
     }else if(path.indexOf("tracking") > -1){
 
         roles.trackingAdmin.allowRoute = true;
+        roles.tracking.allowRoute = true;
 
     }else if(path.indexOf("users") > -1){
         

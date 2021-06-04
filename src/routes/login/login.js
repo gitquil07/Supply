@@ -1,15 +1,16 @@
 import styled from "styled-components";
-import { CustomInput } from "../../components/Inputs/CustomInput";
-import { useFormData } from "../../hooks";
+import { CustomInput } from "components/Inputs/CustomInput";
+import { useFormData } from "hooks";
 import { useMutation } from "@apollo/client";
 import { TOKEN_AUTH } from "./gql";
-import { onResponseComplete } from "../../utils/functions";
+import { onResponseComplete } from "utils/functions";
 import { useHistory } from "react-router-dom";
 import { NotificationManager } from "react-notifications";
-import LoginPageBg from "../../assets/loginPage-bg.jpg";
-import { getValueOfProperty } from "../../utils/functions";
+import LoginPageBg from "assets/loginPage-bg.jpg";
+import { getValueOfProperty } from "utils/functions";
 import { useContext } from "react";
-import { UserContext } from "../../context/UserContext";
+import { UserContext } from "context/UserContext";
+import { id } from "date-fns/locale";
 
 
 const Login = () => {
@@ -27,12 +28,18 @@ const Login = () => {
 
     const [ auth ] = useMutation(TOKEN_AUTH, {
         onCompleted: data => {
-            onResponseComplete(data, "auth", "", () => {
-                const token = getValueOfProperty(data, "role");
-                      localStorage.setItem("supply_token", token);
-                      history.push("/");
-                      setRole(token);
-            })
+            if(data.account.tokenAuth.ok){
+                const role = data.account.tokenAuth.query.account.users.edges[0].node.role.name;
+                localStorage.setItem("supply_role", role);
+                onResponseComplete(data, "auth", "", () => {
+                    console.log("here")
+                    const token = getValueOfProperty(data, "token");
+                    localStorage.setItem("supply_token", token);
+                    history.push("/");
+                })
+                setRole(role);
+
+            }
         },
         onError: error => {
             NotificationManager.error(error.message)
@@ -45,6 +52,7 @@ const Login = () => {
 
         auth({
             variables: {
+                username: state.username,
                 input: state
             }
         })
