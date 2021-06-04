@@ -18,33 +18,36 @@ export const generateColumns = () => {
             options: options
         },
         {
-            name: "factory",
-            label: "Название Завода",
-            options: options
-        },
-        {
-            name: "vendor",
-            label: "Поставщик",
-            options: options
-        },
-        {
             name: "status",
-            label: "Статус",
-            options: options
-        },
-        {
-            name: "invoice_proforma",
-            label: "Инвойс",
-            options: options
-        },
-        {
-            name: "invoice_date",
-            label: "Дата инвойса",
+            label: "Статус заказа",
             options: options
         },
         {
             name: "created_at",
             label: "Дата создания заказа",
+            options: options
+        },
+        {
+            name: "vendorFactory",
+            label: "Завод / Поставщик",
+            options: {
+                ...options,
+                customBodyRender: value => {
+                    return <>{value.factory} / {value.vendor}</>
+                }
+            }
+        },
+        {
+            name: "invoice_proforma",
+            label: "Инвойс",
+            options: {
+                ...options,
+                customBodyRender: value => "№"+value
+            }
+        },
+        {
+            name: "invoice_date",
+            label: "Дата инвойса",
             options: options
         },
     ];

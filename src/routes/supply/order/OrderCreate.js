@@ -93,6 +93,8 @@ const OrderCreate = ({ match }) => {
         invoiceProforma: ""
     });
 
+    const [productionDayCounts, setProductionDayCounts] = useState({});
+
     useEffect(() => {
         getFactories();
     }, []);
@@ -176,6 +178,7 @@ const OrderCreate = ({ match }) => {
 
         if (dataType === "material") {
             const materialsCopy = materials.slice(0);
+            setProductionDayCounts({...productionDayCounts, [index] : event.target.value});
             materialsCopy[index] = { ...materialsCopy[index], [event.target.name]: event.target.value }
             setMaterials(materialsCopy);
         }
@@ -209,18 +212,33 @@ const OrderCreate = ({ match }) => {
 
 
         if (files.uploaded.length > 0) {
-            uploadFile('/api-file/documents/', files)
+            uploadFile('/api-file/documents/', files.uploaded)
                 .then(resp => console.log(resp))
                 .catch(err => console.log(err));
         }
     }
 
-    const getAproximateDeliveryDate = (date) => {
-        const dateInMilliseconds = (typeof date == "number")? date : new Date(date).getTime(),
-              twoDays = 1000 * 60 * 60 * 24 * 2,
-              aproximateDeliveryDate = moment(new Date(dateInMilliseconds + twoDays).toISOString()).format("DD.MM.YYYY");
-        return aproximateDeliveryDate;     
+    const getAproximateDeliveryDate = (date, productionDayCounts) => {
+
+        console.log("date", date);
+        console.log("productionDayCounts", productionDayCounts);
+        
+        if(productionDayCounts){
+            const dateInMilliseconds = (typeof date == "number")? date : new Date(date).getTime(),
+                  daysInMilliseconds = 1000 * 60 * 60 * 24 * productionDayCounts,
+                  aproximateDeliveryDate = moment(new Date(dateInMilliseconds + daysInMilliseconds).toISOString()).format("DD.MM.YYYY");
+            return aproximateDeliveryDate;     
+        }
+
+        return moment(new Date(date).toISOString()).format("DD.MM.YYYY");
         // return  new Day(dateInMilliseconds + twoDays);
+    }
+
+    const remove = (index) => {
+        const tmp = {...productionDayCounts};
+        delete tmp[index];
+        setProductionDayCounts(tmp);
+        removeTempl(index)
     }
 
 
@@ -287,12 +305,12 @@ const OrderCreate = ({ match }) => {
                                             })
                                         }
                                     </CustomSelector>
-                                    <CustomPicker name="dateOfDelivery" label="Дата доставки" date={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
-                                    <CustomInput label="Примерная дата прибытия" value={getAproximateDeliveryDate(e.dateOfDelivery)} disabled /> 
+                                    <CustomPicker name="dateOfDelivery" label="Дата отгрузки" date={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
+                                    <CustomInput label="Примерная дата прибытия" value={getAproximateDeliveryDate(e.dateOfDelivery, productionDayCounts[index])} disabled /> 
                                     <CustomInput name="count" label="Кол-во" value={e.count}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomInput name="price" label="Цена" value={e.price}  stateChange={(e) => handleDataChange(e, "material", index)} />
                                 </InputsWrapper>
-                                <RemoveIcon clicked={() => removeTempl(index)} />
+                                <RemoveIcon clicked={() => remove(index)} />
                             </AddibleInputWithTrash>
                         })
                     }

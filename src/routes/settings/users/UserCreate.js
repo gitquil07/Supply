@@ -65,6 +65,7 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
             setState({
                 firstName: entry.firstName,
                 lastName: entry.lastName,
+                username: entry.username,
                 password: "",
                 role: entry.role,
                 email: entry.email,
@@ -74,6 +75,8 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
 
         }
     }, [entry?.id]);
+
+    console.log("state", state);
 
 
     const [getFactories, getFactoriesRes] = useLazyQuery(GET_FACTORIES),

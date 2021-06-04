@@ -13,11 +13,12 @@ query getApplication($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $a
           transportType {
             name
           }
+          transportCount
+          deliveryCondition
           trackingUser {
             firstName
             lastName
           }
-          typeOfPackaging
           createdAt
           count
         }
@@ -31,7 +32,6 @@ query getApplication($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $a
     }
   }
 }
-
 `;
 
 export const GET_ORDERS = gql`

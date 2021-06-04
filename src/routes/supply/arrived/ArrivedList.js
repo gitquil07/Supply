@@ -73,8 +73,8 @@ const ApplicationList = () => {
         return {
             ...node,
             id: node.id,
-            transportType: node.transportType.name,
-            typeOfPackaging: node.typeOfPackaging + " / " + node.count,
+            transportTypeCountDelivery: { transportType: node.transportType.name, transportCount: node.transportCount, deliveryCondition: node.deliveryCondition },
+            typeOfPackaging: node.typeOfPackaging,
             trackingUser: node.trackingUser.firstName + " " + node.trackingUser.lastName
         }
     }), [applications]);

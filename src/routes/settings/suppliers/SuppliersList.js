@@ -43,16 +43,9 @@ const SuppliersList = ({ match }) => {
     const list = vendors.map(({ node }) => {
         return {
             id: node.id,
-            name: node.name,
-            companyName: node.companyName,
-            sapCountry: node.sapCountry?.name,
-            sapAccountGroup: node.sapAccountGroup?.name,
-            phoneNumber: node.phoneNumber,
-            street: node.street,
-            house: node.house,
-            postcode: node.postcode,
-            sapOkonkh: node.sapOkonkh,
-            sapCity: node.sapCity
+            contactPersonVendorPhone: { contactPerson: node.name, vendor: node.companyName,  phoneNumber: node.phoneNumber },
+            address: { country: node.sapCountry?.name, street: node.street, house: node.house },
+            createdAt: node.createdAt
         }
     });
 

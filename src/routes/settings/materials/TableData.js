@@ -1,5 +1,6 @@
 import moment from "moment";
-import { Row } from "components/Row";
+import { Row, RowGray } from "components/Row";
+import { setHeading } from "utils/functions";
 
 export const generateColumns = (url) => {
 
@@ -12,22 +13,6 @@ export const generateColumns = (url) => {
             }
         },
         {
-            name: "vendorFactoryProduct",
-            label: "Завод / Поставщик ",
-            options: {
-                filter: true,
-                sort: false,
-                customBodyRender: (value) => {
-                    return (
-                        <>
-                            {value.factory} / {value.vendor}
-                            <Row>{ value.product }</Row>
-                        </>
-                    )
-                }
-            }
-        },
-        {
             name: "createdAt",
             label: "Дата создания:",
             options: {
@@ -37,16 +22,34 @@ export const generateColumns = (url) => {
             }
         },
         {
-            name: "deliveryAndProductionDayCount",
-            label: "Дни изгот. / Дни дост.",
+            name: "vendorFactoryProduct",
+            label: "Завод / Поставщик\nПродукт",
             options: {
                 filter: true,
                 sort: false,
+                customHeadRender: setHeading,
+                customBodyRender: (value) => {
+                    return (
+                        <>
+                            <Row>{value.factory} / {value.vendor}</Row>
+                            <RowGray>{ value.product }</RowGray>
+                        </>
+                    )
+                }
+            }
+        },
+        {
+            name: "deliveryAndProductionDayCount",
+            label: "Дни изгот. / Дни дост.\nЦена / Ед.Изм.",
+            options: {
+                filter: true,
+                sort: false,
+                customHeadRender: setHeading,
                 customBodyRender: (value) => {
                     return(
                         <>
-                            {value.deliveryDayCount} дн. / {value.productionDayCount} дн.
-                            <Row>{value.price} / {value.measure}</Row>
+                            <Row>{value.deliveryDayCount} дн. / {value.productionDayCount} дн.</Row>
+                            <RowGray>{value.price} / {value.measure}</RowGray>
                         </>
                     );
                 }

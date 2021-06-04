@@ -136,6 +136,7 @@ query getOrder($id: ID!){
           node{
             vendorProduct{
               pk
+              productionDayCount
               product{
                 name
               }

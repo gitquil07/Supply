@@ -5,6 +5,7 @@ import { NotificationManager } from "react-notifications";
 import { TableRow } from '@material-ui/core';
 import { TableCell } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
+import { Row, RowGray } from "components/Row";
 
 
 export const TimeParser = (time) => moment(time).format('YYYY-MM-DD');
@@ -193,6 +194,18 @@ export const CustomRowGeneratorForModal = (openDialog) => {
             );
         }
     }
+};
+
+export const setHeading = columnMeta => {
+    const parts = columnMeta.label.split("\n");
+    return (
+        <th className="MuiTableCell-root MuiTableCell-head" scope="col" data-colindex={columnMeta.index}>
+            <div>
+                <Row>{parts[0]}</Row>
+                <RowGray>{parts[1]}</RowGray>
+            </div>
+        </th>
+    );
 };
 
 export const downloadFile = (url) => {

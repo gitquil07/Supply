@@ -5,15 +5,14 @@ import Supply from "./supply";
 import Tracking from "./tracking";
 import StockBalance from "./stockBalance";
 import Plan from "./plan";
+import { Home } from "Home";
 
 console.log("Plan", Plan);
 
 const Routes = () => {
     return (
         <Switch>
-            <Route path="/" exact>
-                saas
-            </Route>
+            <Route path="/" component={Home} exact />
             <Route path="/tracking" component={Tracking} />
             <Route path="/supply" component={Supply} />
             <Route path="/customs" component={Customs} />

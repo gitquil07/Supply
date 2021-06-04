@@ -17,13 +17,13 @@ const App = () => {
 
   return (
     <>
-      <NotificationContainer/>
+      <NotificationContainer />
       <UserContext.Provider value={{
         role,
         setRole
       }}>
         {
-          token?  <ProtectedPages /> : <Auth />
+          token ? <ProtectedPages /> : <Auth />
         }
       </UserContext.Provider>
     </>

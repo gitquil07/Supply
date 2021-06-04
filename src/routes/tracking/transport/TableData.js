@@ -1,5 +1,6 @@
-import { Row } from "components/Row";
+import { Row, RowGray } from "components/Row";
 import moment from "moment";
+import { setHeading } from "utils/functions";
 
 export const generateColumns = () => {
     return [
@@ -21,17 +22,20 @@ export const generateColumns = () => {
         },
         {
             name: "vendor",
-            label: "Транспортировщик",
+            label: "Транспортировщик\nНомер транспорта",
             options: {
                 filter: true,
                 sort: false,
+                customHeadRender: setHeading,
                 customBodyRender: (value) => {
                     return (
                         <>
                             <Row>
                                 <b>{value.vendor}</b>
                             </Row>
-                            {value.trNumber}
+                            <RowGray>
+                                {value.trNumber}
+                            </RowGray>
                         </>
                     )
                 }
@@ -39,15 +43,16 @@ export const generateColumns = () => {
         },
         {
             name: "amount",
-            label: "Сумма",
+            label: "Сумма\nНетто / Брутто",
             options: {
                 filter: true,
                 sort: false,
+                customHeadRender: setHeading,
                 customBodyRender: value => {
                     return (
                         <>
-                            {value.amount} {value.currency}
-                            <Row>{value.netto} кг / {value.brutto} кг</Row>
+                            <Row>{value.amount} {value.currency}</Row>
+                            <RowGray>{value.netto} кг / {value.brutto} кг</RowGray>
                         </>
                     );
                 }

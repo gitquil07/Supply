@@ -50,17 +50,20 @@ const UsersList = () => {
                 id: node.id,
                 firstName: node.firstName,
                 lastName: node.lastName,
-                username: node.username,
                 phoneNumber: node.phoneNumber,
+                fioNumber: { firstName: node.firstName, lastName: node.lastName, phoneNumber: node.phoneNumber },
+                username: node.username,
                 role: node.role?.displayName,
                 email: node?.email,
                 password: node?.password,
-                factories: (typeof node.pk === "object") ? node.pk : [node.pk]
+                factories: node.factories?.edges.map(({node}) => node.name),
+                createdAt: node.createdAt
             }
         });
     }, [users]);
 
     const user = list?.find(user => user.id === id);
+    console.log("user", user);
 
     const editEntry = (id) => {
         setId(id);
