@@ -3,7 +3,7 @@ import Doc from "../../assets/icons/file.svg";
 import Remove from "../../assets/icons/deleteFile.svg";
 import { downloadFile } from "../../utils/functions";
 
-export const DragFile = ({ receivedFile, fetchedFiles, uploadedFiles, removeClicked }) => {
+export const DragFile = ({ receivedFile, fetchedFiles, uploadedFiles, removeClicked, loading }) => {
     return (
         <Wrapper>
             <Form>
@@ -20,10 +20,20 @@ export const DragFile = ({ receivedFile, fetchedFiles, uploadedFiles, removeClic
 
                 {uploadedFiles?.map((e, i) => <FileElement key={i}>
                     <img src={Doc} alt="doc" />
-                    {e.name}
-                    <img src={Remove} alt="remove" id="remove" onClick={() => removeClicked(i)} />
+                    {e.file_name}
+                    <img src={Remove} alt="remove" id="remove" onClick={() => removeClicked(e.file_id)} />
                 </FileElement>
                 )}
+
+                {loading ?
+                    <FileElement>
+                        <Loading>
+                            Загрузка
+                        </Loading>
+                    </FileElement>
+                    :
+                    ""
+                }
             </FilesList>
         </Wrapper>
     )
@@ -96,4 +106,26 @@ export const FileElement = styled.div`
     #remove {
         cursor: pointer;
     }
+`;
+
+const Loading = styled.div`
+    padding: 0 13px 0 10px;
+
+    :after {
+        content: '.';
+        animation: dots 1s steps(5, end) infinite;
+    }
+
+    @keyframes dots {
+        20% {
+            color: rgba(0,0,0,0);
+            text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);}
+        40% {
+            color: white;
+            text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);}
+        60% {
+            text-shadow: .25em 0 0 white, .5em 0 0 rgba(0,0,0,0);}
+        100% {
+            text-shadow: .25em 0 0 white, .5em 0 0 white;}
+        }
 `;
