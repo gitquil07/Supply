@@ -67,6 +67,7 @@ const OrderCreate = ({ match }) => {
         fetched: [],
         uploaded: []
     });
+    const [loading, setLoading] = useState(false);
 
 
     const templ = {
@@ -178,7 +179,7 @@ const OrderCreate = ({ match }) => {
 
         if (dataType === "material") {
             const materialsCopy = materials.slice(0);
-            setProductionDayCounts({...productionDayCounts, [index] : event.target.value});
+            setProductionDayCounts({ ...productionDayCounts, [index]: event.target.value });
             materialsCopy[index] = { ...materialsCopy[index], [event.target.name]: event.target.value }
             setMaterials(materialsCopy);
         }
@@ -209,25 +210,18 @@ const OrderCreate = ({ match }) => {
         }
 
         pk ? submitData(orderRequestBody, pk) : submitData(exceptKey(orderRequestBody, ["status"]));
-
-
-        if (files.uploaded.length > 0) {
-            uploadFile('/api-file/documents/', files.uploaded)
-                .then(resp => console.log(resp))
-                .catch(err => console.log(err));
-        }
     }
 
     const getAproximateDeliveryDate = (date, productionDayCounts) => {
 
         console.log("date", date);
         console.log("productionDayCounts", productionDayCounts);
-        
-        if(productionDayCounts){
-            const dateInMilliseconds = (typeof date == "number")? date : new Date(date).getTime(),
-                  daysInMilliseconds = 1000 * 60 * 60 * 24 * productionDayCounts,
-                  aproximateDeliveryDate = moment(new Date(dateInMilliseconds + daysInMilliseconds).toISOString()).format("DD.MM.YYYY");
-            return aproximateDeliveryDate;     
+
+        if (productionDayCounts) {
+            const dateInMilliseconds = (typeof date == "number") ? date : new Date(date).getTime(),
+                daysInMilliseconds = 1000 * 60 * 60 * 24 * productionDayCounts,
+                aproximateDeliveryDate = moment(new Date(dateInMilliseconds + daysInMilliseconds).toISOString()).format("DD.MM.YYYY");
+            return aproximateDeliveryDate;
         }
 
         return moment(new Date(date).toISOString()).format("DD.MM.YYYY");
@@ -235,14 +229,21 @@ const OrderCreate = ({ match }) => {
     }
 
     const remove = (index) => {
-        const tmp = {...productionDayCounts};
+        const tmp = { ...productionDayCounts };
         delete tmp[index];
         setProductionDayCounts(tmp);
         removeTempl(index)
     }
 
 
-    console.log(files)
+    const sendFileToServer = (file) => {
+        setLoading(true);
+
+        uploadFile('/api-file/documents/', file).then(res => {
+            setFiles({ ...files, uploaded: [...files.uploaded, { file_id: res.data[0].id, file_name: file.name }] })
+            setLoading(false);
+        }).catch(err => console.log(err));
+    }
 
 
     return (
@@ -285,8 +286,9 @@ const OrderCreate = ({ match }) => {
                     <DragFile
                         fetchedFiles={files.fetched}
                         uploadedFiles={files.uploaded}
-                        receivedFile={(file) => setFiles({ ...files, uploaded: [...files.uploaded, file] })}
-                        removeClicked={(index) => setFiles({ ...files, uploaded: files.uploaded.filter((e, i) => i !== index) })}
+                        receivedFile={(file) => sendFileToServer(file)}
+                        removeClicked={(id) => setFiles({ ...files, uploaded: files.uploaded.filter((e) => e.file_id !== id) })}
+                        loading={loading}
                     />
 
                     <Header>
@@ -305,10 +307,10 @@ const OrderCreate = ({ match }) => {
                                             })
                                         }
                                     </CustomSelector>
-                                    <CustomPicker name="dateOfDelivery" label="Дата отгрузки" date={e.dateOfDelivery}  stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
-                                    <CustomInput label="Примерная дата прибытия" value={getAproximateDeliveryDate(e.dateOfDelivery, productionDayCounts[index])} disabled /> 
-                                    <CustomInput name="count" label="Кол-во" value={e.count}  stateChange={(e) => handleDataChange(e, "material", index)} />
-                                    <CustomInput name="price" label="Цена" value={e.price}  stateChange={(e) => handleDataChange(e, "material", index)} />
+                                    <CustomPicker name="dateOfDelivery" label="Дата отгрузки" date={e.dateOfDelivery} stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
+                                    <CustomInput label="Примерная дата прибытия" value={getAproximateDeliveryDate(e.dateOfDelivery, productionDayCounts[index])} disabled />
+                                    <CustomInput name="count" label="Кол-во" value={e.count} stateChange={(e) => handleDataChange(e, "material", index)} />
+                                    <CustomInput name="price" label="Цена" value={e.price} stateChange={(e) => handleDataChange(e, "material", index)} />
                                 </InputsWrapper>
                                 <RemoveIcon clicked={() => remove(index)} />
                             </AddibleInputWithTrash>

@@ -218,15 +218,15 @@ export const downloadFile = (url) => {
 export const toCamelCase = (word) => {
     let trWord = word.toLowerCase();
 
-    if(trWord.indexOf("_") > -1){
+    if (trWord.indexOf("_") > -1) {
         const parts = trWord.split("_");
         let i = 0;
-        for(let part of parts){
-            if(i > 0) trWord += part[0].toUpperCase() + part.slice(1);
+        for (let part of parts) {
+            if (i > 0) trWord += part[0].toUpperCase() + part.slice(1);
             else trWord = part;
             i++;
         }
     }
 
     return trWord;
-}
+} 
