@@ -146,7 +146,7 @@ const TrackingTransportCreate = ({ match }) => {
         }),
         ApplicationFiles = applicationInfo?.files?.edges;
 
-    console.log("applicationInfo", applicationInfo)
+    console.log("applicationInfo", applicationInfo) 
 
     const [updateTracking] = useMutation(UPDATE_TRACKING, {
         onCompleted: () => {
@@ -337,24 +337,24 @@ const TrackingTransportCreate = ({ match }) => {
                         invoiceList.length ? <>
                             <Title size="18">Инвойсы</Title>
                             {
-                                invoiceList.map((invoice, idx) => 
+                                invoiceList.map((invoice, idx) =>
                                     <CustomizableInputs t="1fr 1fr 1fr 1fr">
                                         <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
                                         <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
                                             {
-                                                invoiceStatuses.map(invoiceStatus => 
-                                                    <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status == invoiceStatus.value}>{invoiceStatus.label}</MenuItem>    
-                                                    )
-                                                }
+                                                invoiceStatuses.map(invoiceStatus =>
+                                                    <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status == invoiceStatus.value}>{invoiceStatus.label}</MenuItem>
+                                                )
+                                            }
                                         </CustomSelector>
                                         <CustomSelector name="destination" label="место оплаты" stateChaneg={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination}>
                                             {
                                                 destinationOptions.map(destination =>
                                                     <MenuItem key={destination.value} value={destination.value} selected={destination.value == invoice.destination} >{destination.label}</MenuItem>
-                                                    )
-                                                }
+                                                )
+                                            }
                                         </CustomSelector>
-                                        <CustomInput label="Относительный вес" value={invoice.relativeWeight} stateChange={() => {}} disabled={true} />
+                                        <CustomInput label="Относительный вес" value={invoice.relativeWeight} stateChange={() => { }} disabled={true} />
                                         {/* <CustomInput name="destination" label="место назначения" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination} /> */}
                                     </CustomizableInputs>
 
@@ -499,15 +499,15 @@ const TrackingTransportCreate = ({ match }) => {
                                 Количество мест
                             </h4>
                             <span>
-                                { applicationInfo?.packageOnPallet.slice(0, applicationInfo?.packageOnPallet.indexOf("."))  }
+                                {applicationInfo?.packageOnPallet.slice(0, applicationInfo?.packageOnPallet.indexOf("."))}
                             </span>
                         </Item>
                     </List>
 
                     <FilesList>
                         {ApplicationFiles?.map(({ node }, i) =>
-                            <FileElement key={i} onClick={() => downloadFile(node.file)}>
-                                {node.name}
+                            <FileElement key={i} style={{ cursor: "pointer" }} onClick={() => downloadFile(node.file)}>
+                                {node.file.split("/")[1]}
                             </FileElement>)}
                     </FilesList>
 
