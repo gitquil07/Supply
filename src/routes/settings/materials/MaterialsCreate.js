@@ -52,6 +52,9 @@ const SuppliersCreate = ({ match }) => {
           [getVendorProductHistory, vendorProductHistoryRes] = useLazyQuery(GET_VENDOR_PRODUCT_HISTORY);
 
 
+          console.log("vendorProductRes", vendorProductRes.data);
+
+
     // const factories = getList(factoriesRes?.data) || [],
     //       vendorFactories = getList(vendorFactoriesRes?.data) || [],
     //       products = getList(productsRes?.data) || [],
@@ -113,8 +116,8 @@ const SuppliersCreate = ({ match }) => {
             setState({
                 ...exceptKey(vendor, ["pk", "__typename", "id", "vendorFactory"]),
                 product: vendor?.product.pk,
-                vendorFactory: vendor?.vendorFactory.pk,
-                factory: vendor?.vendorFactory.factory.pk
+                vendorFactory: vendor?.vendorFactory.vendor.name,
+                factory: vendor?.vendorFactory.factory.name
             });
         }
     }, [vendorProductRes?.data?.vendor.vendorProduct]);
@@ -160,7 +163,8 @@ const SuppliersCreate = ({ match }) => {
                 <p>Информация о материале</p>
                 <AddibleInput>
                     {
-                        pk? <CustomInput label="Завод" value={factories.find(({node}) => node.pk == state.factory)?.node?.name} disabled /> : 
+                        // pk? <CustomInput label="Завод" value={factories.find(({node}) => node.pk == state.factory)?.node?.name} disabled /> : 
+                        pk? <CustomInput label="Завод" value={state.factory} disabled /> : 
                         <CustomSelector name="factory" value={state.factory} stateChange={e => handleChange({fElem: e})} label="Завод">
                             {
                                 factories?.map(({node}) => {
@@ -171,7 +175,8 @@ const SuppliersCreate = ({ match }) => {
                         </CustomSelector>
                     }
                     {
-                        pk? <CustomInput label="Поставщик" value={vendorFactories.find(({node}) => node.pk == state.vendorFactory)?.node?.vendor?.name} disabled /> : 
+                        // pk? <CustomInput label="Поставщик" value={vendorFactories.find(({node}) => node.pk == state.vendorFactory)?.node?.vendor?.name} disabled /> : 
+                        pk? <CustomInput label="Поставщик" value={state.vendorFactory} disabled /> : 
                         <CustomSelector name="vendorFactory" value={state.vendorFactory} stateChange={e => handleChange({fElem: e})} label="Поставщик">
                             {
                                 vendorFactories?.map(({node}) => {
