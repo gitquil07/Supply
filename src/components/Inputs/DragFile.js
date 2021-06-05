@@ -2,8 +2,10 @@ import styled from "styled-components";
 import Doc from "../../assets/icons/file.svg";
 import Remove from "../../assets/icons/deleteFile.svg";
 import { downloadFile } from "../../utils/functions";
+import { Loading } from "../LoadingIndicator";
 
 export const DragFile = ({ receivedFile, fetchedFiles, uploadedFiles, removeClicked, loading }) => {
+    console.log(fetchedFiles)
     return (
         <Wrapper>
             <Form>
@@ -13,9 +15,9 @@ export const DragFile = ({ receivedFile, fetchedFiles, uploadedFiles, removeClic
             </Form>
             <FilesList>
                 {fetchedFiles?.map((e, i) =>
-                    <FileElement key={i} onClick={() => downloadFile(e.file)}>
+                    <FileElement style={{cursor: "pointer"}} key={i} onClick={() => console.log(e.file)}>
                         <img src={Doc} alt="doc" />
-                        {e.file_name}
+                        {e.file.split("/")[1]}
                     </FileElement>)}
 
                 {uploadedFiles?.map((e, i) => <FileElement key={i}>
@@ -108,24 +110,24 @@ export const FileElement = styled.div`
     }
 `;
 
-const Loading = styled.div`
-    padding: 0 13px 0 10px;
+// const Loading = styled.div`
+//     padding: 0 13px 0 10px;
 
-    :after {
-        content: '.';
-        animation: dots 1s steps(5, end) infinite;
-    }
+//     :after {
+//         content: '.';
+//         animation: dots 1s steps(5, end) infinite;
+//     }
 
-    @keyframes dots {
-        20% {
-            color: rgba(0,0,0,0);
-            text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);}
-        40% {
-            color: white;
-            text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);}
-        60% {
-            text-shadow: .25em 0 0 white, .5em 0 0 rgba(0,0,0,0);}
-        100% {
-            text-shadow: .25em 0 0 white, .5em 0 0 white;}
-        }
-`;
+//     @keyframes dots {
+//         20% {
+//             color: rgba(0,0,0,0);
+//             text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);}
+//         40% {
+//             color: white;
+//             text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);}
+//         60% {
+//             text-shadow: .25em 0 0 white, .5em 0 0 rgba(0,0,0,0);}
+//         100% {
+//             text-shadow: .25em 0 0 white, .5em 0 0 white;}
+//         }
+// `;

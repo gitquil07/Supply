@@ -7,6 +7,7 @@ import { generalReportColorSchema } from "utils/static";
 import { goToNewLine } from "utils/functions";
 import { useTitle } from "hooks"
 import Helmet from "react-helmet";
+import { Loading } from "components/LoadingIndicator";
 
 const allowedHeadersToRepeat = [ 
     "Остаток на начало\nмесяца ",
@@ -42,6 +43,13 @@ const WithBadge = (str) => {
     )
 }
 
+const BlurBackground = ({children}) => {
+    return (
+        <BluredBg className="fade">
+            {children}
+        </BluredBg>
+    );
+}
 
 const TestTable2 = () => {
 
@@ -50,6 +58,9 @@ const TestTable2 = () => {
     const [getReport, reportRes] = useLazyQuery(GET_TABLE_BODY),
           tableData = getValueOfProperty(reportRes?.data, "body") || [],
           columns = getValueOfProperty(reportRes?.data, "columns") || [];
+
+    const { loading } = reportRes;
+    // const loading = true;
 
     useEffect(() => {
         getReport();
@@ -63,6 +74,11 @@ const TestTable2 = () => {
         <>
         <Helmet title={title} />
             <Table border="1px">
+                {
+                        loading && <BlurBackground>
+                            <Loading />
+                        </BlurBackground>
+                }
                 <thead>
                     {
                         columns.map((row, rowIdx) => {
@@ -220,6 +236,44 @@ const TestTable2 = () => {
 
 export default TestTable2;
 
+const BluredBg = styled.div`
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    position:absolute;
+    top:0;
+    left:0;
+    opacity:1;
+
+    background-color: rgba(0, 0, 0, 0.4);
+    color:#fff;
+    backdrop-filter: blur(10px);
+    transition: opacity 1s linear;
+    transition: display 1.1s linear;
+
+    &.fade{
+        animation-name: fade;
+        animation-duration: .6s;
+        animation-fill-mode: forwards;
+    }
+
+    @keyframes fade{
+        0%{
+            display:flex;
+            opacity:1;
+        }
+        80%{
+            opacity:0;
+        }
+        100%{
+            display:none;
+        }
+    }
+`;
+
 const Table = styled.table`
     width: 100%;
     height: calc(100vh - 90px);
@@ -229,6 +283,7 @@ const Table = styled.table`
     overflow: auto;  
     display: block;
     border-radius: 10px;
+    position:relative;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.30);
 
     .reddest{

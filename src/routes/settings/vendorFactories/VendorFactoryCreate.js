@@ -1,25 +1,26 @@
 import {  useEffect, useMemo } from "react";
-import { CustomSelector } from "../../../components/Inputs/CustomSelector";
-import CustomPicker from "../../../components/Inputs/DatePicker";
-import { Form } from "../../../components/Form";
-import { Footer } from "../../../components/Footer";
-import { Button } from "../../../components/Buttons";
-import { AddibleInput } from "../../../components/Flex";
+import { CustomSelector } from "components/Inputs/CustomSelector";
+import CustomPicker from "components/Inputs/DatePicker";
+import { Form } from "components/Form";
+import { Footer } from "components/Footer";
+import { Button } from "components/Buttons";
+import { AddibleInput } from "components/Flex";
 import { Helmet } from "react-helmet";
 import { MenuItem } from "@material-ui/core";
 
-import { useTitle } from "../../../hooks";
+import { useTitle } from "hooks";
 import { useLazyQuery } from "@apollo/client";
-import { exceptKey } from "../../../utils/functions";
+import { exceptKey } from "utils/functions";
 import { GET_FACTORIES, GET_VENDORS, GET_VENDOR_FACTORY, CREATE_VENDOR_FACTORY, UPDATE_VENDOR_FACTORY, GET_VENDOR_DEPENDENT_PRODUCT } from "./gql";
-import { paymentOptions } from "../../../utils/static";
+import { paymentOptions } from "utils/static";
 import { useHistory } from "react-router-dom";
 import Switch from "@material-ui/core/Switch";
 import moment from "moment";
 import styled from "styled-components";
+import { CustomInput } from "components/Inputs/CustomInput";
 
-import { useCustomMutation, useFormData } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { useCustomMutation, useFormData } from "hooks";
+import { getList } from "utils/functions";
 
 const initialState = {
     vendor: "",
@@ -155,20 +156,27 @@ const FactoryCreate = ({ match }) => {
             <Form>
                 <p>Информация о поставщике</p>
                 <AddibleInput>
-                    <CustomSelector label="Завод" name="factory" disabled={id? true : false} stateChange={e => handleChange({fElem: e})} value={state.factory}>
-                        {
-                            factories?.map(factory => 
-                                <MenuItem value={factory.pk} selected={factory.pk === state.factory}>{factory.name}</MenuItem>    
-                            )
-                        }
-                    </CustomSelector>
-                    <CustomSelector label="Поставщик" name="vendor" disabled={id? true : false} stateChange={e => handleChange({fElem: e})} value={state.vendor}>
-                        {
-                            vendors?.map(vendor => 
-                                <MenuItem value={vendor.pk} selected={vendor.pk === state.vendor}>{vendor.name}</MenuItem>    
-                            )
-                        }
-                    </CustomSelector>
+                    {
+                        pk? <CustomInput label="Завод" disabled value={state.factory} /> : 
+                            <CustomSelector label="Завод" name="factory" stateChange={e => handleChange({fElem: e})} value={state.factory}>
+                                {
+                                    factories?.map(factory => 
+                                        <MenuItem value={factory.pk} selected={factory.pk === state.factory}>{factory.name}</MenuItem>    
+                                    )
+                                }
+                            </CustomSelector>
+                    }
+                    {
+                        pk? <CustomInput label="Поставщик" disabled value={state.vendor} /> :
+                        <CustomSelector label="Поставщик" name="vendor" stateChange={e => handleChange({fElem: e})} value={state.vendor}>
+                            {
+                                vendors?.map(vendor => 
+                                    <MenuItem value={vendor.pk} selected={vendor.pk === state.vendor}>{vendor.name}</MenuItem>    
+                                )
+                            }
+                        </CustomSelector>
+
+                    }
                     <CustomSelector label="Условия оплаты" name="paymentCondition" stateChange={e => handleChange({fElem: e})} value={state.paymentCondition}>
                         {
                             paymentOptions?.map(option => 

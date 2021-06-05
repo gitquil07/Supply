@@ -68,6 +68,7 @@ const ApplicationCreate = ({ match }) => {
         fetched: [],
         uploaded: []
     });
+    const [loading, setLoading] = useState(false);
 
     const [getTrackingUserTypes, trackingUserTypesRes] = useLazyQuery(GET_TRACKING_USER),
         [getTransportTypes, transportTypesRes] = useLazyQuery(GET_TRANSPORT_TYPES),
@@ -254,13 +255,13 @@ const ApplicationCreate = ({ match }) => {
         requestBody.applicationItems = !pk ? items.map(item => exceptKey(item, "invoice")) : items;
         // console.log("requestBody", requestBody);
 
-        console.log("requestBody", requestBody);
-
-        if (files.uploaded.length > 0) {
-            uploadFile('/api-file/documents/', files.uploaded)
-                .then(resp => console.log(resp))
-                .catch(err => console.log(err));
-        }
+       
+        requestBody.files = files.uploaded.map(file => file.file_id);
+        // if (files.uploaded.length > 0) {
+        //     uploadFile('/api-file/documents/', files.uploaded)
+        //         .then(resp => console.log(resp))
+        //         .catch(err => console.log(err));
+        // }
 
         if (pk) {
             submitData(exceptKey(requestBody, ["orders"]), pk)
@@ -274,6 +275,15 @@ const ApplicationCreate = ({ match }) => {
         delete tmp[idx];
         setRequiredCounts(tmp);
         removeTempl(idx);
+    }
+
+    const sendFileToServer = (file) => {
+        setLoading(true);
+
+        uploadFile('/api-file/documents/', file).then(res => {
+            setFiles({ ...files, uploaded: [...files.uploaded, { file_id: res.data[0].id, file_name: file.name }] })
+            setLoading(false);
+        }).catch(err => console.log(err));
     }
 
     useEffect(() => {
@@ -362,13 +372,11 @@ const ApplicationCreate = ({ match }) => {
                 <DragFile
                     fetchedFiles={files.fetched}
                     uploadedFiles={files.uploaded}
-                    receivedFile={(file) => setFiles({ ...files, uploaded: [...files.uploaded, file] })}
-                    removeClicked={(index) => setFiles({ ...files, uploaded: files.uploaded.filter((e, i) => i !== index) })}
+                    receivedFile={(file) => sendFileToServer(file)}
+                    removeClicked={(id) => setFiles({ ...files, uploaded: files.uploaded.filter((e) => e.file_id !== id) })}
+                    loading={loading}
                 />
 
-                {
-                    requiredCounts[0]
-                }
 
                 <Header>
                     <Title>Материал</Title>

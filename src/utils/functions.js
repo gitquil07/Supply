@@ -211,7 +211,7 @@ export const setHeading = columnMeta => {
 export const downloadFile = (url) => {
     const a = window.document.createElement("a");
     a.href = url;
-    a.setAttribute("download");
+    a.setAttribute("download", true);
     a.click();
 }
 

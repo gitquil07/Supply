@@ -124,10 +124,9 @@ const OrderCreate = ({ match }) => {
                 ...files,
                 fetched: [
                     ...files.fetched,
-                    orderRes?.data?.order?.order?.files?.edges.map(({ node }) => {
+                    ...orderRes?.data?.order?.order?.files?.edges.map(({ node }) => {
                         return {
                             file: node.file,
-                            file_name: node.file_name
                         }
                     })
                 ]
@@ -150,6 +149,11 @@ const OrderCreate = ({ match }) => {
     useEffect(() => {
         console.log("factory", factory);
     }, [factory]);
+
+
+    useEffect(() => {
+        console.log("files", files);
+    }, [files]);
 
     useEffect(() => {
 
@@ -205,6 +209,7 @@ const OrderCreate = ({ match }) => {
         orderRequestBody.invoiceDate = moment(orderRequestBody.invoiceDate).format("YYYY-MM-DD");
 
         orderRequestBody.orderItems = formedOrderMaterials;
+        orderRequestBody.files = files.uploaded.map(file => file.file_id);
         if (pk) {
             orderRequestBody.status = statuses.find(status => status.value == orderRequestBody.status).label;
         }

@@ -37,8 +37,11 @@ const initialState = {
 
 export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection }) => {
 
-    const [loading, setLoading] = useState(false),
-          [files, setFiles] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [files, setFiles] = useState({
+        fetched: [],
+        uploaded: []
+    });
 
     const [getTemplate, templateRes] = useLazyQuery(query),
           [getFactories, factoriesRes] = useLazyQuery(GET_FACTORIES_LIST);
@@ -76,61 +79,98 @@ export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection
         getTemplate();
     }, []);
 
-    const handleFileUpload = () => {
-        if(files.length > 0){
-            setLoading(true);
-            uploadFile("/api-file/documents/", files)
-            .then(res => {
-                setLoading(false);
-                if(res.status === 200){
-                    res.data.forEach(d => {
-                        NotificationManager.success(d.file_name + " загружен");
-                    });
+    // const handleFileUpload = () => {
+    //     if(files.length > 0){
+    //         setLoading(true);
+    //         uploadFile("/api-file/documents/", files)
+    //         .then(res => {
+    //             setLoading(false);
+    //             if(res.status === 200){
+    //                 res.data.forEach(d => {
+    //                     NotificationManager.success(d.file_name + " загружен");
+    //                 });
 
-                    if(withoutSelection){
-                        submitData({
-                            file: res.data[0].id
-                        })
-                    }else{
-                        setState({
-                            ...state,
-                            file: res.data[0].id
-                        });
-                    }
-                }
-            })
-            .catch(err => NotificationManager.error("Ошибка"));
-        }else{
-            NotificationManager.error("Выберите файлы");
-        }
-    }
+    //                 if(withoutSelection){
+    //                     submitData({
+    //                         file: res.data[0].id
+    //                     })
+    //                 }else{
+    //                     setState({
+    //                         ...state,
+    //                         file: res.data[0].id
+    //                     });
+    //                 }
+    //             }
+    //         })
+    //         .catch(err => NotificationManager.error("Ошибка"));
+    //     }else{
+    //         NotificationManager.error("Выберите файлы");
+    //     }
+    // }
 
 
     const handleCreate = () => {
-        submitData(state);
+
+        console.log("files", files);
+
+        // console.log("sad", {
+        //     ...state,
+        //     file: files.uploaded[0].file_id
+        // });
+
+        submitData({
+            ...state,
+            file: files.uploaded[0].file_id
+        });
+
     }
+
+    
+    const sendFileToServer = (file) => {
+        setLoading(true);
+
+        
+        uploadFile('/api-file/documents/', file).then(res => {
+            console.log("sadasd");
+            setLoading(false);
+            setFiles({ ...files, uploaded: [...files.uploaded, { file_id: res.data[0].id, file_name: file.name }] })
+        }).catch(err => console.log(err));
+    }
+
+    useEffect(() => {
+        console.log("loading", loading);
+    }, [loading]);
+
+    useEffect(() => {
+        console.log("state", state);
+    }, [state]);
 
     return (
         <Wrapper>
                 {
                     !withoutSelection && <form>
                                             <CustomizableInput t="2fr 1fr">
-                                                    <CustomSelector name="factory" value={state.factory} label="Завод" stateChange={e => handleChange({fElem: e})} required>
+                                                    <CustomSelector name="factory" value={state.factory} label="Выберите завод" stateChange={e => handleChange({fElem: e})} required>
                                                         {
                                                             factories.map(({node}) => 
                                                                 <MenuItem key={node.pk} value={node.pk}>{node.name}</MenuItem>
                                                             )
                                                         }   
                                                     </CustomSelector>
-                                                    <CutomButton name="сохранить" color="" clickHandler={handleCreate} />
+                                                    {/* <CutomButton name="сохранить" color="" clickHandler={handleCreate} /> */}
                                             </CustomizableInput>
                                         </form> 
                 }
-            <StyledLink href={downloadTemplateLink} onClick={() => false}>скачать шаблон</StyledLink>
+            <StyledLink href={downloadTemplateLink} onClick={() => false} download >скачать шаблон</StyledLink>
             <Title>Загузите файлы</Title>
-            <DragFile receivedFile={(file) => setFiles([...files, file])} files={files} removeClicked={(index) => setFiles(files.filter((e, i) => i !== index))} />
+            <DragFile 
+                loading={loading}
+                receivedFile={(file) => sendFileToServer(file)} 
+                uploadedFiles={files.uploaded} 
+                removeClicked={(id) => setFiles({ ...files, uploaded: files.uploaded.filter((e) => e.file_id !== id) })}
+             />
             <p>
-                <Button onClick={handleFileUpload} disabled={loading}>{loading? <WhiteCircularProgress /> : "загрузить"}</Button>
+                <Button onClick={handleCreate}>{"сохранить"}</Button>
             </p>
         </Wrapper>
     );

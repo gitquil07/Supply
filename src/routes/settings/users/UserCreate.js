@@ -12,7 +12,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { useCustomMutation, useFormData } from "hooks";
-import { getList } from "utils/functions";
+import { exceptKey, getList } from "utils/functions";
 import { ValidationMessage } from "components/ValidationMessage";
 import { object, string, number, array } from "yup";
 
@@ -50,7 +50,17 @@ const userSchema = object({
     factories: array().of(number().required("Выберите завод"))
 });
 
-const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOfElemsPerPage, paginatingState}) => {
+const userSchemaEdit = object({
+    firstName: string().typeError("Поле должно быть строкой").required("Поле 'Имя' обязательно к заполнению"),
+    lastName: string().typeError("Поле должно быть строкой").required("Поле 'Фамилия' обязательно к заполнению"),
+    password: string().typeError("Поле должно быть строкой").required("Поле 'Пароль' обязательно к заполнению"),
+    role: string().typeError("Поле должно быть строкой").required("Поле 'Роль' обязательно к заполнению"),
+    email: string().email("Некорректный email адрес").required("Поле 'Email' обязательно к заполнению"),
+    phoneNumber: string().required("Поле 'Номер телефона' обязательно к заполнению"),
+    factories: array().of(number().required("Выберите завод"))
+});
+
+const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getEntries, amountOfElemsPerPage, paginatingState}) => {
 
     let pk = entry?.pk;
 
@@ -115,6 +125,18 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
         "Пользователь",
         () => {
             handleClose();
+            if(paginatingState.nextPage === true && paginatingState.prevPage === false){
+                console.log("inside condition first");
+                setIsFirstPage(true);
+                getEntries({
+                    variables: {
+                        first: amountOfElemsPerPage,
+                        last: null,
+                        after: null,
+                        before: null
+                    }
+                });
+            }
             if((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)){
                 setMutateState("createOrUpdate");
                 getEntries({
@@ -127,9 +149,31 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
                 });
             }
         },
-        userSchema,
+        pk? userSchemaEdit : userSchema,
         fieldsMessages
     );
+
+    const beforeSubmit = () => {
+
+        let tmp = { ...state };
+        console.log("entry", entry);
+
+    
+        const factoriesPks = [];
+        state.factories.forEach(factory => {
+            console.log("factory", factory);
+            const pk = factories.find(({node}) => node.name == factory)?.node?.pk;
+            factoriesPks.push(pk);
+        });
+
+        tmp.factories = factoriesPks;
+
+        tmp.role = roles.find(({node}) => node.displayName == tmp.role)?.node?.pk;
+
+        tmp = pk? exceptKey(tmp, ["username"]) : tmp;
+    
+        pk? handleSubmit(tmp, pk) : handleSubmit(tmp);
+    }
 
     return (
         <SmallDialog title={pk? "Изменить пользователя" : "Создать пользователя"} isOpen={isOpen} close={handleClose}>
@@ -167,7 +211,7 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
             <CustomSelector label="Роль" name="role" stateChange={(e) => handleChange({fElem: e})} value={state.role}>
                 {
                     roles?.map(({node}) => {
-                        return <MenuItem value={node?.pk} selected={node.displayName == state.role}>{node?.displayName}</MenuItem>
+                        return <MenuItem value={node?.displayName} selected={node.displayName == state.role}>{node?.displayName}</MenuItem>
                     })
                 }
             </CustomSelector>
@@ -183,18 +227,18 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
                 renderValue={selected => {
                     let arr = [];
 
-                    selected.forEach(pk => {
-                        arr.push(factories.find(({node}) => node.pk == pk)?.node?.name)
-                    })
+                    // selected.forEach(pk => {
+                    //     arr.push(factories.find(({node}) => node.pk == pk)?.node?.name)
+                    // })
 
-                    return arr.join(", "); 
+                    return selected.join(", "); 
                 }}
                 >
                 {
                     factories?.map(({node}) => (
-                        <MenuItem value={node.pk}>
+                        <MenuItem value={node.name}>
                             <ListItemIcon>
-                                <Checkbox checked={state.factories.indexOf(node.pk) > -1}/>
+                                <Checkbox checked={state.factories.indexOf(node.name) > -1}/>
                             </ListItemIcon>
                             <ListItemText primary={node.name} />
                         </MenuItem>
@@ -204,7 +248,7 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
             {
                 validationMessages.factories.length? <ValidationMessage>{validationMessages.factories}</ValidationMessage> : null
             }
-            <Button name={pk? "Сохранить" :  "Добавить пользователя"} color="#5762B2" clickHandler={() => pk? handleSubmit(state, pk) : handleSubmit(state)}/>
+            <Button name={pk? "Сохранить" :  "Добавить пользователя"} color="#5762B2" clickHandler={beforeSubmit}/>
         </SmallDialog>
     )
 }

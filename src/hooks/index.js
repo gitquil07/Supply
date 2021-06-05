@@ -93,9 +93,10 @@ export const usePagination = ({type, qraphQlQuery, singular, plural}) => {
     });
 
     const [mutate, setMutateState] = useState("");
+    const [isFirstPage, setIsFirstPage] = useState("");
 
     const [ getDataPagination, dataPaginationRes] = useLazyQuery(qraphQlQuery, {
-        fetchPolicy: "network-only"
+        fetchPolicy: "no-cache"
     });
 
     const [amountOfElemsPerPage, setAmountOfElemsPerPage] = useState(30);
@@ -223,7 +224,7 @@ export const usePagination = ({type, qraphQlQuery, singular, plural}) => {
         console.log("hasNextPage", hasNextPage);
         console.log("hasPreviousPage", hasPreviousPage);
         console.log("mutate", mutate);
-        if(mutate === "createOrUpdate" && ((hasNextPage === true && hasPreviousPage === false) || (hasNextPage === false && hasPreviousPage === false && paginatingState.direction === "forward"))){
+        if(mutate === "create" && ((hasNextPage === true && hasPreviousPage === false) || (hasNextPage === false && hasPreviousPage === false && paginatingState.direction === "forward"))){
             console.log("inside condition");
             setPaginatingState({
                 ...paginatingState,
@@ -237,7 +238,21 @@ export const usePagination = ({type, qraphQlQuery, singular, plural}) => {
             setMutateState("");
         }
         console.log("useEffect 4 finished------------------------------------------------");
-    }, [mutate, hasNextPage, hasPreviousPage])
+    }, [mutate, hasNextPage, hasPreviousPage]);
+
+    useEffect(() => {
+        if(isFirstPage && hasNextPage && hasPreviousPage == false){
+            setPaginatingState({
+                ...paginatingState,
+                direction: null,
+                nextPage: null,
+                prevPage: null,
+                first: null,
+                last: null
+            });
+            setIsFirstPage(false);
+        }
+    }, [isFirstPage, hasNextPage, hasPreviousPage]);
 
     
     return {
@@ -249,6 +264,7 @@ export const usePagination = ({type, qraphQlQuery, singular, plural}) => {
         getDataPagination,
         setMutateState,
         setAmountOfElemsPerPage,
+        setIsFirstPage,
         dataPaginationRes,
 
 

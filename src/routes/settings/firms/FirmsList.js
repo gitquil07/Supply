@@ -24,7 +24,8 @@ const FirmsList = () => {
         getDataPagination,
         setAmountOfElemsPerPage,
         dataPaginationRes,
-        setMutateState
+        setMutateState,
+        setIsFirstPage
     } = usePagination({
         qraphQlQuery: PAGINATE_FIRMS,
         singular: "factory",
@@ -70,7 +71,7 @@ const FirmsList = () => {
     return (
         <>
             <FirmCreate isOpen={createOpen} close={close} entry={firm}
-                setMutateState={setMutateState} getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
+                setMutateState={setMutateState} getEntries={getDataPagination} setIsFirstPage={setIsFirstPage} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
             <Helmet title={title} />
             <FlexForHeader>
                 <ButtonWithIcon name="Создать фирму" clicked={() => setCreateOpen(true)} url="#" />

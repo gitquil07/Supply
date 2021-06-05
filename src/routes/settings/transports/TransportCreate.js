@@ -26,7 +26,7 @@ const transportSchema = object({
 });
 
 
-const TransportCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOfElemsPerPage, paginatingState }) => {
+const TransportCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getEntries, amountOfElemsPerPage, paginatingState }) => {
 
     let pk = entry?.pk;
 
@@ -64,6 +64,18 @@ const TransportCreate = ({ isOpen, close, entry, setMutateState, getEntries, amo
         "Тип транспорта",
         () => {
             handleClose();
+            if((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)){
+                console.log("inside condition first");
+                setIsFirstPage(true);
+                getEntries({
+                    variables: {
+                        first: amountOfElemsPerPage,
+                        last: null,
+                        after: null,
+                        before: null
+                    }
+                });
+            }
             if((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)){
                 setMutateState("create");
                 getEntries({

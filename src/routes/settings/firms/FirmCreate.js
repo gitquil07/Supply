@@ -25,7 +25,7 @@ const firmSchema = object({
     inn: string().typeError("Введите число").required("Поле 'ИНН' обязательно к заполнению")
 });
 
-const FirmCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOfElemsPerPage, paginatingState }) => {
+const FirmCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getEntries, amountOfElemsPerPage, paginatingState }) => {
 
     let pk = entry?.pk;
 
@@ -57,6 +57,18 @@ const FirmCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
         "Тип транспорта",
         () => {
             handleClose();
+            if((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)){
+                console.log("inside condition first");
+                setIsFirstPage(true);
+                getEntries({
+                    variables: {
+                        first: amountOfElemsPerPage,
+                        last: null,
+                        after: null,
+                        before: null
+                    }
+                });
+            }
             if((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)){
                 setMutateState("create");
                 getEntries({

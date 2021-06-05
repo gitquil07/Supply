@@ -24,7 +24,8 @@ const TransportList = () => {
         getDataPagination,
         setAmountOfElemsPerPage,
         dataPaginationRes,
-        setMutateState
+        setMutateState,
+        setIsFirstPage
     } = usePagination({
         qraphQlQuery: PAGINATE_TRANSPORT_TYPES,
         singular: "transport",
@@ -71,7 +72,7 @@ const TransportList = () => {
     return (
         <>
             <TransportCreate isOpen={createOpen} close={close} entry={transportType}
-                setMutateState={setMutateState} getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
+                setMutateState={setMutateState} getEntries={getDataPagination} setIsFirstPage={setIsFirstPage} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
             <Helmet title={title} />
             <FlexForHeader>
                 <ButtonWithIcon name="Создать тип транспорта" clicked={() => setCreateOpen(true)} url="#" />

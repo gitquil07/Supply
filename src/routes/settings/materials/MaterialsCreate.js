@@ -160,7 +160,7 @@ const SuppliersCreate = ({ match }) => {
                 <p>Информация о материале</p>
                 <AddibleInput>
                     {
-                        pk? <CustomInput label="Завод" name="factory" value={factories.find(({node}) => node.pk == state.factory)?.node?.name} disabled /> : 
+                        pk? <CustomInput label="Завод" value={factories.find(({node}) => node.pk == state.factory)?.node?.name} disabled /> : 
                         <CustomSelector name="factory" value={state.factory} stateChange={e => handleChange({fElem: e})} label="Завод">
                             {
                                 factories?.map(({node}) => {
@@ -171,7 +171,7 @@ const SuppliersCreate = ({ match }) => {
                         </CustomSelector>
                     }
                     {
-                        pk? <CustomInput label="Поставщик" name="vendorFactory" value={vendorFactories.find(({node}) => node.pk == state.vendorFactory)?.node?.vendor?.name} disabled /> : 
+                        pk? <CustomInput label="Поставщик" value={vendorFactories.find(({node}) => node.pk == state.vendorFactory)?.node?.vendor?.name} disabled /> : 
                         <CustomSelector name="vendorFactory" value={state.vendorFactory} stateChange={e => handleChange({fElem: e})} label="Поставщик">
                             {
                                 vendorFactories?.map(({node}) => {

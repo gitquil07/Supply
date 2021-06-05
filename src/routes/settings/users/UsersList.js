@@ -26,7 +26,8 @@ const UsersList = () => {
         getDataPagination,
         setAmountOfElemsPerPage,
         dataPaginationRes,
-        setMutateState
+        setMutateState,
+        setIsFirstPage
     } = usePagination({
         qraphQlQuery: PAGINATE_USERS,
         singular: "account",
@@ -48,6 +49,7 @@ const UsersList = () => {
         return users.map(({ node }) => {
             return {
                 id: node.id,
+                pk: node.pk,
                 firstName: node.firstName,
                 lastName: node.lastName,
                 phoneNumber: node.phoneNumber,
@@ -80,7 +82,7 @@ const UsersList = () => {
     return (
         <>
             <UserCreate isOpen={createOpen} close={close} entry={user}
-                setMutateState={setMutateState} getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
+                setMutateState={setMutateState} getEntries={getDataPagination} setIsFirstPage={setIsFirstPage} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
             <Helmet title={title} />
             <FlexForHeader>
                 <ButtonWithIcon name="Создать пользователя" clicked={() => setCreateOpen(true)} url="#" />

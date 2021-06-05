@@ -160,7 +160,11 @@ export const vendorSapSearchCriteria = [
 export const paymentOptions = [
     {
         value: "Наличные",
-        label: "cash"
+        label: "Наличные"
+    },
+    {
+        value: "Безналичные",
+        label: "Безналичные"
     }
 ];
 
@@ -355,7 +359,7 @@ export const currencyOptions = [
     },
     {
         label: "¥",
-        value: "CNA"
+        value: "CNY"
     },
     {
         label: "€",
