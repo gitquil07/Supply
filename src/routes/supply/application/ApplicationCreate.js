@@ -170,23 +170,27 @@ const ApplicationCreate = ({ match }) => {
         if (application !== undefined) {
             setState({
                 ...exceptKey(application, ["applicationItems", "__typename", "pk"]),
-                trackingUser: application.trackingUser.pk,
+                trackingUser: application.trackingUser.pk, 
                 transportType: application.transportType.pk,
                 orders: application.orders.edges.map(({ node }) => node.pk)
             });
 
-            setFiles({
-                ...files,
-                fetched: [
-                    ...files.fetched,
-                    applicationRes?.data?.application?.application?.files?.edges.map(({ node }) => {
-                        return {
-                            file: node.file,
-                            file_name: node.file_name
-                        }
-                    })
-                ]
-            })
+            console.log("applicationRes?.data?.application?.application?.files?.edges", applicationRes?.data?.application?.application?.files?.edges)
+
+            if(applicationRes?.data?.application?.application?.files?.edges.length > 0){
+                setFiles({
+                    ...files,
+                    fetched: [
+                        ...files.fetched,
+                        ...applicationRes?.data?.application?.application?.files?.edges.map(({ node }) => {
+                            return {
+                                file: node.file,
+                                fileUrl: node.fileUrl
+                            }
+                        })
+                    ]
+                })
+            }
 
             const items = getList(application.applicationItems).map(({ node }) => ({
                 ...exceptKey(node, ["__typename"]),
@@ -196,7 +200,7 @@ const ApplicationCreate = ({ match }) => {
             }))
             setItems(items);
         }
-    }, [applicationRes?.data?.application]);
+    }, [applicationRes?.data?.application?.application?.pk]);
 
     useEffect(() => {
         getOrderItems({

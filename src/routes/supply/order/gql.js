@@ -124,7 +124,8 @@ query getOrder($id: ID!){
       files {
         edges {
           node {
-            file
+            file,
+            fileUrl
           }
         }
       }

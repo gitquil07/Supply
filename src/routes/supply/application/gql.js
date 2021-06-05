@@ -83,7 +83,8 @@ query getApplication($id : ID!){
       files {
         edges {
           node {
-            file
+            file,
+            fileUrl
           }
         }
       }

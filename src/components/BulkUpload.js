@@ -161,7 +161,7 @@ export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection
                                             </CustomizableInput>
                                         </form> 
                 }
-            <StyledLink href={downloadTemplateLink} onClick={() => false} download >скачать шаблон</StyledLink>
+            <StyledLink href={downloadTemplateLink} download >скачать шаблон</StyledLink>
             <Title>Загузите файлы</Title>
             <DragFile 
                 loading={loading}

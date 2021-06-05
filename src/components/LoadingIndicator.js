@@ -5,7 +5,7 @@ export const Loading = styled.div`
 
     :after {
         content: '.';
-        font-size:100px;
+        font-size: ${({fs}) => fs+"px"};
         animation: dots 1s steps(5, end) infinite;
     }
 

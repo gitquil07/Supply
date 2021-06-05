@@ -35,7 +35,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import moment from "moment";
 import { useMutation } from "@apollo/client";
 import { NotificationManager } from "react-notifications";
-import { FileElement, FilesList } from "components/Inputs/DragFile";
+import { FileElementA, FilesList } from "components/Inputs/DragFile";
 import { indexOf } from "ramda";
 
 
@@ -506,9 +506,9 @@ const TrackingTransportCreate = ({ match }) => {
 
                     <FilesList>
                         {ApplicationFiles?.map(({ node }, i) =>
-                            <FileElement key={i} style={{ cursor: "pointer" }} onClick={() => downloadFile(node.file)}>
+                            <FileElementA key={i} href={node.fileUrl} download>
                                 {node.file.split("/")[1]}
-                            </FileElement>)}
+                            </FileElementA>)}
                     </FilesList>
 
                     <Title size="18">Материалы</Title>

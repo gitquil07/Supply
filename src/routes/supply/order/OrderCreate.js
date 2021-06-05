@@ -50,7 +50,9 @@ const OrderCreate = ({ match }) => {
     );
 
     const [getFactories, factoriesRes] = useLazyQuery(GET_FACTORIES_LIST),
-        [getOrder, orderRes] = useLazyQuery(GET_ORDER),
+        [getOrder, orderRes] = useLazyQuery(GET_ORDER, {
+            fetchPolicy: "no-cache"
+        }),
         [getVendorFactories, vendorFactoriesResp] = useLazyQuery(GET_VENDOR_FACTORIES),
         [getVendorFactoryProducts, vendorFactoryProductsResp] = useLazyQuery(GET_VENDOR_FACTORY_PRODUCTS);
 
@@ -120,6 +122,7 @@ const OrderCreate = ({ match }) => {
                 invoiceDate: order.invoiceDate,
                 invoiceProforma: order.invoiceProforma
             });
+            if(orderRes?.data?.order?.order?.files?.edges.length > 0) {
             setFiles({
                 ...files,
                 fetched: [
@@ -127,10 +130,12 @@ const OrderCreate = ({ match }) => {
                     ...orderRes?.data?.order?.order?.files?.edges.map(({ node }) => {
                         return {
                             file: node.file,
+                            fileUrl: node.fileUrl
                         }
                     })
                 ]
             })
+            }
             const orderItems = order.orderItems.edges.map(({ node }) => {
                 return {
                     ...exceptKey(node, "__typename"),
