@@ -41,6 +41,7 @@ query getTrackingInfo($id: ID!) {
       brutto
       note
       status
+      trDate
       amount
       currency
       locations{

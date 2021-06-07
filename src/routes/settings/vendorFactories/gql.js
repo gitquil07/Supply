@@ -8,7 +8,7 @@ query getVendorFactories($first: Int, $last: Int, $after: String, $before: Strin
         node{
           id
           vendor{
-            name
+            companyName
           }
           factory{
             name

@@ -76,7 +76,7 @@ const TestTable2 = () => {
             <Table border="1px">
                 {
                         loading && <BlurBackground>
-                            <Loading />
+                            <Loading fs="100" />
                         </BlurBackground>
                 }
                 <thead>

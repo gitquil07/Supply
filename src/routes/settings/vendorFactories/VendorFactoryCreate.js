@@ -61,8 +61,12 @@ const FactoryCreate = ({ match }) => {
         handleChange
     } = useFormData(initialState);
 
-    const [getFactories, factoriesRes] = useLazyQuery(GET_FACTORIES),
-          [getVendors, vendorsRes] = useLazyQuery(GET_VENDORS),
+    const [getFactories, factoriesRes] = useLazyQuery(GET_FACTORIES, {
+        fetchPolicy: "no-cache"
+    }),
+          [getVendors, vendorsRes] = useLazyQuery(GET_VENDORS, {
+              fetchPolicy: "no-cache"
+          }),
           [getVendorFactory, vendorFactoryRes] = useLazyQuery(GET_VENDOR_FACTORY, {
               fetchPolicy: "no-cache"
           }),
@@ -150,8 +154,8 @@ const FactoryCreate = ({ match }) => {
             const obj = exceptKey(vendorFactory, ["__typename", "pk"]);
             setState({
                 ...obj,
-                factory: obj.factory?.pk,
-                vendor: obj.vendor?.pk
+                factory: pk? obj?.factory?.name : obj.factory?.pk,
+                vendor: pk? obj?.vendor?.companyName : obj.vendor?.pk
             });
 
         }

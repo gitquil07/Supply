@@ -225,6 +225,7 @@ const OrderCreate = ({ match }) => {
 
         orderRequestBody.orderItems = formedOrderMaterials;
         orderRequestBody.files = files.uploaded.map(file => file.file_id);
+        orderRequestBody.status = statuses.find(status => status.value == orderRequestBody.status)?.label;
 
         // pk ? submitData(orderRequestBody, pk) : submitData(exceptKey(orderRequestBody, ["status"]));
         pk ? handleSubmit(orderRequestBody, pk) : handleSubmit(exceptKey(orderRequestBody, ["status"]));
@@ -297,8 +298,7 @@ const OrderCreate = ({ match }) => {
                                 {
                                     statuses.map(status => {
                                         return <MenuItem key={status.value} value={status.value} selected={orderData.status === status.value}>{status.label}</MenuItem>
-                                    }
-                                    )
+                                    })
                                 }
                             </CustomSelector>
                         }

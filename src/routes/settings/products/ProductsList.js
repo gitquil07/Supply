@@ -3,13 +3,14 @@ import { useMemo } from "react";
 
 import { PAGINATE_PRODUCTS } from "./gql";
 import { generateColumns } from "./TableData";
-import { useTitle } from "../../../hooks";
-import { FlexForHeader } from "../../../components/Flex";
-import { Pagination } from "../../../components/Pagination";
-import { ButtonWithIcon } from "../../../components/Buttons";
-import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { usePagination } from "../../../hooks";
-import { CustomRowGenerator, getList } from "../../../utils/functions";
+import { useTitle } from "hooks";
+import { FlexForHeader } from "components/Flex";
+import { Pagination } from "components/Pagination";
+import { ButtonWithIcon } from "components/Buttons";
+import { CustomMUIDataTable } from "components/CustomMUIDataTable";
+import { usePagination } from "hooks";
+import { CustomRowGenerator, getList } from "utils/functions";
+import { measureOptions, packagingTypes } from "utils/static";
 
 const ProductsList = ({ match }) => {
 
@@ -44,13 +45,19 @@ const ProductsList = ({ match }) => {
     const products = getList(dataPaginationRes?.data) || [];
 
     const list = products.map(({ node }) => {
+
+        // console.log("measure packaging", node.typeOfPackaging);
+        // packagingTypes.map(type => {
+        //     console.log(type.value);
+        //     console.log("equality", type.valueEnglish == node.typeOfPackaging);
+        // });
         return {
             id: node.id,
             name: node.name,
             group: node.group?.name,
-            measure: node.measure,
+            measure: measureOptions.find(measure => measure.value == node.measure)?.label,
             codeTnved: node.codeTnved,
-            typeOfPackaging: node.typeOfPackaging
+            typeOfPackaging: packagingTypes.find(type => type.valueEnglish == node.typeOfPackaging)?.label
         }
     })
 

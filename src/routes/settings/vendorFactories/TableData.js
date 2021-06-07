@@ -46,7 +46,7 @@ export const generateColumns = () => {
                 filter: true,
                 sort: false,
                 customBodyRender: (value) => {
-                    return value ? "Активнвый" : "Не активный"
+                    return value ? "Активный" : "Неактивный"
                 }
             }
         },

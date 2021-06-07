@@ -16,14 +16,14 @@ export const generateColumns = (url) => {
                 sort: true
             }
         },
-        {
-            name: "group",
-            label: "Группа",
-            options: {
-                filter: true,
-                sort: true,
-            }
-        },
+        // {
+        //     name: "group",
+        //     label: "Группа",
+        //     options: {
+        //         filter: true,
+        //         sort: true,
+        //     }
+        // },
         {
             name: "measure",
             label: "Ед. измерения",

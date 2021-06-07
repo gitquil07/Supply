@@ -86,10 +86,9 @@ const SuppliersCreate = ({ match }) => {
           [getVendorProduct, vendorProductRes] = useLazyQuery(GET_VENDOR_PRODUCT, {
               fetchPolicy: "no-cache"
           }),
-          [getVendorProductHistory, vendorProductHistoryRes] = useLazyQuery(GET_VENDOR_PRODUCT_HISTORY);
-
-
-          console.log("vendorProductRes", vendorProductRes.data);
+          [getVendorProductHistory, vendorProductHistoryRes] = useLazyQuery(GET_VENDOR_PRODUCT_HISTORY, {
+              fetchPolicy: "no-cache"
+          });
 
 
     // const factories = getList(factoriesRes?.data) || [],
@@ -116,9 +115,9 @@ const SuppliersCreate = ({ match }) => {
           vendorProductHistories = useMemo(() => vendorProductHistoriesFull.map(({node}) => {
                     return {
                         ...exceptKey(node, ["vendorFactory", "__typename"]),
-                        factory: node.vendorFactory.factory.name,
-                        vendor: node.vendorFactory.vendor.name,
-                        product: node.product.name
+                        factory: node?.vendorFactory?.factory?.name,
+                        vendor: node?.vendorFactory?.vendor?.name,
+                        product: node?.product?.name
                     }
                 }), [vendorProductHistoriesFull]);
 
@@ -153,8 +152,8 @@ const SuppliersCreate = ({ match }) => {
             setState({
                 ...exceptKey(vendor, ["pk", "__typename", "id", "vendorFactory"]),
                 product: vendor?.product.pk,
-                vendorFactory: vendor?.vendorFactory.vendor.name,
-                factory: vendor?.vendorFactory.factory.name
+                vendorFactory: vendor?.vendorFactory?.vendor?.name,
+                factory: vendor?.vendorFactory?.factory?.name
             });
         }
     }, [vendorProductRes?.data?.vendor.vendorProduct]);
@@ -311,15 +310,15 @@ const SuppliersCreate = ({ match }) => {
                                     vendorProductHistories?.map(history => {
                                         return (
                                             <List>
-                                                <span>{history.factory}</span>
-                                                <span>{history.vendor}</span>
-                                                <span>{history.product.length > 25? history.product.slice(0, 25)+"..." : history.product}</span>
-                                                <span>{history.price}</span>
-                                                <span>{history.currency}</span>
-                                                <span>{history.productionDayCount}</span>
-                                                <span>{history.deliveryDayCount}</span>
-                                                <span>{moment(history.updatedAt).format("YYYY-MM-DD")}</span>
-                                                <span>{history.isActive? "Активный" : "Неактивный"}</span> 
+                                                <span>{history?.factory}</span>
+                                                <span>{history?.vendor}</span>
+                                                <span>{history?.product.length > 25? history?.product.slice(0, 25)+"..." : history?.product}</span>
+                                                <span>{history?.price}</span>
+                                                <span>{history?.currency}</span>
+                                                <span>{history?.productionDayCount}</span>
+                                                <span>{history?.deliveryDayCount}</span>
+                                                <span>{moment(history?.updatedAt).format("YYYY-MM-DD")}</span>
+                                                <span>{history?.isActive? "Активный" : "Неактивный"}</span> 
                                             </List>
                                         )
                                     })

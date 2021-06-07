@@ -230,3 +230,13 @@ export const toCamelCase = (word) => {
 
     return trWord;
 } 
+
+
+// export const summFormat = (sum) => {
+//     const steps = Math.floor(sum.length / 3);
+
+//     let formatedSum = "";
+
+//     for(let i = 0; i < sum.length; )
+
+// }
