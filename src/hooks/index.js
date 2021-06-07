@@ -242,6 +242,9 @@ export const usePagination = ({type, qraphQlQuery, singular, plural}) => {
 
     useEffect(() => {
         if(isFirstPage && hasNextPage && hasPreviousPage == false){
+            console.log("useEffect 5 called ---------------------------------------------------");
+            console.log("hasNextPage", hasNextPage);
+            console.log("hasPreviousPage", hasPreviousPage);
             setPaginatingState({
                 ...paginatingState,
                 direction: null,
@@ -390,6 +393,7 @@ export const useCustomMutation = ({graphQlQuery: {queryCreate, queryUpdate}}, en
             pk? submitData(val, pk, id) : submitData(val, id)
         })
         .catch(errObj => {
+            console.dir(errObj);
             const messages = {};
             for(let error of errObj.inner){
                 console.log(error);

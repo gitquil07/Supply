@@ -21,6 +21,25 @@ import { CustomInput } from "components/Inputs/CustomInput";
 
 import { useCustomMutation, useFormData } from "hooks";
 import { getList } from "utils/functions";
+import { ValidationMessage } from "components/ValidationMessage";
+import { object, string, number, date, boolean } from "yup";
+
+const paymentConditionEnum = [
+    "Наличные",
+    "Безналичные"
+]
+
+const VendorFactoryValidation = object().shape({
+    vendor: number().typeError("Значение для поля 'Поставщик' не выбрано"),
+    factory: number().typeError("Значение для поля 'Поставщик' не выбрано"),
+    paymentCondition: string().oneOf(paymentConditionEnum, "Недопустимое значение для поля 'Условия оплаты'"),
+})
+
+const fildsMessages = {
+    vendor: "",
+    factory: "",
+    paymentCondition: "",
+}
 
 const initialState = {
     vendor: "",
@@ -44,7 +63,9 @@ const FactoryCreate = ({ match }) => {
 
     const [getFactories, factoriesRes] = useLazyQuery(GET_FACTORIES),
           [getVendors, vendorsRes] = useLazyQuery(GET_VENDORS),
-          [getVendorFactory, vendorFactoryRes] = useLazyQuery(GET_VENDOR_FACTORY),
+          [getVendorFactory, vendorFactoryRes] = useLazyQuery(GET_VENDOR_FACTORY, {
+              fetchPolicy: "no-cache"
+          }),
           [getDependentMaterials, dependentMaterialsRes] = useLazyQuery(GET_VENDOR_DEPENDENT_PRODUCT);
 
     const factoriesFull = useMemo(() => getList(factoriesRes?.data), [factoriesRes?.data]) || [], 
@@ -72,7 +93,7 @@ const FactoryCreate = ({ match }) => {
     }), [dependentMaterialsRes?.data]);
 
 
-    const { submitData } = useCustomMutation({
+    const { submitData, handleSubmit, validationMessages } = useCustomMutation({
             graphQlQuery: {
                 queryCreate: CREATE_VENDOR_FACTORY,
                 queryUpdate: UPDATE_VENDOR_FACTORY
@@ -81,7 +102,9 @@ const FactoryCreate = ({ match }) => {
         "Поставщик",
         () => {
             history.push("/settings/vendor-factories");
-        }
+        },
+        VendorFactoryValidation,
+        fildsMessages
     );
 
 
@@ -139,11 +162,14 @@ const FactoryCreate = ({ match }) => {
         setState({...state, partnerStartDate: date});
     }
 
-    const handleSubmit = () => {
+    const beforeSubmit = () => {
 
         const data = {...state, partnerStartDate: moment(state.partnerStartDate).format("YYYY-MM-DD")};
 
-        pk? submitData(exceptKey(data, ["factory", "vendor"]), pk) : submitData(data);
+        console.log("data", data);
+
+        // pk? submitData(exceptKey(data, ["factory", "vendor"]), pk) : submitData(data);
+        pk? handleSubmit(exceptKey(data, ["factory", "vendor"]), pk) : handleSubmit(data);
 
     }
 
@@ -158,38 +184,55 @@ const FactoryCreate = ({ match }) => {
                 <AddibleInput>
                     {
                         pk? <CustomInput label="Завод" disabled value={state.factory} /> : 
-                            <CustomSelector label="Завод" name="factory" stateChange={e => handleChange({fElem: e})} value={state.factory}>
+                        <div>
+                            <CustomSelector label="Завод" name="factory" stateChange={e => handleChange({fElem: e})} value={state.factory} errorVal={validationMessages.factory.length? true : false}>
                                 {
                                     factories?.map(factory => 
                                         <MenuItem value={factory.pk} selected={factory.pk === state.factory}>{factory.name}</MenuItem>    
                                     )
                                 }
                             </CustomSelector>
+                            {
+                                validationMessages.factory.length? <ValidationMessage>{validationMessages.factory}</ValidationMessage> : null
+                            }
+                        </div>
                     }
                     {
                         pk? <CustomInput label="Поставщик" disabled value={state.vendor} /> :
-                        <CustomSelector label="Поставщик" name="vendor" stateChange={e => handleChange({fElem: e})} value={state.vendor}>
+                        <div>
+                            <CustomSelector label="Поставщик" name="vendor" stateChange={e => handleChange({fElem: e})} value={state.vendor} errorVal={validationMessages.vendor.length? true : false}>
+                                {
+                                    vendors?.map(vendor => 
+                                        <MenuItem value={vendor.pk} selected={vendor.pk === state.vendor}>{vendor.companyName}</MenuItem>    
+                                    )
+                                }
+                            </CustomSelector>
                             {
-                                vendors?.map(vendor => 
-                                    <MenuItem value={vendor.pk} selected={vendor.pk === state.vendor}>{vendor.name}</MenuItem>    
+                                validationMessages.vendor.length? <ValidationMessage>{validationMessages.vendor}</ValidationMessage> : null
+                            }
+                        </div>
+
+                    }
+                    <div>
+                        <CustomSelector label="Условия оплаты" name="paymentCondition" stateChange={e => handleChange({fElem: e})} value={state.paymentCondition} errorVal={validationMessages.paymentCondition.length? true : false}>
+                            {
+                                paymentOptions?.map(option => 
+                                    <MenuItem value={option.value}>{option.label}</MenuItem>    
                                 )
                             }
                         </CustomSelector>
-
-                    }
-                    <CustomSelector label="Условия оплаты" name="paymentCondition" stateChange={e => handleChange({fElem: e})} value={state.paymentCondition}>
                         {
-                            paymentOptions?.map(option => 
-                                <MenuItem value={option.value}>{option.label}</MenuItem>    
-                            )
+                            validationMessages.paymentCondition.length? <ValidationMessage>{validationMessages.paymentCondition}</ValidationMessage> : null
                         }
-                    </CustomSelector>
-                    <CustomPicker
-                        name="partnerStartDate"
-                        label="Начало сотрудничества"
-                        date={state.partnerStartDate}
-                        stateChange={date => handleDateChange(date)}
-                    />
+                    </div>
+                    <div>
+                        <CustomPicker
+                            name="partnerStartDate"
+                            label="Начало сотрудничества"
+                            date={state.partnerStartDate}
+                            stateChange={date => handleDateChange(date)}
+                        />
+                    </div>
                 </AddibleInput>
                 <label htmlFor="isActive">Активность : </label>
                 <Switch 
@@ -237,7 +280,7 @@ const FactoryCreate = ({ match }) => {
                     }
             </Form>
             <Footer justify="flex-end">
-                <Button name={pk? "сохранить" : "создать"} clickHandler={handleSubmit} />
+                <Button name={pk? "сохранить" : "создать"} clickHandler={beforeSubmit} />
             </Footer>
         </>
     );

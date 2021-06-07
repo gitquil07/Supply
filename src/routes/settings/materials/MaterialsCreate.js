@@ -22,6 +22,41 @@ import { exceptKey, getValueOfProperty } from "utils/functions";
 import { useCustomMutation, useFormData } from "hooks";
 import { getList } from "utils/functions";
 import moment from "moment";
+import { ValidationMessage } from "components/ValidationMessage";
+import { object, number, string, boolean } from "yup";
+
+
+const currencyEnum = currencyOptions.map(currency => currency.value);
+
+const MaterialsSchema = object().shape({
+    vendorFactory: number().typeError("Значение для поля 'Поставщик' не выбрано"),
+    product: number().typeError("Значение для поля 'Продукт' не выбрано"),
+    price: number()
+        .positive("Цена не можеть быть отрицательной")
+        .typeError("Поле 'Продукт' должно иметь число в качестве значения"),
+    deliveryDayCount: number()
+                    .positive("Введите положительно число")
+                    .integer("Введите целое число")
+                    .typeError("Поле 'Дни доставкм' должно иметь число в качестве значения"),
+    productionDayCount: number()
+                    .positive("Введите положительно число")
+                    .integer("Введите целое число")
+                    .typeError("Поле 'Срок изготовлеия' должно иметь число в качестве значения"),
+    isActive: boolean(),
+    currency: string()
+                    .oneOf(currencyEnum,  "Недопустимое значение поля 'Валюта'"),
+});
+
+const fieldsMessages = {
+    "factory": "",
+    "vendorFactory": "",
+    "product": "",
+    "price": "",
+    "deliveryDayCount": "",
+    "productionDayCount": "",
+    "isActive": "",
+    "currency": ""
+}
 
 const initialState = {
     "factory": "",
@@ -48,7 +83,9 @@ const SuppliersCreate = ({ match }) => {
     const [getFactories, factoriesRes] = useLazyQuery(GET_FACTORIES),
           [getVendorFactories, vendorFactoriesRes] = useLazyQuery(GET_VENDOR_FACTORIES),
           [getProducts, productsRes] = useLazyQuery(GET_PRODUCTS),
-          [getVendorProduct, vendorProductRes] = useLazyQuery(GET_VENDOR_PRODUCT),
+          [getVendorProduct, vendorProductRes] = useLazyQuery(GET_VENDOR_PRODUCT, {
+              fetchPolicy: "no-cache"
+          }),
           [getVendorProductHistory, vendorProductHistoryRes] = useLazyQuery(GET_VENDOR_PRODUCT_HISTORY);
 
 
@@ -132,7 +169,7 @@ const SuppliersCreate = ({ match }) => {
         }
     }, [state.factory])
 
-    const { submitData } = useCustomMutation({
+    const { submitData, handleSubmit, validationMessages } = useCustomMutation({
             graphQlQuery: {
                 queryCreate: CREATE_VENDOR_PRODUCT,
                 queryUpdate: UPDATE_VENDOR_PRODUCT
@@ -141,15 +178,19 @@ const SuppliersCreate = ({ match }) => {
         "База данных",
         () => {
             history.push("/settings/materials");
-        }
+        },
+        MaterialsSchema,
+        fieldsMessages
     );
 
-    const handleSubmit = () => {
+    const beforeSubmit = () => {
         const data = exceptKey(state, ["factory"]);
 
         console.log("pk", pk);
 
-        pk? submitData(exceptKey(data, ["vendorFactory", "product"]), pk) : submitData(data);
+
+        pk? handleSubmit(exceptKey(data, ["vendorFactory", "product"]), pk) : handleSubmit(data);
+        // pk? submitData(exceptKey(data, ["vendorFactory", "product"]), pk) : submitData(data);
     }
 
     // const factory = factories.find(({node}) => node.pk == state.factor)?.name,
@@ -163,8 +204,7 @@ const SuppliersCreate = ({ match }) => {
                 <p>Информация о материале</p>
                 <AddibleInput>
                     {
-                        // pk? <CustomInput label="Завод" value={factories.find(({node}) => node.pk == state.factory)?.node?.name} disabled /> : 
-                        pk? <CustomInput label="Завод" value={state.factory} disabled /> : 
+                        pk? <CustomInput label="Завод" value={state.factory} disabled /> :
                         <CustomSelector name="factory" value={state.factory} stateChange={e => handleChange({fElem: e})} label="Завод">
                             {
                                 factories?.map(({node}) => {
@@ -174,49 +214,83 @@ const SuppliersCreate = ({ match }) => {
                             }
                         </CustomSelector>
                     }
-                    {
-                        // pk? <CustomInput label="Поставщик" value={vendorFactories.find(({node}) => node.pk == state.vendorFactory)?.node?.vendor?.name} disabled /> : 
-                        pk? <CustomInput label="Поставщик" value={state.vendorFactory} disabled /> : 
-                        <CustomSelector name="vendorFactory" value={state.vendorFactory} stateChange={e => handleChange({fElem: e})} label="Поставщик">
-                            {
-                                vendorFactories?.map(({node}) => {
-                                        return <MenuItem value={node.pk} selected={node.pk === state.vendorFactory}>{node.vendor.name}</MenuItem>
-                                    }
-                                )
-                            }
-                        </CustomSelector>
-                    }
-                    {
-                        pk? <CustomInput label="Продукт" name="product" value={products.find(({node}) => node.pk == state.product)?.node?.name} disabled /> : 
-                        <CustomSelector disabled={id? true : false} name="product" value={state.product} stateChange={e => handleChange({fElem: e})} label="Продукт">
-                            {
-                                products?.map(({node}) => 
-                                    <MenuItem value={node.pk} selected={node.pk === state.product}>{node.name}</MenuItem>
-                                )
-                            }
-                        </CustomSelector>
-                    }
-                    <CustomSelector label="Валюта" name="currency" value={state.currency} stateChange={e => handleChange({fElem: e})}>
+                    <div>
                         {
-                            currencyOptions.map((currency) => 
-                                <MenuItem value={currency.value} selected={currency.value === state.currency}>{currency.label}</MenuItem> 
-                            )
+                            pk? <CustomInput label="Поставщик" value={state.vendorFactory} disabled /> : <>
+                                <CustomSelector name="vendorFactory" value={state.vendorFactory} stateChange={e => handleChange({fElem: e})} label="Поставщик" errorVal={validationMessages.vendorFactory.length > 0? true : false}>
+                                    {
+                                        vendorFactories?.map(({node}) => {
+                                                return <MenuItem value={node.pk} selected={node.pk === state.vendorFactory}>{node.vendor.name}</MenuItem>
+                                            }
+                                        )
+                                    }
+                                </CustomSelector>
+                                {
+                                    validationMessages.vendorFactory.length > 0? <ValidationMessage>{validationMessages.vendorFactory}</ValidationMessage> : null
+                                }
+                            </>
                         }
-                    </CustomSelector>
-                    <CustomNumber label="Цена" name="price" value={state.price} stateChange={e => handleChange({fElem: e})} />
-                    <CustomNumber label="Дни доставки" name="deliveryDayCount" value={state.deliveryDayCount} stateChange={e => handleChange({fElem: e})} />
-                    <CustomNumber label="Срок изготовления" name="productionDayCount" value={state.productionDayCount} stateChange={e => handleChange({fElem: e})}/>
-                    <p>
-                        <label htmlFor="isActive">Активность</label> 
-                        <Switch
-                            id="isActive"
-                            checked={state.isActive}
-                            name="isActive"
-                            onChange={e => handleChange({fElem: e, type: "choice"})}
-                        />
-                    </p>
+                    </div>
+                    <div>
+                        {
+                            pk? <CustomInput label="Продукт" name="product" value={products.find(({node}) => node.pk == state.product)?.node?.name} disabled /> : <>
+                                <CustomSelector disabled={id? true : false} name="product" value={state.product} stateChange={e => handleChange({fElem: e})} label="Продукт" errorVal={validationMessages.product.length > 0? true : false}>
+                                    {
+                                        products?.map(({node}) => 
+                                            <MenuItem value={node.pk} selected={node.pk === state.product}>{node.name}</MenuItem>
+                                        )
+                                    }
+                                </CustomSelector>
+                                {
+                                    validationMessages.product.length > 0? <ValidationMessage>{validationMessages.product}</ValidationMessage> : null
+                                }
+                            </>
+                        }
+                    </div>
+                    <div>
+                        <CustomSelector label="Валюта" name="currency" value={state.currency} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.currency.length > 0? true : false}>
+                            {
+                                currencyOptions.map((currency) => 
+                                    <MenuItem value={currency.value} selected={currency.value === state.currency}>{currency.label}</MenuItem> 
+                                )
+                            }
+                        </CustomSelector>
+                        {
+                            validationMessages.currency.length > 0? <ValidationMessage>{validationMessages.currency}</ValidationMessage> : null
+                        }
+                    </div>
+                    <div>
+                        <CustomNumber label="Цена" name="price" value={state.price} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.price.length > 0? true : false}/>
+                        {
+                            validationMessages.price.length > 0? <ValidationMessage>{validationMessages.price}</ValidationMessage> : null
+                        }
+                    </div>
+                    <div>
+                        <CustomNumber label="Дни доставки" name="deliveryDayCount" value={state.deliveryDayCount} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.deliveryDayCount.length > 0? true : false}/>
+                        {
+                            validationMessages.deliveryDayCount.length > 0? <ValidationMessage>{validationMessages.deliveryDayCount}</ValidationMessage> : null
+                        }
+                    </div>
+                    <div>
+                        <CustomNumber label="Срок изготовления" name="productionDayCount" value={state.productionDayCount} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.productionDayCount.length > 0? true : false}/>
+                        {
+                            validationMessages.productionDayCount.length > 0? <ValidationMessage>{validationMessages.productionDayCount}</ValidationMessage> : null
+                        }
+                    </div>
 
                 </AddibleInput>
+                <p>
+                    <label htmlFor="isActive">Активность</label> 
+                    <Switch
+                        id="isActive"
+                        checked={state.isActive}
+                        name="isActive"
+                        onChange={e => handleChange({fElem: e, type: "choice"})}
+                    />
+                    {
+                        validationMessages.isActive.length > 0? <ValidationMessage>{validationMessages.isActive}</ValidationMessage> : null
+                    }
+                </p>
                 {
                     id && <>
                         <p>История материала</p>
@@ -257,7 +331,7 @@ const SuppliersCreate = ({ match }) => {
             </Form>
             <Footer justify="flex-end">
                 {/* <span>Кол-во материалов: 6</span> */}
-                <Button name={pk? "Сохранить" : "Создать"} clickHandler={handleSubmit}/>
+                <Button name={pk? "Сохранить" : "Создать"} clickHandler={beforeSubmit}/>
             </Footer>
         </>
     )

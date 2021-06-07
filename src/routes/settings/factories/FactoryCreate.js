@@ -84,7 +84,7 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, g
         "Завод",
         () => {
             handleClose();
-            if(paginatingState.nextPage === true && paginatingState.prevPage === false){
+            if((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)){
                 console.log("inside condition first");
                 setIsFirstPage(true);
                 getEntries({

@@ -27,9 +27,18 @@ import { exceptKey } from "../../../utils/functions";
 import { useCustomMutation } from "../../../hooks";
 import { getList, getValueOfProperty } from "../../../utils/functions";
 import { useTemplate } from "../../../hooks";
-import { Day } from "@material-ui/pickers";
+import { ValidationMessage } from "components/ValidationMessage";
+import { object, number } from "yup";
 
+const OrderSchema = object().shape({
+    vendorFactory: number().typeError("Значение для поля 'Поставщик' не выбрано"),
+    invoiceProforma: number().typeError("Введите только цифры").required("Поле 'Инвойс заказа' должно быть заполнено")
+});
 
+const fieldsMessages = {
+    vendorFactory: "",
+    invoiceProforma: ""
+}
 
 const OrderCreate = ({ match }) => {
 
@@ -37,7 +46,7 @@ const OrderCreate = ({ match }) => {
         title = useTitle("Создать Заказ"),
         history = useHistory();
 
-    const { submitData } = useCustomMutation({
+    const { submitData, handleSubmit, validationMessages } = useCustomMutation({
         graphQlQuery: {
             queryCreate: ORDER_CREATE,
             queryUpdate: ORDER_UPDATE
@@ -46,7 +55,9 @@ const OrderCreate = ({ match }) => {
         "Заказ",
         () => {
             history.push('/supply/order');
-        }
+        },
+        OrderSchema,
+        fieldsMessages
     );
 
     const [getFactories, factoriesRes] = useLazyQuery(GET_FACTORIES_LIST),
@@ -91,7 +102,6 @@ const OrderCreate = ({ match }) => {
 
     const [orderData, setOrderData] = useState({
         vendorFactory: "",
-        status: "",
         invoiceDate: Date.now(),
         invoiceProforma: ""
     });
@@ -200,7 +210,7 @@ const OrderCreate = ({ match }) => {
         setMaterials(materialsCopy);
     }
 
-    const handleSubmit = () => {
+    const beforeSubmit = () => {
         const orderRequestBody = { ...orderData };
         let orderMaterials = materials.slice(0);
 
@@ -215,11 +225,9 @@ const OrderCreate = ({ match }) => {
 
         orderRequestBody.orderItems = formedOrderMaterials;
         orderRequestBody.files = files.uploaded.map(file => file.file_id);
-        if (pk) {
-            orderRequestBody.status = statuses.find(status => status.value == orderRequestBody.status).label;
-        }
 
-        pk ? submitData(orderRequestBody, pk) : submitData(exceptKey(orderRequestBody, ["status"]));
+        // pk ? submitData(orderRequestBody, pk) : submitData(exceptKey(orderRequestBody, ["status"]));
+        pk ? handleSubmit(orderRequestBody, pk) : handleSubmit(exceptKey(orderRequestBody, ["status"]));
     }
 
     const getAproximateDeliveryDate = (date, productionDayCounts) => {
@@ -271,13 +279,18 @@ const OrderCreate = ({ match }) => {
                                 })
                             }
                         </CustomSelector>
-                        <CustomSelector label="Выберите поставщика" name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")}>
+                        <div>
+                            <CustomSelector label="Выберите поставщика" name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")} errorVal={validationMessages.vendorFactory.length? true : false}>
+                                {
+                                    vendorFactories?.map(({ node }) => {
+                                        return <MenuItem key={node.pk} value={node.pk} selected={orderData.vendorFactory === node.pk}>{node?.vendor?.name}</MenuItem>
+                                    })
+                                }
+                            </CustomSelector>
                             {
-                                vendorFactories?.map(({ node }) => {
-                                    return <MenuItem key={node.pk} value={node.pk} selected={orderData.vendorFactory === node.pk}>{node?.vendor?.name}</MenuItem>
-                                })
+                                validationMessages.vendorFactory.length? <ValidationMessage>{validationMessages.vendorFactory}</ValidationMessage> : null
                             }
-                        </CustomSelector>
+                        </div>
 
                         {
                             pk && <CustomSelector label="Статус" name="status" value={orderData.status} stateChange={e => handleDataChange(e, "order")}>
@@ -290,7 +303,12 @@ const OrderCreate = ({ match }) => {
                             </CustomSelector>
                         }
                         <CustomPicker label="Дата создание" name="invoiceDate" date={orderData.invoiceDate} stateChange={(date) => setOrderData({ ...orderData, invoiceDate: date })} />
-                        <CustomInput label="Инвойс заказа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} />
+                        <div>
+                            <CustomInput label="Инвойс заказа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} errorVal={validationMessages.invoiceProforma.length? true : false}/>
+                            {
+                                validationMessages.invoiceProforma.length? <ValidationMessage>{validationMessages.invoiceProforma}</ValidationMessage> : null
+                            }
+                        </div>
                     </AddibleInput>
 
                     <DragFile
@@ -331,7 +349,7 @@ const OrderCreate = ({ match }) => {
 
                 <Footer>
                     <span>Кол-во материалов: {materials.length}</span>
-                    <Button name={pk ? "Изменить заказ" : "Создать заказ"} clickHandler={handleSubmit} />
+                    <Button name={pk ? "Изменить заказ" : "Создать заказ"} clickHandler={beforeSubmit} />
                 </Footer>
             </Wrapper>
         </>

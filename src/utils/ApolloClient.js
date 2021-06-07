@@ -14,7 +14,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
     // console.log("operation", operation);
     // console.log("forward", forward);
     const token = localStorage.getItem("supply_token");
-    console.log("token in apollo client", token);
+    // console.log("token in apollo client", token);
 
     operation.setContext({
         headers: {

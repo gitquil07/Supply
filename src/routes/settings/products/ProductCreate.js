@@ -22,7 +22,75 @@ import { useHistory } from "react-router-dom";
 import { NotificationManager } from "react-notifications";
 import { getValueOfProperty } from "utils/functions";
 import { useTemplate, useCustomMutation } from "hooks";
+import { ValidationMessage } from "components/ValidationMessage";
+import { object, string } from "yup";
 
+// object() - (function-constructor)
+// In it (prototype) method it contains 
+// method which will be available inside hidden property [[prototype]]
+// of created object.
+
+
+const obj = new object();
+console.dir(object);
+console.log(obj);
+// console.log(typeof  obj);
+// display -> 
+// that typeof object is object
+console.dir(string);
+const str = string().oneOf(["value1", "value2"]);
+
+console.log("str", str);
+// Test 1
+str.isValid("value1")
+    .then(res => console.log("result", res))
+    .catch(error => console.log("fail", error));
+
+// Test 2
+str.isValid("value2")
+    .then(res => console.log("result 2", res))
+    .catch(error => console.log("error", error));
+
+// Test 3
+// Pass value which is not exist in list
+str.isValid("sajkd")
+    .then(res => console.log("result 3", res))
+    .catch(error => console.log("error 3", error));
+
+// Test 4
+// Don't pass anyhting to check whether (.required) method is working
+str.isValid()
+    .then(res => console.log("result 5", res))
+    .catch(error => console.log("error 5", error));
+// -> There is not any messages displayed but validation failed because 
+// isValid method returned false
+
+// isValid - function returns executed Promise, so
+// to see result we have to use (.then) method 
+// when Promise object instance of Prodmise resolved
+// to get resolved value ([[PromiseState]] => "resolved", [[PromiseResult]] => "value")
+// .catch - method promise object executed with rejection ([[PromiseState]] => "rejected", [[PromiseResult]] => "value")
+// Executed promise object returned by (.isValid) method resolves with boolean. (true) when validations passes successfully
+// and (false) when validation fails!
+
+
+const measureEnums = measureOptions.map(measure => measure.value);
+
+const productSchema = object({
+    name: string().typeError("Поле `Название` должно быть строкой").required("Поле `Название` должно быть заполнено"),
+    code: string().typeError("Поле `Код` должно быть строкой").required("Поле `Код` должно быть заполнено"),
+    codeTnved: string().typeError("Поле `Код ТН ВЭД` должно быть строкой").required("Поле `Код ТН ВЭД` должно быть заполнено"),
+    measure: string().oneOf(measureEnums, "Недопустимое значение поля 'Ед. измерения' "),
+    typeOfPackaging: string().typeError("Поле `Тип упаковки` должно быть строкой").required("Поле `Тип упаковки` должно быть заполнено")
+}); 
+
+const fieldsMessages = {
+    name: "",
+    code: "",
+    codeTnved: "",
+    measure: "",
+    typeOfPackaging: ""
+}
 
 const ProductCreate = ({match}) => {
     
@@ -49,7 +117,9 @@ const ProductCreate = ({match}) => {
 
 
     const {
-        submitData
+        submitData,
+        handleSubmit,
+        validationMessages
     } = useCustomMutation({
             graphQlQuery: {
                 queryCreate: CREATE_PRODUCT,
@@ -59,7 +129,9 @@ const ProductCreate = ({match}) => {
         "Продукт",
         () => {
             history.push("/settings/products");
-        }
+        },
+        productSchema,
+        fieldsMessages
     );
     
     // const [groupCreate, setGroupCreate] = useState({
@@ -67,7 +139,9 @@ const ProductCreate = ({match}) => {
     //     code: ""
     // });
 
-    const [getProduct, getProductResp] = useLazyQuery(GET_PRODUCT_AND_GROUP);
+    const [getProduct, getProductResp] = useLazyQuery(GET_PRODUCT_AND_GROUP, {
+        fetchPolicy: "no-cache"
+    });
 
     // const [ createProduct ] = useMutation(CREATE_PRODUCT, {
     //     onCompleted: data => {
@@ -218,10 +292,11 @@ const ProductCreate = ({match}) => {
     const save = () => {
         
         if(productPk){
+            // handleSubmit(products[0], productPk);
             submitData(products[0], productPk);
         }else{
-            const recursiveMutation = recursiveFetch(products.length, (turn) => submitData(products[turn])
-            );
+            const recursiveMutation = recursiveFetch(products.length, (turn) => submitData(products[turn]));
+            // const recursiveMutation = recursiveFetch(products.length, (turn) => handleSubmit(products[turn]));
             recursiveMutation();
         }   
 

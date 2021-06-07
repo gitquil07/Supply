@@ -24,7 +24,7 @@ import { useState, useEffect, useMemo } from 'react';
 import MenuItem from "@material-ui/core/MenuItem";
 import { getList, getValueOfProperty } from "utils/functions";
 import moment from 'moment';
-import { packagingTypes, deliveryCondition, statuses, degreeOfDanger } from "utils/static";
+import { deliveryCondition, statuses, degreeOfDanger } from "utils/static";
 import Checkbox from "@material-ui/core/Checkbox";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -35,19 +35,54 @@ import EditDefaultIcon from "assets/icons/editDefault.svg";
 import EditSelectedIcon from "assets/icons/editSelected.svg";
 import EditHoveredIcon from "assets/icons/editHovered.svg";
 import { uploadFile } from 'api';
+import { ValidationMessage } from "components/ValidationMessage";
+import { object, number, string } from "yup";
 
+
+const deliveryConditionEnum = deliveryCondition.map(condition => condition.value);
+const degreeOfDangerEnum = degreeOfDanger.map(degree => degree.label);
+const statusEnum = statuses.map(status => status.label);
+
+console.log("deliveryCondition", deliveryConditionEnum);
+
+const ApplicationSchema = object().shape({
+    trackingUser: number().typeError("Значение для поля 'Логист' не выбрано"),
+    transportType: number().typeError("Значение для поля 'Тип транспорта' не выбрано"),
+    deliveryCondition: string().typeError("Значение для поля 'Условия доставки' не выбрано").oneOf(deliveryConditionEnum, "Недопустимое значение для поля 'Условия доставки'"),
+    degreeOfDanger: string().required("Значение для поля 'Уровень опасности' не выбрано").typeError("Значение для поля 'Уровень опасности' не выбрано").oneOf(degreeOfDangerEnum, "Недопустимое значение для поля 'Уровень опасности'"),
+    packageOnPallet: number().positive("Введите положительно число").integer("Введите целое число").required("Поле 'Количество мест' должно быть заполнено"),
+    transportCount: number().typeError("Введите число").required("Поле 'Количество транспорта' должно быть заполнено").positive("Введите положительно число").integer("Введите целое число"),
+    status: string().required("Значение для поля 'Статус' не выбрано").typeError("Значение для поля 'Статус' не выбрано").oneOf(statusEnum, "Недопустимое значение для поля 'Статус'")
+});
+
+const str = string().typeError("Значение для поля 'Тип транспорта' не выбрано").oneOf(deliveryConditionEnum, "Недопустимое значение для поля 'Условия доставки'");
+console.log("deliveryConditionEnum", deliveryConditionEnum);
+str.isValid("FCA")
+    .then(res => console.log("res ass", res))
+    .catch(error => console.log("error ass", error));
+
+
+const fieldsMessages = {
+    trackingUser: "",
+    transportType: "",
+    deliveryCondition: "",
+    degreeOfDanger: "",
+    packageOnPallet: "",
+    transportCount: "",
+    status: "",
+}
 
 const initialState = {
     orders: [],
     trackingUser: "",
     transportType: "",
-    deliveryCondition: "",
-    degreeOfDanger: "",
+    deliveryCondition: undefined,
+    degreeOfDanger: undefined,
     // typeOfPackaging: "",
     packageOnPallet: "",
     transportCount: "",
     shippingDate: new Date(),
-    status: "",
+    status: undefined,
     transportMix: true
 };
 
@@ -115,7 +150,7 @@ const ApplicationCreate = ({ match }) => {
 
 
     const {
-        submitData
+        submitData, handleSubmit, validationMessages
     } = useCustomMutation({
         graphQlQuery: {
             queryCreate: CREATE_APPLICATION,
@@ -125,7 +160,9 @@ const ApplicationCreate = ({ match }) => {
         "Заявка",
         () => {
             history.push("/supply/application");
-        }
+        },
+        ApplicationSchema,
+        fieldsMessages
     );
 
     const {
@@ -247,13 +284,16 @@ const ApplicationCreate = ({ match }) => {
         invoicePk ? submitInvoiceData({ number: invoiceNumber }, invoicePk, id) : submitInvoiceData({ number: invoiceNumber, application: pk }, undefined, id);
     }
 
-    const handleSubmit = () => {
+    const beforeSubmit = () => {
+
+        console.log("state", state);
+
         let requestBody = {
             ...state,
             shippingDate: moment(state.shippingDate).format("YYYY-MM-DD"),
             // typeOfPackaging: packagingTypes.find(packaging => packaging.value === state.typeOfPackaging)?.label,
             status: statuses.find(status => status.value === state.status)?.label,
-            degreeOfDanger: degreeOfDanger.find(degree => degree.value === state.degreeOfDanger).label
+            degreeOfDanger: degreeOfDanger.find(degree => degree.value === state.degreeOfDanger)?.label
         }
 
         requestBody.applicationItems = !pk ? items.map(item => exceptKey(item, "invoice")) : items;
@@ -267,10 +307,12 @@ const ApplicationCreate = ({ match }) => {
         //         .catch(err => console.log(err));
         // }
 
+        console.log("requestBody", requestBody);
+
         if (pk) {
-            submitData(exceptKey(requestBody, ["orders"]), pk)
+            handleSubmit(exceptKey(requestBody, ["orders"]), pk)
         } else {
-            submitData(requestBody)
+            handleSubmit(requestBody)
         }
     }
 
@@ -319,27 +361,42 @@ const ApplicationCreate = ({ match }) => {
                                 }
                             </CustomSelector>
                     }
-                    <CustomSelector label="Логист" value={state.trackingUser} name="trackingUser" stateChange={e => handleChange({ fElem: e })}>
+                    <div>
+                        <CustomSelector label="Логист" value={state.trackingUser} name="trackingUser" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.trackingUser.length? true : false} >
+                            {
+                                trackingUserType.map(({ node }) =>
+                                    <MenuItem key={node.pk} value={node.pk}>{node.username}</MenuItem>
+                                )
+                            }
+                        </CustomSelector>
                         {
-                            trackingUserType.map(({ node }) =>
-                                <MenuItem key={node.pk} value={node.pk}>{node.username}</MenuItem>
-                            )
+                            validationMessages.trackingUser.length? <ValidationMessage>{validationMessages.trackingUser}</ValidationMessage> : null
                         }
-                    </CustomSelector>
-                    <CustomSelector label="Тип транспорта" value={state.transportType} name="transportType" stateChange={e => handleChange({ fElem: e })}>
+                    </div>
+                    <div>
+                        <CustomSelector label="Тип транспорта" value={state.transportType} name="transportType" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.transportCount.length? true : false}>
+                            {
+                                transportTypes.map(({ node }) =>
+                                    <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.transportType}>{node.name}</MenuItem>
+                                )
+                            }
+                        </CustomSelector>
                         {
-                            transportTypes.map(({ node }) =>
-                                <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.transportType}>{node.name}</MenuItem>
-                            )
+                            validationMessages.transportType.length? <ValidationMessage>{validationMessages.transportType}</ValidationMessage> : null
                         }
-                    </CustomSelector>
-                    <CustomSelector label="Условия доставки" value={state.deliveryCondition} name="deliveryCondition" stateChange={e => handleChange({ fElem: e })}>
+                    </div>
+                    <div>
+                        <CustomSelector label="Условия доставки" value={state.deliveryCondition} name="deliveryCondition" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.deliveryCondition.length? true : false}>
+                            {
+                                deliveryCondition.map(condition =>
+                                    <MenuItem key={condition.value} value={condition.value} selected={state.deliveryCondition === condition.value}>{condition.value}</MenuItem>
+                                )
+                            }
+                        </CustomSelector>
                         {
-                            deliveryCondition.map(condition =>
-                                <MenuItem key={condition.value} value={condition.label} selected={state.deliveryCondition === condition.value}>{condition.label}</MenuItem>
-                            )
+                            validationMessages.deliveryCondition.length? <ValidationMessage>{validationMessages.deliveryCondition}</ValidationMessage> : null
                         }
-                    </CustomSelector>
+                    </div>
                     {/* <CustomSelector label="Тип упаковки" name="typeOfPackaging" value={state.typeOfPackaging} stateChange={e => handleChange({fElem: e})}>
                         {
                             packagingTypes.map(packaging => {
@@ -348,25 +405,46 @@ const ApplicationCreate = ({ match }) => {
                             )
                         }
                     </CustomSelector> */}
-                    <CustomSelector label="Уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({ fElem: e })}>
-                        {
-                            degreeOfDanger.map(level =>
-                                <MenuItem key={level.value} value={level.value} selected={state.degreeOfDanger === level.value} >{level.label}</MenuItem>
-                            )
-                        }
-                    </CustomSelector>
-                    {/* <CustomInput label="уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({fElem: e})}/> */}
-                    <CustomNumber label="Кол-во мест" value={state.packageOnPallet} name="packageOnPallet" stateChange={e => handleChange({ fElem: e })} />
-                    <CustomNumber label="Кол-во транспорта" value={state.transportCount} name="transportCount" stateChange={e => handleChange({ fElem: e })} />
-                    <CustomPicker label="Дата отгрузки" date={state.shippingDate} name="shippingDate" stateChange={date => handleDateChange(date)} />
-                    <CustomSelector label="Статус" name="status" value={state.status} stateChange={e => handleChange({ fElem: e })}>
-                        {
-                            statuses.map(status => {
-                                return <MenuItem key={status.label} value={status.value} selected={state.status === status.value}>{status.label}</MenuItem>
+                    <div>
+                        <CustomSelector label="Уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.degreeOfDanger.length? true : false}>
+                            {
+                                degreeOfDanger.map(level =>
+                                    <MenuItem key={level.value} value={level.value} selected={state.degreeOfDanger === level.value} >{level.label}</MenuItem>
+                                )
                             }
-                            )
+                        </CustomSelector>
+                        {
+                            validationMessages.degreeOfDanger.length? <ValidationMessage>{validationMessages.degreeOfDanger}</ValidationMessage> : null
                         }
-                    </CustomSelector>
+                    </div>
+                    {/* <CustomInput label="уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({fElem: e})}/> */}
+                    <div>
+                        <CustomNumber label="Кол-во мест" value={state.packageOnPallet} name="packageOnPallet" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.packageOnPallet.length? true : false}/>
+                        {
+                            validationMessages.packageOnPallet.length? <ValidationMessage>{validationMessages.packageOnPallet}</ValidationMessage> : null
+                        }
+                    </div>
+                    <div>
+                        <CustomNumber label="Кол-во транспорта" value={state.transportCount} name="transportCount" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.transportCount.length? true : false}/>
+                        {
+                            validationMessages.transportCount.length? <ValidationMessage>{validationMessages.transportCount}</ValidationMessage> : null
+                        }
+                    </div>
+                    
+                    <CustomPicker label="Дата отгрузки" date={state.shippingDate} name="shippingDate" stateChange={date => handleDateChange(date)} />
+                    <div>
+                        <CustomSelector label="Статус" name="status" value={state.status} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.status.length? true : false}>
+                            {
+                                statuses.map(status => {
+                                    return <MenuItem key={status.label} value={status.value} selected={state.status === status.value}>{status.label}</MenuItem>
+                                }
+                                )
+                            }
+                        </CustomSelector>
+                        {
+                            validationMessages.status.length? <ValidationMessage>{validationMessages.status}</ValidationMessage> : null
+                        }
+                    </div>
                 </AddibleInput>
                 <p>
                     <label htmlFor="transportMix">Комбинированный транспорт</label>
@@ -439,7 +517,7 @@ const ApplicationCreate = ({ match }) => {
 
             <Footer>
                 <span>Кол-во материалов: {items?.length}</span>
-                <Button name={pk ? "Сохранить" : "Создать"} clickHandler={handleSubmit} />
+                <Button name={pk ? "Сохранить" : "Создать"} clickHandler={beforeSubmit} />
             </Footer>
         </>
     )
