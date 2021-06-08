@@ -232,11 +232,96 @@ export const toCamelCase = (word) => {
 } 
 
 
-// export const summFormat = (sum) => {
-//     const steps = Math.floor(sum.length / 3);
 
-//     let formatedSum = "";
+export const formatPrice = (price) => {
 
-//     for(let i = 0; i < sum.length; )
+    if(!isNaN(price) && price.length > 0 || (price.length == 1 && price == "-")){
+        
+        const separator = (price.indexOf(".") > -1)? price.indexOf(".") : false,
+              step = 3,
+              isNegative = price.indexOf("-") > -1;
+    
+        let fractionalPart = undefined,
+            wholePart = price.slice(isNegative? 1 : 0);
+            
+        if(separator){
+            fractionalPart = price.slice(separator + 1);
+            wholePart = price.slice(isNegative? 1 : 0, separator);
+        }
+        
+        const pLength = wholePart.length;
+    
+        const remaining = pLength % 3;
+    
+        let iterationCount = Math.floor(pLength / 3);
+        
+        (remaining > 0) && ++iterationCount;
 
-// }
+        // console.log("remaining", remaining);
+     
+        let formatedPrice = "",
+            pointer = 0;
+
+        for(let i = 0; i < iterationCount; i++){
+
+            if(i == 0 && remaining > 0){
+                formatedPrice += wholePart.slice(0, remaining);
+                pointer += remaining;
+            }else{
+                formatedPrice += " " + wholePart.slice(pointer, pointer + step);
+                pointer += step;
+            }
+
+        }
+
+        formatedPrice = formatedPrice.trim();
+        formatedPrice = fractionalPart? formatedPrice + "." + fractionalPart : formatedPrice;
+        formatedPrice = (!fractionalPart && separator)? formatedPrice + "." : formatedPrice;
+        formatedPrice = isNegative? "-" + formatedPrice : formatedPrice;
+
+        return formatedPrice;
+    }else if(isNaN(price)){
+
+       return price;
+    
+    }
+
+    return price;
+
+}
+
+export const formatInputPrice = (input) => {
+
+    const iLength = input.length;
+
+    let cleanedInput = "";
+    
+    if(iLength == 1 && input == ".") cleanedInput = "0.";
+
+    for(let i = 0; i < iLength; i++){
+        
+        if(input[i] == "-" || input[i] == "." || (!isNaN(input[i]) && (input[i] != " ") && (input[i] != ""))){
+
+            if((cleanedInput.indexOf("-") == -1) && (input[i] == "-") && cleanedInput.length == 0){
+                cleanedInput += input[i];
+            }
+
+            if((cleanedInput.indexOf(".") == -1) && (input[i] == ".")){
+                cleanedInput += input[i];
+            }
+
+            if(input[i] != "-" && input[i] != "."){
+                cleanedInput += input[i];
+            }
+
+        }
+
+    }
+
+    console.log("cleanedInput", cleanedInput);
+
+    return  formatPrice(cleanedInput);
+
+    // return formatPrice(cleanedInput);
+
+}

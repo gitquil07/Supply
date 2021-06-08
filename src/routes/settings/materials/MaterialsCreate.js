@@ -15,7 +15,7 @@ import { useHistory } from "react-router-dom";
 import { currencyOptions } from "utils/static";
 import Switch from "@material-ui/core/Switch";
 import { CustomNumber } from "components/Inputs/CustomNumber";
-
+import { formatInputPrice } from "utils/functions";
 
 import { GET_FACTORIES, GET_VENDOR_FACTORIES, GET_PRODUCTS, CREATE_VENDOR_PRODUCT, UPDATE_VENDOR_PRODUCT, GET_VENDOR_PRODUCT, GET_VENDOR_PRODUCT_HISTORY } from "./gql";
 import { exceptKey, getValueOfProperty } from "utils/functions";

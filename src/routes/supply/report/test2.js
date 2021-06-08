@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { GET_TABLE_BODY } from "./gql";
 import { getValueOfProperty } from "utils/functions";
@@ -8,6 +8,7 @@ import { goToNewLine } from "utils/functions";
 import { useTitle } from "hooks"
 import Helmet from "react-helmet";
 import { Loading } from "components/LoadingIndicator";
+import { formatPrice } from "utils/functions";
 
 const allowedHeadersToRepeat = [ 
     "Остаток на начало\nмесяца ",
@@ -58,6 +59,9 @@ const TestTable2 = () => {
     const [getReport, reportRes] = useLazyQuery(GET_TABLE_BODY),
           tableData = getValueOfProperty(reportRes?.data, "body") || [],
           columns = getValueOfProperty(reportRes?.data, "columns") || [];
+
+
+    const [input, setInput] = useState("");
 
     const { loading } = reportRes;
     // const loading = true;
@@ -215,12 +219,11 @@ const TestTable2 = () => {
                                             }
 
                                             if(+col < 0){
-                                                console.log("cageClasses", col);
                                                 cageClasses += " reddest";
                                             }
 
                                             // console.log("cage classes", cageClasses);
-                                            return <td className={cageClasses}>{col}</td>
+                                            return <td className={cageClasses}>{(!isNaN(col) && col.length > 0)? formatPrice(col) : col}</td>
                                             // return <td className={cageClasses}>{col}</td>
                                     })
                                 }
