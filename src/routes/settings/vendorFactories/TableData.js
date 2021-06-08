@@ -8,6 +8,14 @@ export const generateColumns = () => {
             }
         },
         {
+            name: "partnerStartDate",
+            label: "Начало сотрудничества",
+            options: {
+                filter: true,
+                sort: false,
+            }
+        },
+        {
             name: "factory",
             label: "Завод",
             options: {
@@ -32,33 +40,25 @@ export const generateColumns = () => {
             }
         },
         {
-            name: "partnerStartDate",
-            label: "Дата",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
             name: "isActive",
             label: "Статус",
             options: {
                 filter: true,
                 sort: false,
                 customBodyRender: (value) => {
-                    return value ? "Активнвый" : "Не активный"
+                    return value ? "Активный" : "Неактивный"
                 }
             }
         },
-        {
-            name: "id",
-            label: "Id",
-            options: {
-                filter: false,
-                sort: false,
-                display: false,
-            }
-        },
+        // {
+        //     name: "id",
+        //     label: "Id",
+        //     options: {
+        //         filter: false,
+        //         sort: false,
+        //         display: false,
+        //     }
+        // },
         // {
         //     name: "Actions",
         //     options: {

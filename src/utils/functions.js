@@ -5,6 +5,7 @@ import { NotificationManager } from "react-notifications";
 import { TableRow } from '@material-ui/core';
 import { TableCell } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
+import { Row, RowGray } from "components/Row";
 
 
 export const TimeParser = (time) => moment(time).format('YYYY-MM-DD');
@@ -195,9 +196,160 @@ export const CustomRowGeneratorForModal = (openDialog) => {
     }
 };
 
+export const setHeading = columnMeta => {
+    const parts = columnMeta.label.split("\n");
+    return (
+        <th className="MuiTableCell-root MuiTableCell-head" scope="col" data-colindex={columnMeta.index}>
+            <div>
+                <Row>{parts[0]}</Row>
+                <RowGray>{parts[1]}</RowGray>
+            </div>
+        </th>
+    );
+};
+
 export const downloadFile = (url) => {
     const a = window.document.createElement("a");
     a.href = url;
-    a.setAttribute("download");
+    a.setAttribute("download", true);
     a.click();
 }
+
+export const toCamelCase = (word) => {
+    let trWord = word.toLowerCase();
+
+    if (trWord.indexOf("_") > -1) {
+        const parts = trWord.split("_");
+        let i = 0;
+        for (let part of parts) {
+            if (i > 0) trWord += part[0].toUpperCase() + part.slice(1);
+            else trWord = part;
+            i++;
+        }
+    }
+
+    return trWord;
+}
+
+
+
+export const formatPrice = (price) => {
+
+    if(!isNaN(price) && price.length > 0 || (price.length == 1 && price == "-")){
+        
+        const separator = (price.indexOf(".") > -1)? price.indexOf(".") : false,
+              step = 3,
+              isNegative = price.indexOf("-") > -1;
+    
+        let fractionalPart = undefined,
+            wholePart = price.slice(isNegative? 1 : 0);
+            
+        if(separator){
+            fractionalPart = price.slice(separator + 1);
+            wholePart = price.slice(isNegative? 1 : 0, separator);
+        }
+        
+        const pLength = wholePart.length;
+    
+        const remaining = pLength % 3;
+    
+        let iterationCount = Math.floor(pLength / 3);
+        
+        (remaining > 0) && ++iterationCount;
+
+        // console.log("remaining", remaining);
+     
+        let formatedPrice = "",
+            pointer = 0;
+
+        for(let i = 0; i < iterationCount; i++){
+
+            if(i == 0 && remaining > 0){
+                formatedPrice += wholePart.slice(0, remaining);
+                pointer += remaining;
+            }else{
+                formatedPrice += " " + wholePart.slice(pointer, pointer + step);
+                pointer += step;
+            }
+
+        }
+
+        formatedPrice = formatedPrice.trim();
+        formatedPrice = fractionalPart? formatedPrice + "." + fractionalPart : formatedPrice;
+        formatedPrice = (!fractionalPart && separator)? formatedPrice + "." : formatedPrice;
+        formatedPrice = isNegative? "-" + formatedPrice : formatedPrice;
+
+        return formatedPrice;
+    }else if(isNaN(price)){
+
+       return price;
+    
+    }
+
+    return price;
+
+}
+
+export const formatInputPrice = (input) => {
+
+    const iLength = input.length;
+
+    let cleanedInput = "";
+    
+    if(iLength == 1 && input == ".") cleanedInput = "0.";
+
+    for(let i = 0; i < iLength; i++){
+        
+        if(input[i] == "-" || input[i] == "." || (!isNaN(input[i]) && (input[i] != " ") && (input[i] != ""))){
+
+            if((cleanedInput.indexOf("-") == -1) && (input[i] == "-") && cleanedInput.length == 0){
+                cleanedInput += input[i];
+            }
+
+            if((cleanedInput.indexOf(".") == -1) && (input[i] == ".")){
+                cleanedInput += input[i];
+            }
+
+            if(input[i] != "-" && input[i] != "."){
+                cleanedInput += input[i];
+            }
+
+        }
+
+    }
+
+    console.log("cleanedInput", cleanedInput);
+
+    return  formatPrice(cleanedInput);
+
+
+}
+
+
+export const fullscreen = (id) => {
+    var elem;
+    if (!id) elem = document.documentElement;
+    else elem = document.getElementById(id);
+
+    if (
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement
+    ) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    } else {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        }
+    }
+};

@@ -99,6 +99,7 @@ query MyQuery($vendorFactory : ID) {
           product {
             name
           }
+          productionDayCount
           pk
         }
       }
@@ -123,7 +124,8 @@ query getOrder($id: ID!){
       files {
         edges {
           node {
-            file
+            file,
+            fileUrl
           }
         }
       }
@@ -135,6 +137,7 @@ query getOrder($id: ID!){
           node{
             vendorProduct{
               pk
+              productionDayCount
               product{
                 name
               }

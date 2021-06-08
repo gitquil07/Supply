@@ -1,3 +1,7 @@
+import moment from "moment";
+import { Row, RowGray } from "components/Row";
+import { setHeading } from "utils/functions";
+
 export const generateColumns = () => {
 
     return [
@@ -9,32 +13,38 @@ export const generateColumns = () => {
             }
         },
         {
-            name: "firstName",
-            label: "Имя",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "lastName",
-            label: "Фамилия",
+            name: "createdAt",
+            label: "Дата создания",
             options: {
                 filter: true,
                 sort: true,
+                customBodyRender: value => moment(value).format("YYYY-MM-DD")
+            } 
+        },
+        {
+            name: "fioNumber",
+            label: "Имя Фамилия\nНомер телефона",
+            options: {
+                filter: true,
+                sort: true,
+                customHeadRender: setHeading,
+                customBodyRender: value => {
+                    return (
+                        <>
+                            <Row>
+                                {value.firstName} {value.lastName}
+                            </Row>
+                            <RowGray>
+                                {value.phoneNumber}
+                            </RowGray>
+                        </>
+                    );
+                }
             }
         },
         {
             name: "username",
             label: "Username",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "phoneNumber",
-            label: "Номер телефона",
             options: {
                 filter: true,
                 sort: false,

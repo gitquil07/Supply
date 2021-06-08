@@ -1,9 +1,10 @@
 import styled from "styled-components";
 import Doc from "../../assets/icons/file.svg";
 import Remove from "../../assets/icons/deleteFile.svg";
-import { downloadFile } from "../../utils/functions";
+import { Loading } from "../LoadingIndicator";
 
-export const DragFile = ({ receivedFile, fetchedFiles, uploadedFiles, removeClicked }) => {
+export const DragFile = ({ receivedFile, fetchedFiles, uploadedFiles, removeClicked, loading }) => {
+    console.log("fetchedFiles drag file", fetchedFiles);
     return (
         <Wrapper>
             <Form>
@@ -13,17 +14,27 @@ export const DragFile = ({ receivedFile, fetchedFiles, uploadedFiles, removeClic
             </Form>
             <FilesList>
                 {fetchedFiles?.map((e, i) =>
-                    <FileElement key={i} onClick={() => downloadFile(e.file)}>
+                    <FileElementA download style={{cursor: "pointer"}} key={i} href={e.fileUrl}>
                         <img src={Doc} alt="doc" />
-                        {e.file_name}
-                    </FileElement>)}
+                        {e.file && e.file.split("/")[1]}
+                    </FileElementA>)}
 
                 {uploadedFiles?.map((e, i) => <FileElement key={i}>
                     <img src={Doc} alt="doc" />
-                    {e.name}
-                    <img src={Remove} alt="remove" id="remove" onClick={() => removeClicked(i)} />
+                    {e.file_name}
+                    <img src={Remove} alt="remove" id="remove" onClick={() => removeClicked(e.file_id)} />
                 </FileElement>
                 )}
+
+                {loading ?
+                    <FileElement>
+                        <Loading fs="13">
+                            Загрузка
+                        </Loading>
+                    </FileElement>
+                    :
+                    ""
+                }
             </FilesList>
         </Wrapper>
     )
@@ -97,3 +108,47 @@ export const FileElement = styled.div`
         cursor: pointer;
     }
 `;
+
+
+export const FileElementA = styled.a`
+    background: #5762B3;
+    border-radius: 30px;
+    padding: 5px 10px;
+    color: white;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    cursor: pointer;
+
+    img {
+        margin: 0 5px;
+    }
+
+    #remove {
+        cursor: pointer;
+    }
+`;
+
+
+// const Loading = styled.div`
+//     padding: 0 13px 0 10px;
+
+//     :after {
+//         content: '.';
+//         animation: dots 1s steps(5, end) infinite;
+//     }
+
+//     @keyframes dots {
+//         20% {
+//             color: rgba(0,0,0,0);
+//             text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);}
+//         40% {
+//             color: white;
+//             text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);}
+//         60% {
+//             text-shadow: .25em 0 0 white, .5em 0 0 rgba(0,0,0,0);}
+//         100% {
+//             text-shadow: .25em 0 0 white, .5em 0 0 white;}
+//         }
+// `;

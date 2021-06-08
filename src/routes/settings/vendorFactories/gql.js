@@ -8,7 +8,7 @@ query getVendorFactories($first: Int, $last: Int, $after: String, $before: Strin
         node{
           id
           vendor{
-            name
+            companyName
           }
           factory{
             name
@@ -51,7 +51,7 @@ query getVendors {
         edges {
           node {
             pk
-            name
+            companyName
           }
         }
       }
@@ -70,7 +70,7 @@ query getVendorFactory($id: ID!){
         }
         vendor{
           pk
-          name
+          companyName
         }
         paymentCondition
         partnerStartDate

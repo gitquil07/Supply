@@ -18,12 +18,13 @@ export const Header = ({ menuIconClicked }) => {
     const open = Boolean(anchorEl);
     const title = useSelector(state => state.title);
     const history = useHistory();
-    const { setAuth } = useContext(UserContext);
+    const { setRole } = useContext(UserContext);
 
     const logout = () => {
         localStorage.removeItem("supply_token");
+        localStorage.removeItem("supply_role");
         history.push("/login");
-        setAuth("");
+        setRole("");
     }
 
     const handleMenu = (event) => {
@@ -41,7 +42,7 @@ export const Header = ({ menuIconClicked }) => {
                     <MenuIcon />
                 </IconButton>
 
-                <Title size="24">{title}</Title>
+                <Title size="24">{title === "Supply" ? "" : title}</Title>
             </span>
 
             <Account>

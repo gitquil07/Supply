@@ -25,7 +25,7 @@ const firmSchema = object({
     inn: string().typeError("Введите число").required("Поле 'ИНН' обязательно к заполнению")
 });
 
-const FirmCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOfElemsPerPage, paginatingState }) => {
+const FirmCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getEntries, amountOfElemsPerPage, paginatingState }) => {
 
     let pk = entry?.pk;
 
@@ -37,7 +37,7 @@ const FirmCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
 
     useEffect(() => {
 
-        if(entry !== undefined){
+        if (entry !== undefined) {
 
             setState({
                 name: entry.name,
@@ -48,16 +48,28 @@ const FirmCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
 
     }, [entry?.id]);
 
-    const { handleSubmit, validationMessages, setValidationMessages } = useCustomMutation({
-            graphQlQuery: {
-                queryCreate: CREATE_FIRM,
-                queryUpdate: UPDATE_FIRM,
-            }
-        },
+    const { handleSubmit, validationMessages, setValidationMessages, mutationLoading } = useCustomMutation({
+        graphQlQuery: {
+            queryCreate: CREATE_FIRM,
+            queryUpdate: UPDATE_FIRM,
+        }
+    },
         "Тип транспорта",
         () => {
             handleClose();
-            if((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)){
+            if ((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)) {
+                console.log("inside condition first");
+                setIsFirstPage(true);
+                getEntries({
+                    variables: {
+                        first: amountOfElemsPerPage,
+                        last: null,
+                        after: null,
+                        before: null
+                    }
+                });
+            }
+            if ((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)) {
                 setMutateState("create");
                 getEntries({
                     variables: {
@@ -80,20 +92,20 @@ const FirmCreate = ({ isOpen, close, entry, setMutateState, getEntries, amountOf
     }
 
     return (
-        <SmallDialog title={pk? "Изменить" : "Создать фирму"} isOpen={isOpen} close={handleClose}>
-            <CustomInput value={state.name} name="name" label="Название фирмы" stateChange={e => handleChange({fElem:e})} errorVal={validationMessages.name.length? true : false} />
+        <SmallDialog title={pk ? "Изменить" : "Создать фирму"} isOpen={isOpen} close={handleClose}>
+            <CustomInput value={state.name} name="name" label="Название фирмы" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.name.length ? true : false} />
             {
-                validationMessages.name.length? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
+                validationMessages.name.length ? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
             }
-            <CustomNumber value={state.inn} name="inn" label="ИНН" stateChange={e => handleChange({fElem:e})} fullWidth errorVal={validationMessages.inn.length? true : false}/>
+            <CustomNumber value={state.inn} name="inn" label="ИНН" stateChange={e => handleChange({ fElem: e })} fullWidth errorVal={validationMessages.inn.length ? true : false} />
             {
-                validationMessages.inn.length? <ValidationMessage>{validationMessages.inn}</ValidationMessage> : null
+                validationMessages.inn.length ? <ValidationMessage>{validationMessages.inn}</ValidationMessage> : null
             }
-            <Button name={pk? "сохранить" : "Добавить фирму"} color="#5762B2" clickHandler={() => pk? handleSubmit(state, pk) : handleSubmit(state)}/>
+            <Button name={pk ? "сохранить" : "Добавить фирму"} color="#5762B2" clickHandler={() => pk ? handleSubmit(state, pk) : handleSubmit(state)} loading={mutationLoading} />
         </SmallDialog>
     );
 };
 
 export default React.memo(FirmCreate, (prevProps, nextProps) => {
-           return prevProps.isOpen === nextProps.isOpen;
+    return prevProps.isOpen === nextProps.isOpen;
 });

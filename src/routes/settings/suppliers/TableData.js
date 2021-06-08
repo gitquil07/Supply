@@ -1,3 +1,7 @@
+import { Row, RowGray } from "components/Row";
+import moment from "moment";
+import { setHeading } from "utils/functions";
+
 export const generateColumns = (url) => {
     return [
         {
@@ -8,59 +12,54 @@ export const generateColumns = (url) => {
             }
         },
         {
-            name: "name",
-            label: "Контактное лицо",
+            name: "createdAt",
+            label: "Дата создания",
             options: {
                 filter: true,
                 sort: true,
+                customBodyRender: value => moment(value).format("YYYY-MM-DD")
             }
         },
         {
-            name: "companyName",
-            label: "Название компании",
+            name: "contactPersonVendorPhone",
+            label: "Контактное лицо / Поставщик\nНомер телефона",
             options: {
                 filter: true,
-                sort: false,
+                sort: true,
+                customHeadRender: setHeading,
+                customBodyRender: value => {
+                    return (
+                        <>
+                            <Row>
+                                {value.contactPerson} / {value.vendor}
+                            </Row>
+                            <RowGray>
+                                {value.phoneNumber}
+                            </RowGray>
+                        </>
+                    );
+                }
             }
         },
         {
-            name: "sapCountry",
-            label: "Страна",
+            name: "address",
+            label: "Страна\nУлица / Дом",
             options: {
                 filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "phoneNumber",
-            label: "Номер телефона",
-            options: {
-                filter: true,
-                sort: false
-            }
-        },
-        {
-            name: "street",
-            label: "Улица",
-            options: {
-                filter: true,
-                sort: false
-            }
-        },
-        {
-            name: "house",
-            label: "Дом",
-            options: {
-                filter: true,
-                sort: false
-            }
-        },
-        {
-            name: "postcode",
-            label: "Почтовый индекс",
-            options: {
-                filter: true,
-                sort: false
+                sort: true,
+                customHeadRender: setHeading,
+                customBodyRender: value => {
+                    return (
+                        <>
+                            <Row>
+                                {value.country}
+                            </Row>
+                            <RowGray>
+                                {value.street} / {value.house}
+                            </RowGray>
+                        </>
+                    );
+                }
             }
         },
     ];

@@ -24,7 +24,8 @@ const FirmsList = () => {
         getDataPagination,
         setAmountOfElemsPerPage,
         dataPaginationRes,
-        setMutateState
+        setMutateState,
+        setIsFirstPage
     } = usePagination({
         qraphQlQuery: PAGINATE_FIRMS,
         singular: "factory",
@@ -42,18 +43,22 @@ const FirmsList = () => {
     }
 
     const firms = getList(dataPaginationRes?.data) || [];
+
     const list = useMemo(() => {
         return firms.map(({ node }) => {
             return {
                 id: node.id,
                 pk: node.pk,
                 name: node.name,
-                inn: node.inn
+                inn: node.inn,
+                factories: node.factories.edges.map(({ node }) => <p style={{ margin: "5px" }}>{node.name}</p>)
             }
         });
     }, [firms])
 
     const firm = list.find(firm => firm.id === id);
+
+    console.log(list)
 
     const editEntry = (id) => {
         setId(id);
@@ -70,7 +75,7 @@ const FirmsList = () => {
     return (
         <>
             <FirmCreate isOpen={createOpen} close={close} entry={firm}
-                setMutateState={setMutateState} getEntries={getDataPagination} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
+                setMutateState={setMutateState} getEntries={getDataPagination} setIsFirstPage={setIsFirstPage} amountOfElemsPerPage={amountOfElemsPerPage} paginatingState={paginatingState} />
             <Helmet title={title} />
             <FlexForHeader>
                 <ButtonWithIcon name="Создать фирму" clicked={() => setCreateOpen(true)} url="#" />

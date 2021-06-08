@@ -17,8 +17,36 @@ import { useHistory } from "react-router-dom";
 import { vendorRoles } from "utils/static";
 import { useCustomMutation, useFormData } from "hooks";
 import { getList } from "utils/functions";
-import { useState } from"react";
+import { useState } from "react";
+import { ValidationMessage } from "components/ValidationMessage";
+import { object, string, number } from "yup";
 
+
+const vendorEnum = vendorRoles.map(vendorRole => vendorRole.label);
+
+const SuppliersValidation = object().shape({
+    sapCountry: number().typeError("Значение для поля 'Страна' не выбрано"),
+    name: string().required("Поле 'Контактное лицо' обязательно к заполнению"),
+    companyName: string().required("Поле 'Фирма' обязательно к заполнению"),
+    phoneNumber: string().required("Поле 'Телефонный номер' обязательно к заполнению"),
+    email: string().email("Некорректный Email адрес").required("Поле 'Email' обязательно к заполнению"),
+    street: string().required("Поле 'Улица' обязательно к заполнению"),
+    house: string().required("Поле 'Дом' обязательно к заполнению"),
+    role: string().typeError("Поле 'Роль' обязательно к заполнению").oneOf(vendorEnum),
+    postcode: number().required("Поле 'Почтовый индекс' обязательно к заполнению"),
+});
+
+const fieldsMessages = {
+    sapCountry: "",
+    name: "",
+    companyName: "",
+    phoneNumber: "",
+    street: "",
+    house: "",
+    role: "",
+    email: "",
+    postcode: ""
+};
 
 const initialState = {
     sapCountry: "",
@@ -35,8 +63,8 @@ const initialState = {
 const SuppliersCreate = ({ match }) => {
 
     const title = useTitle("Создание нового Партнера"),
-          {id} = match.params,
-          history = useHistory();
+        { id } = match.params,
+        history = useHistory();
 
     const {
         state,
@@ -44,26 +72,31 @@ const SuppliersCreate = ({ match }) => {
         handleChange
     } = useFormData(initialState);
 
-    const { submitData } = useCustomMutation({
-            graphQlQuery: {
-                queryCreate: CREATE_VENDOR,
-                queryUpdate: UPDATE_VENDOR
-            }
-        },
+    const { submitData, handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
+        graphQlQuery: {
+            queryCreate: CREATE_VENDOR,
+            queryUpdate: UPDATE_VENDOR
+        }
+    },
         "Партнер",
         () => {
             history.push("/settings/suppliers");
-        }
+        },
+        SuppliersValidation,
+        fieldsMessages
     );
 
+
     const [getSapCountries, sapCountriesRes] = useLazyQuery(GET_SAP_COUNTRIES),
-          sapCountries = getList(sapCountriesRes?.data),
-          [getVendor, vendorRes] = useLazyQuery(GET_VENDOR),
-          pk = vendorRes?.data?.vendor?.vendor?.pk;
+        sapCountries = getList(sapCountriesRes?.data),
+        [getVendor, vendorRes] = useLazyQuery(GET_VENDOR, {
+            fetchPolicy: "no-cache"
+        }),
+        pk = vendorRes?.data?.vendor?.vendor?.pk;
 
     useEffect(() => {
         getSapCountries();
-        if(id !== undefined){
+        if (id !== undefined) {
             getVendor({
                 variables: {
                     id
@@ -77,10 +110,10 @@ const SuppliersCreate = ({ match }) => {
         const vendor = vendorRes.data?.vendor?.vendor;
 
         const state = {};
-        if(vendor){
+        if (vendor) {
             Object.keys(vendor).forEach(key => {
-                if(key !== "pk" && key !== "__typename"){
-                    state[key] = (typeof vendor[key] === "object" && vendor[key] !== null)?  vendor[key]?.pk :  vendor[key];
+                if (key !== "pk" && key !== "__typename") {
+                    state[key] = (typeof vendor[key] === "object" && vendor[key] !== null) ? vendor[key]?.pk : vendor[key];
                 }
             })
         }
@@ -89,12 +122,17 @@ const SuppliersCreate = ({ match }) => {
 
     }, [vendorRes.data?.vendor?.vendor])
 
-    const handleSubmit = () => {
+    const beforeSubmit = () => {
+        console.log("state", state);
         const requestBody = {
             ...state,
-            role: vendorRoles.find(vendorRole => vendorRole.value == state.role).label
+            role: vendorRoles.find(vendorRole => vendorRole.value == state.role)?.label
         }
-        pk? submitData(requestBody, pk) : submitData(requestBody)
+
+        console.log("requestBody", requestBody);
+        // pk? submitData(requestBody, pk) : submitData(requestBody)
+        pk ? handleSubmit(requestBody, pk) : handleSubmit(requestBody)
+
     }
 
     return (
@@ -103,38 +141,83 @@ const SuppliersCreate = ({ match }) => {
             <Form>
                 <p>Информация о Партнере</p>
                 <AddibleInput>
-                    <CustomInput name="name" label="Контактное лицо" value={state.name} stateChange={e => handleChange({fElem: e})} />
-                    <CustomInput name="phoneNumber" label="Номер телефона" value={state.phoneNumber} stateChange={e => handleChange({fElem: e})} />
-                    <CustomInput name="companyName" label="Фирма" value={state.companyName} stateChange={e => handleChange({fElem: e})} />
-                    <CustomInput name="email" label="Email" value={state.email} stateChange={e => handleChange({fElem: e})} />
-                    <CustomSelector name="role" label="Роль" value={state.role} stateChange={e => handleChange({fElem: e})}>
+                    <div>
+                        <CustomInput name="name" label="Контактное лицо" value={state.name} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.name.length ? true : false} />
                         {
-                            vendorRoles.map(role => (
-                                <MenuItem value={role.value}>{role.label}</MenuItem>
-                            ))
+                            validationMessages.name.length ? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
                         }
-                    </CustomSelector>
-                    <CustomInput name="postcode" label="Почтовый индекс" value={state.postcode} stateChange={e => handleChange({fElem: e})} />
+                    </div>
+                    <div>
+                        <CustomInput name="phoneNumber" label="Номер телефона" value={state.phoneNumber} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.phoneNumber.length ? true : false} />
+                        {
+                            validationMessages.phoneNumber.length ? <ValidationMessage>{validationMessages.phoneNumber}</ValidationMessage> : null
+                        }
+                    </div>
+                    <div>
+                        <CustomInput name="companyName" label="Фирма" value={state.companyName} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.companyName.length ? true : false} />
+                        {
+                            validationMessages.companyName.length ? <ValidationMessage>{validationMessages.companyName}</ValidationMessage> : null
+                        }
+                    </div>
+                    <div>
+                        <CustomInput name="email" label="Email" value={state.email} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.email.length ? true : false} />
+                        {
+                            validationMessages.email.length ? <ValidationMessage>{validationMessages.email}</ValidationMessage> : null
+                        }
+                    </div>
+                    <div>
+                        <CustomSelector name="role" label="Роль" value={state.role} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.role.length ? true : false} >
+                            {
+                                vendorRoles.map(role => (
+                                    <MenuItem value={role.value}>{role.label}</MenuItem>
+                                ))
+                            }
+                        </CustomSelector>
+                        {
+                            validationMessages.role.length ? <ValidationMessage>{validationMessages.role}</ValidationMessage> : null
+                        }
+                    </div>
                 </AddibleInput>
 
                 <p>Адрес</p>
                 <AddibleInput>
-                    <CustomSelector name="sapCountry" label="Страна" value={state.sapCountry} stateChange={e => handleChange({fElem: e})}>
+                    <div>
+                        <CustomSelector name="sapCountry" label="Страна" value={state.sapCountry} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.sapCountry.length ? true : false}>
+                            {
+                                sapCountries?.map(({ node }) => {
+                                    return <MenuItem value={node.pk}>{node.name}</MenuItem>
+                                })
+                            }
+                        </CustomSelector>
                         {
-                            sapCountries?.map(({node}) => {
-                                return <MenuItem value={node.pk}>{node.name}</MenuItem>
-                            })
+                            validationMessages.sapCountry.length ? <ValidationMessage>{validationMessages.sapCountry}</ValidationMessage> : null
                         }
-                    </CustomSelector>
-                    <CustomInput name="street" label="Улица" value={state.street} stateChange={e => handleChange({fElem: e})} />
-                    <CustomInput name="house" label="Дом" value={state.house} stateChange={e => handleChange({fElem: e})} />
+                    </div>
+                    <div>
+                        <CustomInput name="street" label="Улица" value={state.street} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.street.length ? true : false} />
+                        {
+                            validationMessages.street.length ? <ValidationMessage>{validationMessages.street}</ValidationMessage> : null
+                        }
+                    </div>
+                    <div>
+                        <CustomInput name="house" label="Дом" value={state.house} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.street.length ? true : false} />
+                        {
+                            validationMessages.house.length ? <ValidationMessage>{validationMessages.house}</ValidationMessage> : null
+                        }
+                    </div>
+                    <div>
+                        <CustomInput name="postcode" label="Почтовый индекс" value={state.postcode} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.postcode.length ? true : false} />
+                        {
+                            validationMessages.postcode.length ? <ValidationMessage>{validationMessages.postcode}</ValidationMessage> : null
+                        }
+                    </div>
                 </AddibleInput>
 
                 <Header>
                 </Header>
             </Form>
             <Footer justify="flex-end">
-                    <Button name={pk? "Сохранить" : "создать"} clickHandler={handleSubmit} /> 
+                <Button name={pk ? "Сохранить" : "создать"} clickHandler={beforeSubmit} loading={mutationLoading} />
             </Footer>
         </>
     )

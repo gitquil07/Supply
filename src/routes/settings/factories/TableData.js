@@ -10,11 +10,12 @@ export const generateColumns = (callback) => {
             }
         },
         {
-            name: "code",
-            label: "Код",
+            name: "createdAt",
+            label: "Дата создания",
             options: {
-                filter: true,
-                sort: false,
+                filter: false,
+                sortL: false,
+                customBodyRender: value => moment(value).format("YYYY-MM-DD")
             }
         },
         {
@@ -34,20 +35,11 @@ export const generateColumns = (callback) => {
             }
         },
         {
-            name: "position",
-            label: "Позиция",
+            name: "code",
+            label: "Код",
             options: {
                 filter: true,
-                sort: false
-            }
-        },
-        {
-            name: "createdAt",
-            label: "Дата создания",
-            options: {
-                filter: false,
-                sortL: false,
-                customBodyRender: value => moment(value).format("YYYY-MM-DD")
+                sort: false,
             }
         }
     ];

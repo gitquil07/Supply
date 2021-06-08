@@ -9,6 +9,9 @@ query nextPage($first: Int, $last: Int, $after: String, $before: String) {
           id
           pk
           name
+          firm{
+            pk
+          }
           officialName
           code
           position
@@ -60,3 +63,17 @@ mutation UPDATE_FACTORY($input: FactoryUpdateMutationInput!) {
   }
 }
 `;
+
+export const GET_FIRMS = gql`
+query getFrims {
+  factory {
+    firms {
+      edges {
+        node {
+          pk
+          name
+        }
+      }
+    }
+  }
+}`;

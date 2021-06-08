@@ -118,11 +118,16 @@ const StyledMUIDataTable = styled(MUIDataTable)`
 
 
     tbody tr td {
-        padding: 15px 10px; 
+        padding: 15px 10px;
+        font-size:17px !important; 
     }
     
     thead th, thead span { 
         font-size: 17px;
+        z-index:100;
+        top:0;
+        position:sticky !important;
+        background-color:#fff;
     }
 
     tbody>tr:nth-child(even) {

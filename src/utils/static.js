@@ -160,7 +160,11 @@ export const vendorSapSearchCriteria = [
 export const paymentOptions = [
     {
         value: "Наличные",
-        label: "cash"
+        label: "Наличные"
+    },
+    {
+        value: "Безналичные",
+        label: "Безналичные"
     }
 ];
 
@@ -332,11 +336,11 @@ export const invoiceStatuses = [
 
 export const degreeOfDanger = [
     {
-        label: "Опасно",
+        label: "опасно",
         value: "OPASNO"
     },
     {
-        label: "Не опасно",
+        label: "не опасно",
         value: "NE_OPASNO"
     }
 ];
@@ -355,11 +359,11 @@ export const currencyOptions = [
     },
     {
         label: "¥",
-        value: "YUAN"
+        value: "CNY"
     },
     {
         label: "€",
-        value: "EURO"
+        value: "EUR"
     },
     {
         label: "₽",

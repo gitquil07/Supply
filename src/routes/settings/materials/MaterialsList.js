@@ -50,7 +50,6 @@ const MaterialsList = ({ match }) => {
             ...obj,
             vendorFactoryProduct: {factory: node.vendorFactory?.factory?.name, vendor: node.vendorFactory?.vendor?.name, product: node.product?.name},  
             deliveryAndProductionDayCount: {deliveryDayCount: node.deliveryDayCount,  productionDayCount: node.productionDayCount, price: node.price,  measure: node.product.measure}
-
         }
     });
 

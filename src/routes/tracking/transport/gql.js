@@ -41,6 +41,7 @@ query getTrackingInfo($id: ID!) {
       brutto
       note
       status
+      trDate
       amount
       currency
       locations{
@@ -57,7 +58,8 @@ query getTrackingInfo($id: ID!) {
         files {
           edges {
             node {
-              file
+              file,
+              fileUrl
             }
           }
         }
@@ -74,7 +76,7 @@ query getTrackingInfo($id: ID!) {
         }
         typeOfPackaging
         degreeOfDanger
-        count
+        packageOnPallet
         createdAt
       }
     }
@@ -159,6 +161,7 @@ query getInvoices($id: ID!) {
             number
             destination
             status
+            relativeWeight
           }
         }
       }

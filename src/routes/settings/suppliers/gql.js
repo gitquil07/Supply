@@ -16,6 +16,7 @@ query nextPage($first: Int, $last: Int, $after: String, $before: String) {
           street
           house
           postcode
+          createdAt
         }
       }
       pageInfo {

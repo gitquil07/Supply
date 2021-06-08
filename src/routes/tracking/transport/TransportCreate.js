@@ -35,7 +35,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import moment from "moment";
 import { useMutation } from "@apollo/client";
 import { NotificationManager } from "react-notifications";
-import { FileElement, FilesList } from "components/Inputs/DragFile";
+import { FileElementA, FilesList } from "components/Inputs/DragFile";
 import { indexOf } from "ramda";
 
 
@@ -45,7 +45,8 @@ const initialState = {
     currency: "",
     netto: "",
     brutto: "",
-    amount: ""
+    amount: "",
+    trDate: new Date()
 };
 
 const TrackingTransportCreate = ({ match }) => {
@@ -55,7 +56,6 @@ const TrackingTransportCreate = ({ match }) => {
     const title = useTitle("Изменение Слежения");
     const [additionalData, setAdditionalData] = useState({
         status: "",
-        trDate: new Date(),
         locations: ""
     });
     const [applications, setApplications] = useState([
@@ -78,7 +78,7 @@ const TrackingTransportCreate = ({ match }) => {
     // const [state, setState] = useState();
 
     const {
-        submitData
+        submitData, mutationLoading
     } = useCustomMutation({
         graphQlQuery: {
             queryCreate: UPDATE_TRACKING,
@@ -194,13 +194,13 @@ const TrackingTransportCreate = ({ match }) => {
             setAdditionalData({
                 ...additionalData,
                 status: trackingInfo.status,
-                trDate: trackingInfo.trDate,
             })
         }
     }, [trackingInfoRes?.data]);
 
+
     useEffect(() => {
-        console.log("state", state);
+        console.log("state tracking", state);
     }, [state]);
 
     useEffect(() => {
@@ -213,7 +213,6 @@ const TrackingTransportCreate = ({ match }) => {
             const requestBody = {
                 ...exceptKey(state, ["pk", "publicId"]),
                 status: trackingStatuses.find(status => status.value === additionalData.status).label,
-                trDate: moment(additionalData.trDate).format("YYYY-MM-DD"),
                 locations: [{
                     name: additionalData.locations
                 }]
@@ -236,7 +235,7 @@ const TrackingTransportCreate = ({ match }) => {
 
             const invoicesToUpdate = invoiceList.map(invoice => {
                 return {
-                    ...exceptKey(invoice, ["pk"]),
+                    ...exceptKey(invoice, ["pk", "relativeWeight"]),
                     status: invoiceStatuses.find(invoiceStatus => invoiceStatus.value == invoice.status).label
                 }
             });
@@ -252,14 +251,18 @@ const TrackingTransportCreate = ({ match }) => {
 
             console.log("state", exceptKey(state, ["pk", "publicId"]));
 
+            const requestBody = { ...state };
+
+            requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
+
             submitData({
-                ...exceptKey(state, ["pk", "publicId", "status"])
+                ...exceptKey(requestBody, ["pk", "publicId", "status"])
             }, pk);
-            // getTrackingInfo({
-            //     variables: {
-            //         id
-            //     }
-            // });
+            getTrackingInfo({
+                variables: {
+                    id
+                }
+            });
         }
     }
 
@@ -289,6 +292,10 @@ const TrackingTransportCreate = ({ match }) => {
         const tmp = invoiceList.slice(0);
         tmp[idx][e.target.name] = e.target.value;
         setInvoiceList(tmp);
+    }
+
+    const handleDateChange = (date) => {
+        setState({ ...state, trDate: date });
     }
 
     const expand = (index) => {
@@ -329,6 +336,7 @@ const TrackingTransportCreate = ({ match }) => {
                         </CustomSelector>
                         <CustomNumber name="netto" label="Нетто" value={state?.netto} stateChange={e => handleChange({ fElem: e })} />
                         <CustomNumber name="brutto" label="Бруто" value={state?.brutto} stateChange={e => handleChange({ fElem: e })} />
+                        <CustomPicker date={state.trDate} name="trDate" stateChange={date => handleDateChange(date)} label="Дата" />
                     </CustomizableInputs>
                 </MiniForm>
 
@@ -338,12 +346,12 @@ const TrackingTransportCreate = ({ match }) => {
                             <Title size="18">Инвойсы</Title>
                             {
                                 invoiceList.map((invoice, idx) =>
-                                    <CustomizableInputs t="1fr 1fr 1fr">
+                                    <CustomizableInputs t="1fr 1fr 1fr 1fr">
                                         <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
                                         <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
                                             {
                                                 invoiceStatuses.map(invoiceStatus =>
-                                                    <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status === invoiceStatus.value}>{invoiceStatus.label}</MenuItem>
+                                                    <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status == invoiceStatus.value}>{invoiceStatus.label}</MenuItem>
                                                 )
                                             }
                                         </CustomSelector>
@@ -354,6 +362,7 @@ const TrackingTransportCreate = ({ match }) => {
                                                 )
                                             }
                                         </CustomSelector>
+                                        <CustomInput label="Относительный вес" value={invoice.relativeWeight} stateChange={() => { }} disabled={true} />
                                         {/* <CustomInput name="destination" label="место назначения" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination} /> */}
                                     </CustomizableInputs>
 
@@ -382,7 +391,6 @@ const TrackingTransportCreate = ({ match }) => {
                                 )
                             }
                         </CustomSelector>
-                        <CustomPicker date={additionalData.trDate} name="trDate" stateChange={date => setAdditionalData({ ...additionalData, trDate: date })} label="Дата" />
                         <CustomInput value={additionalData.location} name="location" stateChange={e => setAdditionalData({ ...additionalData, locations: e.target.value })} label="Местонахождение" />
                         <Button value={additionalData.status} name="Добавить местонахождение" color="#5762B2" clickHandler={() => handleAdditionalDataSubmit(true)} />
                     </CustomizableInputs>
@@ -477,14 +485,14 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Тип заявки</h4>
                             <span>{applicationInfo?.transportMix ? "Сборная" : "Обычная"}</span>
                         </Item>
-                        <Item>
+                        {/* <Item>
                             <h4>
                                 Вид упаковки
                             </h4>
                             <span>
                                 {applicationInfo?.typeOfPackaging}
                             </span>
-                        </Item>
+                        </Item> */}
                         <Item>
                             <h4>
                                 Степень опасности
@@ -495,19 +503,19 @@ const TrackingTransportCreate = ({ match }) => {
                         </Item>
                         <Item>
                             <h4>
-                                Количество упаковки
+                                Количество мест
                             </h4>
                             <span>
-                                {applicationInfo?.count}
+                                {applicationInfo?.packageOnPallet.slice(0, applicationInfo?.packageOnPallet.indexOf("."))}
                             </span>
                         </Item>
                     </List>
 
                     <FilesList>
                         {ApplicationFiles?.map(({ node }, i) =>
-                            <FileElement key={i} onClick={() => downloadFile(node.file)}>
-                                {node.name}
-                            </FileElement>)}
+                            <FileElementA key={i} href={node.fileUrl} download>
+                                {node.file.split("/")[1]}
+                            </FileElementA>)}
                     </FilesList>
 
                     <Title size="18">Материалы</Title>
@@ -617,7 +625,7 @@ const TrackingTransportCreate = ({ match }) => {
             </Form>
 
             <Footer justify="flex-end">
-                <Button name="сохранить" clickHandler={() => handleAdditionalDataSubmit()} />
+                <Button name="сохранить" clickHandler={() => handleAdditionalDataSubmit()} loading={mutationLoading} />
             </Footer>
 
             <SmallDialog title="Добавить заявку" close={closeRequestDialog} isOpen={requestDialogState}>

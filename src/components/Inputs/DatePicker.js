@@ -5,7 +5,7 @@ import Calendar from "../../assets/icons/calendar.svg";
 import styled from "styled-components";
 
 
-const CustomPicker = ({ date, stateChange, label }) => {
+const CustomPicker = ({ date, stateChange, label, disabled }) => {
     return (
         <Wrapper>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -18,6 +18,7 @@ const CustomPicker = ({ date, stateChange, label }) => {
                     inputVariant="outlined"
                     label={label}
                     value={date}
+                    disbled={disabled}
                     onChange={date => stateChange(date)}
                 />
             </MuiPickersUtilsProvider>

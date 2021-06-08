@@ -23,7 +23,17 @@ export const generateColumns = (callback) => {
                 sort: true,
                 filter: true
             }
+        },
+        {
+            name: "factories",
+            label: "Заводов",
+            options: {
+                sort: true,
+                filter: true,
+                customBodyRender: value => <div style={{ fontSize: "14px" }}>{value}</div>
+            }
         }
+
     ];
 
 

@@ -82,24 +82,28 @@ export const Customs = [
 
 export const Settings = [
     {
-        name: "Пользователи",
-        url: "/settings/users"
+        name: "Фирмы",
+        url: "/settings/firms"
     },
     {
         name: "Заводы",
         url: "/settings/factories"
     },
     {
-        name: "Партнеры",
-        url: "/settings/suppliers"
+        name: "Пользователи",
+        url: "/settings/users"
+    },
+    {
+        name: "Продукты",
+        url: "/settings/products"
     },
     {
         name: "База данных",
         url: "/settings/materials"
     },
     {
-        name: "Продукты",
-        url: "/settings/products"
+        name: "Партнеры",
+        url: "/settings/suppliers"
     },
     {
         name: "Поставщики",
@@ -109,10 +113,7 @@ export const Settings = [
         name: "Транспорт",
         url: "/settings/transports"
     },
-    {
-        name: "Фирмы",
-        url: "/settings/firms"
-    }
+
 ];
 
 export const navElements = [

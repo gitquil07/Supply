@@ -45,7 +45,7 @@ const VendorFactoriesList = ({ match }) => {
     const list = useMemo(() => vendorFactories.map(({ node }) => {
         return {
             ...exceptKey(node, ["__typename"]),
-            vendor: node.vendor?.name,
+            vendor: node.vendor?.companyName,
             factory: node.factory?.name
         }
     }), [vendorFactories]);

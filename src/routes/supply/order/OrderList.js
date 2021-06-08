@@ -65,8 +65,7 @@ const OrderList = ({ match }) => {
         return {
             id: node.id,
             pk: node.pk,
-            factory: node.vendorFactory?.factory.name,
-            vendor: node.vendorFactory?.vendor.name,
+            vendorFactory: { factory: node.vendorFactory?.factory.name, vendor: node.vendorFactory?.vendor.name  },
             status: statuses.find(status => status.value == node.status).label,
             invoice_proforma: node.invoiceProforma,
             invoice_date: node.invoiceDate,

@@ -1,7 +1,7 @@
-import { Row } from "components/Row";
+import { Row, RowGray } from "components/Row";
 import moment from "moment";
 
-export const generateColumns = (callback) => {
+export const generateColumns = () => {
     const options = {
         filter: true,
         sort: false
@@ -55,8 +55,8 @@ export const generateColumns = (callback) => {
                     if (typeof value === "object") {
                         return (
                             <>
-                                <Row>Декларант: {value.declarant}</Row>
-                                <Row>Контрактор: {value.contractor}</Row>
+                                <RowGray>Декларант: {value.declarant}</RowGray>
+                                <RowGray>Контрактор: {value.contractor}</RowGray>
                             </>
                         )
                     }

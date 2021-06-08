@@ -143,8 +143,13 @@ query getVendorProduct($id: ID!) {
       isActive
       vendorFactory {
         pk
+        vendor{
+          pk
+          name
+        }
         factory {
           pk
+          name
         }
       }
       product {

@@ -19,13 +19,15 @@ import VendorFactoryCreate from "./vendorFactories/VendorFactoryCreate";
 import TransportsList from "./transports/TransportsList";
 import FirmsList from "./firms/FirmsList"; 
 
+import { ProtectedRoute } from "authorization/routes";
+
 const Settings = ({ match }) => {
 
     const url = (path) => `${match.url}/${path}`;
 
     return (
         <>
-            <Route path={url("users")} component={UsersList} exact />
+            <ProtectedRoute path={url("users")} component={UsersList} exact />
 
             <Route path={url("factories")} component={FactoryList} exact />
 
