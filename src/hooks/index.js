@@ -5,6 +5,7 @@ import { NotificationManager } from "react-notifications";
 import { onResponseComplete } from "../utils/functions";
 import moment from "moment";
 import { ValidationMessage } from "components/ValidationMessage";
+import { formatInputPrice } from "utils/functions";
 
 export const useDateRange = (query) => {
 
@@ -315,10 +316,18 @@ export const useFormData = (initialState = {}) => {
         }
     }
 
+    const handlePriceChange = (e) => {
+        setState({
+            ...state,
+            price: formatInputPrice(e.target.value)
+        })
+    }
+
     return {
         state,
         setState,
-        handleChange
+        handleChange,
+        handlePriceChange
     }
 }
 

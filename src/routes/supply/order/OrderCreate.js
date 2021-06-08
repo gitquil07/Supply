@@ -29,6 +29,7 @@ import { getList, getValueOfProperty } from "../../../utils/functions";
 import { useTemplate } from "../../../hooks";
 import { ValidationMessage } from "components/ValidationMessage";
 import { object, number } from "yup";
+import { formatInputPrice } from "utils/functions";
 
 const OrderSchema = object().shape({
     vendorFactory: number().typeError("Значение для поля 'Поставщик' не выбрано"),
@@ -197,9 +198,14 @@ const OrderCreate = ({ match }) => {
         }
 
         if (dataType === "material") {
+            
             const materialsCopy = materials.slice(0);
-            setProductionDayCounts({ ...productionDayCounts, [index]: event.target.value });
-            materialsCopy[index] = { ...materialsCopy[index], [event.target.name]: event.target.value }
+            if(event.target.name == "price"){
+                materialsCopy[index] = { ...materialsCopy[index], price: formatInputPrice(event.target.value) }
+            }else{
+                materialsCopy[index] = { ...materialsCopy[index], [event.target.name]: event.target.value }
+                setProductionDayCounts({ ...productionDayCounts, [index]: event.target.value });
+            }
             setMaterials(materialsCopy);
         }
     }
@@ -234,9 +240,9 @@ const OrderCreate = ({ match }) => {
     const getAproximateDeliveryDate = (date, productionDayCounts) => {
 
         console.log("date", date);
-        console.log("productionDayCounts", productionDayCounts);
+        console.log("date productionDayCounts", productionDayCounts);
 
-        if (productionDayCounts) {
+        if (productionDayCounts !== undefined) {
             const dateInMilliseconds = (typeof date == "number") ? date : new Date(date).getTime(),
                 daysInMilliseconds = 1000 * 60 * 60 * 24 * productionDayCounts,
                 aproximateDeliveryDate = moment(new Date(dateInMilliseconds + daysInMilliseconds).toISOString()).format("DD.MM.YYYY");

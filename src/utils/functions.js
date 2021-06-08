@@ -322,10 +322,8 @@ export const formatInputPrice = (input) => {
 
     return  formatPrice(cleanedInput);
 
-    // return formatPrice(cleanedInput);
 
 }
-// }
 
 
 export const fullscreen = (id) => {

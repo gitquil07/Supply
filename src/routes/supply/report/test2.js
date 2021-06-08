@@ -229,7 +229,7 @@ const TestTable2 = () => {
                                             }
 
                                             // console.log("cage classes", cageClasses);
-                                            return <td className={cageClasses}>{(!isNaN(col) && col.length > 0)? formatPrice(col) : col}</td>
+                                            return <td className={cageClasses}>{goToNewLine((!isNaN(col) && col.length > 0)? formatPrice(col) : col)}</td>
                                             // return <td className={cageClasses}>{col}</td>
                                     })
                                 }
