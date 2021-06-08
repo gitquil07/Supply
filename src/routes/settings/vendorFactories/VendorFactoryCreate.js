@@ -24,15 +24,11 @@ import { getList } from "utils/functions";
 import { ValidationMessage } from "components/ValidationMessage";
 import { object, string, number, date, boolean } from "yup";
 
-const paymentConditionEnum = [
-    "Наличные",
-    "Безналичные"
-]
 
 const VendorFactoryValidation = object().shape({
     vendor: number().typeError("Значение для поля 'Поставщик' не выбрано"),
     factory: number().typeError("Значение для поля 'Поставщик' не выбрано"),
-    paymentCondition: string().oneOf(paymentConditionEnum, "Недопустимое значение для поля 'Условия оплаты'"),
+    paymentCondition: string().typeError("Недопустимое значение для поля 'Условия оплаты'").required("Поле 'Название транспорта' обязательно к заполнению"),
 })
 
 const fildsMessages = {
@@ -218,13 +214,7 @@ const FactoryCreate = ({ match }) => {
 
                     }
                     <div>
-                        <CustomSelector label="Условия оплаты" name="paymentCondition" stateChange={e => handleChange({ fElem: e })} value={state.paymentCondition} errorVal={validationMessages.paymentCondition.length ? true : false}>
-                            {
-                                paymentOptions?.map(option =>
-                                    <MenuItem value={option.value}>{option.label}</MenuItem>
-                                )
-                            }
-                        </CustomSelector>
+                        <CustomInput label="Условия оплаты" name="paymentCondition" stateChange={e => handleChange({ fElem: e })} value={state.paymentCondition} errorVal={validationMessages.paymentCondition.length ? true : false} />
                         {
                             validationMessages.paymentCondition.length ? <ValidationMessage>{validationMessages.paymentCondition}</ValidationMessage> : null
                         }
