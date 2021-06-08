@@ -177,12 +177,6 @@ const SuppliersCreate = ({ match }) => {
                             validationMessages.role.length ? <ValidationMessage>{validationMessages.role}</ValidationMessage> : null
                         }
                     </div>
-                    <div>
-                        <CustomInput name="postcode" label="Почтовый индекс" value={state.postcode} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.postcode.length ? true : false} />
-                        {
-                            validationMessages.postcode.length ? <ValidationMessage>{validationMessages.postcode}</ValidationMessage> : null
-                        }
-                    </div>
                 </AddibleInput>
 
                 <p>Адрес</p>
@@ -209,6 +203,12 @@ const SuppliersCreate = ({ match }) => {
                         <CustomInput name="house" label="Дом" value={state.house} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.street.length ? true : false} />
                         {
                             validationMessages.house.length ? <ValidationMessage>{validationMessages.house}</ValidationMessage> : null
+                        }
+                    </div>
+                    <div>
+                        <CustomInput name="postcode" label="Почтовый индекс" value={state.postcode} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.postcode.length ? true : false} />
+                        {
+                            validationMessages.postcode.length ? <ValidationMessage>{validationMessages.postcode}</ValidationMessage> : null
                         }
                     </div>
                 </AddibleInput>
