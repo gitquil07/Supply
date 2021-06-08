@@ -37,6 +37,7 @@ import { useMutation } from "@apollo/client";
 import { NotificationManager } from "react-notifications";
 import { FileElementA, FilesList } from "components/Inputs/DragFile";
 import { indexOf } from "ramda";
+import { ValidationMessage } from "components/ValidationMessage";
 
 
 const initialState = {
@@ -334,7 +335,10 @@ const TrackingTransportCreate = ({ match }) => {
                                 )
                             }
                         </CustomSelector>
-                        <CustomNumber name="netto" label="Нетто" value={state?.netto} stateChange={e => handleChange({ fElem: e })} />
+                        <div>
+                            <CustomNumber name="netto" label="Нетто" value={state?.netto} stateChange={e => handleChange({ fElem: e })} />
+                            {state?.brutto <= state?.netto ? <ValidationMessage>Нетто должно быть меньше Бруто</ValidationMessage> : null}
+                        </div>
                         <CustomNumber name="brutto" label="Бруто" value={state?.brutto} stateChange={e => handleChange({ fElem: e })} />
                         <CustomPicker date={state.trDate} name="trDate" stateChange={date => handleDateChange(date)} label="Дата" />
                     </CustomizableInputs>
