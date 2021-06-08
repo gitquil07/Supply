@@ -15,7 +15,7 @@ import { useHistory } from "react-router-dom";
 import { currencyOptions } from "utils/static";
 import Switch from "@material-ui/core/Switch";
 import { CustomNumber } from "components/Inputs/CustomNumber";
-
+import { formatInputPrice } from "utils/functions";
 
 import { GET_FACTORIES, GET_VENDOR_FACTORIES, GET_PRODUCTS, CREATE_VENDOR_PRODUCT, UPDATE_VENDOR_PRODUCT, GET_VENDOR_PRODUCT, GET_VENDOR_PRODUCT_HISTORY } from "./gql";
 import { exceptKey, getValueOfProperty } from "utils/functions";
@@ -24,6 +24,7 @@ import { getList } from "utils/functions";
 import moment from "moment";
 import { ValidationMessage } from "components/ValidationMessage";
 import { object, number, string, boolean } from "yup";
+
 
 
 const currencyEnum = currencyOptions.map(currency => currency.value);
@@ -77,7 +78,8 @@ const SuppliersCreate = ({ match }) => {
     const {
         state,
         setState,
-        handleChange
+        handleChange,
+        handlePriceChange
     } = useFormData(initialState);
 
     const [getFactories, factoriesRes] = useLazyQuery(GET_FACTORIES),
@@ -196,6 +198,7 @@ const SuppliersCreate = ({ match }) => {
     //       vendor = vendorFactories.find(({node}) => node.pk == state.vendorFactory)?.name,
     //       product = products.find(({node}) => node.pk == state.product)?.name;
 
+
     return (
         <>
             <Helmet title={title} />
@@ -259,7 +262,7 @@ const SuppliersCreate = ({ match }) => {
                         }
                     </div>
                     <div>
-                        <CustomNumber label="Цена" name="price" value={state.price} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.price.length > 0 ? true : false} />
+                        <CustomInput label="Цена" name="price" value={state.price} stateChange={e => handlePriceChange(e)} errorVal={validationMessages.price.length > 0 ? true : false} />
                         {
                             validationMessages.price.length > 0 ? <ValidationMessage>{validationMessages.price}</ValidationMessage> : null
                         }

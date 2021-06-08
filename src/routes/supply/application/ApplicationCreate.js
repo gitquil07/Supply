@@ -37,6 +37,7 @@ import EditHoveredIcon from "assets/icons/editHovered.svg";
 import { uploadFile } from 'api';
 import { ValidationMessage } from "components/ValidationMessage";
 import { object, number, string } from "yup";
+import { formatInputPrice } from "utils/functions";
 
 
 const deliveryConditionEnum = deliveryCondition.map(condition => condition.value);
@@ -266,7 +267,12 @@ const ApplicationCreate = ({ match }) => {
 
     const handleItemChange = (e, idx) => {
         const tmp = items.slice(0);
-        tmp[idx][e.target.name] = e.target.value;
+        
+        if(e.target.name == "invoicePrice"){
+            tmp[idx][e.target.name] = formatInputPrice(e.target.value);
+        }else{
+            tmp[idx][e.target.name] = e.target.value;
+        }
 
         if (e.target.name === "orderItem") {
             const requiredCount = orderItems.find(({ node }) => node.pk === e.target.value).node.requiredCount;
@@ -502,7 +508,7 @@ const ApplicationCreate = ({ match }) => {
                                     <CustomInputWithComponent type="text" fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} component={<Measure value="3" index>м</Measure>} />
                                     {/* <CustomNumber fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} />
                                         <CustomNumber fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} /> */}
-                                    <CustomNumber fullWidth label="Цена инвойса" value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
+                                    <CustomInput fullWidth label="Цена инвойса" value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
                                 </Row>
                             </RowWrapper>
                             <RemoveIcon clicked={() => remove(index)} />
