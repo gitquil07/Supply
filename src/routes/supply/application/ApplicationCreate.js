@@ -150,7 +150,7 @@ const ApplicationCreate = ({ match }) => {
 
 
     const {
-        submitData, handleSubmit, validationMessages
+        submitData, handleSubmit, validationMessages, mutationLoading
     } = useCustomMutation({
         graphQlQuery: {
             queryCreate: CREATE_APPLICATION,
@@ -207,14 +207,14 @@ const ApplicationCreate = ({ match }) => {
         if (application !== undefined) {
             setState({
                 ...exceptKey(application, ["applicationItems", "__typename", "pk"]),
-                trackingUser: application.trackingUser.pk, 
+                trackingUser: application.trackingUser.pk,
                 transportType: application.transportType.pk,
                 orders: application.orders.edges.map(({ node }) => node.pk)
             });
 
             console.log("applicationRes?.data?.application?.application?.files?.edges", applicationRes?.data?.application?.application?.files?.edges)
 
-            if(applicationRes?.data?.application?.application?.files?.edges.length > 0){
+            if (applicationRes?.data?.application?.application?.files?.edges.length > 0) {
                 setFiles({
                     ...files,
                     fetched: [
@@ -299,7 +299,7 @@ const ApplicationCreate = ({ match }) => {
         requestBody.applicationItems = !pk ? items.map(item => exceptKey(item, "invoice")) : items;
         // console.log("requestBody", requestBody);
 
-       
+
         requestBody.files = files.uploaded.map(file => file.file_id);
         // if (files.uploaded.length > 0) {
         //     uploadFile('/api-file/documents/', files.uploaded)
@@ -317,7 +317,7 @@ const ApplicationCreate = ({ match }) => {
     }
 
     const remove = (idx) => {
-        const tmp =  {...requiredCounts};
+        const tmp = { ...requiredCounts };
         delete tmp[idx];
         setRequiredCounts(tmp);
         removeTempl(idx);
@@ -362,7 +362,7 @@ const ApplicationCreate = ({ match }) => {
                             </CustomSelector>
                     }
                     <div>
-                        <CustomSelector label="Логист" value={state.trackingUser} name="trackingUser" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.trackingUser.length? true : false} >
+                        <CustomSelector label="Логист" value={state.trackingUser} name="trackingUser" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.trackingUser.length ? true : false} >
                             {
                                 trackingUserType.map(({ node }) =>
                                     <MenuItem key={node.pk} value={node.pk}>{node.username}</MenuItem>
@@ -370,11 +370,11 @@ const ApplicationCreate = ({ match }) => {
                             }
                         </CustomSelector>
                         {
-                            validationMessages.trackingUser.length? <ValidationMessage>{validationMessages.trackingUser}</ValidationMessage> : null
+                            validationMessages.trackingUser.length ? <ValidationMessage>{validationMessages.trackingUser}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomSelector label="Тип транспорта" value={state.transportType} name="transportType" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.transportCount.length? true : false}>
+                        <CustomSelector label="Тип транспорта" value={state.transportType} name="transportType" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.transportCount.length ? true : false}>
                             {
                                 transportTypes.map(({ node }) =>
                                     <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.transportType}>{node.name}</MenuItem>
@@ -382,11 +382,11 @@ const ApplicationCreate = ({ match }) => {
                             }
                         </CustomSelector>
                         {
-                            validationMessages.transportType.length? <ValidationMessage>{validationMessages.transportType}</ValidationMessage> : null
+                            validationMessages.transportType.length ? <ValidationMessage>{validationMessages.transportType}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomSelector label="Условия доставки" value={state.deliveryCondition} name="deliveryCondition" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.deliveryCondition.length? true : false}>
+                        <CustomSelector label="Условия доставки" value={state.deliveryCondition} name="deliveryCondition" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.deliveryCondition.length ? true : false}>
                             {
                                 deliveryCondition.map(condition =>
                                     <MenuItem key={condition.value} value={condition.value} selected={state.deliveryCondition === condition.value}>{condition.value}</MenuItem>
@@ -394,7 +394,7 @@ const ApplicationCreate = ({ match }) => {
                             }
                         </CustomSelector>
                         {
-                            validationMessages.deliveryCondition.length? <ValidationMessage>{validationMessages.deliveryCondition}</ValidationMessage> : null
+                            validationMessages.deliveryCondition.length ? <ValidationMessage>{validationMessages.deliveryCondition}</ValidationMessage> : null
                         }
                     </div>
                     {/* <CustomSelector label="Тип упаковки" name="typeOfPackaging" value={state.typeOfPackaging} stateChange={e => handleChange({fElem: e})}>
@@ -406,7 +406,7 @@ const ApplicationCreate = ({ match }) => {
                         }
                     </CustomSelector> */}
                     <div>
-                        <CustomSelector label="Уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.degreeOfDanger.length? true : false}>
+                        <CustomSelector label="Уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.degreeOfDanger.length ? true : false}>
                             {
                                 degreeOfDanger.map(level =>
                                     <MenuItem key={level.value} value={level.value} selected={state.degreeOfDanger === level.value} >{level.label}</MenuItem>
@@ -414,26 +414,26 @@ const ApplicationCreate = ({ match }) => {
                             }
                         </CustomSelector>
                         {
-                            validationMessages.degreeOfDanger.length? <ValidationMessage>{validationMessages.degreeOfDanger}</ValidationMessage> : null
+                            validationMessages.degreeOfDanger.length ? <ValidationMessage>{validationMessages.degreeOfDanger}</ValidationMessage> : null
                         }
                     </div>
                     {/* <CustomInput label="уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({fElem: e})}/> */}
                     <div>
-                        <CustomNumber label="Кол-во мест" value={state.packageOnPallet} name="packageOnPallet" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.packageOnPallet.length? true : false}/>
+                        <CustomNumber label="Кол-во мест" value={state.packageOnPallet} name="packageOnPallet" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.packageOnPallet.length ? true : false} />
                         {
-                            validationMessages.packageOnPallet.length? <ValidationMessage>{validationMessages.packageOnPallet}</ValidationMessage> : null
+                            validationMessages.packageOnPallet.length ? <ValidationMessage>{validationMessages.packageOnPallet}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomNumber label="Кол-во транспорта" value={state.transportCount} name="transportCount" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.transportCount.length? true : false}/>
+                        <CustomNumber label="Кол-во транспорта" value={state.transportCount} name="transportCount" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.transportCount.length ? true : false} />
                         {
-                            validationMessages.transportCount.length? <ValidationMessage>{validationMessages.transportCount}</ValidationMessage> : null
+                            validationMessages.transportCount.length ? <ValidationMessage>{validationMessages.transportCount}</ValidationMessage> : null
                         }
                     </div>
-                    
+
                     <CustomPicker label="Дата отгрузки" date={state.shippingDate} name="shippingDate" stateChange={date => handleDateChange(date)} />
                     <div>
-                        <CustomSelector label="Статус" name="status" value={state.status} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.status.length? true : false}>
+                        <CustomSelector label="Статус" name="status" value={state.status} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.status.length ? true : false}>
                             {
                                 statuses.map(status => {
                                     return <MenuItem key={status.label} value={status.value} selected={state.status === status.value}>{status.label}</MenuItem>
@@ -442,7 +442,7 @@ const ApplicationCreate = ({ match }) => {
                             }
                         </CustomSelector>
                         {
-                            validationMessages.status.length? <ValidationMessage>{validationMessages.status}</ValidationMessage> : null
+                            validationMessages.status.length ? <ValidationMessage>{validationMessages.status}</ValidationMessage> : null
                         }
                     </div>
                 </AddibleInput>
@@ -502,11 +502,11 @@ const ApplicationCreate = ({ match }) => {
                                     <CustomInputWithComponent type="text" fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} component={<Measure value="3" index>м</Measure>} />
                                     {/* <CustomNumber fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} />
                                         <CustomNumber fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} /> */}
-                                        <CustomNumber fullWidth label="Цена инвойса"  value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
-                                    </Row>
-                                </RowWrapper>
-                                <RemoveIcon clicked={() => remove(index)}/>
-                            </Material>
+                                    <CustomNumber fullWidth label="Цена инвойса" value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
+                                </Row>
+                            </RowWrapper>
+                            <RemoveIcon clicked={() => remove(index)} />
+                        </Material>
                     })
                 }
             </Form>
@@ -517,7 +517,7 @@ const ApplicationCreate = ({ match }) => {
 
             <Footer>
                 <span>Кол-во материалов: {items?.length}</span>
-                <Button name={pk ? "Сохранить" : "Создать"} clickHandler={beforeSubmit} />
+                <Button name={pk ? "Сохранить" : "Создать"} clickHandler={beforeSubmit} loading={mutationLoading} />
             </Footer>
         </>
     )

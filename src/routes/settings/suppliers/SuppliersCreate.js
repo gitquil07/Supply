@@ -17,7 +17,7 @@ import { useHistory } from "react-router-dom";
 import { vendorRoles } from "utils/static";
 import { useCustomMutation, useFormData } from "hooks";
 import { getList } from "utils/functions";
-import { useState } from"react";
+import { useState } from "react";
 import { ValidationMessage } from "components/ValidationMessage";
 import { object, string, number } from "yup";
 
@@ -63,8 +63,8 @@ const initialState = {
 const SuppliersCreate = ({ match }) => {
 
     const title = useTitle("Создание нового Партнера"),
-          {id} = match.params,
-          history = useHistory();
+        { id } = match.params,
+        history = useHistory();
 
     const {
         state,
@@ -72,12 +72,12 @@ const SuppliersCreate = ({ match }) => {
         handleChange
     } = useFormData(initialState);
 
-    const { submitData, handleSubmit, validationMessages } = useCustomMutation({
-            graphQlQuery: {
-                queryCreate: CREATE_VENDOR,
-                queryUpdate: UPDATE_VENDOR
-            }
-        },
+    const { submitData, handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
+        graphQlQuery: {
+            queryCreate: CREATE_VENDOR,
+            queryUpdate: UPDATE_VENDOR
+        }
+    },
         "Партнер",
         () => {
             history.push("/settings/suppliers");
@@ -88,15 +88,15 @@ const SuppliersCreate = ({ match }) => {
 
 
     const [getSapCountries, sapCountriesRes] = useLazyQuery(GET_SAP_COUNTRIES),
-          sapCountries = getList(sapCountriesRes?.data),
-          [getVendor, vendorRes] = useLazyQuery(GET_VENDOR, {
-              fetchPolicy: "no-cache"
-          }),
-          pk = vendorRes?.data?.vendor?.vendor?.pk;
+        sapCountries = getList(sapCountriesRes?.data),
+        [getVendor, vendorRes] = useLazyQuery(GET_VENDOR, {
+            fetchPolicy: "no-cache"
+        }),
+        pk = vendorRes?.data?.vendor?.vendor?.pk;
 
     useEffect(() => {
         getSapCountries();
-        if(id !== undefined){
+        if (id !== undefined) {
             getVendor({
                 variables: {
                     id
@@ -110,10 +110,10 @@ const SuppliersCreate = ({ match }) => {
         const vendor = vendorRes.data?.vendor?.vendor;
 
         const state = {};
-        if(vendor){
+        if (vendor) {
             Object.keys(vendor).forEach(key => {
-                if(key !== "pk" && key !== "__typename"){
-                    state[key] = (typeof vendor[key] === "object" && vendor[key] !== null)?  vendor[key]?.pk :  vendor[key];
+                if (key !== "pk" && key !== "__typename") {
+                    state[key] = (typeof vendor[key] === "object" && vendor[key] !== null) ? vendor[key]?.pk : vendor[key];
                 }
             })
         }
@@ -129,9 +129,9 @@ const SuppliersCreate = ({ match }) => {
             role: vendorRoles.find(vendorRole => vendorRole.value == state.role)?.label
         }
 
-        console.log("requestBody",requestBody);
+        console.log("requestBody", requestBody);
         // pk? submitData(requestBody, pk) : submitData(requestBody)
-        pk? handleSubmit(requestBody, pk) : handleSubmit(requestBody)
+        pk ? handleSubmit(requestBody, pk) : handleSubmit(requestBody)
 
     }
 
@@ -142,31 +142,31 @@ const SuppliersCreate = ({ match }) => {
                 <p>Информация о Партнере</p>
                 <AddibleInput>
                     <div>
-                        <CustomInput name="name" label="Контактное лицо" value={state.name} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.name.length? true : false} />
+                        <CustomInput name="name" label="Контактное лицо" value={state.name} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.name.length ? true : false} />
                         {
-                            validationMessages.name.length? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
+                            validationMessages.name.length ? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomInput name="phoneNumber" label="Номер телефона" value={state.phoneNumber} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.phoneNumber.length? true : false}/>
+                        <CustomInput name="phoneNumber" label="Номер телефона" value={state.phoneNumber} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.phoneNumber.length ? true : false} />
                         {
-                            validationMessages.phoneNumber.length? <ValidationMessage>{validationMessages.phoneNumber}</ValidationMessage> : null
+                            validationMessages.phoneNumber.length ? <ValidationMessage>{validationMessages.phoneNumber}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomInput name="companyName" label="Фирма" value={state.companyName} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.companyName.length? true : false}/>
+                        <CustomInput name="companyName" label="Фирма" value={state.companyName} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.companyName.length ? true : false} />
                         {
-                            validationMessages.companyName.length? <ValidationMessage>{validationMessages.companyName}</ValidationMessage> : null
+                            validationMessages.companyName.length ? <ValidationMessage>{validationMessages.companyName}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomInput name="email" label="Email" value={state.email} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.email.length? true : false} />
+                        <CustomInput name="email" label="Email" value={state.email} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.email.length ? true : false} />
                         {
-                            validationMessages.email.length? <ValidationMessage>{validationMessages.email}</ValidationMessage> : null
+                            validationMessages.email.length ? <ValidationMessage>{validationMessages.email}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomSelector name="role" label="Роль" value={state.role} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.role.length? true : false} >
+                        <CustomSelector name="role" label="Роль" value={state.role} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.role.length ? true : false} >
                             {
                                 vendorRoles.map(role => (
                                     <MenuItem value={role.value}>{role.label}</MenuItem>
@@ -174,13 +174,13 @@ const SuppliersCreate = ({ match }) => {
                             }
                         </CustomSelector>
                         {
-                            validationMessages.role.length? <ValidationMessage>{validationMessages.role}</ValidationMessage> : null
+                            validationMessages.role.length ? <ValidationMessage>{validationMessages.role}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomInput name="postcode" label="Почтовый индекс" value={state.postcode} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.postcode.length? true : false} />
+                        <CustomInput name="postcode" label="Почтовый индекс" value={state.postcode} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.postcode.length ? true : false} />
                         {
-                            validationMessages.postcode.length? <ValidationMessage>{validationMessages.postcode}</ValidationMessage> : null
+                            validationMessages.postcode.length ? <ValidationMessage>{validationMessages.postcode}</ValidationMessage> : null
                         }
                     </div>
                 </AddibleInput>
@@ -188,27 +188,27 @@ const SuppliersCreate = ({ match }) => {
                 <p>Адрес</p>
                 <AddibleInput>
                     <div>
-                        <CustomSelector name="sapCountry" label="Страна" value={state.sapCountry} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.sapCountry.length? true : false}>
+                        <CustomSelector name="sapCountry" label="Страна" value={state.sapCountry} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.sapCountry.length ? true : false}>
                             {
-                                sapCountries?.map(({node}) => {
+                                sapCountries?.map(({ node }) => {
                                     return <MenuItem value={node.pk}>{node.name}</MenuItem>
                                 })
                             }
                         </CustomSelector>
                         {
-                            validationMessages.sapCountry.length? <ValidationMessage>{validationMessages.sapCountry}</ValidationMessage> : null
+                            validationMessages.sapCountry.length ? <ValidationMessage>{validationMessages.sapCountry}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomInput name="street" label="Улица" value={state.street} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.street.length? true :  false} />
+                        <CustomInput name="street" label="Улица" value={state.street} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.street.length ? true : false} />
                         {
-                            validationMessages.street.length? <ValidationMessage>{validationMessages.street}</ValidationMessage> : null
+                            validationMessages.street.length ? <ValidationMessage>{validationMessages.street}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomInput name="house" label="Дом" value={state.house} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.street.length? true :  false} />
+                        <CustomInput name="house" label="Дом" value={state.house} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.street.length ? true : false} />
                         {
-                            validationMessages.house.length? <ValidationMessage>{validationMessages.house}</ValidationMessage> : null
+                            validationMessages.house.length ? <ValidationMessage>{validationMessages.house}</ValidationMessage> : null
                         }
                     </div>
                 </AddibleInput>
@@ -217,7 +217,7 @@ const SuppliersCreate = ({ match }) => {
                 </Header>
             </Form>
             <Footer justify="flex-end">
-                    <Button name={pk? "Сохранить" : "создать"} clickHandler={beforeSubmit} /> 
+                <Button name={pk ? "Сохранить" : "создать"} clickHandler={beforeSubmit} loading={mutationLoading} />
             </Footer>
         </>
     )

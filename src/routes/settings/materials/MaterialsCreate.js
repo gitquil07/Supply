@@ -35,16 +35,16 @@ const MaterialsSchema = object().shape({
         .positive("Цена не можеть быть отрицательной")
         .typeError("Поле 'Продукт' должно иметь число в качестве значения"),
     deliveryDayCount: number()
-                    .positive("Введите положительно число")
-                    .integer("Введите целое число")
-                    .typeError("Поле 'Дни доставкм' должно иметь число в качестве значения"),
+        .positive("Введите положительно число")
+        .integer("Введите целое число")
+        .typeError("Поле 'Дни доставкм' должно иметь число в качестве значения"),
     productionDayCount: number()
-                    .positive("Введите положительно число")
-                    .integer("Введите целое число")
-                    .typeError("Поле 'Срок изготовлеия' должно иметь число в качестве значения"),
+        .positive("Введите положительно число")
+        .integer("Введите целое число")
+        .typeError("Поле 'Срок изготовлеия' должно иметь число в качестве значения"),
     isActive: boolean(),
     currency: string()
-                    .oneOf(currencyEnum,  "Недопустимое значение поля 'Валюта'"),
+        .oneOf(currencyEnum, "Недопустимое значение поля 'Валюта'"),
 });
 
 const fieldsMessages = {
@@ -70,10 +70,10 @@ const initialState = {
 }
 
 const SuppliersCreate = ({ match }) => {
-    const {id} = match.params,
-          title = useTitle("Создание новой базы данных"),
-          history = useHistory();
-    
+    const { id } = match.params,
+        title = useTitle("Создание новой базы данных"),
+        history = useHistory();
+
     const {
         state,
         setState,
@@ -81,14 +81,14 @@ const SuppliersCreate = ({ match }) => {
     } = useFormData(initialState);
 
     const [getFactories, factoriesRes] = useLazyQuery(GET_FACTORIES),
-          [getVendorFactories, vendorFactoriesRes] = useLazyQuery(GET_VENDOR_FACTORIES),
-          [getProducts, productsRes] = useLazyQuery(GET_PRODUCTS),
-          [getVendorProduct, vendorProductRes] = useLazyQuery(GET_VENDOR_PRODUCT, {
-              fetchPolicy: "no-cache"
-          }),
-          [getVendorProductHistory, vendorProductHistoryRes] = useLazyQuery(GET_VENDOR_PRODUCT_HISTORY, {
-              fetchPolicy: "no-cache"
-          });
+        [getVendorFactories, vendorFactoriesRes] = useLazyQuery(GET_VENDOR_FACTORIES),
+        [getProducts, productsRes] = useLazyQuery(GET_PRODUCTS),
+        [getVendorProduct, vendorProductRes] = useLazyQuery(GET_VENDOR_PRODUCT, {
+            fetchPolicy: "no-cache"
+        }),
+        [getVendorProductHistory, vendorProductHistoryRes] = useLazyQuery(GET_VENDOR_PRODUCT_HISTORY, {
+            fetchPolicy: "no-cache"
+        });
 
 
     // const factories = getList(factoriesRes?.data) || [],
@@ -106,20 +106,20 @@ const SuppliersCreate = ({ match }) => {
     //         }
     //       });
 
-    
+
     const factories = useMemo(() => getList(factoriesRes?.data), [factoriesRes?.data]) || [],
-          vendorFactories = useMemo(() => getList(vendorFactoriesRes?.data), [vendorFactoriesRes?.data]) || [],
-          products = useMemo(() => getList(productsRes?.data), [productsRes?.data]) || [],
-          pk = useMemo(() => getValueOfProperty(vendorProductRes?.data, "pk"), [vendorProductRes?.data]) || undefined,
-          vendorProductHistoriesFull = useMemo(() => getList(vendorProductHistoryRes?.data), [vendorProductHistoryRes?.data]) || [],
-          vendorProductHistories = useMemo(() => vendorProductHistoriesFull.map(({node}) => {
-                    return {
-                        ...exceptKey(node, ["vendorFactory", "__typename"]),
-                        factory: node?.vendorFactory?.factory?.name,
-                        vendor: node?.vendorFactory?.vendor?.name,
-                        product: node?.product?.name
-                    }
-                }), [vendorProductHistoriesFull]);
+        vendorFactories = useMemo(() => getList(vendorFactoriesRes?.data), [vendorFactoriesRes?.data]) || [],
+        products = useMemo(() => getList(productsRes?.data), [productsRes?.data]) || [],
+        pk = useMemo(() => getValueOfProperty(vendorProductRes?.data, "pk"), [vendorProductRes?.data]) || undefined,
+        vendorProductHistoriesFull = useMemo(() => getList(vendorProductHistoryRes?.data), [vendorProductHistoryRes?.data]) || [],
+        vendorProductHistories = useMemo(() => vendorProductHistoriesFull.map(({ node }) => {
+            return {
+                ...exceptKey(node, ["vendorFactory", "__typename"]),
+                factory: node?.vendorFactory?.factory?.name,
+                vendor: node?.vendorFactory?.vendor?.name,
+                product: node?.product?.name
+            }
+        }), [vendorProductHistoriesFull]);
 
 
 
@@ -131,7 +131,7 @@ const SuppliersCreate = ({ match }) => {
     }, []);
 
     useEffect(() => {
-        if(id !== undefined){
+        if (id !== undefined) {
             getVendorProduct({
                 variables: {
                     id
@@ -148,7 +148,7 @@ const SuppliersCreate = ({ match }) => {
 
     useEffect(() => {
         const vendor = vendorProductRes?.data?.vendor?.vendorProduct;
-        if(vendor !== undefined){
+        if (vendor !== undefined) {
             setState({
                 ...exceptKey(vendor, ["pk", "__typename", "id", "vendorFactory"]),
                 product: vendor?.product.pk,
@@ -159,21 +159,21 @@ const SuppliersCreate = ({ match }) => {
     }, [vendorProductRes?.data?.vendor.vendorProduct]);
 
     useEffect(() => {
-        if(state.factory){
+        if (state.factory) {
             getVendorFactories({
-                variables : {
+                variables: {
                     factory: state.factory
                 }
             });
         }
     }, [state.factory])
 
-    const { submitData, handleSubmit, validationMessages } = useCustomMutation({
-            graphQlQuery: {
-                queryCreate: CREATE_VENDOR_PRODUCT,
-                queryUpdate: UPDATE_VENDOR_PRODUCT
-            }
-        },
+    const { submitData, handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
+        graphQlQuery: {
+            queryCreate: CREATE_VENDOR_PRODUCT,
+            queryUpdate: UPDATE_VENDOR_PRODUCT
+        }
+    },
         "База данных",
         () => {
             history.push("/settings/materials");
@@ -188,7 +188,7 @@ const SuppliersCreate = ({ match }) => {
         console.log("pk", pk);
 
 
-        pk? handleSubmit(exceptKey(data, ["vendorFactory", "product"]), pk) : handleSubmit(data);
+        pk ? handleSubmit(exceptKey(data, ["vendorFactory", "product"]), pk) : handleSubmit(data);
         // pk? submitData(exceptKey(data, ["vendorFactory", "product"]), pk) : submitData(data);
     }
 
@@ -203,91 +203,91 @@ const SuppliersCreate = ({ match }) => {
                 <p>Информация о материале</p>
                 <AddibleInput>
                     {
-                        pk? <CustomInput label="Завод" value={state.factory} disabled /> :
-                        <CustomSelector name="factory" value={state.factory} stateChange={e => handleChange({fElem: e})} label="Завод">
-                            {
-                                factories?.map(({node}) => {
-                                        return <MenuItem value={node.pk} selected={node.pk === state.factory}>{node.name}</MenuItem>    
+                        pk ? <CustomInput label="Завод" value={state.factory} disabled /> :
+                            <CustomSelector name="factory" value={state.factory} stateChange={e => handleChange({ fElem: e })} label="Завод">
+                                {
+                                    factories?.map(({ node }) => {
+                                        return <MenuItem value={node.pk} selected={node.pk === state.factory}>{node.name}</MenuItem>
                                     }
-                                )
-                            }
-                        </CustomSelector>
+                                    )
+                                }
+                            </CustomSelector>
                     }
                     <div>
                         {
-                            pk? <CustomInput label="Поставщик" value={state.vendorFactory} disabled /> : <>
-                                <CustomSelector name="vendorFactory" value={state.vendorFactory} stateChange={e => handleChange({fElem: e})} label="Поставщик" errorVal={validationMessages.vendorFactory.length > 0? true : false}>
+                            pk ? <CustomInput label="Поставщик" value={state.vendorFactory} disabled /> : <>
+                                <CustomSelector name="vendorFactory" value={state.vendorFactory} stateChange={e => handleChange({ fElem: e })} label="Поставщик" errorVal={validationMessages.vendorFactory.length > 0 ? true : false}>
                                     {
-                                        vendorFactories?.map(({node}) => {
-                                                return <MenuItem value={node.pk} selected={node.pk === state.vendorFactory}>{node.vendor.name}</MenuItem>
-                                            }
+                                        vendorFactories?.map(({ node }) => {
+                                            return <MenuItem value={node.pk} selected={node.pk === state.vendorFactory}>{node.vendor.name}</MenuItem>
+                                        }
                                         )
                                     }
                                 </CustomSelector>
                                 {
-                                    validationMessages.vendorFactory.length > 0? <ValidationMessage>{validationMessages.vendorFactory}</ValidationMessage> : null
+                                    validationMessages.vendorFactory.length > 0 ? <ValidationMessage>{validationMessages.vendorFactory}</ValidationMessage> : null
                                 }
                             </>
                         }
                     </div>
                     <div>
                         {
-                            pk? <CustomInput label="Продукт" name="product" value={products.find(({node}) => node.pk == state.product)?.node?.name} disabled /> : <>
-                                <CustomSelector disabled={id? true : false} name="product" value={state.product} stateChange={e => handleChange({fElem: e})} label="Продукт" errorVal={validationMessages.product.length > 0? true : false}>
+                            pk ? <CustomInput label="Продукт" name="product" value={products.find(({ node }) => node.pk == state.product)?.node?.name} disabled /> : <>
+                                <CustomSelector disabled={id ? true : false} name="product" value={state.product} stateChange={e => handleChange({ fElem: e })} label="Продукт" errorVal={validationMessages.product.length > 0 ? true : false}>
                                     {
-                                        products?.map(({node}) => 
+                                        products?.map(({ node }) =>
                                             <MenuItem value={node.pk} selected={node.pk === state.product}>{node.name}</MenuItem>
                                         )
                                     }
                                 </CustomSelector>
                                 {
-                                    validationMessages.product.length > 0? <ValidationMessage>{validationMessages.product}</ValidationMessage> : null
+                                    validationMessages.product.length > 0 ? <ValidationMessage>{validationMessages.product}</ValidationMessage> : null
                                 }
                             </>
                         }
                     </div>
                     <div>
-                        <CustomSelector label="Валюта" name="currency" value={state.currency} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.currency.length > 0? true : false}>
+                        <CustomSelector label="Валюта" name="currency" value={state.currency} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.currency.length > 0 ? true : false}>
                             {
-                                currencyOptions.map((currency) => 
-                                    <MenuItem value={currency.value} selected={currency.value === state.currency}>{currency.label}</MenuItem> 
+                                currencyOptions.map((currency) =>
+                                    <MenuItem value={currency.value} selected={currency.value === state.currency}>{currency.label}</MenuItem>
                                 )
                             }
                         </CustomSelector>
                         {
-                            validationMessages.currency.length > 0? <ValidationMessage>{validationMessages.currency}</ValidationMessage> : null
+                            validationMessages.currency.length > 0 ? <ValidationMessage>{validationMessages.currency}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomNumber label="Цена" name="price" value={state.price} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.price.length > 0? true : false}/>
+                        <CustomNumber label="Цена" name="price" value={state.price} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.price.length > 0 ? true : false} />
                         {
-                            validationMessages.price.length > 0? <ValidationMessage>{validationMessages.price}</ValidationMessage> : null
+                            validationMessages.price.length > 0 ? <ValidationMessage>{validationMessages.price}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomNumber label="Дни доставки" name="deliveryDayCount" value={state.deliveryDayCount} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.deliveryDayCount.length > 0? true : false}/>
+                        <CustomNumber label="Дни доставки" name="deliveryDayCount" value={state.deliveryDayCount} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.deliveryDayCount.length > 0 ? true : false} />
                         {
-                            validationMessages.deliveryDayCount.length > 0? <ValidationMessage>{validationMessages.deliveryDayCount}</ValidationMessage> : null
+                            validationMessages.deliveryDayCount.length > 0 ? <ValidationMessage>{validationMessages.deliveryDayCount}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomNumber label="Срок изготовления" name="productionDayCount" value={state.productionDayCount} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.productionDayCount.length > 0? true : false}/>
+                        <CustomNumber label="Срок изготовления" name="productionDayCount" value={state.productionDayCount} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.productionDayCount.length > 0 ? true : false} />
                         {
-                            validationMessages.productionDayCount.length > 0? <ValidationMessage>{validationMessages.productionDayCount}</ValidationMessage> : null
+                            validationMessages.productionDayCount.length > 0 ? <ValidationMessage>{validationMessages.productionDayCount}</ValidationMessage> : null
                         }
                     </div>
 
                 </AddibleInput>
                 <p>
-                    <label htmlFor="isActive">Активность</label> 
+                    <label htmlFor="isActive">Активность</label>
                     <Switch
                         id="isActive"
                         checked={state.isActive}
                         name="isActive"
-                        onChange={e => handleChange({fElem: e, type: "choice"})}
+                        onChange={e => handleChange({ fElem: e, type: "choice" })}
                     />
                     {
-                        validationMessages.isActive.length > 0? <ValidationMessage>{validationMessages.isActive}</ValidationMessage> : null
+                        validationMessages.isActive.length > 0 ? <ValidationMessage>{validationMessages.isActive}</ValidationMessage> : null
                     }
                 </p>
                 {
@@ -312,13 +312,13 @@ const SuppliersCreate = ({ match }) => {
                                             <List>
                                                 <span>{history?.factory}</span>
                                                 <span>{history?.vendor}</span>
-                                                <span>{history?.product.length > 25? history?.product.slice(0, 25)+"..." : history?.product}</span>
+                                                <span>{history?.product.length > 25 ? history?.product.slice(0, 25) + "..." : history?.product}</span>
                                                 <span>{history?.price}</span>
                                                 <span>{history?.currency}</span>
                                                 <span>{history?.productionDayCount}</span>
                                                 <span>{history?.deliveryDayCount}</span>
                                                 <span>{moment(history?.updatedAt).format("YYYY-MM-DD")}</span>
-                                                <span>{history?.isActive? "Активный" : "Неактивный"}</span> 
+                                                <span>{history?.isActive ? "Активный" : "Неактивный"}</span>
                                             </List>
                                         )
                                     })
@@ -330,7 +330,7 @@ const SuppliersCreate = ({ match }) => {
             </Form>
             <Footer justify="flex-end">
                 {/* <span>Кол-во материалов: 6</span> */}
-                <Button name={pk? "Сохранить" : "Создать"} clickHandler={beforeSubmit}/>
+                <Button name={pk ? "Сохранить" : "Создать"} clickHandler={beforeSubmit} loading={mutationLoading} />
             </Footer>
         </>
     )
