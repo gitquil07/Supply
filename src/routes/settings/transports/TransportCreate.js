@@ -38,7 +38,7 @@ const TransportCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage,
 
     useEffect(() => {
 
-        if(entry !== undefined){
+        if (entry !== undefined) {
 
             setState({
                 name: entry.name,
@@ -55,16 +55,16 @@ const TransportCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage,
         setValidationMessages(fieldsMessages);
     }
 
-    const { handleSubmit, validationMessages, setValidationMessages } = useCustomMutation({
-            graphQlQuery: {
-                queryCreate: CREATE_TRANSPORT_TYPE,
-                queryUpdate: UPDATE_TRANSPORT_TYPE,
-            }
-        },
+    const { handleSubmit, validationMessages, setValidationMessages, mutationLoading } = useCustomMutation({
+        graphQlQuery: {
+            queryCreate: CREATE_TRANSPORT_TYPE,
+            queryUpdate: UPDATE_TRANSPORT_TYPE,
+        }
+    },
         "Тип транспорта",
         () => {
             handleClose();
-            if((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)){
+            if ((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)) {
                 console.log("inside condition first");
                 setIsFirstPage(true);
                 getEntries({
@@ -76,7 +76,7 @@ const TransportCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage,
                     }
                 });
             }
-            if((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)){
+            if ((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)) {
                 setMutateState("create");
                 getEntries({
                     variables: {
@@ -94,20 +94,20 @@ const TransportCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage,
 
 
     return (
-        <SmallDialog title={pk? "Изменить" : "Создать Тип транспорта"} isOpen={isOpen} close={handleClose}>
-            <CustomInput value={state.name} name="name" label="Название транспорта" stateChange={e => handleChange({fElem:e})} errorVal={validationMessages.name.length? true : false} />
+        <SmallDialog title={pk ? "Изменить" : "Создать Тип транспорта"} isOpen={isOpen} close={handleClose}>
+            <CustomInput value={state.name} name="name" label="Название транспорта" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.name.length ? true : false} />
             {
-                validationMessages.name.length? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
+                validationMessages.name.length ? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
             }
-            <CustomNumber value={state.customsDayCount} name="customsDayCount" label="Кол-во дней" stateChange={e => handleChange({fElem:e})} fullWidth errorVal={validationMessages.name.length? true : false} />
+            <CustomNumber value={state.customsDayCount} name="customsDayCount" label="Кол-во дней" stateChange={e => handleChange({ fElem: e })} fullWidth errorVal={validationMessages.name.length ? true : false} />
             {
-                validationMessages.customsDayCount.length? <ValidationMessage>{validationMessages.customsDayCount}</ValidationMessage> : null
+                validationMessages.customsDayCount.length ? <ValidationMessage>{validationMessages.customsDayCount}</ValidationMessage> : null
             }
-            <Button name={pk? "сохранить" : "Добавить транспорт"} color="#5762B2" clickHandler={() => pk? handleSubmit(state, pk) : handleSubmit(state)}/>
+            <Button name={pk ? "сохранить" : "Добавить транспорт"} color="#5762B2" clickHandler={() => pk ? handleSubmit(state, pk) : handleSubmit(state)} loading={mutationLoading} />
         </SmallDialog>
     );
 };
 
 export default React.memo(TransportCreate, (prevProps, nextProps) => {
-           return prevProps.isOpen === nextProps.isOpen;
+    return prevProps.isOpen === nextProps.isOpen;
 });

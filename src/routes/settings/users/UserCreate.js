@@ -17,7 +17,7 @@ import { ValidationMessage } from "components/ValidationMessage";
 import { object, string, number, array } from "yup";
 
 
-const initialState = { 
+const initialState = {
     firstName: "",
     lastName: "",
     username: "",
@@ -60,7 +60,7 @@ const userSchemaEdit = object({
     factories: array().of(number().required("Выберите завод"))
 });
 
-const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getEntries, amountOfElemsPerPage, paginatingState}) => {
+const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getEntries, amountOfElemsPerPage, paginatingState }) => {
 
     let pk = entry?.pk;
 
@@ -71,7 +71,7 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
     } = useFormData(initialState);
 
     useEffect(() => {
-        if(entry !== undefined){
+        if (entry !== undefined) {
             setState({
                 firstName: entry.firstName,
                 lastName: entry.lastName,
@@ -90,10 +90,10 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
 
 
     const [getFactories, getFactoriesRes] = useLazyQuery(GET_FACTORIES),
-          [getRoles, getRolesRes] = useLazyQuery(GET_ROLES);
+        [getRoles, getRolesRes] = useLazyQuery(GET_ROLES);
 
     const factories = useMemo(() => getList(getFactoriesRes?.data), [getFactoriesRes?.data]),
-          roles = useMemo(() => getList(getRolesRes?.data), [getRolesRes?.data]);
+        roles = useMemo(() => getList(getRolesRes?.data), [getRolesRes?.data]);
 
 
     useEffect(() => {
@@ -105,8 +105,8 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
     const inputs = [
         { label: "Имя", name: "firstName" },
         { label: "Фамилия", name: "lastName" },
-        { label: "Email", name: "email"},
-        { label: "Номер телефона", name: "phoneNumber"},
+        { label: "Email", name: "email" },
+        { label: "Номер телефона", name: "phoneNumber" },
         { label: "Пароль", name: "password", type: "password" },
     ];
 
@@ -116,16 +116,16 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
         setValidationMessages(fieldsMessages);
     }
 
-    const { handleSubmit, validationMessages, setValidationMessages } = useCustomMutation({
-            graphQlQuery: {
-                queryCreate: CREATE_USER,
-                queryUpdate: UPDATE_USER
-            }
-        },
+    const { handleSubmit, validationMessages, setValidationMessages, mutationLoading } = useCustomMutation({
+        graphQlQuery: {
+            queryCreate: CREATE_USER,
+            queryUpdate: UPDATE_USER
+        }
+    },
         "Пользователь",
         () => {
             handleClose();
-            if((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)){
+            if ((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)) {
                 console.log("inside condition first");
                 setIsFirstPage(true);
                 getEntries({
@@ -137,7 +137,7 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
                     }
                 });
             }
-            if((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)){
+            if ((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)) {
                 setMutateState("create");
                 getEntries({
                     variables: {
@@ -149,7 +149,7 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
                 });
             }
         },
-        pk? userSchemaEdit : userSchema,
+        pk ? userSchemaEdit : userSchema,
         fieldsMessages
     );
 
@@ -158,31 +158,31 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
         let tmp = { ...state };
         console.log("entry", entry);
 
-    
+
         const factoriesPks = [];
         state.factories.forEach(factory => {
             console.log("factory", factory);
-            const pk = factories.find(({node}) => node.name == factory)?.node?.pk;
+            const pk = factories.find(({ node }) => node.name == factory)?.node?.pk;
             factoriesPks.push(pk);
         });
 
         tmp.factories = factoriesPks;
 
-        tmp.role = roles.find(({node}) => node.displayName == tmp.role)?.node?.pk;
+        tmp.role = roles.find(({ node }) => node.displayName == tmp.role)?.node?.pk;
 
-        tmp = pk? exceptKey(tmp, ["username"]) : tmp;
-    
-        pk? handleSubmit(tmp, pk) : handleSubmit(tmp);
+        tmp = pk ? exceptKey(tmp, ["username"]) : tmp;
+
+        pk ? handleSubmit(tmp, pk) : handleSubmit(tmp);
     }
 
     return (
-        <SmallDialog title={pk? "Изменить пользователя" : "Создать пользователя"} isOpen={isOpen} close={handleClose}>
+        <SmallDialog title={pk ? "Изменить пользователя" : "Создать пользователя"} isOpen={isOpen} close={handleClose}>
             {
                 !pk && (
                     <>
-                        <CustomInput name="username" value={state.username} label="Username" stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.username.length? true : false}/>
+                        <CustomInput name="username" value={state.username} label="Username" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.username.length ? true : false} />
                         {
-                            validationMessages.username.length? <ValidationMessage>{validationMessages.username}</ValidationMessage> : null
+                            validationMessages.username.length ? <ValidationMessage>{validationMessages.username}</ValidationMessage> : null
                         }
                     </>
                 )
@@ -190,40 +190,40 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
             {
                 inputs.map((e, i) => {
                     console.log("NAME", typeof validationMessages[e.name]);
-                 return <>    
+                    return <>
                         <CustomInput
                             key={i}
                             value={state[e.name]}
                             name={e.name}
                             label={e.label}
-                            stateChange={e => handleChange({fElem: e})}
-                            errorVal={validationMessages[e.name].length? true : false}
+                            stateChange={e => handleChange({ fElem: e })}
+                            errorVal={validationMessages[e.name].length ? true : false}
                         />
                         {
-                            validationMessages[e.name].length? <ValidationMessage>{validationMessages[e.name]}</ValidationMessage> : null
+                            validationMessages[e.name].length ? <ValidationMessage>{validationMessages[e.name]}</ValidationMessage> : null
                         }
                     </>
                 }
 
                 )
             }
-            
-            <CustomSelector label="Роль" name="role" stateChange={(e) => handleChange({fElem: e})} value={state.role}>
+
+            <CustomSelector label="Роль" name="role" stateChange={(e) => handleChange({ fElem: e })} value={state.role}>
                 {
-                    roles?.map(({node}) => {
+                    roles?.map(({ node }) => {
                         return <MenuItem value={node?.displayName} selected={node.displayName == state.role}>{node?.displayName}</MenuItem>
                     })
                 }
             </CustomSelector>
             {
-                validationMessages.role.length? <ValidationMessage>{validationMessages.role}</ValidationMessage> : null
+                validationMessages.role.length ? <ValidationMessage>{validationMessages.role}</ValidationMessage> : null
             }
-            <CustomSelector 
-                multiple 
-                label="Завод" 
+            <CustomSelector
+                multiple
+                label="Завод"
                 name="factories"
                 value={state.factories}
-                stateChange={e => handleChange({fElem: e})} 
+                stateChange={e => handleChange({ fElem: e })}
                 renderValue={selected => {
                     let arr = [];
 
@@ -231,14 +231,14 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
                     //     arr.push(factories.find(({node}) => node.pk == pk)?.node?.name)
                     // })
 
-                    return selected.join(", "); 
+                    return selected.join(", ");
                 }}
-                >
+            >
                 {
-                    factories?.map(({node}) => (
+                    factories?.map(({ node }) => (
                         <MenuItem value={node.name}>
                             <ListItemIcon>
-                                <Checkbox checked={state.factories.indexOf(node.name) > -1}/>
+                                <Checkbox checked={state.factories.indexOf(node.name) > -1} />
                             </ListItemIcon>
                             <ListItemText primary={node.name} />
                         </MenuItem>
@@ -246,9 +246,9 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
                 }
             </CustomSelector>
             {
-                validationMessages.factories.length? <ValidationMessage>{validationMessages.factories}</ValidationMessage> : null
+                validationMessages.factories.length ? <ValidationMessage>{validationMessages.factories}</ValidationMessage> : null
             }
-            <Button name={pk? "Сохранить" :  "Добавить пользователя"} color="#5762B2" clickHandler={beforeSubmit}/>
+            <Button name={pk ? "Сохранить" : "Добавить пользователя"} color="#5762B2" clickHandler={beforeSubmit} loading={mutationLoading} />
         </SmallDialog>
     )
 }

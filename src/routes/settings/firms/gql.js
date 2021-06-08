@@ -10,6 +10,13 @@ query getFirms($first: Int, $last: Int, $before: String, $after: String) {
           pk
           name
           inn
+          factories {
+            edges {
+              node {
+                name
+              }
+            }
+          }
         }
       }
       pageInfo{

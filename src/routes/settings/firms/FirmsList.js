@@ -43,18 +43,22 @@ const FirmsList = () => {
     }
 
     const firms = getList(dataPaginationRes?.data) || [];
+
     const list = useMemo(() => {
         return firms.map(({ node }) => {
             return {
                 id: node.id,
                 pk: node.pk,
                 name: node.name,
-                inn: node.inn
+                inn: node.inn,
+                factories: node.factories.edges.map(({ node }) => <p style={{ margin: "5px" }}>{node.name}</p>)
             }
         });
     }, [firms])
 
     const firm = list.find(firm => firm.id === id);
+
+    console.log(list)
 
     const editEntry = (id) => {
         setId(id);

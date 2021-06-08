@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Add from "../assets/icons/add.svg";
 import { CustomHeader } from "./CustomHeader";
 
-export const Button = ({ name, url, color, clickHandler }) => <IButton to={url} color={color} onClick={clickHandler}>{name}</IButton>
+export const Button = ({ name, url, color, clickHandler, loading }) => <IButton to={url} color={color} onClick={clickHandler} loading={loading}>{name}</IButton>
 
 export const ButtonWithIcon = React.memo(({ name, url, clicked }) => {
     console.log("button rendered");
@@ -28,7 +28,36 @@ const IButton = styled(Link)`
     display: flex;
     text-decoration: none;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
+    pointer-events: ${({ loading }) => loading && "none"};
+
+    ${({ loading }) =>
+
+        loading &&
+
+        `
+        :after {
+            content: '.';
+            font-size: 18px;
+            animation: dots 1s steps(5, end) infinite;
+            margin-left: 3px;
+            padding-right: 6px;
+        }
+
+        @keyframes dots {
+            20% {
+                color: rgba(0,0,0,0);
+                text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);}
+            40% {
+                color: white;
+                text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);}
+            60% {
+                text-shadow: .25em 0 0 white, .5em 0 0 rgba(0,0,0,0);}
+            100% {
+                text-shadow: .25em 0 0 white, .5em 0 0 white;}
+            }
+    `
+    }
 
     :hover {
         background: ${props => props.color ? props.color : "#08BB19"};

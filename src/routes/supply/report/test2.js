@@ -8,7 +8,9 @@ import { goToNewLine } from "utils/functions";
 import { useTitle } from "hooks"
 import Helmet from "react-helmet";
 import { Loading } from "components/LoadingIndicator";
-import { formatPrice } from "utils/functions";
+import { formatPrice, fullscreen } from "utils/functions";
+import { Fullscreen } from "@material-ui/icons";
+import { IconButton } from '@material-ui/core';
 
 const allowedHeadersToRepeat = [ 
     "Остаток на начало\nмесяца ",
@@ -75,11 +77,15 @@ const TestTable2 = () => {
     let repeatedColsAmount = columns[0]? columns[0].filter(column => column.indexOf("Планируемый прогноз") > -1).length / 4: 0;
     let flags = [];
     return(
-        <>
+        <Wrapper>
+                <IconButton onClick={() => fullscreen("table")} className="fullscreen">
+                <Fullscreen />
+            </IconButton>
         <Helmet title={title} />
-            <Table border="1px">
+            <Table border="1px" id="table">
                 {
-                        loading && <BlurBackground>
+                        loading && 
+                        <BlurBackground>
                             <Loading fs="100" />
                         </BlurBackground>
                 }
@@ -232,7 +238,7 @@ const TestTable2 = () => {
                     }
                 </tbody>
             </Table>
-        </>
+        </Wrapper>
     );
 
 }
@@ -434,4 +440,13 @@ const Table = styled.table`
         }
     }
 
+`;
+
+const Wrapper = styled.div`
+    .fullscreen {
+        position: absolute;
+        z-index: 99999999999999999999;
+        top: 9px;
+        left: 110px;
+    }
 `;

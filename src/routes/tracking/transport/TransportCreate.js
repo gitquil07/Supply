@@ -78,7 +78,7 @@ const TrackingTransportCreate = ({ match }) => {
     // const [state, setState] = useState();
 
     const {
-        submitData
+        submitData, mutationLoading
     } = useCustomMutation({
         graphQlQuery: {
             queryCreate: UPDATE_TRACKING,
@@ -146,7 +146,7 @@ const TrackingTransportCreate = ({ match }) => {
         }),
         ApplicationFiles = applicationInfo?.files?.edges;
 
-    console.log("applicationInfo", applicationInfo) 
+    console.log("applicationInfo", applicationInfo)
 
     const [updateTracking] = useMutation(UPDATE_TRACKING, {
         onCompleted: () => {
@@ -251,9 +251,9 @@ const TrackingTransportCreate = ({ match }) => {
 
             console.log("state", exceptKey(state, ["pk", "publicId"]));
 
-            const requestBody = {...state};
-            
-            requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");  
+            const requestBody = { ...state };
+
+            requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
 
             submitData({
                 ...exceptKey(requestBody, ["pk", "publicId", "status"])
@@ -295,7 +295,7 @@ const TrackingTransportCreate = ({ match }) => {
     }
 
     const handleDateChange = (date) => {
-        setState({...state, trDate: date});
+        setState({ ...state, trDate: date });
     }
 
     const expand = (index) => {
@@ -625,7 +625,7 @@ const TrackingTransportCreate = ({ match }) => {
             </Form>
 
             <Footer justify="flex-end">
-                <Button name="сохранить" clickHandler={() => handleAdditionalDataSubmit()} />
+                <Button name="сохранить" clickHandler={() => handleAdditionalDataSubmit()} loading={mutationLoading} />
             </Footer>
 
             <SmallDialog title="Добавить заявку" close={closeRequestDialog} isOpen={requestDialogState}>

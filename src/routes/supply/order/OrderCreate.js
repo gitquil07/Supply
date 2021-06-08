@@ -46,7 +46,7 @@ const OrderCreate = ({ match }) => {
         title = useTitle("Создать Заказ"),
         history = useHistory();
 
-    const { submitData, handleSubmit, validationMessages } = useCustomMutation({
+    const { submitData, handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
         graphQlQuery: {
             queryCreate: ORDER_CREATE,
             queryUpdate: ORDER_UPDATE
@@ -132,19 +132,19 @@ const OrderCreate = ({ match }) => {
                 invoiceDate: order.invoiceDate,
                 invoiceProforma: order.invoiceProforma
             });
-            if(orderRes?.data?.order?.order?.files?.edges.length > 0) {
-            setFiles({
-                ...files,
-                fetched: [
-                    ...files.fetched,
-                    ...orderRes?.data?.order?.order?.files?.edges.map(({ node }) => {
-                        return {
-                            file: node.file,
-                            fileUrl: node.fileUrl
-                        }
-                    })
-                ]
-            })
+            if (orderRes?.data?.order?.order?.files?.edges.length > 0) {
+                setFiles({
+                    ...files,
+                    fetched: [
+                        ...files.fetched,
+                        ...orderRes?.data?.order?.order?.files?.edges.map(({ node }) => {
+                            return {
+                                file: node.file,
+                                fileUrl: node.fileUrl
+                            }
+                        })
+                    ]
+                })
             }
             const orderItems = order.orderItems.edges.map(({ node }) => {
                 return {
@@ -281,7 +281,7 @@ const OrderCreate = ({ match }) => {
                             }
                         </CustomSelector>
                         <div>
-                            <CustomSelector label="Выберите поставщика" name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")} errorVal={validationMessages.vendorFactory.length? true : false}>
+                            <CustomSelector label="Выберите поставщика" name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")} errorVal={validationMessages.vendorFactory.length ? true : false}>
                                 {
                                     vendorFactories?.map(({ node }) => {
                                         return <MenuItem key={node.pk} value={node.pk} selected={orderData.vendorFactory === node.pk}>{node?.vendor?.name}</MenuItem>
@@ -289,7 +289,7 @@ const OrderCreate = ({ match }) => {
                                 }
                             </CustomSelector>
                             {
-                                validationMessages.vendorFactory.length? <ValidationMessage>{validationMessages.vendorFactory}</ValidationMessage> : null
+                                validationMessages.vendorFactory.length ? <ValidationMessage>{validationMessages.vendorFactory}</ValidationMessage> : null
                             }
                         </div>
 
@@ -304,9 +304,9 @@ const OrderCreate = ({ match }) => {
                         }
                         <CustomPicker label="Дата создание" name="invoiceDate" date={orderData.invoiceDate} stateChange={(date) => setOrderData({ ...orderData, invoiceDate: date })} />
                         <div>
-                            <CustomInput label="Инвойс заказа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} errorVal={validationMessages.invoiceProforma.length? true : false}/>
+                            <CustomInput label="Инвойс заказа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} errorVal={validationMessages.invoiceProforma.length ? true : false} />
                             {
-                                validationMessages.invoiceProforma.length? <ValidationMessage>{validationMessages.invoiceProforma}</ValidationMessage> : null
+                                validationMessages.invoiceProforma.length ? <ValidationMessage>{validationMessages.invoiceProforma}</ValidationMessage> : null
                             }
                         </div>
                     </AddibleInput>
@@ -349,7 +349,7 @@ const OrderCreate = ({ match }) => {
 
                 <Footer>
                     <span>Кол-во материалов: {materials.length}</span>
-                    <Button name={pk ? "Изменить заказ" : "Создать заказ"} clickHandler={beforeSubmit} />
+                    <Button name={pk ? "Изменить заказ" : "Создать заказ"} clickHandler={beforeSubmit} loading={mutationLoading} />
                 </Footer>
             </Wrapper>
         </>

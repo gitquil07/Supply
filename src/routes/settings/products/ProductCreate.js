@@ -12,10 +12,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { useEffect, useState } from "react";
 
 import { RemoveIcon } from 'components/RemoveIcon';
-import { CREATE_PRODUCT, CREATE_PRODUCT_GROUP, GET_PRODUCT_AND_GROUP  } from "./gql";
+import { CREATE_PRODUCT, CREATE_PRODUCT_GROUP, GET_PRODUCT_AND_GROUP } from "./gql";
 import { UPDATE_PRODUCT, UPDATE_PRODUCT_GROUP } from "./gql";
 import { measureOptions, packagingTypes } from "utils/static";
-import { recursiveFetch, addProp } from "utils/functions"; 
+import { recursiveFetch, addProp } from "utils/functions";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { showNotification } from "utils/functions";
 import { useHistory } from "react-router-dom";
@@ -82,7 +82,7 @@ const productSchema = object({
     codeTnved: string().typeError("Поле `Код ТН ВЭД` должно быть строкой").required("Поле `Код ТН ВЭД` должно быть заполнено"),
     measure: string().oneOf(measureEnums, "Недопустимое значение поля 'Ед. измерения' "),
     typeOfPackaging: string().typeError("Поле `Тип упаковки` должно быть строкой").required("Поле `Тип упаковки` должно быть заполнено")
-}); 
+});
 
 const fieldsMessages = {
     name: "",
@@ -92,20 +92,20 @@ const fieldsMessages = {
     typeOfPackaging: ""
 }
 
-const ProductCreate = ({match}) => {
-    
+const ProductCreate = ({ match }) => {
+
     const { id } = match.params,
-          history = useHistory();
+        history = useHistory();
 
     const templ = {
-            name: "",
-            code: "",
-            codeTnved: "",
-            measure: "",
-            typeOfPackaging: "",
-            // group: ""
-        };
-    
+        name: "",
+        code: "",
+        codeTnved: "",
+        measure: "",
+        typeOfPackaging: "",
+        // group: ""
+    };
+
     const [products, setProducts] = useState([
         templ
     ]);
@@ -119,13 +119,14 @@ const ProductCreate = ({match}) => {
     const {
         submitData,
         handleSubmit,
-        validationMessages
+        validationMessages,
+        mutationLoading
     } = useCustomMutation({
-            graphQlQuery: {
-                queryCreate: CREATE_PRODUCT,
-                queryUpdate: UPDATE_PRODUCT
-            }
-        },
+        graphQlQuery: {
+            queryCreate: CREATE_PRODUCT,
+            queryUpdate: UPDATE_PRODUCT
+        }
+    },
         "Продукт",
         () => {
             history.push("/settings/products");
@@ -133,7 +134,7 @@ const ProductCreate = ({match}) => {
         productSchema,
         fieldsMessages
     );
-    
+
     // const [groupCreate, setGroupCreate] = useState({
     //     name: "",
     //     code: ""
@@ -147,7 +148,7 @@ const ProductCreate = ({match}) => {
     //     onCompleted: data => {
     //         showNotification(data, "product", "productCreate", "Продукт создан");
     //         history.push("/settings/products");
-    
+
     //     },
     //     onError: error => console.log(error)
     // });
@@ -180,15 +181,15 @@ const ProductCreate = ({match}) => {
     //     onError: error => NotificationManager.error(error.message)
     // })
 
-    
+
     const product = getValueOfProperty(getProductResp?.data, "product")?.product,
-          productPk = getProductResp?.data?.product?.product?.pk;
+        productPk = getProductResp?.data?.product?.product?.pk;
     //   group = getValueOfProperty(getProductResp?.data, "group"),
-        //   groupPk =  getProductResp?.data?.product?.product?.group?.pk;    
-    
+    //   groupPk =  getProductResp?.data?.product?.product?.group?.pk;    
+
 
     useEffect(() => {
-        if(id !== undefined){
+        if (id !== undefined) {
             getProduct({
                 variables: {
                     id
@@ -199,7 +200,7 @@ const ProductCreate = ({match}) => {
 
     useEffect(() => {
         console.log("product", product);
-        if(product !== undefined){
+        if (product !== undefined) {
             setProducts([
                 {
                     name: product?.name,
@@ -241,7 +242,7 @@ const ProductCreate = ({match}) => {
         console.log("products", products);
     }, [products])
 
-    const title = useTitle(id? "Редактирование продукта" : "Создание нового продукта");
+    const title = useTitle(id ? "Редактирование продукта" : "Создание нового продукта");
 
     // Will launch after (save) button clicked
     // function launchProductsCreate(data){
@@ -281,24 +282,24 @@ const ProductCreate = ({match}) => {
         //     setGroupCreate({...groupCreate, [event.target.name] : event.target.value});
         // }
 
-        if(dataType === "product"){
+        if (dataType === "product") {
             const productsCopy = products.slice(0);
-            productsCopy[index] = {...productsCopy[index], [event.target.name] : event.target.value}
+            productsCopy[index] = { ...productsCopy[index], [event.target.name]: event.target.value }
             setProducts(productsCopy);
         }
     }
 
 
     const save = () => {
-        
-        if(productPk){
+
+        if (productPk) {
             // handleSubmit(products[0], productPk);
             submitData(products[0], productPk);
-        }else{
+        } else {
             const recursiveMutation = recursiveFetch(products.length, (turn) => submitData(products[turn]));
             // const recursiveMutation = recursiveFetch(products.length, (turn) => handleSubmit(products[turn]));
             recursiveMutation();
-        }   
+        }
 
         // if(id !== undefined){
         //     updateGroupProduct({
@@ -320,7 +321,7 @@ const ProductCreate = ({match}) => {
         // }
 
     }
-    
+
     return (
         <>
             <Helmet title={title} />
@@ -332,7 +333,7 @@ const ProductCreate = ({match}) => {
                 </AddibleInput> */}
                 <FlexForHeader>
                     <p>Продукты</p>
-                    <Button name="Добавить продукт" color="#5762B2" clickHandler={addTempl}/>
+                    <Button name="Добавить продукт" color="#5762B2" clickHandler={addTempl} />
                 </FlexForHeader>
                 {
                     products.map((e, index) => {
@@ -343,13 +344,13 @@ const ProductCreate = ({match}) => {
                                 <CustomInput label="Код ТН ВЭД" name="codeTnved" value={e.codeTnved} stateChange={e => handleDataChange(e, "product", index)} />
                                 <CustomSelector label="Ед.изм" name="measure" value={e.measure} stateChange={e => handleDataChange(e, "product", index)}>
                                     {
-                                        measureOptions.map(unit => 
+                                        measureOptions.map(unit =>
                                             <MenuItem key={unit.value} value={unit.value} selected={unit.value == e.measure}>{unit.label}</MenuItem>
                                         )
                                     }
                                 </CustomSelector>
                                 <CustomSelector label="Тип упаковки" name="typeOfPackaging" value={e.typeOfPackaging} stateChange={e => handleDataChange(e, "product", index)}>
-                                    {   
+                                    {
                                         packagingTypes.map(type => <MenuItem key={type.value} value={type.valueEnglish} selected={type.valueEnglish === e.typeOfPackaging}>{type.label}</MenuItem>)
                                     }
                                 </CustomSelector>
@@ -357,11 +358,11 @@ const ProductCreate = ({match}) => {
                             <RemoveIcon clicked={() => removeTempl(index)} />
                         </AddibleInputWithTrash>
                     })
-                }  
+                }
             </Form>
             <Footer>
                 <span>Кол-во продуктов: {products.length || 0}</span>
-                <Button name="Сохранить" clickHandler={save} />
+                <Button name="Сохранить" clickHandler={save} loading={mutationLoading} />
             </Footer>
         </>
     )

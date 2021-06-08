@@ -38,7 +38,7 @@ const factorySchema = object({
 });
 
 const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getEntries, amountOfElemsPerPage, paginatingState }) => {
-    
+
     let pk = entry?.pk;
 
     const {
@@ -55,11 +55,9 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, g
         getFirms();
     }, []);
 
-    console.log("firm", entry);
-
     useEffect(() => {
 
-        if(entry !== undefined){
+        if (entry !== undefined) {
 
             setState({
                 firm: entry.firm,
@@ -75,16 +73,16 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, g
 
 
 
-    const { handleSubmit, validationMessages, setValidationMessages } = useCustomMutation({
-            graphQlQuery: {
-                queryCreate: CREATE_FACTORY,
-                queryUpdate: UPDATE_FACTORY,
-            }
-        },
+    const { handleSubmit, validationMessages, setValidationMessages, mutationLoading } = useCustomMutation({
+        graphQlQuery: {
+            queryCreate: CREATE_FACTORY,
+            queryUpdate: UPDATE_FACTORY,
+        }
+    },
         "Завод",
         () => {
             handleClose();
-            if((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)){
+            if ((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)) {
                 console.log("inside condition first");
                 setIsFirstPage(true);
                 getEntries({
@@ -96,7 +94,7 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, g
                     }
                 });
             }
-            if((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)){
+            if ((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)) {
                 console.log("inside condition second");
                 setMutateState("create");
                 getEntries({
@@ -120,38 +118,38 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, g
     }
 
     return (
-        <SmallDialog title={pk? "Изменить" : "Создать Завод"} isOpen={isOpen} close={handleClose}>
-            <CustomSelector value={state.firm} label="фирма" name="firm" stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.firm.length? true : false}>
+        <SmallDialog title={pk ? "Изменить" : "Создать Завод"} isOpen={isOpen} close={handleClose}>
+            <CustomSelector value={state.firm} label="фирма" name="firm" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.firm.length ? true : false}>
                 {
-                    firms.map(({node}) => 
+                    firms.map(({ node }) =>
                         <MenuItem key={node.pk} value={node.pk} selected={node.pk == state.firm}>{node.name}</MenuItem>
                     )
-                }    
-            </CustomSelector> 
+                }
+            </CustomSelector>
             {
-                validationMessages.firm.length? <ValidationMessage>{validationMessages.firm}</ValidationMessage> : null
+                validationMessages.firm.length ? <ValidationMessage>{validationMessages.firm}</ValidationMessage> : null
             }
-            <CustomInput value={state.name} name="name" label="Название" stateChange={e => handleChange({fElem:e})} errorVal={validationMessages.name.length? true : false} />
+            <CustomInput value={state.name} name="name" label="Название" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.name.length ? true : false} />
             {
-                validationMessages.name.length? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null   
+                validationMessages.name.length ? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
             }
-            <CustomInput value={state.officialName} name="officialName" label="Официальное название" stateChange={e => handleChange({fElem:e})} errorVal={validationMessages.officialName.length? true : false} />
+            <CustomInput value={state.officialName} name="officialName" label="Официальное название" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.officialName.length ? true : false} />
             {
-                validationMessages.officialName.length? <ValidationMessage>{validationMessages.officialName}</ValidationMessage> : null
+                validationMessages.officialName.length ? <ValidationMessage>{validationMessages.officialName}</ValidationMessage> : null
             }
-            <CustomInput value={state.code} name="code" label="Код" stateChange={e => handleChange({fElem:e})} errorVal={validationMessages.code.length? true : false} />
+            <CustomInput value={state.code} name="code" label="Код" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.code.length ? true : false} />
             {
-                validationMessages.code.length? <ValidationMessage>{validationMessages.code}</ValidationMessage> : null
+                validationMessages.code.length ? <ValidationMessage>{validationMessages.code}</ValidationMessage> : null
             }
-            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={e => handleChange({fElem:e})} fullWidth errorVal={validationMessages.position.length? true : false} />
+            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={e => handleChange({ fElem: e })} fullWidth errorVal={validationMessages.position.length ? true : false} />
             {
-                validationMessages.position.length? <ValidationMessage>{validationMessages.position}</ValidationMessage> : null
+                validationMessages.position.length ? <ValidationMessage>{validationMessages.position}</ValidationMessage> : null
             }
-            <Button name={pk? "сохранить" : "Добавить завод"} color="#5762B2" clickHandler={() =>  pk? handleSubmit(state, pk) : handleSubmit(state)}/>
+            <Button name={pk ? "сохранить" : "Добавить завод"} color="#5762B2" clickHandler={() => pk ? handleSubmit(state, pk) : handleSubmit(state)} loading={mutationLoading} />
         </SmallDialog>
     );
 };
 
 export default React.memo(FactoryCreate, (prevProps, nextProps) => {
-           return prevProps.isOpen === nextProps.isOpen;
+    return prevProps.isOpen === nextProps.isOpen;
 });
