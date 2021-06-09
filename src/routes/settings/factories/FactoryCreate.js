@@ -16,7 +16,6 @@ import { object, string, number } from "yup";
 const initialState = {
     firm: "",
     name: "",
-    officialName: "",
     code: "",
     position: ""
 }
@@ -24,7 +23,6 @@ const initialState = {
 const fieldsMessages = {
     firm: "",
     name: "",
-    officialName: "",
     code: "",
     position: ""
 }
@@ -32,7 +30,6 @@ const fieldsMessages = {
 const factorySchema = object({
     firm: number().typeError("Поле должно быть числом").required("Поле 'Фирма' должно быть выбрано"),
     name: string().typeError("Поле должно быть строкой").required("Поле 'Название' обязательно к заполнению"),
-    officialName: string().typeError("Поле должно быть строкой").required("Поле 'Официальное название' обязательо к заполнению"),
     code: string().typeError("Поле должно быть строкой").required("Поле 'Код' обязательно к заполению"),
     position: number().typeError("Введите число").required("Поле 'Позиция' обязательно к заполнению")
 });
@@ -62,7 +59,6 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, g
             setState({
                 firm: entry.firm,
                 name: entry.name,
-                officialName: entry.officialName,
                 code: entry.code,
                 position: entry.position
             });
@@ -132,10 +128,6 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, g
             <CustomInput value={state.name} name="name" label="Название" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.name.length ? true : false} />
             {
                 validationMessages.name.length ? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
-            }
-            <CustomInput value={state.officialName} name="officialName" label="Официальное название" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.officialName.length ? true : false} />
-            {
-                validationMessages.officialName.length ? <ValidationMessage>{validationMessages.officialName}</ValidationMessage> : null
             }
             <CustomInput value={state.code} name="code" label="Код" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.code.length ? true : false} />
             {

@@ -44,7 +44,7 @@ const fieldsMessages = {
 const OrderCreate = ({ match }) => {
 
     const { id } = match.params,
-        title = useTitle("Создать Заказ"),
+        title = useTitle(id? "Изменить заказ" : "Создать Заказ"),
         history = useHistory();
 
     const { submitData, handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
@@ -107,7 +107,7 @@ const OrderCreate = ({ match }) => {
         invoiceProforma: ""
     });
 
-    const [productionDayCounts, setProductionDayCounts] = useState({});
+    const [deliveryDayCounts, setDeliveryDayCounts] = useState({});
 
     useEffect(() => {
         getFactories();
@@ -192,7 +192,7 @@ const OrderCreate = ({ match }) => {
 
     }, [vendorFactory]);
 
-    const handleDataChange = (event, dataType, index) => {
+    const handleDataChange = (event, dataType, index, vendorProductChange) => {
         if (dataType === "order") {
             setOrderData({ ...orderData, [event.target.name]: event.target.value });
         }
@@ -203,8 +203,12 @@ const OrderCreate = ({ match }) => {
             if(event.target.name == "price"){
                 materialsCopy[index] = { ...materialsCopy[index], price: formatInputPrice(event.target.value) }
             }else{
+                if(vendorProductChange){
+                    const deliveryDayCount = vendorProducts.find(({node}) => node.pk == event.target.value)?.node?.deliveryDayCount;
+                    setDeliveryDayCounts({ ...deliveryDayCounts, [index]: deliveryDayCount });
+
+                }
                 materialsCopy[index] = { ...materialsCopy[index], [event.target.name]: event.target.value }
-                setProductionDayCounts({ ...productionDayCounts, [index]: event.target.value });
             }
             setMaterials(materialsCopy);
         }
@@ -237,14 +241,12 @@ const OrderCreate = ({ match }) => {
         pk ? handleSubmit(orderRequestBody, pk) : handleSubmit(exceptKey(orderRequestBody, ["status"]));
     }
 
-    const getAproximateDeliveryDate = (date, productionDayCounts) => {
+    const getAproximateDeliveryDate = (date, deliveryDayCount) => {
 
-        console.log("date", date);
-        console.log("date productionDayCounts", productionDayCounts);
 
-        if (productionDayCounts !== undefined) {
+        if (deliveryDayCount !== undefined) {
             const dateInMilliseconds = (typeof date == "number") ? date : new Date(date).getTime(),
-                daysInMilliseconds = 1000 * 60 * 60 * 24 * productionDayCounts,
+                daysInMilliseconds = 1000 * 60 * 60 * 24 * deliveryDayCount,
                 aproximateDeliveryDate = moment(new Date(dateInMilliseconds + daysInMilliseconds).toISOString()).format("DD.MM.YYYY");
             return aproximateDeliveryDate;
         }
@@ -254,11 +256,15 @@ const OrderCreate = ({ match }) => {
     }
 
     const remove = (index) => {
-        const tmp = { ...productionDayCounts };
+        const tmp = { ...deliveryDayCounts };
         delete tmp[index];
-        setProductionDayCounts(tmp);
+        setDeliveryDayCounts(tmp);
         removeTempl(index)
     }
+
+    useEffect(() => {
+        console.log("deliveryDayCounts", deliveryDayCounts);
+    }, [deliveryDayCounts]);
 
 
     const sendFileToServer = (file) => {
@@ -310,7 +316,7 @@ const OrderCreate = ({ match }) => {
                         }
                         <CustomPicker label="Дата создание" name="invoiceDate" date={orderData.invoiceDate} stateChange={(date) => setOrderData({ ...orderData, invoiceDate: date })} />
                         <div>
-                            <CustomInput label="Инвойс заказа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} errorVal={validationMessages.invoiceProforma.length ? true : false} />
+                            <CustomInput label="Инвойс проформа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} errorVal={validationMessages.invoiceProforma.length ? true : false} />
                             {
                                 validationMessages.invoiceProforma.length ? <ValidationMessage>{validationMessages.invoiceProforma}</ValidationMessage> : null
                             }
@@ -334,7 +340,7 @@ const OrderCreate = ({ match }) => {
                         materials.map((e, index) => {
                             return <AddibleInputWithTrash>
                                 <InputsWrapper>
-                                    <CustomSelector name="vendorProduct" label="Выберите материал" value={e.vendorProduct} stateChange={(e) => handleDataChange(e, "material", index)}>
+                                    <CustomSelector name="vendorProduct" label="Выберите материал" value={e.vendorProduct} stateChange={(e) => handleDataChange(e, "material", index, "vendorProduct")}>
                                         {
                                             vendorProducts?.map(({ node }) => {
                                                 return <MenuItem key={node.pk} value={node.pk} selected={materials[index].vendorProduct === node.pk}>{node.product.name}</MenuItem>
@@ -342,7 +348,7 @@ const OrderCreate = ({ match }) => {
                                         }
                                     </CustomSelector>
                                     <CustomPicker name="dateOfDelivery" label="Дата отгрузки" date={e.dateOfDelivery} stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
-                                    <CustomInput label="Примерная дата прибытия" value={getAproximateDeliveryDate(e.dateOfDelivery, productionDayCounts[index])} disabled />
+                                    <CustomInput label="Примерная дата прибытия" value={getAproximateDeliveryDate(e.dateOfDelivery, deliveryDayCounts[index])} disabled />
                                     <CustomInput name="count" label="Кол-во" value={e.count} stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomInput name="price" label="Цена" value={e.price} stateChange={(e) => handleDataChange(e, "material", index)} />
                                 </InputsWrapper>

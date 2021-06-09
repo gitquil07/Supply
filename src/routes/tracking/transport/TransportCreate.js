@@ -36,7 +36,9 @@ import moment from "moment";
 import { useMutation } from "@apollo/client";
 import { NotificationManager } from "react-notifications";
 import { FileElementA, FilesList } from "components/Inputs/DragFile";
-import { indexOf } from "ramda";
+import { degreeOfDanger as degreeOfDangerOptions } from "utils/static";
+import { calculateDaysOnTheWay, formatPrice } from "utils/functions";
+// import { Row } from "components/Row";
 
 
 const initialState = {
@@ -73,7 +75,8 @@ const TrackingTransportCreate = ({ match }) => {
     const {
         state,
         setState,
-        handleChange
+        handleChange,
+        handlePriceChange
     } = useFormData(initialState);
     // const [state, setState] = useState();
 
@@ -189,7 +192,8 @@ const TrackingTransportCreate = ({ match }) => {
             });
             setState({
                 ...trackingInfo,
-                vendor: trackingInfo?.vendor?.pk
+                vendor: trackingInfo?.vendor?.pk,
+                amount: formatPrice(trackingInfo?.amount)
             });
             setAdditionalData({
                 ...additionalData,
@@ -317,7 +321,7 @@ const TrackingTransportCreate = ({ match }) => {
             <Form>
                 <MiniForm>
                     <Title>Данные транспорта</Title>
-                    <CustomizableInputs t="2fr 2fr 2fr 2fr 1fr 1fr 1fr">
+                    <CustomizableInputs t="1fr 1fr 1fr 1fr 1fr 1fr 1fr">
                         <CustomSelector label="Транспортировщики" value={state?.vendor} name="vendor" stateChange={e => handleChange({ fElem: e })}>
                             {
                                 vendors.map(({ node }) =>
@@ -326,7 +330,7 @@ const TrackingTransportCreate = ({ match }) => {
                             }
                         </CustomSelector>
                         <CustomNumber name="transportNumber" label="Номер транспорта" value={state?.transportNumber} stateChange={e => handleChange({ fElem: e })} />
-                        <CustomNumber name="amount" label="Сумма" value={state?.amount} stateChange={e => handleChange({ fElem: e })} />
+                        <CustomInput name="amount" label="Сумма" value={state?.amount} stateChange={e => handlePriceChange(e, "amount")} />
                         <CustomSelector name="currency" label="Валюта" value={state?.currency} stateChange={e => handleChange({ fElem: e })}>
                             {
                                 currencyOptions.map(currency =>
@@ -336,7 +340,11 @@ const TrackingTransportCreate = ({ match }) => {
                         </CustomSelector>
                         <CustomNumber name="netto" label="Нетто" value={state?.netto} stateChange={e => handleChange({ fElem: e })} />
                         <CustomNumber name="brutto" label="Бруто" value={state?.brutto} stateChange={e => handleChange({ fElem: e })} />
-                        <CustomPicker date={state.trDate} name="trDate" stateChange={date => handleDateChange(date)} label="Дата" />
+                        <CustomPicker date={state.trDate} name="trDate" stateChange={date => handleDateChange(date)} label="Дата прибытия" />
+                    </CustomizableInputs>
+                    <CustomizableInputs t="1fr 1fr">
+                        <CustomInput label="Дата отгрузки" value={applicationInfo?.shippingDate || "YYYY-MM-DD"} disabled />
+                        <CustomInput label="В пути" value={calculateDaysOnTheWay(applicationInfo?.shippingDate)} disabled /> 
                     </CustomizableInputs>
                 </MiniForm>
 
@@ -355,10 +363,10 @@ const TrackingTransportCreate = ({ match }) => {
                                                 )
                                             }
                                         </CustomSelector>
-                                        <CustomSelector name="destination" label="место оплаты" stateChaneg={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination}>
+                                        <CustomSelector name="destination" label="место оплаты" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination}>
                                             {
                                                 destinationOptions.map(destination =>
-                                                    <MenuItem key={destination.value} value={destination.value} selected={destination.value == invoice.destination} >{destination.label}</MenuItem>
+                                                    <MenuItem key={destination.value} value={destination.value} selected={destination.value == invoice.destination}>{destination.label}</MenuItem>
                                                 )
                                             }
                                         </CustomSelector>
@@ -498,7 +506,9 @@ const TrackingTransportCreate = ({ match }) => {
                                 Степень опасности
                             </h4>
                             <span>
-                                {applicationInfo?.degreeOfDanger}
+                                {
+                                    degreeOfDangerOptions.find(degree => degree.value == applicationInfo?.degreeOfDanger)?.label
+                                }
                             </span>
                         </Item>
                         <Item>

@@ -24,6 +24,7 @@ import { getList } from "utils/functions";
 import moment from "moment";
 import { ValidationMessage } from "components/ValidationMessage";
 import { object, number, string, boolean } from "yup";
+import { formatPrice } from "utils/functions"
 
 
 
@@ -33,19 +34,23 @@ const MaterialsSchema = object().shape({
     vendorFactory: number().typeError("Значение для поля 'Поставщик' не выбрано"),
     product: number().typeError("Значение для поля 'Продукт' не выбрано"),
     price: number()
-        .positive("Цена не можеть быть отрицательной")
-        .typeError("Поле 'Продукт' должно иметь число в качестве значения"),
+            .positive("Цена не можеть быть отрицательной")
+            .typeError("Поле 'Продукт' должно иметь число в качестве значения"),
     deliveryDayCount: number()
-        .positive("Введите положительно число")
-        .integer("Введите целое число")
-        .typeError("Поле 'Дни доставкм' должно иметь число в качестве значения"),
+            .positive("Введите положительно число")
+            .integer("Введите целое число")
+            .typeError("Поле 'Дни доставкм' должно иметь число в качестве значения"),
     productionDayCount: number()
-        .positive("Введите положительно число")
-        .integer("Введите целое число")
-        .typeError("Поле 'Срок изготовлеия' должно иметь число в качестве значения"),
+            .positive("Введите положительно число")
+            .integer("Введите целое число")
+            .typeError("Поле 'Срок изготовлеия' должно иметь число в качестве значения"),
     isActive: boolean(),
     currency: string()
         .oneOf(currencyEnum, "Недопустимое значение поля 'Валюта'"),
+    moq: number()
+            .positive("Введите положительное число")
+            .integer("Введите целое число")
+            .required("Поле 'moq' должно быть заполнено")
 });
 
 const fieldsMessages = {
@@ -56,7 +61,8 @@ const fieldsMessages = {
     "deliveryDayCount": "",
     "productionDayCount": "",
     "isActive": "",
-    "currency": ""
+    "currency": "",
+    "moq": ""
 }
 
 const initialState = {
@@ -67,7 +73,8 @@ const initialState = {
     "deliveryDayCount": "",
     "productionDayCount": "",
     "isActive": true,
-    "currency": ""
+    "currency": "",
+    "moq": ""
 }
 
 const SuppliersCreate = ({ match }) => {
@@ -118,7 +125,7 @@ const SuppliersCreate = ({ match }) => {
             return {
                 ...exceptKey(node, ["vendorFactory", "__typename"]),
                 factory: node?.vendorFactory?.factory?.name,
-                vendor: node?.vendorFactory?.vendor?.name,
+                vendor: node?.vendorFactory?.vendor?.companyName,
                 product: node?.product?.name
             }
         }), [vendorProductHistoriesFull]);
@@ -154,7 +161,7 @@ const SuppliersCreate = ({ match }) => {
             setState({
                 ...exceptKey(vendor, ["pk", "__typename", "id", "vendorFactory"]),
                 product: vendor?.product.pk,
-                vendorFactory: vendor?.vendorFactory?.vendor?.name,
+                vendorFactory: vendor?.vendorFactory?.vendor?.companyName,
                 factory: vendor?.vendorFactory?.factory?.name
             });
         }
@@ -279,6 +286,13 @@ const SuppliersCreate = ({ match }) => {
                             validationMessages.productionDayCount.length > 0 ? <ValidationMessage>{validationMessages.productionDayCount}</ValidationMessage> : null
                         }
                     </div>
+                    <div>
+                        <CustomNumber label="MOQ" name="moq" value={state.moq} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.moq.length > 0? true : false} />
+                        {
+                            validationMessages.moq.length? <ValidationMessage>{validationMessages.moq}</ValidationMessage> : null
+                        }
+                    </div>
+
 
                 </AddibleInput>
                 <p>
@@ -302,7 +316,7 @@ const SuppliersCreate = ({ match }) => {
                                 <span> Поставщик: </span>
                                 <span> Продукт: </span>
                                 <span> Цена: </span>
-                                <span> Ед. Изм: </span>
+                                <span> Валюта: </span>
                                 <span> Дни изготовления: </span>
                                 <span> Дни доставки: </span>
                                 <span> Дата изменения: </span>
@@ -316,7 +330,7 @@ const SuppliersCreate = ({ match }) => {
                                                 <span>{history?.factory}</span>
                                                 <span>{history?.vendor}</span>
                                                 <span>{history?.product.length > 25 ? history?.product.slice(0, 25) + "..." : history?.product}</span>
-                                                <span>{history?.price}</span>
+                                                <span>{formatPrice(history?.price)}</span>
                                                 <span>{history?.currency}</span>
                                                 <span>{history?.productionDayCount}</span>
                                                 <span>{history?.deliveryDayCount}</span>

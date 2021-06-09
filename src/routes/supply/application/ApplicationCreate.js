@@ -453,7 +453,7 @@ const ApplicationCreate = ({ match }) => {
                     </div>
                 </AddibleInput>
                 <p>
-                    <label htmlFor="transportMix">Комбинированный транспорт</label>
+                    <label htmlFor="transportMix">Сборный груз</label>
                     <Switch id="transportMix" name="transportMix" onChange={e => handleChange({ fElem: e, type: "choice" })} checked={state.transportMix} />
                 </p>
 

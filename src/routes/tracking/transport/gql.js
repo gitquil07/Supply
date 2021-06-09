@@ -55,6 +55,7 @@ query getTrackingInfo($id: ID!) {
       application {
         id
         transportMix
+        shippingDate
         files {
           edges {
             node {
@@ -101,6 +102,7 @@ query getVendorProductsGroupedByOrder($id: ID!) {
                         firm {
                           name
                         }
+                        size
                         count
                         weight
                         orderItem {

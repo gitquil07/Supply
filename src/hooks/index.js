@@ -316,10 +316,10 @@ export const useFormData = (initialState = {}) => {
         }
     }
 
-    const handlePriceChange = (e) => {
+    const handlePriceChange = (e, name) => {
         setState({
             ...state,
-            price: formatInputPrice(e.target.value)
+            [name || "price"]: formatInputPrice(e.target.value)
         })
     }
 

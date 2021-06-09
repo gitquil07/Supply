@@ -16,6 +16,7 @@ query nextPage($first: Int, $last: Int, $after: String, $before: String) {
             }
             vendor{
               name
+              companyName
             }
           }
           product {
@@ -146,6 +147,7 @@ query getVendorProduct($id: ID!) {
         vendor{
           pk
           name
+          companyName
         }
         factory {
           pk
@@ -174,6 +176,7 @@ query getVendorProductHistory($id: String) {
             }
             vendor {
               name
+              companyName
             }
           }
           product {

@@ -27,11 +27,11 @@ export const generateColumns = (callback) => {
             }
         },
         {
-            name: "officialName",
-            label: "Официальное название завода",
+            name: "firmName",
+            label: "Фирма",
             options: {
                 filter: true,
-                sort: false,
+                sort: true
             }
         },
         {

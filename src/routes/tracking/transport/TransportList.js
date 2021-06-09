@@ -10,7 +10,7 @@ import { FlexForHeader } from "../../../components/Flex";
 import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { CustomRowGenerator, getList } from "../../../utils/functions";
-import { ButtonWithIcon } from "../../../components/Buttons";
+import { formatPrice } from "utils/functions";
 
 const TransportList = ({ match }) => {
     const title = useTitle("Слежение");
@@ -60,7 +60,7 @@ const TransportList = ({ match }) => {
             ...node,
             publicId: { publicId: node.publicId, id: node.id },
             vendor: { vendor: node.vendor?.name, trNumber: node.transportNumber },
-            amount: { amount: node.amount, currency: node.currency, brutto: node.brutto, netto: node.netto },
+            amount: { amount: formatPrice(node.amount), currency: node.currency, brutto: node.brutto, netto: node.netto },
         }
     });
 

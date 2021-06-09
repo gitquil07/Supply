@@ -99,7 +99,7 @@ query MyQuery($vendorFactory : ID) {
           product {
             name
           }
-          productionDayCount
+          deliveryDayCount
           pk
         }
       }
@@ -137,7 +137,7 @@ query getOrder($id: ID!){
           node{
             vendorProduct{
               pk
-              productionDayCount
+              deliveryDayCount
               product{
                 name
               }
