@@ -1,9 +1,9 @@
 import moment from "moment";
 import { Row, RowGray } from "components/Row";
 import { setHeading } from "utils/functions";
+import Switch from "@material-ui/core/Switch";
 
-export const generateColumns = () => {
-
+export const generateColumns = (switchActivation) => {
     return [
         {
             name: "id",
@@ -19,7 +19,7 @@ export const generateColumns = () => {
                 filter: true,
                 sort: true,
                 customBodyRender: value => moment(value).format("YYYY-MM-DD")
-            } 
+            }
         },
         {
             name: "fioNumber",
@@ -69,18 +69,5 @@ export const generateColumns = () => {
                 }
             }
         },
-        
-        // {
-        //     name: "Actions",
-        //     options: {
-        //         customBodyRender: (value, tableMeta, updateValue) => {
-        //             return (
-        //                 <MatButton variant="outlined" className="btn-danger text-white" onClick={() => resetUserPassword(tableMeta.rowData[6], tableMeta.rowData[2], tableMeta.rowData[7])}>
-        //                     {`RESET`}
-        //                 </MatButton>
-        //             );
-        //         }
-        //     }
-        // }
     ];
 }

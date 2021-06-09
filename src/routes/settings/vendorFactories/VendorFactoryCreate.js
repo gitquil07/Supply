@@ -22,24 +22,10 @@ import { CustomInput } from "components/Inputs/CustomInput";
 import { useCustomMutation, useFormData } from "hooks";
 import { getList } from "utils/functions";
 import { ValidationMessage } from "components/ValidationMessage";
-import { object, string, number, date, boolean } from "yup";
+import { VendorFactoryValidation, fieldsMessages } from "./validation";
 
-const paymentConditionEnum = [
-    "Наличные",
-    "Безналичные"
-]
 
-const VendorFactoryValidation = object().shape({
-    vendor: number().typeError("Значение для поля 'Поставщик' не выбрано"),
-    factory: number().typeError("Значение для поля 'Поставщик' не выбрано"),
-    paymentCondition: string().oneOf(paymentConditionEnum, "Недопустимое значение для поля 'Условия оплаты'"),
-})
 
-const fildsMessages = {
-    vendor: "",
-    factory: "",
-    paymentCondition: "",
-}
 
 const initialState = {
     vendor: "",
@@ -108,7 +94,7 @@ const FactoryCreate = ({ match }) => {
             history.push("/settings/vendor-factories");
         },
         VendorFactoryValidation,
-        fildsMessages
+        fieldsMessages
     );
 
 
@@ -218,13 +204,7 @@ const FactoryCreate = ({ match }) => {
 
                     }
                     <div>
-                        <CustomSelector label="Условия оплаты" name="paymentCondition" stateChange={e => handleChange({ fElem: e })} value={state.paymentCondition} errorVal={validationMessages.paymentCondition.length ? true : false}>
-                            {
-                                paymentOptions?.map(option =>
-                                    <MenuItem value={option.value}>{option.label}</MenuItem>
-                                )
-                            }
-                        </CustomSelector>
+                        <CustomInput label="Условия оплаты" name="paymentCondition" stateChange={e => handleChange({ fElem: e })} value={state.paymentCondition} errorVal={validationMessages.paymentCondition.length ? true : false} />
                         {
                             validationMessages.paymentCondition.length ? <ValidationMessage>{validationMessages.paymentCondition}</ValidationMessage> : null
                         }

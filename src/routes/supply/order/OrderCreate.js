@@ -4,42 +4,31 @@ import moment from "moment";
 import { Helmet } from 'react-helmet';
 import styled from "styled-components";
 
-import { uploadFile } from "../../../api";
-import { useTitle } from '../../../hooks';
+import { uploadFile } from "api";
+import { useTitle } from 'hooks';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import { Button } from '../../../components/Buttons';
-import CustomPicker from '../../../components/Inputs/DatePicker';
-import { DragFile } from '../../../components/Inputs/DragFile';
-import { RemoveIcon } from '../../../components/RemoveIcon';
-import { CustomInput } from '../../../components/Inputs/CustomInput';
-import { CustomSelector } from '../../../components/Inputs/CustomSelector';
-import { AddibleInput, AddibleInputWithTrash } from "../../../components/Flex";
-import { Footer } from '../../../components/Footer';
+import { Button } from 'components/Buttons';
+import CustomPicker from 'components/Inputs/DatePicker';
+import { DragFile } from 'components/Inputs/DragFile';
+import { RemoveIcon } from 'components/RemoveIcon';
+import { CustomInput } from 'components/Inputs/CustomInput';
+import { CustomSelector } from 'components/Inputs/CustomSelector';
+import { AddibleInput, AddibleInputWithTrash } from "components/Flex";
+import { Footer } from 'components/Footer';
 import { ORDER_CREATE, ORDER_UPDATE } from "./gql";
 import { GET_FACTORIES_LIST, GET_VENDOR_FACTORIES, GET_VENDOR_FACTORY_PRODUCTS } from "./gql";
-import { CustomNumber } from "../../../components/Inputs/CustomNumber";
-import { Form } from "../../../components/Form";
-import { statuses } from "../../../utils/static";
+import { Form } from "components/Form";
+import { statuses } from "utils/static";
 import { useHistory } from "react-router-dom";
 import { GET_ORDER } from "./gql";
-import { exceptKey } from "../../../utils/functions";
-import { useCustomMutation } from "../../../hooks";
-import { getList, getValueOfProperty } from "../../../utils/functions";
-import { useTemplate } from "../../../hooks";
+import { exceptKey } from "utils/functions";
+import { useCustomMutation } from "hooks";
+import { getList, getValueOfProperty } from "utils/functions";
+import { useTemplate } from "hooks";
 import { ValidationMessage } from "components/ValidationMessage";
-import { object, number } from "yup";
-import { formatInputPrice } from "utils/functions";
-
-const OrderSchema = object().shape({
-    vendorFactory: number().typeError("Значение для поля 'Поставщик' не выбрано"),
-    invoiceProforma: number().typeError("Введите только цифры").required("Поле 'Инвойс заказа' должно быть заполнено")
-});
-
-const fieldsMessages = {
-    vendorFactory: "",
-    invoiceProforma: ""
-}
+import { formatInputPrice, formatPrice, resetPriceFormat } from "utils/functions";
+import { OrderSchema, fieldsMessages } from "./validation";
 
 const OrderCreate = ({ match }) => {
 
@@ -47,7 +36,7 @@ const OrderCreate = ({ match }) => {
         title = useTitle(id? "Изменить заказ" : "Создать Заказ"),
         history = useHistory();
 
-    const { submitData, handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
+    const { handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
         graphQlQuery: {
             queryCreate: ORDER_CREATE,
             queryUpdate: ORDER_UPDATE
@@ -70,7 +59,6 @@ const OrderCreate = ({ match }) => {
 
     const [factory, setFactory] = useState("");
 
-    // console.log("factoriesQuerySet?.data", useMemo(() => getList(undefined?.undefined), [undefined]));
     const factories = useMemo(() => getList(factoriesRes?.data), [factoriesRes?.data]) || [],
         vendorFactories = useMemo(() => getList(vendorFactoriesResp?.data), [vendorFactoriesResp?.data]) || [],
         vendorProducts = useMemo(() => getList(vendorFactoryProductsResp?.data), [vendorFactoryProductsResp?.data]) || [],
@@ -88,7 +76,6 @@ const OrderCreate = ({ match }) => {
         vendorProduct: "",
         dateOfDelivery: Date.now(),
         count: "",
-        currency: "",
         price: ""
     };
 
@@ -150,7 +137,8 @@ const OrderCreate = ({ match }) => {
             const orderItems = order.orderItems.edges.map(({ node }) => {
                 return {
                     ...exceptKey(node, "__typename"),
-                    vendorProduct: node.vendorProduct.pk
+                    vendorProduct: node.vendorProduct.pk,
+                    price: formatPrice(node.price)
                 }
             });
             setMaterials(orderItems);
@@ -228,6 +216,7 @@ const OrderCreate = ({ match }) => {
             return {
                 ...orderMaterial,
                 dateOfDelivery: moment(orderMaterial.dateOfDelivery).format("YYYY-MM-DD"),
+                price: resetPriceFormat(orderMaterial.price)
             }
         });
 
@@ -237,7 +226,6 @@ const OrderCreate = ({ match }) => {
         orderRequestBody.files = files.uploaded.map(file => file.file_id);
         orderRequestBody.status = statuses.find(status => status.value == orderRequestBody.status)?.label;
 
-        // pk ? submitData(orderRequestBody, pk) : submitData(exceptKey(orderRequestBody, ["status"]));
         pk ? handleSubmit(orderRequestBody, pk) : handleSubmit(exceptKey(orderRequestBody, ["status"]));
     }
 
@@ -252,7 +240,6 @@ const OrderCreate = ({ match }) => {
         }
 
         return moment(new Date(date).toISOString()).format("DD.MM.YYYY");
-        // return  new Day(dateInMilliseconds + twoDays);
     }
 
     const remove = (index) => {

@@ -1,4 +1,9 @@
+import { Switch } from "@material-ui/core";
+
 export const generateColumns = (url) => {
+    const deactivateProduct = () => {
+
+    }
 
     return [
         {
@@ -47,6 +52,16 @@ export const generateColumns = (url) => {
                 filter: false,
                 sort: false,
             }
-        }
+        },
+        // {
+        //     name: "Активный",
+        //     options: {
+        //         customBodyRender: (value, tableMeta, updateValue) => {
+        //             return (
+        //                 <Switch checked={true} onClick={() => deactivateProduct(value)} />
+        //             );
+        //         }
+        //     }
+        // }
     ];
 }

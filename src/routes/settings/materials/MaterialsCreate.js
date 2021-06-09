@@ -15,7 +15,7 @@ import { useHistory } from "react-router-dom";
 import { currencyOptions } from "utils/static";
 import Switch from "@material-ui/core/Switch";
 import { CustomNumber } from "components/Inputs/CustomNumber";
-import { formatInputPrice } from "utils/functions";
+import { formatPrice, resetPriceFormat } from "utils/functions";
 
 import { GET_FACTORIES, GET_VENDOR_FACTORIES, GET_PRODUCTS, CREATE_VENDOR_PRODUCT, UPDATE_VENDOR_PRODUCT, GET_VENDOR_PRODUCT, GET_VENDOR_PRODUCT_HISTORY } from "./gql";
 import { exceptKey, getValueOfProperty } from "utils/functions";
@@ -23,47 +23,7 @@ import { useCustomMutation, useFormData } from "hooks";
 import { getList } from "utils/functions";
 import moment from "moment";
 import { ValidationMessage } from "components/ValidationMessage";
-import { object, number, string, boolean } from "yup";
-import { formatPrice } from "utils/functions"
-
-
-
-const currencyEnum = currencyOptions.map(currency => currency.value);
-
-const MaterialsSchema = object().shape({
-    vendorFactory: number().typeError("Значение для поля 'Поставщик' не выбрано"),
-    product: number().typeError("Значение для поля 'Продукт' не выбрано"),
-    price: number()
-            .positive("Цена не можеть быть отрицательной")
-            .typeError("Поле 'Продукт' должно иметь число в качестве значения"),
-    deliveryDayCount: number()
-            .positive("Введите положительно число")
-            .integer("Введите целое число")
-            .typeError("Поле 'Дни доставкм' должно иметь число в качестве значения"),
-    productionDayCount: number()
-            .positive("Введите положительно число")
-            .integer("Введите целое число")
-            .typeError("Поле 'Срок изготовлеия' должно иметь число в качестве значения"),
-    isActive: boolean(),
-    currency: string()
-        .oneOf(currencyEnum, "Недопустимое значение поля 'Валюта'"),
-    moq: number()
-            .positive("Введите положительное число")
-            .integer("Введите целое число")
-            .required("Поле 'moq' должно быть заполнено")
-});
-
-const fieldsMessages = {
-    "factory": "",
-    "vendorFactory": "",
-    "product": "",
-    "price": "",
-    "deliveryDayCount": "",
-    "productionDayCount": "",
-    "isActive": "",
-    "currency": "",
-    "moq": ""
-}
+import { MaterialsSchema, fieldsMessages } from "./validation";
 
 const initialState = {
     "factory": "",
@@ -99,23 +59,6 @@ const SuppliersCreate = ({ match }) => {
             fetchPolicy: "no-cache"
         });
 
-
-    // const factories = getList(factoriesRes?.data) || [],
-    //       vendorFactories = getList(vendorFactoriesRes?.data) || [],
-    //       products = getList(productsRes?.data) || [],
-    //       pk = getList(vendorProductRes?.data) || [],
-    //       vendorProductHistoriesFull = getList(vendorProductHistoryRes?.data) || [],
-    //       vendorProductHistories = vendorProductHistoriesFull.map(({node}) => {
-    //         const obj = exceptKey(node, ["vendorFactory", "__typename"]);
-    //         return {
-    //             ...obj,
-    //             factory: node.vendorFactory.factory.name,
-    //             vendor: node.vendorFactory.vendor.name,
-    //             product: node.product.name
-    //         }
-    //       });
-
-
     const factories = useMemo(() => getList(factoriesRes?.data), [factoriesRes?.data]) || [],
         vendorFactories = useMemo(() => getList(vendorFactoriesRes?.data), [vendorFactoriesRes?.data]) || [],
         products = useMemo(() => getList(productsRes?.data), [productsRes?.data]) || [],
@@ -126,7 +69,7 @@ const SuppliersCreate = ({ match }) => {
                 ...exceptKey(node, ["vendorFactory", "__typename"]),
                 factory: node?.vendorFactory?.factory?.name,
                 vendor: node?.vendorFactory?.vendor?.companyName,
-                product: node?.product?.name
+                product: node?.product?.name,
             }
         }), [vendorProductHistoriesFull]);
 
@@ -162,7 +105,8 @@ const SuppliersCreate = ({ match }) => {
                 ...exceptKey(vendor, ["pk", "__typename", "id", "vendorFactory"]),
                 product: vendor?.product.pk,
                 vendorFactory: vendor?.vendorFactory?.vendor?.companyName,
-                factory: vendor?.vendorFactory?.factory?.name
+                factory: vendor?.vendorFactory?.factory?.name,
+                price: formatPrice(vendor?.price)
             });
         }
     }, [vendorProductRes?.data?.vendor.vendorProduct]);
@@ -195,16 +139,13 @@ const SuppliersCreate = ({ match }) => {
         const data = exceptKey(state, ["factory"]);
 
         console.log("pk", pk);
+        data.price = resetPriceFormat(data.price);
+
+        console.log("data", data);
 
 
         pk ? handleSubmit(exceptKey(data, ["vendorFactory", "product"]), pk) : handleSubmit(data);
-        // pk? submitData(exceptKey(data, ["vendorFactory", "product"]), pk) : submitData(data);
     }
-
-    // const factory = factories.find(({node}) => node.pk == state.factor)?.name,
-    //       vendor = vendorFactories.find(({node}) => node.pk == state.vendorFactory)?.name,
-    //       product = products.find(({node}) => node.pk == state.product)?.name;
-
 
     return (
         <>

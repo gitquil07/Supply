@@ -1,21 +1,23 @@
 import { Helmet } from "react-helmet";
 
-import { PAGINATE_USERS } from "./gql";
+import { PAGINATE_USERS, UPDATE_USER } from "./gql";
 import { generateColumns } from "./TableData";
-import { useTitle } from "../../../hooks";
-import { FlexForHeader } from "../../../components/Flex";
-import { ButtonWithIcon } from "../../../components/Buttons";
-import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { Pagination } from "../../../components/Pagination";
+import { useTitle } from "hooks";
+import { FlexForHeader } from "components/Flex";
+import { ButtonWithIcon } from "components/Buttons";
+import { CustomMUIDataTable } from "components/CustomMUIDataTable";
+import { Pagination } from "components/Pagination";
 import UserCreate from "./UserCreate";
 import { useState, useMemo } from "react";
-import { usePagination } from "../../../hooks";
-import { CustomRowGenerator, CustomRowGeneratorForModal, getList } from "../../../utils/functions";
+import { usePagination, useSwitchState } from "hooks";
+import { CustomRowGeneratorForModal, getList } from "utils/functions";
 
 const UsersList = () => {
     const title = useTitle("Пользователи");
     const [createOpen, setCreateOpen] = useState(false);
     const [id, setId] = useState(undefined);
+
+    const { update } = useSwitchState(UPDATE_USER);
 
     const {
         nextPageCursor,
@@ -59,7 +61,8 @@ const UsersList = () => {
                 email: node?.email,
                 password: node?.password,
                 factories: node.factories?.edges.map(({node}) => node.name),
-                createdAt: node.createdAt
+                createdAt: node.createdAt,
+                isActive: node.isActive
             }
         });
     }, [users]);
@@ -77,7 +80,22 @@ const UsersList = () => {
         setCreateOpen(false);
     }
 
-    const columns = useMemo(() => generateColumns(editEntry), []);
+    const switchActivation = (pk, state) => {
+
+        update({
+            variables: {
+                input: {
+                    pk,
+                    data: {
+                        isActive: state
+                    }
+                }
+            }
+        })
+
+    }
+
+    const columns = useMemo(() => generateColumns(switchActivation), []);
 
     return (
         <>

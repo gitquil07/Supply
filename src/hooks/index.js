@@ -423,3 +423,14 @@ export const useCustomMutation = ({ graphQlQuery: { queryCreate, queryUpdate } }
     };
 
 }
+
+export const useSwitchState = (graghQlQuery) => {
+    const [ update ] = useMutation(graghQlQuery, {
+        onCompleted : data => onResponseComplete(data, "update", "Активность", () => {}),
+        onError: error => NotificationManager.error(error.message)
+    });
+    
+    return {
+        update
+    }
+}

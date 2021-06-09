@@ -26,7 +26,6 @@ query nextPage($first: Int, $last: Int, $after: String, $before: String) {
           productionDayCount
           deliveryDayCount
           currency
-          
         }
       }
       pageInfo {

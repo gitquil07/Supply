@@ -11,6 +11,7 @@ import DatePickers from "../../../components/Inputs/DatePickers";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { CustomRowGenerator, getList } from "../../../utils/functions";
 import { formatPrice } from "utils/functions";
+import { noteOptions } from "utils/static";
 
 const TransportList = ({ match }) => {
     const title = useTitle("Слежение");
@@ -56,11 +57,18 @@ const TransportList = ({ match }) => {
 
     const applications = getList(dataPaginationRes?.data) || [];
     const list = applications.map(({ node }) => {
+        console.log("node", node);
         return {
             ...node,
             publicId: { publicId: node.publicId, id: node.id },
-            vendor: { vendor: node.vendor?.name, trNumber: node.transportNumber },
+            vendor: { vendor: node.vendor?.name, trNumber: node.transportNumber, trType: node.application?.transportType?.name },
             amount: { amount: formatPrice(node.amount), currency: node.currency, brutto: node.brutto, netto: node.netto },
+            ordersNumbers: node.application?.orders?.edges?.map(({node}) => node.pk)?.join(", "),
+            locations: node.locations?.edges?.map(({node}) => node?.name).join(", "),
+            factories: node.application?.orders?.edges?.map(({node}) => node?.vendorFactory?.factory?.name)?.join(", "),
+            shippingDate: node.shippingDate,
+            transportMix: node.application.transportMix,
+            note: noteOptions.find(note => note.value == node.note)?.label
         }
     });
 

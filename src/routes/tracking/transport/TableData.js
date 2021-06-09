@@ -12,17 +12,47 @@ export const generateColumns = () => {
             }
         },
         {
+            name: "ordersNumbers",
+            label: "Номера\nзаказов",
+            options: {
+                filter: false,
+                sort: false,
+                customHeadRender: setHeading,
+            } 
+        },
+        {
             name: "createdAt",
-            label: "Дата создания заявки",
+            label: "Дата создания\nзаявки",
             options: {
                 filter: true,
                 sort: false,
+                customHeadRender: setHeading,
+                customBodyRender: value => moment(value).format("YYYY-MM-DD")
+            }
+        },
+        {
+            name: "transportMix",
+            label: "Тип\nзявки",
+            options:{
+                filter: true,
+                soft: true,
+                customHeadRender: setHeading,
+                customBodyRender: value => <b>{value? "Сборная" : "Обычная"}</b>
+            }
+        },
+        {
+            name: "shippingDate",
+            label: "Дата\nотгрузки",
+            options: {
+                filter: true,
+                sort: true,
+                customHeadRender: setHeading,
                 customBodyRender: value => moment(value).format("YYYY-MM-DD")
             }
         },
         {
             name: "vendor",
-            label: "Транспортировщик\nНомер транспорта",
+            label: "Транспортировщик\nТип / Номер транспорта",
             options: {
                 filter: true,
                 sort: false,
@@ -34,7 +64,7 @@ export const generateColumns = () => {
                                 <b>{value.vendor}</b>
                             </Row>
                             <RowGray>
-                                {value.trNumber}
+                                {value.trType} / {value.trNumber}
                             </RowGray>
                         </>
                     )
@@ -63,6 +93,22 @@ export const generateColumns = () => {
             label: "Примечание",
             options: {
                 filter: true,
+                sort: false,
+            }
+        },
+        {
+            name: "locations",
+            label: "Местонахождение",
+            options: {
+                filter: false,
+                sort: false,
+            }            
+        },
+        {
+            name: "factories",
+            label: "Заводы",
+            options: {
+                filter: false,
                 sort: false,
             }
         },

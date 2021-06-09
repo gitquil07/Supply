@@ -6,24 +6,13 @@ import SmallDialog from "components/SmallDialog";
 import { CustomInput } from "components/Inputs/CustomInput";
 import { CustomNumber } from "components/Inputs/CustomNumber";
 import { ValidationMessage } from "components/ValidationMessage";
-import { object, string } from "yup";
-
 import { useCustomMutation, useFormData } from "hooks";
+import { fieldsMessages, firmSchema } from "./validation"
 
 const initialState = {
     name: "",
     inn: ""
 }
-
-const fieldsMessages = {
-    name: "",
-    inn: "",
-}
-
-const firmSchema = object({
-    name: string().typeError("Поле должно быть строкой").required("Поле 'Название фирмы' обязательно к заполнению"),
-    inn: string().typeError("Введите число").required("Поле 'ИНН' обязательно к заполнению")
-});
 
 const FirmCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getEntries, amountOfElemsPerPage, paginatingState }) => {
 

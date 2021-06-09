@@ -26,19 +26,19 @@ import { CustomizableInputs } from "components/ComponentsForForm/CustomizableInp
 import { GET_TRACKING, GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS, GET_VENDORS, GET_INVOICES, INVOICE_UPDATE } from "./gql";
 import { useLazyQuery } from "@apollo/client";
 import { recursiveFetch, exceptKey, downloadFile } from "utils/functions";
-import { currencyOptions, trackingStatuses, Валю } from "utils/static";
+import { currencyOptions, trackingStatuses } from "utils/static";
 import { useFormData, useCustomMutation } from "hooks";
 import { useHistory } from "react-router-dom";
 import { UPDATE_TRACKING } from "./gql"
-import { invoiceStatuses, destinationOptions } from "utils/static";
+import { invoiceStatuses, noteOptions } from "utils/static";
 import MenuItem from "@material-ui/core/MenuItem";
 import moment from "moment";
 import { useMutation } from "@apollo/client";
 import { NotificationManager } from "react-notifications";
 import { FileElementA, FilesList } from "components/Inputs/DragFile";
 import { degreeOfDanger as degreeOfDangerOptions } from "utils/static";
-import { calculateDaysOnTheWay, formatPrice } from "utils/functions";
-// import { Row } from "components/Row";
+import { calculateDaysOnTheWay, formatPrice, resetPriceFormat } from "utils/functions";
+import { ValidationMessage } from "components/ValidationMessage";
 
 
 const initialState = {
@@ -48,7 +48,8 @@ const initialState = {
     netto: "",
     brutto: "",
     amount: "",
-    trDate: new Date()
+    trDate: new Date(),
+    "note": ""
 };
 
 const TrackingTransportCreate = ({ match }) => {
@@ -78,7 +79,6 @@ const TrackingTransportCreate = ({ match }) => {
         handleChange,
         handlePriceChange
     } = useFormData(initialState);
-    // const [state, setState] = useState();
 
     const {
         submitData, mutationLoading
@@ -216,14 +216,16 @@ const TrackingTransportCreate = ({ match }) => {
         if (additional) {
             const requestBody = {
                 ...exceptKey(state, ["pk", "publicId"]),
-                status: trackingStatuses.find(status => status.value === additionalData.status).label,
+                status: trackingStatuses.find(status => status.value === additionalData.status)?.label,
                 locations: [{
                     name: additionalData.locations
                 }]
             };
-            // submitAdditionalData(requestBody, pk);
-            // console.log("sad", requestBody);
-            // console.log("pk", pk);
+
+            requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
+            requestBody.amount = resetPriceFormat(requestBody.amount);
+            requestBody.note = noteOptions.find(note => note.value === requestBody.note)?.label;
+
             updateTracking({
                 variables: {
                     input: {
@@ -234,7 +236,6 @@ const TrackingTransportCreate = ({ match }) => {
             });
 
         } else {
-            console.log("requestBody", state);
 
 
             const invoicesToUpdate = invoiceList.map(invoice => {
@@ -253,11 +254,11 @@ const TrackingTransportCreate = ({ match }) => {
 
             recursiveMutation();
 
-            console.log("state", exceptKey(state, ["pk", "publicId"]));
-
             const requestBody = { ...state };
 
             requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
+            requestBody.amount = resetPriceFormat(requestBody.amount);
+            requestBody.note = noteOptions.find(note => note.value === requestBody.note)?.label;
 
             submitData({
                 ...exceptKey(requestBody, ["pk", "publicId", "status"])
@@ -321,7 +322,7 @@ const TrackingTransportCreate = ({ match }) => {
             <Form>
                 <MiniForm>
                     <Title>Данные транспорта</Title>
-                    <CustomizableInputs t="1fr 1fr 1fr 1fr 1fr 1fr 1fr">
+                    <CustomizableInputs t="1fr 1fr 1fr 1fr 1fr 0.5fr 0.5fr 1.3fr">
                         <CustomSelector label="Транспортировщики" value={state?.vendor} name="vendor" stateChange={e => handleChange({ fElem: e })}>
                             {
                                 vendors.map(({ node }) =>
@@ -338,7 +339,17 @@ const TrackingTransportCreate = ({ match }) => {
                                 )
                             }
                         </CustomSelector>
-                        <CustomNumber name="netto" label="Нетто" value={state?.netto} stateChange={e => handleChange({ fElem: e })} />
+                        <CustomSelector name="note" label="место оплаты" stateChange={e => handleChange({fElem: e})} value={state.note}>
+                            {
+                                noteOptions.map(note =>
+                                    <MenuItem key={note.value} value={note.value} selected={note.value == state.note}>{note.label}</MenuItem>
+                                )
+                            }
+                        </CustomSelector>
+                        <div>
+                            <CustomNumber name="netto" label="Нетто" value={state?.netto} stateChange={e => handleChange({ fElem: e })} />
+                            {state?.brutto <= state?.netto ? <ValidationMessage>Нетто должно быть меньше Бруто</ValidationMessage> : null}
+                        </div>
                         <CustomNumber name="brutto" label="Бруто" value={state?.brutto} stateChange={e => handleChange({ fElem: e })} />
                         <CustomPicker date={state.trDate} name="trDate" stateChange={date => handleDateChange(date)} label="Дата прибытия" />
                     </CustomizableInputs>
@@ -363,31 +374,13 @@ const TrackingTransportCreate = ({ match }) => {
                                                 )
                                             }
                                         </CustomSelector>
-                                        <CustomSelector name="destination" label="место оплаты" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination}>
-                                            {
-                                                destinationOptions.map(destination =>
-                                                    <MenuItem key={destination.value} value={destination.value} selected={destination.value == invoice.destination}>{destination.label}</MenuItem>
-                                                )
-                                            }
-                                        </CustomSelector>
                                         <CustomInput label="Относительный вес" value={invoice.relativeWeight} stateChange={() => { }} disabled={true} />
-                                        {/* <CustomInput name="destination" label="место назначения" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination} /> */}
                                     </CustomizableInputs>
 
                                 )
                             }
                         </> : null
                     }
-
-                    {/* <CustomizableInputs t="1fr 1fr 2fr">
-                        <CustomInput label="01290949889612389" />
-                        <CustomInput label="Вид оплаты" />
-                    </CustomizableInputs>
-
-                    <CustomizableInputs t="1fr 1fr 2fr">
-                        <CustomInput label="01290949889612389" />
-                        <CustomInput label="Вид оплаты" />
-                    </CustomizableInputs> */}
 
                     <Title size="18">Статус слежения: <span>{trackingInfo?.publicId}</span></Title>
 
@@ -429,58 +422,6 @@ const TrackingTransportCreate = ({ match }) => {
 
                 </MiniForm>
                 <MiniForm>
-                    {/* <Title size="18">Данные транспорта</Title>
-
-                    <List>
-                        <Item>
-                            <h4>Транспортировщик</h4>
-                            <span>
-                                {
-                                    trackingInfo?.vendor?.name || vendors.find(({node}) => node.pk == state.vendor)?.node?.name
-                                }
-                            </span>
-                        </Item>
-                        <Item>
-                            <h4>Номер транспорта</h4>
-                            <span>
-                                {
-                                    trackingInfo?.transportNumber || state.transportNumber
-                                }
-                            </span>
-                        </Item>
-                        <Item>
-                            <h4>Сумма</h4>
-                            <span>
-                                {
-                                    trackingInfo?.amount || state.amount
-                                }
-                            </span>
-                        </Item>
-                        <Item>
-                            <h4>Нетто вес</h4>
-                            <span>
-                                {
-                                    trackingInfo?.netto || state.netto
-                                }
-                            </span>
-                        </Item>
-                        <Item>
-                            <h4>Брутто вес</h4>
-                            <span>
-                                {
-                                    trackingInfo?.brutto || state.brutto
-                                }
-                            </span>
-                        </Item>
-                        <Item>
-                            <h4>Примечание</h4>
-                            <span>
-                                {
-                                    trackingInfo?.note || state.note
-                                }
-                            </span>
-                        </Item>
-                    </List> */}
 
                     <Title size="18">Информация заявки</Title>
 
@@ -493,14 +434,6 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Тип заявки</h4>
                             <span>{applicationInfo?.transportMix ? "Сборная" : "Обычная"}</span>
                         </Item>
-                        {/* <Item>
-                            <h4>
-                                Вид упаковки
-                            </h4>
-                            <span>
-                                {applicationInfo?.typeOfPackaging}
-                            </span>
-                        </Item> */}
                         <Item>
                             <h4>
                                 Степень опасности
@@ -587,50 +520,6 @@ const TrackingTransportCreate = ({ match }) => {
                         })
                     }
                 </MiniForm>
-
-                {/* 
-                {
-                    applications.map((e, i) =>
-                        <Applications expand={e.expand}>
-                            <FlexForHeader p="0 0 30px 0">
-                                <Title>Статус слежения: <span>873264923</span></Title>
-                                <Expand onClick={() => expand(i)}><Arrows open={e.expand} /> Свернуть</Expand>
-                            </FlexForHeader>
-
-                            <Inputs>
-                                <CustomSelector label="Статус" />
-                                <CustomPicker label="Дата" />
-                                <CustomInput label="Местонахождение" />
-                                <Button name="Добавить статус" color="#5762B2" />
-                            </Inputs>
-
-                            // <TableIII />,
-
-                            <Material>
-                                <FlexForHeader m="20px 0">
-                                    <Title>Материалы</Title>
-                                    <Button name="Добавить материал" color="#5762B2" />
-                                </FlexForHeader>
-
-                                <InputRow>
-                                    <DisabledInput name="Название материала" value="01290949889612389" />
-                                    <DisabledInput name="OOO “trade solution”" value="100 000 000" />
-                                    <DisabledInput name="Брутто вес" value="320 000 кг" />
-                                    <DisabledInput name="Обем" value="21 м3" />
-                                    <CustomInput label="Отгружаемое кол-во" />
-
-                                    <RemoveIcon />
-                                </InputRow>
-                            </Material>
-
-                            <Footer>
-                                <span>Кол-во материалов: 6</span>
-                                <Button name="Создать Слежение" />
-                            </Footer>
-                        </Applications>
-                    )
-                } */}
-
 
             </Form>
 

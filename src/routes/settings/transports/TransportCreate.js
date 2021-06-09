@@ -6,7 +6,7 @@ import SmallDialog from "components/SmallDialog";
 import { CustomInput } from "components/Inputs/CustomInput";
 import { CustomNumber } from "components/Inputs/CustomNumber";
 import { ValidationMessage } from "components/ValidationMessage";
-import { object, string, number } from "yup";
+import { transportSchema, fieldsMessages } from "./validation";
 
 import { useCustomMutation, useFormData } from "hooks";
 
@@ -14,16 +14,6 @@ const initialState = {
     name: "",
     customsDayCount: ""
 }
-
-const fieldsMessages = {
-    name: "",
-    customsDayCount: ""
-}
-
-const transportSchema = object({
-    name: string().typeError("Поле должно быть строкой").required("Поле 'Название транспорта' обязательно к заполнению"),
-    customsDayCount: number().typeError("Поле должно быть строкой").required("Поле 'Кол-во дней' обязательно к заполнению")
-});
 
 
 const TransportCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getEntries, amountOfElemsPerPage, paginatingState }) => {

@@ -11,6 +11,32 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
           vendor {
             name
           }
+          application {
+            transportType {
+              name
+            }
+            orders {
+              edges {
+                node {
+                  pk
+                  vendorFactory {
+                    factory {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+            transportMix
+            shippingDate
+          }
+          locations {
+            edges {
+              node {
+                name
+              }
+            }
+          }
           transportNumber
           createdAt
           currency
@@ -23,6 +49,7 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
     }
   }
 }
+
 `;
 
 
@@ -161,7 +188,6 @@ query getInvoices($id: ID!) {
           node {
             pk
             number
-            destination
             status
             relativeWeight
           }

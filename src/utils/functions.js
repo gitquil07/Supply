@@ -291,6 +291,16 @@ export const formatPrice = (price) => {
 
 export const formatInputPrice = (input) => {
 
+    const cleanedInput = resetPriceFormat(input);
+
+    console.log("cleanedInput", cleanedInput);
+
+    return  formatPrice(cleanedInput);
+
+}
+
+
+export const resetPriceFormat = (input) => {
     const iLength = input.length;
 
     let cleanedInput = "";
@@ -317,11 +327,7 @@ export const formatInputPrice = (input) => {
 
     }
 
-    console.log("cleanedInput", cleanedInput);
-
-    return  formatPrice(cleanedInput);
-
-
+    return cleanedInput;
 }
 
 

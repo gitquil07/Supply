@@ -36,42 +36,9 @@ import EditSelectedIcon from "assets/icons/editSelected.svg";
 import EditHoveredIcon from "assets/icons/editHovered.svg";
 import { uploadFile } from 'api';
 import { ValidationMessage } from "components/ValidationMessage";
-import { object, number, string } from "yup";
 import { formatInputPrice } from "utils/functions";
+import { ApplicationSchema, fieldsMessages } from "./validation";
 
-
-const deliveryConditionEnum = deliveryCondition.map(condition => condition.value);
-const degreeOfDangerEnum = degreeOfDanger.map(degree => degree.label);
-const statusEnum = statuses.map(status => status.label);
-
-console.log("deliveryCondition", deliveryConditionEnum);
-
-const ApplicationSchema = object().shape({
-    trackingUser: number().typeError("Значение для поля 'Логист' не выбрано"),
-    transportType: number().typeError("Значение для поля 'Тип транспорта' не выбрано"),
-    deliveryCondition: string().typeError("Значение для поля 'Условия доставки' не выбрано").oneOf(deliveryConditionEnum, "Недопустимое значение для поля 'Условия доставки'"),
-    degreeOfDanger: string().required("Значение для поля 'Уровень опасности' не выбрано").typeError("Значение для поля 'Уровень опасности' не выбрано").oneOf(degreeOfDangerEnum, "Недопустимое значение для поля 'Уровень опасности'"),
-    packageOnPallet: number().positive("Введите положительно число").integer("Введите целое число").required("Поле 'Количество мест' должно быть заполнено"),
-    transportCount: number().typeError("Введите число").required("Поле 'Количество транспорта' должно быть заполнено").positive("Введите положительно число").integer("Введите целое число"),
-    status: string().required("Значение для поля 'Статус' не выбрано").typeError("Значение для поля 'Статус' не выбрано").oneOf(statusEnum, "Недопустимое значение для поля 'Статус'")
-});
-
-const str = string().typeError("Значение для поля 'Тип транспорта' не выбрано").oneOf(deliveryConditionEnum, "Недопустимое значение для поля 'Условия доставки'");
-console.log("deliveryConditionEnum", deliveryConditionEnum);
-str.isValid("FCA")
-    .then(res => console.log("res ass", res))
-    .catch(error => console.log("error ass", error));
-
-
-const fieldsMessages = {
-    trackingUser: "",
-    transportType: "",
-    deliveryCondition: "",
-    degreeOfDanger: "",
-    packageOnPallet: "",
-    transportCount: "",
-    status: "",
-}
 
 const initialState = {
     orders: [],
@@ -79,7 +46,6 @@ const initialState = {
     transportType: "",
     deliveryCondition: undefined,
     degreeOfDanger: undefined,
-    // typeOfPackaging: "",
     packageOnPallet: "",
     transportCount: "",
     shippingDate: new Date(),
@@ -297,21 +263,13 @@ const ApplicationCreate = ({ match }) => {
         let requestBody = {
             ...state,
             shippingDate: moment(state.shippingDate).format("YYYY-MM-DD"),
-            // typeOfPackaging: packagingTypes.find(packaging => packaging.value === state.typeOfPackaging)?.label,
             status: statuses.find(status => status.value === state.status)?.label,
             degreeOfDanger: degreeOfDanger.find(degree => degree.value === state.degreeOfDanger)?.label
         }
 
         requestBody.applicationItems = !pk ? items.map(item => exceptKey(item, "invoice")) : items;
-        // console.log("requestBody", requestBody);
-
 
         requestBody.files = files.uploaded.map(file => file.file_id);
-        // if (files.uploaded.length > 0) {
-        //     uploadFile('/api-file/documents/', files.uploaded)
-        //         .then(resp => console.log(resp))
-        //         .catch(err => console.log(err));
-        // }
 
         console.log("requestBody", requestBody);
 
@@ -403,14 +361,6 @@ const ApplicationCreate = ({ match }) => {
                             validationMessages.deliveryCondition.length ? <ValidationMessage>{validationMessages.deliveryCondition}</ValidationMessage> : null
                         }
                     </div>
-                    {/* <CustomSelector label="Тип упаковки" name="typeOfPackaging" value={state.typeOfPackaging} stateChange={e => handleChange({fElem: e})}>
-                        {
-                            packagingTypes.map(packaging => {
-                                    return <MenuItem key={packaging.value} value={packaging.value} selected={state.typeOfPackaging === packaging.value}>{packaging.label}</MenuItem>    
-                                }
-                            )
-                        }
-                    </CustomSelector> */}
                     <div>
                         <CustomSelector label="Уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.degreeOfDanger.length ? true : false}>
                             {
@@ -423,7 +373,6 @@ const ApplicationCreate = ({ match }) => {
                             validationMessages.degreeOfDanger.length ? <ValidationMessage>{validationMessages.degreeOfDanger}</ValidationMessage> : null
                         }
                     </div>
-                    {/* <CustomInput label="уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({fElem: e})}/> */}
                     <div>
                         <CustomNumber label="Кол-во мест" value={state.packageOnPallet} name="packageOnPallet" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.packageOnPallet.length ? true : false} />
                         {
@@ -506,8 +455,6 @@ const ApplicationCreate = ({ match }) => {
                                 <Row>
                                     <CustomInputWithComponent type="text" fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} component={<Measure>кг</Measure>} />
                                     <CustomInputWithComponent type="text" fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} component={<Measure value="3" index>м</Measure>} />
-                                    {/* <CustomNumber fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} />
-                                        <CustomNumber fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} /> */}
                                     <CustomInput fullWidth label="Цена инвойса" value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
                                 </Row>
                             </RowWrapper>

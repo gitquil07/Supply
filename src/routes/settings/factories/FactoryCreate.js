@@ -11,7 +11,7 @@ import { useLazyQuery } from "@apollo/client";
 import { getList } from "utils/functions";
 import { useCustomMutation, useFormData } from "hooks";
 import { MenuItem } from "@material-ui/core";
-import { object, string, number } from "yup";
+import { factorySchema, fieldsMessages } from "./validation";
 
 const initialState = {
     firm: "",
@@ -19,20 +19,6 @@ const initialState = {
     code: "",
     position: ""
 }
-
-const fieldsMessages = {
-    firm: "",
-    name: "",
-    code: "",
-    position: ""
-}
-
-const factorySchema = object({
-    firm: number().typeError("Поле должно быть числом").required("Поле 'Фирма' должно быть выбрано"),
-    name: string().typeError("Поле должно быть строкой").required("Поле 'Название' обязательно к заполнению"),
-    code: string().typeError("Поле должно быть строкой").required("Поле 'Код' обязательно к заполению"),
-    position: number().typeError("Введите число").required("Поле 'Позиция' обязательно к заполнению")
-});
 
 const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getEntries, amountOfElemsPerPage, paginatingState }) => {
 
