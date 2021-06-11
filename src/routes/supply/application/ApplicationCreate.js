@@ -38,7 +38,7 @@ import { uploadFile } from 'api';
 import { ValidationMessage } from "components/ValidationMessage";
 import { formatInputPrice } from "utils/functions";
 import { ApplicationSchema, fieldsMessages } from "./validation";
-
+import { resetPriceFormat } from "utils/functions";
 
 const initialState = {
     orders: [],
@@ -270,11 +270,19 @@ const ApplicationCreate = ({ match }) => {
             degreeOfDanger: degreeOfDanger.find(degree => degree.value === state.degreeOfDanger)?.label
         }
 
-        requestBody.applicationItems = !pk ? items.map(item => exceptKey(item, "invoice")) : items;
+        const itemsList = items.map(item => {
+            return {
+                ...item,
+                invoicePrice: resetPriceFormat(item.invoicePrice)
+            }
+        
+        })
+
+        requestBody.applicationItems = !pk ? itemsList.map(item => exceptKey(item, "invoice")) : itemsList;
 
         requestBody.files = files.uploaded.map(file => file.file_id);
 
-        console.log("requestBody", requestBody);
+        // console.log("requestBody", requestBody);
 
         if (pk) {
             handleSubmit(exceptKey(requestBody, ["orders"]), pk)
