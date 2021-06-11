@@ -273,7 +273,7 @@ const ApplicationCreate = ({ match }) => {
         const itemsList = items.map(item => {
             return {
                 ...item,
-                invoicePrice: resetPriceFormat(item.invoicePrice)
+                invoicePrice: resetPriceFormat(item.invoicePrice)+".00"
             }
         
         })

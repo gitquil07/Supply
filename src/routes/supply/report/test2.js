@@ -58,7 +58,9 @@ const TestTable2 = () => {
 
     const title = useTitle("Отчёт");
 
-    const [getReport, reportRes] = useLazyQuery(GET_TABLE_BODY),
+    const [getReport, reportRes] = useLazyQuery(GET_TABLE_BODY, {
+        fetchPolicy: "no-cache"
+    }),
           tableData = getValueOfProperty(reportRes?.data, "body") || [],
           columns = getValueOfProperty(reportRes?.data, "columns") || [];
 
