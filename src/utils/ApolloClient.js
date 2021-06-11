@@ -18,7 +18,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 
     operation.setContext({
         headers: {
-            authorization: token    
+            Authorization: `JWT ${token}`    
         }
     });
 
