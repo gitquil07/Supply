@@ -241,9 +241,12 @@ const ApplicationCreate = ({ match }) => {
         }
 
         if (e.target.name === "orderItem") {
-            const requiredCount = orderItems.find(({ node }) => node.pk === e.target.value).node.requiredCount;
+            const one = orderItems.find(({ node }) => node.pk === e.target.value).node,
+                  requiredCount = one.requiredCount,
+                  measure = one.vendorProduct?.product?.measure;
+                       
             let tmp = { ...requiredCounts };
-            tmp[idx] = requiredCount;
+            tmp[idx] = { requiredCount, measure };
             console.log("here", tmp);
 
             setRequiredCounts(tmp);
@@ -449,11 +452,11 @@ const ApplicationCreate = ({ match }) => {
                                             )
                                         }
                                     </CustomSelectorAdd>
-                                    <CustomInputWithComponent type="text" label="Кол-во" value={item.count} name="count" stateChange={e => handleItemChange(e, index)} component={requiredCounts[index] && <Badge>{requiredCounts[index]}</Badge>} />
+                                    <CustomInputWithComponent type="text" label="Кол-во" value={item.count} name="count" stateChange={e => handleItemChange(e, index)} component={requiredCounts[index]?.requiredCount && <Badge>{requiredCounts[index].requiredCount}</Badge>} />
                                 </Row>
 
                                 <Row>
-                                    <CustomInputWithComponent type="text" fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} component={<Measure>кг</Measure>} />
+                                    <CustomInputWithComponent type="text" fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} component={<Measure>{requiredCounts[index]?.measure}</Measure>} />
                                     <CustomInputWithComponent type="text" fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} component={<Measure value="3" index>м</Measure>} />
                                     <CustomInput fullWidth label="Цена инвойса" value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
                                 </Row>

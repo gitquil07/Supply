@@ -1,6 +1,7 @@
 import { Row, RowGray } from "components/Row";
 import moment from "moment";
 import { setHeading } from "utils/functions";
+import styled from "styled-components";
 
 export const generateColumns = () => {
     return [
@@ -9,6 +10,15 @@ export const generateColumns = () => {
             label: "№",
             options: {
                 display: "none"
+            }
+        },
+        {
+            name: "pk",
+            label: "№\nслежения",
+            options: {
+                filter: true,
+                sort: true,
+                customHeadRender: setHeading,
             }
         },
         {
@@ -27,7 +37,7 @@ export const generateColumns = () => {
                 filter: true,
                 sort: false,
                 customHeadRender: setHeading,
-                customBodyRender: value => moment(value).format("YYYY-MM-DD")
+                customBodyRender: value => <RowFixWidth width="100">{moment(value).format("YYYY-MM-DD")}</RowFixWidth>
             }
         },
         {
@@ -47,7 +57,17 @@ export const generateColumns = () => {
                 filter: true,
                 sort: true,
                 customHeadRender: setHeading,
-                customBodyRender: value => moment(value).format("YYYY-MM-DD")
+                customBodyRender: value => <RowFixWidth width="100">{moment(value).format("YYYY-MM-DD")}</RowFixWidth>
+            }
+        },
+        {
+            name: "inWayDayCount",
+            label: "Дней\nв пути",
+            options: {
+                filter: true,
+                sort: true,
+                customHeadRender: setHeading,
+                customBodyRender: value => <RowCenter>{value}</RowCenter>
             }
         },
         {
@@ -80,12 +100,42 @@ export const generateColumns = () => {
                 customHeadRender: setHeading,
                 customBodyRender: value => {
                     return (
-                        <>
+                        <RowFixWidth width="180">
                             <Row>{value.amount} {value.currency}</Row>
                             <RowGray>{value.netto} кг / {value.brutto} кг</RowGray>
-                        </>
+                        </RowFixWidth>
                     );
                 }
+            }
+        },
+        {
+            name: "country",
+            label: "Страна\nпоставщика",
+            options: {
+                filter: true,
+                sort: true,
+                customHeadRender: setHeading,
+            }
+        },
+        {
+            name: "deliveryCondition",
+            label: "Условия\nдоставки",
+            options:{
+                filter: true,
+                sort: true,
+                customHeadRender: setHeading,
+            }
+        },
+        {
+            name: "invoiceProforma",
+            label: "Инвойсы",
+        },
+        {
+            name: "trackingUser",
+            label: "Логист",
+            options: {
+                filter: true,
+                sort: true
             }
         },
         {
@@ -115,3 +165,12 @@ export const generateColumns = () => {
     ];
 
 }
+
+
+const RowFixWidth = styled.div`
+    width:${({width}) => width+"px"};
+`;
+
+const RowCenter = styled.div`
+    text-align:center;
+`;

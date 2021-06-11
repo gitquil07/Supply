@@ -37,7 +37,7 @@ import { useMutation } from "@apollo/client";
 import { NotificationManager } from "react-notifications";
 import { FileElementA, FilesList } from "components/Inputs/DragFile";
 import { degreeOfDanger as degreeOfDangerOptions } from "utils/static";
-import { calculateDaysOnTheWay, formatPrice, resetPriceFormat } from "utils/functions";
+import { addDays, formatPrice, resetPriceFormat } from "utils/functions";
 import { ValidationMessage } from "components/ValidationMessage";
 
 
@@ -94,17 +94,17 @@ const TrackingTransportCreate = ({ match }) => {
         }
     );
 
-    const {
-        submitData: submitAdditionalData
-    } = useCustomMutation({
-        graphQlQuery: {
-            queryCreate: UPDATE_TRACKING,
-            queryUpdate: UPDATE_TRACKING
-        }
-    },
-        "Данные",
-        () => { }
-    );
+    // const {
+    //     submitData: submitAdditionalData
+    // } = useCustomMutation({
+    //     graphQlQuery: {
+    //         queryCreate: UPDATE_TRACKING,
+    //         queryUpdate: UPDATE_TRACKING
+    //     }
+    // },
+    //     "Данные",
+    //     () => { }
+    // );
 
     const {
         submitData: submitInvoiceUpdate
@@ -355,7 +355,7 @@ const TrackingTransportCreate = ({ match }) => {
                     </CustomizableInputs>
                     <CustomizableInputs t="1fr 1fr">
                         <CustomInput label="Дата отгрузки" value={applicationInfo?.shippingDate || "YYYY-MM-DD"} disabled />
-                        <CustomInput label="В пути" value={calculateDaysOnTheWay(applicationInfo?.shippingDate)} disabled /> 
+                        <CustomInput label="В пути" value={addDays(applicationInfo?.inWayDayCount || 0)} disabled /> 
                     </CustomizableInputs>
                 </MiniForm>
 

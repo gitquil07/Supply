@@ -43,7 +43,6 @@ const MaterialsList = ({ match }) => {
         setAmountOfElemsPerPage
     }
 
-
     const vendorProducts = getList(dataPaginationRes?.data) || [];
     const list = vendorProducts.map(({ node }) => {
         const obj = exceptKey(node, ["__typename", "vendorFactory", "product", "productionDayCount", "deliveryDayCount"]);
@@ -56,7 +55,8 @@ const MaterialsList = ({ match }) => {
 
 
     const { url } = match;
-    const columns = useMemo(() => generateColumns(url), [])
+    const columns = useMemo(() => generateColumns(url), []);
+
 
     return (
         <>

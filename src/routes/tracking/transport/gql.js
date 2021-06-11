@@ -7,11 +7,20 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
       edges {
         node {
           id
+          pk
           publicId
           vendor {
             name
+            sapCountry {
+              name
+            }
           }
           application {
+            deliveryCondition
+            trackingUser {
+              username
+            }
+            inWayDayCount
             transportType {
               name
             }
@@ -19,6 +28,7 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
               edges {
                 node {
                   pk
+                  invoiceProforma
                   vendorFactory {
                     factory {
                       name
@@ -49,7 +59,6 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
     }
   }
 }
-
 `;
 
 
@@ -82,6 +91,7 @@ query getTrackingInfo($id: ID!) {
       application {
         id
         transportMix
+        inWayDayCount
         shippingDate
         files {
           edges {

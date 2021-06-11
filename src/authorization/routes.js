@@ -3,6 +3,7 @@ import { Route } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 import { RolesAuthority } from "./roles";
 import { toCamelCase } from "utils/functions";
+import ErrorBoundary from "components/ErrorBoundary";
 
 const AuthorityRoute = ({component: Component, roles, ...props}) => {
 
@@ -12,7 +13,7 @@ const AuthorityRoute = ({component: Component, roles, ...props}) => {
           console.log("role routes", role);
     // let role = "ADMIN",
 
-    return <Route {...props} render={props => roles[trRole].allowRoute? <Component {...props} /> : "Page not found"}></Route>
+    return <Route {...props} render={props => roles[trRole].allowRoute? <ErrorBoundary><Component {...props} /></ErrorBoundary> : "Page not found"}></Route>
 }
 
 

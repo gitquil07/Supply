@@ -61,14 +61,21 @@ const TransportList = ({ match }) => {
         return {
             ...node,
             publicId: { publicId: node.publicId, id: node.id },
+            pk: node.pk,
             vendor: { vendor: node.vendor?.name, trNumber: node.transportNumber, trType: node.application?.transportType?.name },
             amount: { amount: formatPrice(node.amount), currency: node.currency, brutto: node.brutto, netto: node.netto },
             ordersNumbers: node.application?.orders?.edges?.map(({node}) => node.pk)?.join(", "),
             locations: node.locations?.edges?.map(({node}) => node?.name).join(", "),
-            factories: node.application?.orders?.edges?.map(({node}) => node?.vendorFactory?.factory?.name)?.join(", "),
+            factories: node.application?.orders?.edges?.filter(({node}) => node?.vendorFactory?.factory?.name !== null)?.map(({node}) => node?.vendorFactory?.factory?.name)?.join(", "),
             shippingDate: node.shippingDate,
             transportMix: node.application.transportMix,
-            note: noteOptions.find(note => note.value == node.note)?.label
+            note: noteOptions.find(note => note.value == node.note)?.label,
+
+            country: node?.vendor?.sapCountry?.name,
+            inWayDayCount: node?.application?.inWayDayCount,
+            trackingUser: node?.application?.trackingUser?.username,
+            deliveryCondition: node?.application?.deliveryCondition,
+            invoiceProforma: node?.application?.orders?.edges?.filter(({node}) => node.invoiceProforma !== null)?.map(({node}) => "№"+node?.invoiceProforma)?.join(", ")
         }
     });
 

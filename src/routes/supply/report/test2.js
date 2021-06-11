@@ -63,8 +63,6 @@ const TestTable2 = () => {
           columns = getValueOfProperty(reportRes?.data, "columns") || [];
 
 
-    const [input, setInput] = useState("");
-
     const { loading } = reportRes;
     // const loading = true;
 

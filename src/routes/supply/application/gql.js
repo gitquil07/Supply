@@ -165,6 +165,7 @@ query getOrderItems($orders: [ID]!) {
           vendorProduct {
             product {
               name
+              measure
             }
           }
           requiredCount

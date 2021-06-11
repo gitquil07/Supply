@@ -383,8 +383,13 @@ export const calculateDaysOnTheWay = (shippingDate) => {
     
     const r = amountOfDays % 10;
 
+    return addDays(r);
+}
+
+export const addDays = (dayAmount) => {
     let days = "";
-    switch(r){
+
+    switch(dayAmount){
         case 1:
             days = "день";
             break;
@@ -404,5 +409,5 @@ export const calculateDaysOnTheWay = (shippingDate) => {
 
     }
 
-    return amountOfDays + " " + days;
+    return dayAmount + " " + days;
 }
