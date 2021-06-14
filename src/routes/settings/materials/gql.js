@@ -83,7 +83,7 @@ query getVendorFactories($factory: ID) {
         node {
           pk
           vendor {
-            name
+            companyName
           }
         }
       }

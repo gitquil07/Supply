@@ -170,7 +170,7 @@ const SuppliersCreate = ({ match }) => {
                                 <CustomSelector name="vendorFactory" value={state.vendorFactory} stateChange={e => handleChange({ fElem: e })} label="Поставщик" errorVal={validationMessages.vendorFactory.length > 0 ? true : false}>
                                     {
                                         vendorFactories?.map(({ node }) => {
-                                            return <MenuItem value={node.pk} selected={node.pk === state.vendorFactory}>{node.vendor.name}</MenuItem>
+                                            return <MenuItem value={node.pk} selected={node.pk === state.vendorFactory}>{node.vendor.companyName}</MenuItem>
                                         }
                                         )
                                     }

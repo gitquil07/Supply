@@ -17,6 +17,7 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
             sapCountry {
               name
             }
+            sapCity
           }
           application {
             transferredDate

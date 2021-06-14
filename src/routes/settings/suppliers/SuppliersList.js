@@ -44,7 +44,7 @@ const SuppliersList = ({ match }) => {
         return {
             id: node.id,
             contactPersonVendorPhone: { contactPerson: node.name, vendor: node.companyName,  phoneNumber: node.phoneNumber },
-            address: { country: node.sapCountry?.name, street: node.street, house: node.house },
+            address: { country: node.sapCountry?.name, city: node.sapCity, street: node.street, house: node.house },
             createdAt: node.createdAt
         }
     });
