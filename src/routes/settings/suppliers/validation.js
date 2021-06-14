@@ -13,6 +13,7 @@ export const SuppliersValidation = object().shape({
     house: string().required("Поле 'Дом' обязательно к заполнению"),
     role: string().typeError("Поле 'Роль' обязательно к заполнению").oneOf(vendorEnum),
     postcode: number().required("Поле 'Почтовый индекс' обязательно к заполнению"),
+    sapCity: string().required("Поле 'Город' обязательно к заполнению")
 });
 
 export const fieldsMessages = {
@@ -24,5 +25,6 @@ export const fieldsMessages = {
     house: "",
     role: "",
     email: "",
-    postcode: ""
+    postcode: "",
+    sapCity: ""
 };

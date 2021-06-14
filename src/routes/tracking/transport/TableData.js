@@ -19,7 +19,11 @@ export const generateColumns = () => {
                 filter: true,
                 sort: true,
                 customHeadRender: setHeading,
-                customBodyRender: value => <b>{value}</b>
+                customBodyRender: ({pk, ordersNumbers}) => {
+                    return ordersNumbers.map((oN, idx) => 
+                        <Row>{pk} / <span style={{fontSize: "12px"}}>{idx + 1}</span></Row>    
+                    )
+                }
             }
         },
         {
@@ -43,12 +47,12 @@ export const generateColumns = () => {
         },
         {
             name: "country",
-            label: "Страна\nпоставщика",
+            label: "Страна / Город\nпоставщика",
             options: {
                 filter: true,
                 sort: true,
                 customHeadRender: setHeading,
-                customBodyRender: value => <RowFixWidth width="150">{value}</RowFixWidth>
+                customBodyRender: value => <RowFixWidth width="150">{value.country} / {value.city}</RowFixWidth>
             }
         },
         {

@@ -12,6 +12,7 @@ query nextPage($first: Int, $last: Int, $after: String, $before: String) {
           sapCountry {
             name
           }
+          sapCity
           phoneNumber
           street
           house
@@ -93,6 +94,7 @@ query getVendor($id: ID!) {
       sapCountry {
         pk
       }
+      sapCity
       name
       companyName
       phoneNumber

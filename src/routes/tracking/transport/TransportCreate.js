@@ -25,7 +25,7 @@ import { CustomizableInputs } from "components/ComponentsForForm/CustomizableInp
 import { GET_TRACKING, GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS, GET_VENDORS, GET_INVOICES, INVOICE_UPDATE } from "./gql";
 import { useLazyQuery } from "@apollo/client";
 import { recursiveFetch, exceptKey } from "utils/functions";
-import { currencyOptions, trackingStatuses } from "utils/static";
+import { currencyOptions, measureOptions, trackingStatuses } from "utils/static";
 import { useFormData, useCustomMutation } from "hooks";
 import { useHistory } from "react-router-dom";
 import { UPDATE_TRACKING } from "./gql"
@@ -36,7 +36,7 @@ import { useMutation } from "@apollo/client";
 import { NotificationManager } from "react-notifications";
 import { FileElementA, FilesList } from "components/Inputs/DragFile";
 import { degreeOfDanger as degreeOfDangerOptions } from "utils/static";
-import { addDays } from "utils/functions";
+import { addDays, formatPrice } from "utils/functions";
 
 
 const initialState = {
@@ -47,7 +47,6 @@ const initialState = {
     brutto: "",
     amount: "",
     station: "",
-    border: "",
     trDate: new Date(),
     "note": ""
 };
@@ -238,7 +237,7 @@ const TrackingTransportCreate = ({ match }) => {
 
             const invoicesToUpdate = invoiceList.map(invoice => {
                 return {
-                    ...exceptKey(invoice, ["pk", "relativeWeight"]),
+                    ...exceptKey(invoice, ["pk", "relativeWeight", "netto", "brutto", "amount"]),
                     status: invoiceStatuses.find(invoiceStatus => invoiceStatus.value == invoice.status).label
                 }
             });
@@ -252,11 +251,12 @@ const TrackingTransportCreate = ({ match }) => {
 
             recursiveMutation();
 
-            const requestBody = { ...state };
+            let requestBody = { ...state };
 
             requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
             requestBody.note = noteOptions.find(note => note.value === requestBody.note)?.label;
 
+            requestBody = exceptKey(requestBody, ["netto", "brutto", "amount"]);
             submitData({
                 ...exceptKey(requestBody, ["pk", "publicId", "status"])
             }, pk);
@@ -319,7 +319,7 @@ const TrackingTransportCreate = ({ match }) => {
             <Form>
                 <MiniForm>
                     <Title>Данные транспорта</Title>
-                    <CustomizableInputs t="1.5fr 1.5fr 1fr 1.5fr 2fr 2fr 2fr">
+                    <CustomizableInputs t="1.5fr 1.5fr 1fr 1.5fr 2fr 2fr">
                         <CustomSelector label="Транспортировщики" value={state?.vendor} name="vendor" stateChange={e => handleChange({ fElem: e })}>
                             {
                                 vendors.map(({ node }) =>
@@ -343,7 +343,6 @@ const TrackingTransportCreate = ({ match }) => {
                             }
                         </CustomSelector>
                         <CustomInput name="station" label="Станция" value={state?.station} stateChange={e => handleChange({ fElem: e })} />
-                        <CustomInput name="border" label="Граница" value={state?.border} stateChange={e => handleChange({ fElem: e })} />
                         <CustomPicker date={state.trDate} name="trDate" stateChange={date => handleDateChange(date)} label="Дата прибытия" />
                     </CustomizableInputs>
                     <CustomizableInputs t="1fr 1fr">
@@ -367,20 +366,21 @@ const TrackingTransportCreate = ({ match }) => {
                                                 )
                                             }
                                         </CustomSelector>
-                                        <CustomInput label="Относительный вес" value={invoice.relativeWeight} disabled />
-                                        <CustomInput label="Транспортный расход" value={invoice.amount} disabled />
-                                        <CustomInput label="Брутто" value={invoice.brutto}  disabled />
                                         <CustomInput label="Нетто" value={invoice.netto}  disabled />
+                                        <CustomInput label="Брутто" value={invoice.brutto}  disabled />
+                                        <CustomInput label="Транспортный расход" value={formatPrice(invoice.amount)} disabled />
+                                        <CustomInput label="Относительный вес" value={invoice.relativeWeight} disabled />
                                     </CustomizableInputs>
 
                                 )
                             }
                         </> : null
                     }
-                     <CustomizableInputs t="5.2fr 1fr 1fr">
-                        <CustomInput label="Транспортный расход" value={state.amount} disabled />
-                        <CustomInput label="Брутто" value={state.brutto} disabled /> 
-                        <CustomInput label="Нетто" value={state.netto} disabled /> 
+                     <CustomizableInputs t="1fr 1fr 1fr 1fr">
+                        <CustomInput label="Общий Транспортный расход" value={formatPrice(state.amount)} disabled />
+                        <CustomInput label="Общий Относительный вес" value="1.00" disabled />
+                        <CustomInput label="Общий Брутто" value={state.brutto} disabled /> 
+                        <CustomInput label="Общий Нетто" value={state.netto} disabled /> 
                     </CustomizableInputs>
                     <Title size="18">Статус слежения: <span>{trackingInfo?.publicId}</span></Title>
 

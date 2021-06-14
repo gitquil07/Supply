@@ -43,7 +43,7 @@ export const generateColumns = (url) => {
         },
         {
             name: "address",
-            label: "Страна\nУлица / Дом",
+            label: "Страна / Город\nУлица / Дом",
             options: {
                 filter: true,
                 sort: true,
@@ -52,7 +52,7 @@ export const generateColumns = (url) => {
                     return (
                         <>
                             <Row>
-                                {value.country}
+                                {value.country} / {value.city}
                             </Row>
                             <RowGray>
                                 {value.street} / {value.house}

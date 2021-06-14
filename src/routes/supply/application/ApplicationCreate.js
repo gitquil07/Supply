@@ -53,6 +53,13 @@ const initialState = {
     transportMix: true
 };
 
+const invoiceInitial = {
+    number: "",
+    netto: "",
+    brutto: "",
+    amount: ""
+}
+
 const ApplicationCreate = ({ match }) => {
     const title = useTitle("Создание новой Заявки"),
         {
@@ -92,6 +99,8 @@ const ApplicationCreate = ({ match }) => {
         invoices = useMemo(() => getList(invoicesRes?.data), [invoicesRes?.data]) || [],
         firms = useMemo(() => getList(firmsRes?.data), [firmsRes?.data]) || [];
 
+        console.log("invoices", invoices);
+
     const templ = {
         orderItem: "",
         firm: "",
@@ -103,12 +112,12 @@ const ApplicationCreate = ({ match }) => {
     };
 
     const [items, setItems] = useState([templ]),
-        [invoiceNumber, setInvoiceNumber] = useState(""),
+        [invoiceData, setInvoiceData] = useState(invoiceInitial),
         [invoicePk, setInvoicePk] = useState(undefined);
 
     useEffect(() => {
-        console.log("invoiceCreate", invoiceNumber);
-    }, [invoiceNumber]);
+        console.log("invoiceCreate", invoiceData);
+    }, [invoiceData]);
 
     const {
         addTempl,
@@ -216,13 +225,14 @@ const ApplicationCreate = ({ match }) => {
 
     const editInvoice = (id) => {
         const invoiceToEdit = invoices.find(({ node }) => node.id === id).node;
-        setInvoiceNumber(invoiceToEdit.number);
+        console.log("invoiceToEdit", invoiceToEdit);
+        setInvoiceData(exceptKey(invoiceToEdit, ["__typename"]));
         setInvoicePk(invoiceToEdit.pk);
         handleOpen();
     }
 
     const handleInvoiceEditClose = () => {
-        setInvoiceNumber("");
+        setInvoiceData(invoiceInitial);
         setInvoicePk(undefined);
         handleClose();
     }
@@ -256,7 +266,14 @@ const ApplicationCreate = ({ match }) => {
     }
 
     const submitInvoice = () => {
-        invoicePk ? submitInvoiceData({ number: invoiceNumber }, invoicePk, id) : submitInvoiceData({ number: invoiceNumber, application: pk }, undefined, id);
+        // console.log("invoceData", invoiceData);
+
+        const requestBody = {
+            ...invoiceData,
+            amount: resetPriceFormat(invoiceData.amount)
+        }
+
+        invoicePk ? submitInvoiceData(exceptKey(requestBody, ["id", "pk"]), invoicePk, id) : submitInvoiceData({...requestBody, application: pk}, undefined, id);
     }
 
     const beforeSubmit = () => {
@@ -309,6 +326,15 @@ const ApplicationCreate = ({ match }) => {
     useEffect(() => {
         console.log("requiredCounts", requiredCounts);
     }, [requiredCounts]);
+
+    const handleInvoiceDataChange = (e) => {
+        const name = e.target.name;
+        if(name === "amount"){
+            setInvoiceData({...invoiceData, [name]: formatInputPrice(e.target.value)});
+        }else{
+            setInvoiceData({...invoiceData, [name]: e.target.value});
+        }
+    }
 
     return (
         <>
@@ -474,7 +500,10 @@ const ApplicationCreate = ({ match }) => {
                 }
             </Form>
             <SmallDialog title="Cоздание нового инвойса" close={handleInvoiceEditClose} isOpen={open}>
-                <CustomInput label="Номер инвойса" value={invoiceNumber} name="number" stateChange={e => setInvoiceNumber(e.target.value)} />
+                <CustomInput label="Номер инвойса" value={invoiceData.number} name="number" stateChange={handleInvoiceDataChange} />
+                <CustomInput label="Брутто" value={invoiceData.brutto} name="brutto" stateChange={handleInvoiceDataChange} />
+                <CustomInput label="Нетто" value={invoiceData.netto} name="netto" stateChange={handleInvoiceDataChange} />
+                <CustomInput label="Транспортный расход" value={invoiceData.amount} name="amount" stateChange={handleInvoiceDataChange} />
                 <Button name={invoicePk ? "сохранить" : "создать"} color="#5762B2" clickHandler={submitInvoice} />
             </SmallDialog>
 

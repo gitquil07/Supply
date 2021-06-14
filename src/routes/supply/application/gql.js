@@ -208,6 +208,9 @@ query getInvoices($id: ID!) {
           id
           pk
           number
+          amount
+          netto
+          brutto
         }
       }
     }

@@ -23,6 +23,7 @@ import { SuppliersValidation, fieldsMessages } from "./validation";
 
 const initialState = {
     sapCountry: "",
+    sapCity: "",
     name: "",
     companyName: "",
     phoneNumber: "",
@@ -164,6 +165,12 @@ const SuppliersCreate = ({ match }) => {
                         </CustomSelector>
                         {
                             validationMessages.sapCountry.length ? <ValidationMessage>{validationMessages.sapCountry}</ValidationMessage> : null
+                        }
+                    </div>
+                    <div>
+                        <CustomInput name="sapCity" label="Город" value={state.sapCity} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.sapCity.length ? true : false} />
+                        {
+                            validationMessages.sapCity.length ? <ValidationMessage>{validationMessages.sapCity}</ValidationMessage> : null
                         }
                     </div>
                     <div>
