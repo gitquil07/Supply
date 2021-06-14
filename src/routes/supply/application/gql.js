@@ -21,6 +21,14 @@ query getApplication($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $a
           }
           createdAt
           count
+          shippingDate
+          invoices {
+            edges {
+              node {
+                number
+              }
+            }
+          }
         }
       }
       pageInfo {

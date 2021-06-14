@@ -246,7 +246,7 @@ const ApplicationCreate = ({ match }) => {
                   measure = one.vendorProduct?.product?.measure;
                        
             let tmp = { ...requiredCounts };
-            tmp[idx] = { requiredCount, measure };
+            tmp[idx] = requiredCount;
             console.log("here", tmp);
 
             setRequiredCounts(tmp);
@@ -273,7 +273,7 @@ const ApplicationCreate = ({ match }) => {
         const itemsList = items.map(item => {
             return {
                 ...item,
-                invoicePrice: resetPriceFormat(item.invoicePrice)+".00"
+                invoicePrice: resetPriceFormat(item.invoicePrice)
             }
         
         })
@@ -282,7 +282,6 @@ const ApplicationCreate = ({ match }) => {
 
         requestBody.files = files.uploaded.map(file => file.file_id);
 
-        // console.log("requestBody", requestBody);
 
         if (pk) {
             handleSubmit(exceptKey(requestBody, ["orders"]), pk)
@@ -464,8 +463,8 @@ const ApplicationCreate = ({ match }) => {
                                 </Row>
 
                                 <Row>
-                                    <CustomInputWithComponent type="text" fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} component={<Measure>{requiredCounts[index]?.measure}</Measure>} />
-                                    <CustomInputWithComponent type="text" fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} component={<Measure value="3" index>м</Measure>} />
+                                    <CustomInputWithComponent type="text" fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} component={<Measure>кг</Measure>} />
+                                    <CustomInputWithComponent type="text" fullWidth label="Вместимость" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} component={<Measure value="3" index>м</Measure>} />
                                     <CustomInput fullWidth label="Цена инвойса" value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
                                 </Row>
                             </RowWrapper>

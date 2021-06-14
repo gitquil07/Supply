@@ -119,10 +119,7 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, g
             {
                 validationMessages.code.length ? <ValidationMessage>{validationMessages.code}</ValidationMessage> : null
             }
-            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={e => handleChange({ fElem: e })} fullWidth errorVal={validationMessages.position.length ? true : false} />
-            {
-                validationMessages.position.length ? <ValidationMessage>{validationMessages.position}</ValidationMessage> : null
-            }
+            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={e => handleChange({ fElem: e })} fullWidth />
             <Button name={pk ? "сохранить" : "Добавить завод"} color="#5762B2" clickHandler={() => pk ? handleSubmit(state, pk) : handleSubmit(state)} loading={mutationLoading} />
         </SmallDialog>
     );

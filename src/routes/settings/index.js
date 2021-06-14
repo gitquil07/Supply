@@ -20,7 +20,6 @@ import TransportsList from "./transports/TransportsList";
 import FirmsList from "./firms/FirmsList"; 
 
 import { ProtectedRoute } from "authorization/routes";
-import ErrorBoundary from "components/ErrorBoundary";
 
 const Settings = ({ match }) => {
 
@@ -29,81 +28,21 @@ const Settings = ({ match }) => {
     return (
         <>
             <ProtectedRoute path={url("users")} component={UsersList} exact />
-
-            <Route path={url("factories")} exact render={props =>
-                <ErrorBoundary>
-                    <FactoryList { ...props }/>
-                </ErrorBoundary>
-            }/>
-            <Route path={url("transports")} component={TransportsList} exact render={props =>
-                    <ErrorBoundary>
-                        <FactoryList { ...props }/>
-                    </ErrorBoundary>
-            }/>
-            <Route path={url("firms")} exact render={props =>
-                <ErrorBoundary>
-                    <FirmsList { ...props } />
-                </ErrorBoundary>
-            }/>
-            <Route path={url("suppliers")} exact render={props => 
-                <ErrorBoundary>
-                    <SuppliersList { ...props } />
-                </ErrorBoundary>
-            }/>
-            <Route path={url("suppliers/create")} render={props => 
-                <ErrorBoundary>
-                    <SuppliersCreate { ...props } />
-                </ErrorBoundary>
-            }/>
-            <Route path={url("suppliers/edit/:id")} render={props =>
-                <ErrorBoundary>
-                    <SuppliersCreate { ...props } />
-                </ErrorBoundary>
-            }/>
-            <Route path={url("materials")} exact render={props => 
-                    <ErrorBoundary>
-                        <MaterialsList { ...props } />
-                    </ErrorBoundary>
-            }/>
-            <Route path={url("materials/create")} render={props => 
-                <ErrorBoundary>
-                    <MaterialCreate { ...props } />
-                </ErrorBoundary>
-            } />
-            <Route path={url("materials/edit/:id")} render={props =>
-                <ErrorBoundary>
-                    <MaterialCreate { ...props } />
-                </ErrorBoundary>
-            }/>
-            <Route path={url("products")} component={ProductsList} exact render={props => 
-                <ErrorBoundary>
-                    <ProductsList { ...props } />
-                </ErrorBoundary>
-            } />
-            <Route path={url("products/create")} render={props => 
-                <ErrorBoundary>
-                    <ProductCreate {...props} />
-                </ErrorBoundary>
-            } />
-            <Route path={url("products/edit/:id")} render={props =>
-                <ErrorBoundary>
-                    <ProductCreate {...props}/>
-                </ErrorBoundary> 
-            }/>
-            <Route path={url("vendor-factories")} exact render={props =>
-                <ErrorBoundary>
-                    <VendorFactoriesList {...props}/>
-                </ErrorBoundary>} />
-            <Route path={url("vendor-factories/create")} render={props => 
-                <ErrorBoundary>
-                    <VendorFactoryCreate {...props}/>
-                </ErrorBoundary>
-            }/>
-            <Route path={url("vendor-factories/edit/:id")} render={props => 
-                <ErrorBoundary>
-                    <VendorFactoryCreate {...props}/>
-                </ErrorBoundary>
-            }/>
+            <ProtectedRoute path={url("factories")} component={FactoryList} exact />
+            <ProtectedRoute path={url("transports")} component={TransportsList} exact />
+            <ProtectedRoute path={url("firms")} component={FirmsList} exact />
+            <ProtectedRoute path={url("suppliers")} component={SuppliersList}  exact />
+            <ProtectedRoute path={url("suppliers/create")} component={SuppliersCreate} />
+            <ProtectedRoute path={url("suppliers/edit/:id")} component={SuppliersCreate} />
+            <ProtectedRoute path={url("materials")} component={MaterialsList} exact />
+            <ProtectedRoute path={url("materials/create")} component={MaterialCreate} />
+            <ProtectedRoute path={url("materials/edit/:id")} component={MaterialCreate} />
+            <ProtectedRoute path={url("products")} component={ProductsList} exact />
+            <ProtectedRoute path={url("products/create")} component={ProductCreate} />
+            <ProtectedRoute path={url("products/edit/:id")} component={ProductCreate} />
+            <ProtectedRoute path={url("vendor-factories")} component={VendorFactoriesList} exact />
+            <ProtectedRoute path={url("vendor-factories/create")} component={VendorFactoryCreate} />
+            <ProtectedRoute path={url("vendor-factories/edit/:id")} component={VendorFactoryCreate} />
         </>
     );
 };

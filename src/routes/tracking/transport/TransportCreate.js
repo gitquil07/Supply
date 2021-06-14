@@ -19,13 +19,12 @@ import { Arrows } from "components/Arrows";
 import { RemoveIcon } from "components/RemoveIcon";
 import { DisabledInput } from "components/DisabledInput";
 import CustomPicker from "components/Inputs/DatePicker";
-import { GrayishBackground, MiniForm } from "components/ComponentsForForm/MiniForm";
-import { InputsWrapper } from "components/ComponentsForForm/InputsWrapper";
+import { MiniForm } from "components/ComponentsForForm/MiniForm";
 import { Title } from "components/Title";
 import { CustomizableInputs } from "components/ComponentsForForm/CustomizableInputs";
 import { GET_TRACKING, GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS, GET_VENDORS, GET_INVOICES, INVOICE_UPDATE } from "./gql";
 import { useLazyQuery } from "@apollo/client";
-import { recursiveFetch, exceptKey, downloadFile } from "utils/functions";
+import { recursiveFetch, exceptKey } from "utils/functions";
 import { currencyOptions, trackingStatuses } from "utils/static";
 import { useFormData, useCustomMutation } from "hooks";
 import { useHistory } from "react-router-dom";
@@ -37,8 +36,7 @@ import { useMutation } from "@apollo/client";
 import { NotificationManager } from "react-notifications";
 import { FileElementA, FilesList } from "components/Inputs/DragFile";
 import { degreeOfDanger as degreeOfDangerOptions } from "utils/static";
-import { addDays, formatPrice, resetPriceFormat } from "utils/functions";
-import { ValidationMessage } from "components/ValidationMessage";
+import { addDays } from "utils/functions";
 
 
 const initialState = {
@@ -48,6 +46,8 @@ const initialState = {
     netto: "",
     brutto: "",
     amount: "",
+    station: "",
+    border: "",
     trDate: new Date(),
     "note": ""
 };
@@ -193,7 +193,6 @@ const TrackingTransportCreate = ({ match }) => {
             setState({
                 ...trackingInfo,
                 vendor: trackingInfo?.vendor?.pk,
-                amount: formatPrice(trackingInfo?.amount)
             });
             setAdditionalData({
                 ...additionalData,
@@ -223,7 +222,6 @@ const TrackingTransportCreate = ({ match }) => {
             };
 
             requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
-            requestBody.amount = resetPriceFormat(requestBody.amount);
             requestBody.note = noteOptions.find(note => note.value === requestBody.note)?.label;
 
             updateTracking({
@@ -257,7 +255,6 @@ const TrackingTransportCreate = ({ match }) => {
             const requestBody = { ...state };
 
             requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
-            requestBody.amount = resetPriceFormat(requestBody.amount);
             requestBody.note = noteOptions.find(note => note.value === requestBody.note)?.label;
 
             submitData({
@@ -322,7 +319,7 @@ const TrackingTransportCreate = ({ match }) => {
             <Form>
                 <MiniForm>
                     <Title>Данные транспорта</Title>
-                    <CustomizableInputs t="1fr 1fr 1fr 1fr 1fr 0.5fr 0.5fr 1.3fr">
+                    <CustomizableInputs t="1.5fr 1.5fr 1fr 1.5fr 2fr 2fr 2fr">
                         <CustomSelector label="Транспортировщики" value={state?.vendor} name="vendor" stateChange={e => handleChange({ fElem: e })}>
                             {
                                 vendors.map(({ node }) =>
@@ -331,7 +328,6 @@ const TrackingTransportCreate = ({ match }) => {
                             }
                         </CustomSelector>
                         <CustomNumber name="transportNumber" label="Номер транспорта" value={state?.transportNumber} stateChange={e => handleChange({ fElem: e })} />
-                        <CustomInput name="amount" label="Сумма" value={state?.amount} stateChange={e => handlePriceChange(e, "amount")} />
                         <CustomSelector name="currency" label="Валюта" value={state?.currency} stateChange={e => handleChange({ fElem: e })}>
                             {
                                 currencyOptions.map(currency =>
@@ -339,18 +335,15 @@ const TrackingTransportCreate = ({ match }) => {
                                 )
                             }
                         </CustomSelector>
-                        <CustomSelector name="note" label="место оплаты" stateChange={e => handleChange({fElem: e})} value={state.note}>
+                        <CustomSelector name="note" label="Примечание" stateChange={e => handleChange({fElem: e})} value={state.note}>
                             {
                                 noteOptions.map(note =>
                                     <MenuItem key={note.value} value={note.value} selected={note.value == state.note}>{note.label}</MenuItem>
                                 )
                             }
                         </CustomSelector>
-                        <div>
-                            <CustomNumber name="netto" label="Нетто" value={state?.netto} stateChange={e => handleChange({ fElem: e })} />
-                            {state?.brutto <= state?.netto ? <ValidationMessage>Нетто должно быть меньше Бруто</ValidationMessage> : null}
-                        </div>
-                        <CustomNumber name="brutto" label="Бруто" value={state?.brutto} stateChange={e => handleChange({ fElem: e })} />
+                        <CustomInput name="station" label="Станция" value={state?.station} stateChange={e => handleChange({ fElem: e })} />
+                        <CustomInput name="border" label="Граница" value={state?.border} stateChange={e => handleChange({ fElem: e })} />
                         <CustomPicker date={state.trDate} name="trDate" stateChange={date => handleDateChange(date)} label="Дата прибытия" />
                     </CustomizableInputs>
                     <CustomizableInputs t="1fr 1fr">
@@ -365,7 +358,7 @@ const TrackingTransportCreate = ({ match }) => {
                             <Title size="18">Инвойсы</Title>
                             {
                                 invoiceList.map((invoice, idx) =>
-                                    <CustomizableInputs t="1fr 1fr 1fr 1fr">
+                                    <CustomizableInputs t="1fr 1fr 1fr 1fr 0.8fr 0.8fr">
                                         <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
                                         <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
                                             {
@@ -374,14 +367,21 @@ const TrackingTransportCreate = ({ match }) => {
                                                 )
                                             }
                                         </CustomSelector>
-                                        <CustomInput label="Относительный вес" value={invoice.relativeWeight} stateChange={() => { }} disabled={true} />
+                                        <CustomInput label="Относительный вес" value={invoice.relativeWeight} disabled />
+                                        <CustomInput label="Транспортный расход" value={invoice.amount} disabled />
+                                        <CustomInput label="Брутто" value={invoice.brutto}  disabled />
+                                        <CustomInput label="Нетто" value={invoice.netto}  disabled />
                                     </CustomizableInputs>
 
                                 )
                             }
                         </> : null
                     }
-
+                     <CustomizableInputs t="5.2fr 1fr 1fr">
+                        <CustomInput label="Транспортный расход" value={state.amount} disabled />
+                        <CustomInput label="Брутто" value={state.brutto} disabled /> 
+                        <CustomInput label="Нетто" value={state.netto} disabled /> 
+                    </CustomizableInputs>
                     <Title size="18">Статус слежения: <span>{trackingInfo?.publicId}</span></Title>
 
                     <CustomizableInputs t="1fr 1fr 1fr 1fr">

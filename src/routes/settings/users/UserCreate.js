@@ -26,8 +26,7 @@ const initialState = {
     role: "",
     email: "",
     phoneNumber: "",
-    factories: [],
-    isActive: true,
+    factories: []
 }
 
 
@@ -144,6 +143,8 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
 
         tmp = pk ? exceptKey(tmp, ["username"]) : tmp;
 
+        console.log("tmp", tmp);
+
         pk ? handleSubmit(tmp, pk) : handleSubmit(tmp);
     }
 
@@ -220,13 +221,15 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
             {
                 validationMessages.factories.length ? <ValidationMessage>{validationMessages.factories}</ValidationMessage> : null
             }
-            <label>
-                Активность: 
-                <Switch
-                    name="isActive" 
-                    checked={state.isActive} 
-                    onChange={(e) => handleChange({fElem: e, type: "choice"})} />
-            </label>
+            {
+                pk?  <label>
+                        Активность: 
+                        <Switch
+                            name="isActive" 
+                            checked={state.isActive} 
+                            onChange={(e) => handleChange({fElem: e, type: "choice"})} />
+                    </label> : null
+            }
             <Button name={pk ? "Сохранить" : "Добавить пользователя"} color="#5762B2" clickHandler={beforeSubmit} loading={mutationLoading} />
         </SmallDialog>
     )
