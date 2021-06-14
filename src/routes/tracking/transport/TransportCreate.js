@@ -366,10 +366,10 @@ const TrackingTransportCreate = ({ match }) => {
                                                 )
                                             }
                                         </CustomSelector>
-                                        <CustomInput label="Относительный вес" value={invoice.relativeWeight} disabled />
-                                        <CustomInput label="Транспортный расход" value={formatPrice(invoice.amount)} disabled />
-                                        <CustomInput label="Брутто" value={invoice.brutto}  disabled />
                                         <CustomInput label="Нетто" value={invoice.netto}  disabled />
+                                        <CustomInput label="Брутто" value={invoice.brutto}  disabled />
+                                        <CustomInput label="Транспортный расход" value={formatPrice(invoice.amount)} disabled />
+                                        <CustomInput label="Относительный вес" value={invoice.relativeWeight} disabled />
                                     </CustomizableInputs>
 
                                 )
