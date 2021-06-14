@@ -10,6 +10,7 @@ import { ButtonWithIcon } from "../../../components/Buttons";
 import { Pagination } from '../../../components/Pagination';
 import { usePagination } from "../../../hooks";
 import { CustomRowGenerator, getList } from "../../../utils/functions";
+import { statuses } from "utils/static"
 
 
 const ApplicationList = ({ match }) => {
@@ -62,7 +63,9 @@ const ApplicationList = ({ match }) => {
             id: node.id,
             transportTypeCountDelivery: { transportType: node.transportType.name, transportCount: node.transportCount, deliveryCondition: node.deliveryCondition },
             typeOfPackaging: node.typeOfPackaging,
-            trackingUser: node.trackingUser.firstName + " " + node.trackingUser.lastName
+            trackingUser: node.trackingUser.firstName + " " + node.trackingUser.lastName,
+            status: statuses.find(status => status.value == node.status)?.label,
+            invoices: node.invoices.edges.map(({node}) => node.number).join(", ")
         }
     });
 

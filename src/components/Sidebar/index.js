@@ -11,8 +11,6 @@ import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
 import { navElements } from "./data"
 import { Link } from "react-router-dom";
-import AssessmentIcon from '@material-ui/icons/Assessment';
-import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import { UserContext } from "context/UserContext";
 import { checkPrivilege } from "authorization/authCheck";
 
@@ -35,15 +33,23 @@ export const Sidebar = () => {
             {navElements.map((i, index) =>  {
 
                 let allow = true;
+                let name = "";
                 switch(i.name.toLowerCase()){
                     case "снабжение": 
-                        allow = checkPrivilege(role, "useSupplyNavigation");
+                        name = "useSupplyNavigation";
+                        allow = checkPrivilege(role, `menuPermissions.${name}.main`);
                         break;
                     case "логистика":
-                        allow = checkPrivilege(role, "useTrackingNavigation");
+                        name = "useTrackingNavigation";
+                        allow = checkPrivilege(role, `menuPermissions.${name}.main`);
                         break;
                     case "таможня":
-                        allow = checkPrivilege(role, "useCustomNavigation");
+                        name = "useCustomNavigation";
+                        allow = checkPrivilege(role, `menuPermissions.${name}.main`);
+                        break;
+                    case "управление":
+                        name = "useSettingNavigation";
+                        allow = checkPrivilege(role, `menuPermissions.${name}.main`);
                         break;
                 }
 
@@ -64,13 +70,12 @@ export const Sidebar = () => {
                                     <List component="div" disablePadding>
                                         {i.children.map((i, index) => {
 
-                                            let allowSub = true;
+                                            let path = i.url.slice(i.url.indexOf("/", 1) + 1);
+                                                console.log("path before", path);
+                                                path = path.indexOf("-") === -1? path : path.slice(0, path.indexOf("-")) + path.slice(path.indexOf("-")+1, path.indexOf("-")+2).toUpperCase() + path.slice(path.indexOf("-")+2)
+                                                console.log("path after", path);
 
-                                            switch(i.name.toLowerCase()){
-                                                case "пользователи":
-                                                    allowSub = checkPrivilege(role, "useUserNavigation");
-                                                    break;
-                                            }
+                                            let allowSub = checkPrivilege(role, `menuPermissions.${name}.${path}`);
 
                                             return (
                                                 <>
@@ -94,22 +99,6 @@ export const Sidebar = () => {
                 );
 
             })}
-            <ListItem>
-                <ListItemIcon style={{color: "white"}}>
-                    <AssessmentIcon/>
-                </ListItemIcon>
-                <ListItemText>
-                    <StyledLink to="/stock-balance">Остатки на складе</StyledLink>
-                </ListItemText>
-            </ListItem>
-            <ListItem>
-                <ListItemIcon style={{color: "white"}}>
-                    <CalendarTodayIcon/>
-                </ListItemIcon>
-                <ListItemText>
-                    <StyledLink to="/plan-product">План</StyledLink>
-                </ListItemText>
-            </ListItem>
         </List>
     );
 };

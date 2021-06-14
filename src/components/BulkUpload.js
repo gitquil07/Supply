@@ -118,10 +118,18 @@ export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection
         //     file: files.uploaded[0].file_id
         // });
 
-        submitData({
-            ...state,
-            file: files.uploaded[0].file_id
-        });
+        if(state.factory !== ""){
+            submitData({
+                ...state,
+                file: files.uploaded[0].file_id
+            });
+        }else{
+            // console.log("here");
+            submitData({
+                file: files.uploaded[0].file_id
+            });
+        }
+
 
     }
 

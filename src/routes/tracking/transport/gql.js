@@ -9,6 +9,9 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
           id
           pk
           publicId
+          trDate
+          station
+          border
           vendor {
             name
             sapCountry {
@@ -16,6 +19,7 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
             }
           }
           application {
+            transferredDate
             deliveryCondition
             trackingUser {
               username
@@ -24,20 +28,38 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
             transportType {
               name
             }
+            invoices {
+              edges {
+                node {
+                  number
+                  relativeWeight
+                }
+              }
+            }
             orders {
               edges {
                 node {
                   pk
-                  invoiceProforma
                   vendorFactory {
+                    vendorProducts {
+                      edges {
+                        node {
+                          product {
+                            name
+                          }
+                        }
+                      }
+                    }
                     factory {
                       name
+                      firm {
+                        name
+                      }
                     }
                   }
                 }
               }
             }
-            transportMix
             shippingDate
           }
           locations {
@@ -73,12 +95,14 @@ query getTrackingInfo($id: ID!) {
         pk
       }
       transportNumber
-      netto
+      amount
       brutto
+      netto
+      station
+      border
       note
       status
       trDate
-      amount
       currency
       locations{
         edges{
@@ -98,13 +122,6 @@ query getTrackingInfo($id: ID!) {
             node {
               file,
               fileUrl
-            }
-          }
-        }
-        invoices{
-          edges{
-            node{
-              number
             }
           }
         }
@@ -199,6 +216,9 @@ query getInvoices($id: ID!) {
             pk
             number
             status
+            brutto
+            netto
+            amount
             relativeWeight
           }
         }

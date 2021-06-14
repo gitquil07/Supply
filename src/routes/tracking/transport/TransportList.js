@@ -57,25 +57,33 @@ const TransportList = ({ match }) => {
 
     const applications = getList(dataPaginationRes?.data) || [];
     const list = applications.map(({ node }) => {
-        console.log("node", node);
         return {
             ...node,
             publicId: { publicId: node.publicId, id: node.id },
             pk: node.pk,
             vendor: { vendor: node.vendor?.name, trNumber: node.transportNumber, trType: node.application?.transportType?.name },
-            amount: { amount: formatPrice(node.amount), currency: node.currency, brutto: node.brutto, netto: node.netto },
-            ordersNumbers: node.application?.orders?.edges?.map(({node}) => node.pk)?.join(", "),
+            amount: { brutto: node.brutto, netto: node.netto },
+            ordersNumbers: node.application?.orders?.edges?.map(({node}) => node.pk),
             locations: node.locations?.edges?.map(({node}) => node?.name).join(", "),
-            factories: node.application?.orders?.edges?.filter(({node}) => node?.vendorFactory?.factory?.name !== null)?.map(({node}) => node?.vendorFactory?.factory?.name)?.join(", "),
+            factories: node.application?.orders?.edges?.filter(({node}) => node?.vendorFactory?.factory?.name !== null)?.map(({node}) => node?.vendorFactory?.factory?.name),
             shippingDate: node.shippingDate,
-            transportMix: node.application.transportMix,
             note: noteOptions.find(note => note.value == node.note)?.label,
 
             country: node?.vendor?.sapCountry?.name,
             inWayDayCount: node?.application?.inWayDayCount,
             trackingUser: node?.application?.trackingUser?.username,
             deliveryCondition: node?.application?.deliveryCondition,
-            invoiceProforma: node?.application?.orders?.edges?.filter(({node}) => node.invoiceProforma !== null)?.map(({node}) => "№"+node?.invoiceProforma)?.join(", ")
+            invoiceProforma: node?.application?.orders?.edges?.filter(({node}) => node.invoiceProforma !== null)?.map(({node}) => "№"+node?.invoiceProforma)?.join(", "),
+            
+            // Additonal entries to display
+            firmName: node?.application?.orders?.edges?.map(({node}) => node?.vendorFactory?.factory?.firm?.name),
+            products: node?.application?.orders?.edges?.map(({node}) => node?.vendorFactory?.vendorProducts?.edges?.map(({node}) => node?.product?.name)),
+            cargoInvoices: node?.application?.invoices?.edges?.map(({node}) => "№" + node.number),
+            stationBorder: { station: node?.station, border: node?.border },
+            trDate: node?.trDate,
+            transportExpencese: { amount: formatPrice(node.amount), currency: node.currency },
+            transferredDate: node.transferredDate,
+            relativeWeight: node?.application?.invoices?.edges?.map(({node}) => node.relativeWeight)?.join(", ")
         }
     });
 

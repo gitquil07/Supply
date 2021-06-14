@@ -353,6 +353,10 @@ export const noteOptions = [
     {
         label: "прямой",
         value: "PRIAMOI"
+    },
+    {
+        label: "SPL",
+        value: "SPL"
     }
 ];
 

@@ -3,7 +3,7 @@ import { onError } from "@apollo/client/link/error";
 
 
 const httpLink = new HttpLink({
-    uri: 'http://10.35.84.119:10000/graphql/'
+    uri: 'http://supply-api.artelgroup.org/graphql/'
 });
 
 const logoutLink = onError(({networkError}) => {
@@ -18,7 +18,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 
     operation.setContext({
         headers: {
-            Authorization: `JWT ${token}`    
+            Authorization: token    
         }
     });
 
