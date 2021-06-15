@@ -86,7 +86,7 @@ const TransportList = ({ match }) => {
             trDate: node?.trDate,
             transportExpencese: { amount: formatPrice(node.amount), currency: node.currency },
             transferredDate: node.transferredDate,
-            relativeWeight: node?.application?.invoices?.edges?.map(({node}) => node.relativeWeight)?.join(", ")
+            relativeWeight: node?.application?.invoices?.edges?.map(({node}) => node.relativeWeight)
         }
     });
 
@@ -96,7 +96,6 @@ const TransportList = ({ match }) => {
     return (
         <>
             <Helmet title={title} />
-            <FlexForHeader>
                 <DatePickers mR="15px"
                     fromDate={fromDateChange}
                     toDate={toDateChange}
@@ -104,8 +103,6 @@ const TransportList = ({ match }) => {
                     changeTo={setToDateChange}
                     buttonClicked={handleDateApply}
                 />
-                {/* <ButtonWithIcon name="создать слежение" url={`${match.url}/create`}/> */}
-            </FlexForHeader>
             <CustomMUIDataTable
                 title={"Список слежений"}
                 data={list}

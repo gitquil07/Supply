@@ -218,7 +218,8 @@ export const generateColumns = () => {
             options: {
                 filter: true,
                 sort: false,
-                customHeadRender: setHeading
+                customHeadRender: setHeading,
+                customBodyRender: value => toNewLine(value, "50")
             }
         }
     ];

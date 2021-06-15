@@ -107,16 +107,14 @@ const ArrivedList = ({ match }) => {
     return (
         <>
             <Helmet title={title} />
-            <FlexForHeader>
-                <DatePickers mR="15px"
-                    fromDate={fromDateChange}
-                    toDate={toDateChange}
-                    changeFrom={setFromDateChange}
-                    changeTo={setToDateChange}
-                    buttonClicked={handleDateApply}
-                />
-                {/* <ButtonWithIcon name="создать слежение" url={`${match.url}/create`}/> */}
-            </FlexForHeader>
+            <DatePickers mR="15px"
+                fromDate={fromDateChange}
+                toDate={toDateChange}
+                changeFrom={setFromDateChange}
+                changeTo={setToDateChange}
+                buttonClicked={handleDateApply}
+            />
+            {/* <ButtonWithIcon name="создать слежение" url={`${match.url}/create`}/> */}
             <CustomMUIDataTable
                 title={"Список слежений"}
                 data={list}
