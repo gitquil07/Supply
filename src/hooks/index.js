@@ -100,7 +100,7 @@ export const usePagination = ({ type, qraphQlQuery, singular, plural }) => {
         fetchPolicy: "no-cache"
     });
 
-    const [amountOfElemsPerPage, setAmountOfElemsPerPage] = useState(30);
+    const [amountOfElemsPerPage, setAmountOfElemsPerPage] = useState(100);
 
     const nextPageCursor = dataPaginationRes?.data?.[singular]?.[plural]?.pageInfo?.endCursor,
         hasNextPage = dataPaginationRes?.data?.[singular]?.[plural]?.pageInfo?.hasNextPage;

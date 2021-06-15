@@ -12,7 +12,6 @@ import { useTitle } from "hooks";
 import { useLazyQuery } from "@apollo/client";
 import { exceptKey } from "utils/functions";
 import { GET_FACTORIES, GET_VENDORS, GET_VENDOR_FACTORY, CREATE_VENDOR_FACTORY, UPDATE_VENDOR_FACTORY, GET_VENDOR_DEPENDENT_PRODUCT } from "./gql";
-import { paymentOptions } from "utils/static";
 import { useHistory } from "react-router-dom";
 import Switch from "@material-ui/core/Switch";
 import moment from "moment";
@@ -83,7 +82,7 @@ const FactoryCreate = ({ match }) => {
     }), [dependentMaterialsRes?.data]);
 
 
-    const { submitData, handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
+    const { handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
         graphQlQuery: {
             queryCreate: CREATE_VENDOR_FACTORY,
             queryUpdate: UPDATE_VENDOR_FACTORY
@@ -158,7 +157,6 @@ const FactoryCreate = ({ match }) => {
 
         console.log("data", data);
 
-        // pk? submitData(exceptKey(data, ["factory", "vendor"]), pk) : submitData(data);
         pk ? handleSubmit(exceptKey(data, ["factory", "vendor"]), pk) : handleSubmit(data);
 
     }

@@ -53,8 +53,8 @@ export const Header = ({ menuIconClicked }) => {
                     open={open}
                     onClose={handleClose}
                 >
-                    <MenuItem onClick={logout}>Выйти sad</MenuItem>
-                    <MenuItem onClick={handleClose}>Мой аккаунт</MenuItem>
+                    <MenuItem onClick={logout}>Выйти</MenuItem>
+                    {/* <MenuItem onClick={handleClose}>Мой аккаунт</MenuItem> */}
                 </Menu>
             </Account>
         </Wrapper>

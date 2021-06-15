@@ -64,7 +64,7 @@ const TransportList = ({ match }) => {
             ...node,
             publicId: { publicId: node.publicId, id: node.id },
             pk: {pk: node.pk, ordersNumbers},
-            vendor: { vendor: node.vendor?.name, trNumber: node.transportNumber, trType: node.application?.transportType?.name },
+            vendor: { vendor: node.vendor?.companyName, trNumber: node.transportNumber, trType: node.application?.transportType?.name },
             amount: { brutto: node.brutto, netto: node.netto },
             ordersNumbers,
             locations: node.locations?.edges?.map(({node}) => node?.name).join(", "),

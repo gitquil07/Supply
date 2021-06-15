@@ -95,11 +95,12 @@ query getVendorFactories($factory: ID) {
 export const GET_PRODUCTS = gql`
 query getProducts {
   product {
-    products {
+    products(isActive: true) {
       edges {
         node {
           pk
           name
+          code
         }
       }
     }
@@ -183,6 +184,7 @@ query getVendorProductHistory($id: String) {
           }
           price
           currency
+          moq
           productionDayCount
           deliveryDayCount
           updatedAt
