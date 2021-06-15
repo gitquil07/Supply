@@ -16,6 +16,7 @@ query nextPage($first: Int, $last: Int, $after: String, $before: String) {
             }
             vendor{
               name
+              companyName
             }
           }
           product {
@@ -25,7 +26,6 @@ query nextPage($first: Int, $last: Int, $after: String, $before: String) {
           productionDayCount
           deliveryDayCount
           currency
-          
         }
       }
       pageInfo {
@@ -83,7 +83,7 @@ query getVendorFactories($factory: ID) {
         node {
           pk
           vendor {
-            name
+            companyName
           }
         }
       }
@@ -95,11 +95,12 @@ query getVendorFactories($factory: ID) {
 export const GET_PRODUCTS = gql`
 query getProducts {
   product {
-    products {
+    products(isActive: true) {
       edges {
         node {
           pk
           name
+          code
         }
       }
     }
@@ -146,6 +147,7 @@ query getVendorProduct($id: ID!) {
         vendor{
           pk
           name
+          companyName
         }
         factory {
           pk
@@ -174,6 +176,7 @@ query getVendorProductHistory($id: String) {
             }
             vendor {
               name
+              companyName
             }
           }
           product {
@@ -181,6 +184,7 @@ query getVendorProductHistory($id: String) {
           }
           price
           currency
+          moq
           productionDayCount
           deliveryDayCount
           updatedAt

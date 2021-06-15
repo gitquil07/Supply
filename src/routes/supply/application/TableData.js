@@ -18,11 +18,15 @@ export const generateColumns = () => {
         },
         {
             name: "createdAt",
-            label: "Дата создания",
+            label: "Дата создания заявки",
             options: {
                 ...options,
                 customBodyRender: value => moment(value).format("YYYY-MM-DD")
             }
+        },
+        {
+            name: "status",
+            label: "Статус",
         },
         {
             name: "transportTypeCountDelivery",
@@ -38,15 +42,14 @@ export const generateColumns = () => {
                 }
             }
         },
-        // {
-        //     name: "typeOfPackaging",
-        //     label: "Вид упаковки / Кол-во",
-        //     options
-        // },
         {
             name: "trackingUser",
             label: "Логист",
             options: options
+        },
+        {
+            name: "invoices",
+            label: "инвойсы"
         }
     ];
 

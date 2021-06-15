@@ -12,7 +12,6 @@ import { useTitle } from "hooks";
 import { useLazyQuery } from "@apollo/client";
 import { exceptKey } from "utils/functions";
 import { GET_FACTORIES, GET_VENDORS, GET_VENDOR_FACTORY, CREATE_VENDOR_FACTORY, UPDATE_VENDOR_FACTORY, GET_VENDOR_DEPENDENT_PRODUCT } from "./gql";
-import { paymentOptions } from "utils/static";
 import { useHistory } from "react-router-dom";
 import Switch from "@material-ui/core/Switch";
 import moment from "moment";
@@ -22,20 +21,10 @@ import { CustomInput } from "components/Inputs/CustomInput";
 import { useCustomMutation, useFormData } from "hooks";
 import { getList } from "utils/functions";
 import { ValidationMessage } from "components/ValidationMessage";
-import { object, string, number, date, boolean } from "yup";
+import { VendorFactoryValidation, fieldsMessages } from "./validation";
 
 
-const VendorFactoryValidation = object().shape({
-    vendor: number().typeError("Значение для поля 'Поставщик' не выбрано"),
-    factory: number().typeError("Значение для поля 'Поставщик' не выбрано"),
-    paymentCondition: string().typeError("Недопустимое значение для поля 'Условия оплаты'").required("Поле 'Название транспорта' обязательно к заполнению"),
-})
 
-const fildsMessages = {
-    vendor: "",
-    factory: "",
-    paymentCondition: "",
-}
 
 const initialState = {
     vendor: "",
@@ -93,7 +82,7 @@ const FactoryCreate = ({ match }) => {
     }), [dependentMaterialsRes?.data]);
 
 
-    const { submitData, handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
+    const { handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
         graphQlQuery: {
             queryCreate: CREATE_VENDOR_FACTORY,
             queryUpdate: UPDATE_VENDOR_FACTORY
@@ -104,7 +93,7 @@ const FactoryCreate = ({ match }) => {
             history.push("/settings/vendor-factories");
         },
         VendorFactoryValidation,
-        fildsMessages
+        fieldsMessages
     );
 
 
@@ -168,7 +157,6 @@ const FactoryCreate = ({ match }) => {
 
         console.log("data", data);
 
-        // pk? submitData(exceptKey(data, ["factory", "vendor"]), pk) : submitData(data);
         pk ? handleSubmit(exceptKey(data, ["factory", "vendor"]), pk) : handleSubmit(data);
 
     }
@@ -261,7 +249,7 @@ const FactoryCreate = ({ match }) => {
                                                             <span>{material.price}</span>
                                                             <span>{material.deliveryDayCount}</span>
                                                             <span>{material.productionDayCount}</span>
-                                                            <span>{material.updatedAt}</span>
+                                                            <span>{moment(material.updatedAt).format("YYYY-MM-DD")}</span>
                                                         </List>
                                                     )
                                                 }
@@ -295,7 +283,7 @@ const GreyTable = styled.div`
 
 const Head = styled.div`
     display: grid;
-    grid-template-columns: .7fr 0.7fr 0.7fr .5fr .7fr 0.7fr 0.7fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     padding: 0 10px 10px 10px;
     gap: 10px;
 `;
@@ -309,7 +297,7 @@ const Body = styled.div`
 
 const List = styled.div`
     display: grid;
-    grid-template-columns: .7fr 0.7fr 0.7fr .5fr .7fr 0.7fr 0.7fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     gap: 10px;
     padding: 10px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);

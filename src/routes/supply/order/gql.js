@@ -80,7 +80,7 @@ export const GET_VENDOR_FACTORIES = gql`
         edges {
           node {
             vendor {
-              name
+              companyName
             }
             pk
           }
@@ -96,10 +96,11 @@ query MyQuery($vendorFactory : ID) {
     vendorProducts(vendorFactory: $vendorFactory) {
       edges {
         node {
+          price
           product {
             name
           }
-          productionDayCount
+          deliveryDayCount
           pk
         }
       }
@@ -137,7 +138,7 @@ query getOrder($id: ID!){
           node{
             vendorProduct{
               pk
-              productionDayCount
+              deliveryDayCount
               product{
                 name
               }

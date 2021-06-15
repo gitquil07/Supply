@@ -14,14 +14,15 @@ import CustomsList from "./customs/CustomsList";
 import ArrivedList from "./arrived/ArrivedList"
 import ReportTable from "./report/ReportTable";
 
-import TestTable from "./report/test";
 import TestTable2 from "./report/test2";
+
+import StockBalance from "./stockBalance";
+import Plan from "./plan";
 
 import { ProtectedRoute } from "authorization/routes";
 
 const Supply = ({ match }) => {
 
-    // console.log("props sad", props);
     const url = (path) => `${match.url}${path}`;
 
     return (
@@ -43,6 +44,9 @@ const Supply = ({ match }) => {
             <ProtectedRoute path={url("/customs")} component={CustomsList} exact />
 
             <ProtectedRoute path={url("/report")} component={TestTable2} exact />
+
+            <ProtectedRoute path={url("/stock-balance")} component={StockBalance} />
+            <ProtectedRoute path={url("/plan-product")} component={Plan} />
         </Switch>
     );
 };

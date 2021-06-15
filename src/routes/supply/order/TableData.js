@@ -1,3 +1,5 @@
+import { setHeading } from "utils/functions";
+
 export const generateColumns = () => {
     const options = {
         filter: true,
@@ -7,7 +9,6 @@ export const generateColumns = () => {
     return [
         {
             name: "id",
-            label: "Номер заказа",
             options: {
                 display: "none"
             }
@@ -39,16 +40,20 @@ export const generateColumns = () => {
         },
         {
             name: "invoice_proforma",
-            label: "Инвойс",
+            label: "№ инвойс проформа",
             options: {
                 ...options,
+                customHeadRender: setHeading,
                 customBodyRender: value => "№"+value
             }
         },
         {
             name: "invoice_date",
-            label: "Дата инвойса",
-            options: options
+            label: "Дата инвойс проформа",
+            options: {
+                ...options,
+                customHeadRender: setHeading
+            }
         },
     ];
 

@@ -49,7 +49,7 @@ export const generateColumns = (url) => {
                     return(
                         <>
                             <Row>{value.deliveryDayCount} дн. / {value.productionDayCount} дн.</Row>
-                            <RowGray>{value.price} / {value.measure}</RowGray>
+                            <RowGray>{value.price} / {value.currency}</RowGray>
                         </>
                     );
                 }

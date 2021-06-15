@@ -7,9 +7,68 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
       edges {
         node {
           id
+          pk
           publicId
+          trDate
+          station
+          border
           vendor {
-            name
+            companyName
+            sapCountry {
+              name
+            }
+            sapCity
+          }
+          application {
+            transferredDate
+            deliveryCondition
+            trackingUser {
+              username
+            }
+            inWayDayCount
+            transportType {
+              name
+            }
+            invoices {
+              edges {
+                node {
+                  number
+                  relativeWeight
+                }
+              }
+            }
+            orders {
+              edges {
+                node {
+                  pk
+                  vendorFactory {
+                    vendorProducts {
+                      edges {
+                        node {
+                          product {
+                            name
+                          }
+                        }
+                      }
+                    }
+                    factory {
+                      name
+                      firm {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            shippingDate
+          }
+          locations {
+            edges {
+              node {
+                name
+              }
+            }
           }
           transportNumber
           createdAt
@@ -33,16 +92,18 @@ query getTrackingInfo($id: ID!) {
       pk
       publicId
       vendor {
-        name
+        companyName
         pk
       }
       transportNumber
-      netto
+      amount
       brutto
+      netto
+      station
+      border
       note
       status
       trDate
-      amount
       currency
       locations{
         edges{
@@ -55,18 +116,13 @@ query getTrackingInfo($id: ID!) {
       application {
         id
         transportMix
+        inWayDayCount
+        shippingDate
         files {
           edges {
             node {
               file,
               fileUrl
-            }
-          }
-        }
-        invoices{
-          edges{
-            node{
-              number
             }
           }
         }
@@ -101,6 +157,7 @@ query getVendorProductsGroupedByOrder($id: ID!) {
                         firm {
                           name
                         }
+                        size
                         count
                         weight
                         orderItem {
@@ -142,7 +199,7 @@ query getVendors {
       edges {
         node {
           pk
-          name
+          companyName
         }
       }
     }
@@ -159,8 +216,10 @@ query getInvoices($id: ID!) {
           node {
             pk
             number
-            destination
             status
+            brutto
+            netto
+            amount
             relativeWeight
           }
         }

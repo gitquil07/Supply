@@ -1,14 +1,16 @@
 import { Helmet } from "react-helmet";
-import { FlexForHeader } from "../../../components/Flex";
-import { ButtonWithIcon } from "../../../components/Buttons";
+import { FlexForHeader } from "components/Flex";
+import { ButtonWithIcon } from "components/Buttons";
 import { generateColumns } from "./TableData";
 import { PAGINATE_FIRMS } from "./gql.js";
 import FirmCreate from "./FirmCreate";
-import { useTitle, usePagination } from "../../../hooks";
-import { CustomRowGeneratorForModal, getList } from "../../../utils/functions";
+import { useTitle, usePagination } from "hooks";
+import { CustomRowGeneratorForModal, getList } from "utils/functions";
 import { useState, useMemo } from "react";
-import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { Pagination } from "../../../components/Pagination";
+import { CustomMUIDataTable } from "components/CustomMUIDataTable";
+import { Pagination } from "components/Pagination";
+import { AttachBoundary } from "components/ErrorBoundary";
+
 
 const FirmsList = () => {
     const title = useTitle("Фирмы"),
@@ -51,7 +53,7 @@ const FirmsList = () => {
                 pk: node.pk,
                 name: node.name,
                 inn: node.inn,
-                factories: node.factories.edges.map(({ node }) => <p style={{ margin: "5px" }}>{node.name}</p>)
+                factories: node.factories.edges.map(({ node }) => <p style={{ margin: "5px" }}>{node.name}</p>),
             }
         });
     }, [firms])
@@ -93,4 +95,4 @@ const FirmsList = () => {
 
 }
 
-export default FirmsList;
+export default AttachBoundary(FirmsList);

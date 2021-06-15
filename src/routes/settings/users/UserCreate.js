@@ -14,7 +14,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { useCustomMutation, useFormData } from "hooks";
 import { exceptKey, getList } from "utils/functions";
 import { ValidationMessage } from "components/ValidationMessage";
-import { object, string, number, array } from "yup";
+import { userSchema, userSchemaEdit, fieldsMessages } from "./validation";
+import { Switch } from "@material-ui/core";
 
 
 const initialState = {
@@ -28,37 +29,6 @@ const initialState = {
     factories: []
 }
 
-const fieldsMessages = {
-    firstName: "",
-    lastName: "",
-    username: "",
-    password: "",
-    role: "",
-    email: "",
-    phoneNumber: "",
-    factories: ""
-};
-
-const userSchema = object({
-    firstName: string().typeError("Поле должно быть строкой").required("Поле 'Имя' обязательно к заполнению"),
-    lastName: string().typeError("Поле должно быть строкой").required("Поле 'Фамилия' обязательно к заполнению"),
-    username: string().typeError("Поле должно быть строкой").required("Поле 'Username' обязательно к заполнению"),
-    password: string().typeError("Поле должно быть строкой").required("Поле 'Пароль' обязательно к заполнению"),
-    role: string().typeError("Поле должно быть строкой").required("Поле 'Роль' обязательно к заполнению"),
-    email: string().email("Некорректный email адрес").required("Поле 'Email' обязательно к заполнению"),
-    phoneNumber: string().required("Поле 'Номер телефона' обязательно к заполнению"),
-    factories: array().of(number().required("Выберите завод"))
-});
-
-const userSchemaEdit = object({
-    firstName: string().typeError("Поле должно быть строкой").required("Поле 'Имя' обязательно к заполнению"),
-    lastName: string().typeError("Поле должно быть строкой").required("Поле 'Фамилия' обязательно к заполнению"),
-    password: string().typeError("Поле должно быть строкой").required("Поле 'Пароль' обязательно к заполнению"),
-    role: string().typeError("Поле должно быть строкой").required("Поле 'Роль' обязательно к заполнению"),
-    email: string().email("Некорректный email адрес").required("Поле 'Email' обязательно к заполнению"),
-    phoneNumber: string().required("Поле 'Номер телефона' обязательно к заполнению"),
-    factories: array().of(number().required("Выберите завод"))
-});
 
 const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getEntries, amountOfElemsPerPage, paginatingState }) => {
 
@@ -80,7 +50,8 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
                 role: entry.role,
                 email: entry.email,
                 phoneNumber: entry.phoneNumber,
-                factories: [...entry.factories]
+                factories: [...entry.factories],
+                isActive: entry.isActive
             });
 
         }
@@ -90,7 +61,7 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
 
 
     const [getFactories, getFactoriesRes] = useLazyQuery(GET_FACTORIES),
-        [getRoles, getRolesRes] = useLazyQuery(GET_ROLES);
+          [getRoles, getRolesRes] = useLazyQuery(GET_ROLES);
 
     const factories = useMemo(() => getList(getFactoriesRes?.data), [getFactoriesRes?.data]),
         roles = useMemo(() => getList(getRolesRes?.data), [getRolesRes?.data]);
@@ -172,6 +143,8 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
 
         tmp = pk ? exceptKey(tmp, ["username"]) : tmp;
 
+        console.log("tmp", tmp);
+
         pk ? handleSubmit(tmp, pk) : handleSubmit(tmp);
     }
 
@@ -247,6 +220,15 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
             </CustomSelector>
             {
                 validationMessages.factories.length ? <ValidationMessage>{validationMessages.factories}</ValidationMessage> : null
+            }
+            {
+                pk?  <label>
+                        Активность: 
+                        <Switch
+                            name="isActive" 
+                            checked={state.isActive} 
+                            onChange={(e) => handleChange({fElem: e, type: "choice"})} />
+                    </label> : null
             }
             <Button name={pk ? "Сохранить" : "Добавить пользователя"} color="#5762B2" clickHandler={beforeSubmit} loading={mutationLoading} />
         </SmallDialog>

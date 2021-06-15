@@ -4,50 +4,39 @@ import moment from "moment";
 import { Helmet } from 'react-helmet';
 import styled from "styled-components";
 
-import { uploadFile } from "../../../api";
-import { useTitle } from '../../../hooks';
+import { uploadFile } from "api";
+import { useTitle } from 'hooks';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import { Button } from '../../../components/Buttons';
-import CustomPicker from '../../../components/Inputs/DatePicker';
-import { DragFile } from '../../../components/Inputs/DragFile';
-import { RemoveIcon } from '../../../components/RemoveIcon';
-import { CustomInput } from '../../../components/Inputs/CustomInput';
-import { CustomSelector } from '../../../components/Inputs/CustomSelector';
-import { AddibleInput, AddibleInputWithTrash } from "../../../components/Flex";
-import { Footer } from '../../../components/Footer';
+import { Button } from 'components/Buttons';
+import CustomPicker from 'components/Inputs/DatePicker';
+import { DragFile } from 'components/Inputs/DragFile';
+import { RemoveIcon } from 'components/RemoveIcon';
+import { CustomInput } from 'components/Inputs/CustomInput';
+import { CustomSelector } from 'components/Inputs/CustomSelector';
+import { AddibleInput, AddibleInputWithTrash } from "components/Flex";
+import { Footer } from 'components/Footer';
 import { ORDER_CREATE, ORDER_UPDATE } from "./gql";
 import { GET_FACTORIES_LIST, GET_VENDOR_FACTORIES, GET_VENDOR_FACTORY_PRODUCTS } from "./gql";
-import { CustomNumber } from "../../../components/Inputs/CustomNumber";
-import { Form } from "../../../components/Form";
-import { statuses } from "../../../utils/static";
+import { Form } from "components/Form";
+import { statuses } from "utils/static";
 import { useHistory } from "react-router-dom";
 import { GET_ORDER } from "./gql";
-import { exceptKey } from "../../../utils/functions";
-import { useCustomMutation } from "../../../hooks";
-import { getList, getValueOfProperty } from "../../../utils/functions";
-import { useTemplate } from "../../../hooks";
+import { exceptKey } from "utils/functions";
+import { useCustomMutation } from "hooks";
+import { getList, getValueOfProperty } from "utils/functions";
+import { useTemplate } from "hooks";
 import { ValidationMessage } from "components/ValidationMessage";
-import { object, number } from "yup";
-import { formatInputPrice } from "utils/functions";
-
-const OrderSchema = object().shape({
-    vendorFactory: number().typeError("Значение для поля 'Поставщик' не выбрано"),
-    invoiceProforma: number().typeError("Введите только цифры").required("Поле 'Инвойс заказа' должно быть заполнено")
-});
-
-const fieldsMessages = {
-    vendorFactory: "",
-    invoiceProforma: ""
-}
+import { formatInputPrice, formatPrice, resetPriceFormat } from "utils/functions";
+import { OrderSchema, fieldsMessages } from "./validation";
 
 const OrderCreate = ({ match }) => {
 
     const { id } = match.params,
-        title = useTitle("Создать Заказ"),
+        title = useTitle(id? "Изменить заказ" : "Создать Заказ"),
         history = useHistory();
 
-    const { submitData, handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
+    const { handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
         graphQlQuery: {
             queryCreate: ORDER_CREATE,
             queryUpdate: ORDER_UPDATE
@@ -70,7 +59,6 @@ const OrderCreate = ({ match }) => {
 
     const [factory, setFactory] = useState("");
 
-    // console.log("factoriesQuerySet?.data", useMemo(() => getList(undefined?.undefined), [undefined]));
     const factories = useMemo(() => getList(factoriesRes?.data), [factoriesRes?.data]) || [],
         vendorFactories = useMemo(() => getList(vendorFactoriesResp?.data), [vendorFactoriesResp?.data]) || [],
         vendorProducts = useMemo(() => getList(vendorFactoryProductsResp?.data), [vendorFactoryProductsResp?.data]) || [],
@@ -88,7 +76,6 @@ const OrderCreate = ({ match }) => {
         vendorProduct: "",
         dateOfDelivery: Date.now(),
         count: "",
-        currency: "",
         price: ""
     };
 
@@ -107,7 +94,7 @@ const OrderCreate = ({ match }) => {
         invoiceProforma: ""
     });
 
-    const [productionDayCounts, setProductionDayCounts] = useState({});
+    const [vendorProductChange, setVendorProductChange] = useState({});
 
     useEffect(() => {
         getFactories();
@@ -150,7 +137,8 @@ const OrderCreate = ({ match }) => {
             const orderItems = order.orderItems.edges.map(({ node }) => {
                 return {
                     ...exceptKey(node, "__typename"),
-                    vendorProduct: node.vendorProduct.pk
+                    vendorProduct: node.vendorProduct.pk,
+                    price: formatPrice(node.price)
                 }
             });
             setMaterials(orderItems);
@@ -192,7 +180,7 @@ const OrderCreate = ({ match }) => {
 
     }, [vendorFactory]);
 
-    const handleDataChange = (event, dataType, index) => {
+    const handleDataChange = (event, dataType, index, vendorProductChange) => {
         if (dataType === "order") {
             setOrderData({ ...orderData, [event.target.name]: event.target.value });
         }
@@ -203,8 +191,17 @@ const OrderCreate = ({ match }) => {
             if(event.target.name == "price"){
                 materialsCopy[index] = { ...materialsCopy[index], price: formatInputPrice(event.target.value) }
             }else{
+                if(vendorProductChange){
+                    const one = vendorProducts.find(({node}) => node.pk == event.target.value)?.node,
+                          deliveryDayCount = one?.deliveryDayCount,
+                          price = one?.price;
+                            setVendorProductChange({ ...vendorProductChange, [index]: {
+                                deliveryDayCount,
+                            }})
+                            materialsCopy[index] = { ...materialsCopy[index], price: formatInputPrice(price) }
+
+                }
                 materialsCopy[index] = { ...materialsCopy[index], [event.target.name]: event.target.value }
-                setProductionDayCounts({ ...productionDayCounts, [index]: event.target.value });
             }
             setMaterials(materialsCopy);
         }
@@ -224,6 +221,7 @@ const OrderCreate = ({ match }) => {
             return {
                 ...orderMaterial,
                 dateOfDelivery: moment(orderMaterial.dateOfDelivery).format("YYYY-MM-DD"),
+                price: resetPriceFormat(orderMaterial.price)
             }
         });
 
@@ -233,32 +231,32 @@ const OrderCreate = ({ match }) => {
         orderRequestBody.files = files.uploaded.map(file => file.file_id);
         orderRequestBody.status = statuses.find(status => status.value == orderRequestBody.status)?.label;
 
-        // pk ? submitData(orderRequestBody, pk) : submitData(exceptKey(orderRequestBody, ["status"]));
         pk ? handleSubmit(orderRequestBody, pk) : handleSubmit(exceptKey(orderRequestBody, ["status"]));
     }
 
-    const getAproximateDeliveryDate = (date, productionDayCounts) => {
+    const getAproximateDeliveryDate = (date, deliveryDayCount) => {
 
-        console.log("date", date);
-        console.log("date productionDayCounts", productionDayCounts);
 
-        if (productionDayCounts !== undefined) {
+        if (deliveryDayCount !== undefined) {
             const dateInMilliseconds = (typeof date == "number") ? date : new Date(date).getTime(),
-                daysInMilliseconds = 1000 * 60 * 60 * 24 * productionDayCounts,
+                daysInMilliseconds = 1000 * 60 * 60 * 24 * deliveryDayCount,
                 aproximateDeliveryDate = moment(new Date(dateInMilliseconds + daysInMilliseconds).toISOString()).format("DD.MM.YYYY");
             return aproximateDeliveryDate;
         }
 
         return moment(new Date(date).toISOString()).format("DD.MM.YYYY");
-        // return  new Day(dateInMilliseconds + twoDays);
     }
 
     const remove = (index) => {
-        const tmp = { ...productionDayCounts };
+        const tmp = { ...vendorProductChange };
         delete tmp[index];
-        setProductionDayCounts(tmp);
+        setVendorProductChange(tmp);
         removeTempl(index)
     }
+
+    useEffect(() => {
+        console.log("vendorProductChange", vendorProductChange);
+    }, [vendorProductChange]);
 
 
     const sendFileToServer = (file) => {
@@ -290,7 +288,7 @@ const OrderCreate = ({ match }) => {
                             <CustomSelector label="Выберите поставщика" name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")} errorVal={validationMessages.vendorFactory.length ? true : false}>
                                 {
                                     vendorFactories?.map(({ node }) => {
-                                        return <MenuItem key={node.pk} value={node.pk} selected={orderData.vendorFactory === node.pk}>{node?.vendor?.name}</MenuItem>
+                                        return <MenuItem key={node.pk} value={node.pk} selected={orderData.vendorFactory === node.pk}>{node?.vendor?.companyName}</MenuItem>
                                     })
                                 }
                             </CustomSelector>
@@ -310,7 +308,7 @@ const OrderCreate = ({ match }) => {
                         }
                         <CustomPicker label="Дата создание" name="invoiceDate" date={orderData.invoiceDate} stateChange={(date) => setOrderData({ ...orderData, invoiceDate: date })} />
                         <div>
-                            <CustomInput label="Инвойс заказа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} errorVal={validationMessages.invoiceProforma.length ? true : false} />
+                            <CustomInput label="Инвойс проформа" name="invoiceProforma" value={orderData.invoiceProforma} stateChange={(e) => handleDataChange(e, "order")} errorVal={validationMessages.invoiceProforma.length ? true : false} />
                             {
                                 validationMessages.invoiceProforma.length ? <ValidationMessage>{validationMessages.invoiceProforma}</ValidationMessage> : null
                             }
@@ -334,7 +332,7 @@ const OrderCreate = ({ match }) => {
                         materials.map((e, index) => {
                             return <AddibleInputWithTrash>
                                 <InputsWrapper>
-                                    <CustomSelector name="vendorProduct" label="Выберите материал" value={e.vendorProduct} stateChange={(e) => handleDataChange(e, "material", index)}>
+                                    <CustomSelector name="vendorProduct" label="Выберите материал" value={e.vendorProduct} stateChange={(e) => handleDataChange(e, "material", index, "vendorProduct")}>
                                         {
                                             vendorProducts?.map(({ node }) => {
                                                 return <MenuItem key={node.pk} value={node.pk} selected={materials[index].vendorProduct === node.pk}>{node.product.name}</MenuItem>
@@ -342,7 +340,7 @@ const OrderCreate = ({ match }) => {
                                         }
                                     </CustomSelector>
                                     <CustomPicker name="dateOfDelivery" label="Дата отгрузки" date={e.dateOfDelivery} stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
-                                    <CustomInput label="Примерная дата прибытия" value={getAproximateDeliveryDate(e.dateOfDelivery, productionDayCounts[index])} disabled />
+                                    <CustomInput label="Примерная дата прибытия" value={getAproximateDeliveryDate(e.dateOfDelivery, vendorProductChange[index]?.deliveryDayCount)} disabled />
                                     <CustomInput name="count" label="Кол-во" value={e.count} stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomInput name="price" label="Цена" value={e.price} stateChange={(e) => handleDataChange(e, "material", index)} />
                                 </InputsWrapper>

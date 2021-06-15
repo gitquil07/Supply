@@ -18,6 +18,7 @@ export const SmallSelectForPagination = ({ stateChange, value }) => {
                 >
                     <MenuItem value={30} selected={value === 30}>30</MenuItem>
                     <MenuItem value={50} selected={value === 50}>50</MenuItem>
+                    <MenuItem value={100} selected={value === 100}>100</MenuItem>
                 </Select>
             </FormControl>
         </Wrapper>

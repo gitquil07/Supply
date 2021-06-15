@@ -11,8 +11,8 @@ query nextPage($first: Int, $last: Int, $after: String, $before: String) {
           name
           firm{
             pk
+            name
           }
-          officialName
           code
           position
           createdAt

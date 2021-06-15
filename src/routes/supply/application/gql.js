@@ -21,6 +21,14 @@ query getApplication($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $a
           }
           createdAt
           count
+          shippingDate
+          invoices {
+            edges {
+              node {
+                number
+              }
+            }
+          }
         }
       }
       pageInfo {
@@ -165,6 +173,7 @@ query getOrderItems($orders: [ID]!) {
           vendorProduct {
             product {
               name
+              measure
             }
           }
           requiredCount
@@ -199,6 +208,9 @@ query getInvoices($id: ID!) {
           id
           pk
           number
+          amount
+          netto
+          brutto
         }
       }
     }

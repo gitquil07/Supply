@@ -36,42 +36,9 @@ import EditSelectedIcon from "assets/icons/editSelected.svg";
 import EditHoveredIcon from "assets/icons/editHovered.svg";
 import { uploadFile } from 'api';
 import { ValidationMessage } from "components/ValidationMessage";
-import { object, number, string } from "yup";
 import { formatInputPrice } from "utils/functions";
-
-
-const deliveryConditionEnum = deliveryCondition.map(condition => condition.value);
-const degreeOfDangerEnum = degreeOfDanger.map(degree => degree.label);
-const statusEnum = statuses.map(status => status.label);
-
-console.log("deliveryCondition", deliveryConditionEnum);
-
-const ApplicationSchema = object().shape({
-    trackingUser: number().typeError("Значение для поля 'Логист' не выбрано"),
-    transportType: number().typeError("Значение для поля 'Тип транспорта' не выбрано"),
-    deliveryCondition: string().typeError("Значение для поля 'Условия доставки' не выбрано").oneOf(deliveryConditionEnum, "Недопустимое значение для поля 'Условия доставки'"),
-    degreeOfDanger: string().required("Значение для поля 'Уровень опасности' не выбрано").typeError("Значение для поля 'Уровень опасности' не выбрано").oneOf(degreeOfDangerEnum, "Недопустимое значение для поля 'Уровень опасности'"),
-    packageOnPallet: number().positive("Введите положительно число").integer("Введите целое число").required("Поле 'Количество мест' должно быть заполнено"),
-    transportCount: number().typeError("Введите число").required("Поле 'Количество транспорта' должно быть заполнено").positive("Введите положительно число").integer("Введите целое число"),
-    status: string().required("Значение для поля 'Статус' не выбрано").typeError("Значение для поля 'Статус' не выбрано").oneOf(statusEnum, "Недопустимое значение для поля 'Статус'")
-});
-
-const str = string().typeError("Значение для поля 'Тип транспорта' не выбрано").oneOf(deliveryConditionEnum, "Недопустимое значение для поля 'Условия доставки'");
-console.log("deliveryConditionEnum", deliveryConditionEnum);
-str.isValid("FCA")
-    .then(res => console.log("res ass", res))
-    .catch(error => console.log("error ass", error));
-
-
-const fieldsMessages = {
-    trackingUser: "",
-    transportType: "",
-    deliveryCondition: "",
-    degreeOfDanger: "",
-    packageOnPallet: "",
-    transportCount: "",
-    status: "",
-}
+import { ApplicationSchema, fieldsMessages } from "./validation";
+import { resetPriceFormat } from "utils/functions";
 
 const initialState = {
     orders: [],
@@ -79,13 +46,19 @@ const initialState = {
     transportType: "",
     deliveryCondition: undefined,
     degreeOfDanger: undefined,
-    // typeOfPackaging: "",
     packageOnPallet: "",
     transportCount: "",
     shippingDate: new Date(),
     status: undefined,
     transportMix: true
 };
+
+const invoiceInitial = {
+    number: "",
+    netto: "",
+    brutto: "",
+    amount: ""
+}
 
 const ApplicationCreate = ({ match }) => {
     const title = useTitle("Создание новой Заявки"),
@@ -126,6 +99,8 @@ const ApplicationCreate = ({ match }) => {
         invoices = useMemo(() => getList(invoicesRes?.data), [invoicesRes?.data]) || [],
         firms = useMemo(() => getList(firmsRes?.data), [firmsRes?.data]) || [];
 
+        console.log("invoices", invoices);
+
     const templ = {
         orderItem: "",
         firm: "",
@@ -137,12 +112,12 @@ const ApplicationCreate = ({ match }) => {
     };
 
     const [items, setItems] = useState([templ]),
-        [invoiceNumber, setInvoiceNumber] = useState(""),
+        [invoiceData, setInvoiceData] = useState(invoiceInitial),
         [invoicePk, setInvoicePk] = useState(undefined);
 
     useEffect(() => {
-        console.log("invoiceCreate", invoiceNumber);
-    }, [invoiceNumber]);
+        console.log("invoiceCreate", invoiceData);
+    }, [invoiceData]);
 
     const {
         addTempl,
@@ -250,13 +225,14 @@ const ApplicationCreate = ({ match }) => {
 
     const editInvoice = (id) => {
         const invoiceToEdit = invoices.find(({ node }) => node.id === id).node;
-        setInvoiceNumber(invoiceToEdit.number);
+        console.log("invoiceToEdit", invoiceToEdit);
+        setInvoiceData(exceptKey(invoiceToEdit, ["__typename"]));
         setInvoicePk(invoiceToEdit.pk);
         handleOpen();
     }
 
     const handleInvoiceEditClose = () => {
-        setInvoiceNumber("");
+        setInvoiceData(invoiceInitial);
         setInvoicePk(undefined);
         handleClose();
     }
@@ -275,7 +251,10 @@ const ApplicationCreate = ({ match }) => {
         }
 
         if (e.target.name === "orderItem") {
-            const requiredCount = orderItems.find(({ node }) => node.pk === e.target.value).node.requiredCount;
+            const one = orderItems.find(({ node }) => node.pk === e.target.value).node,
+                  requiredCount = one.requiredCount,
+                  measure = one.vendorProduct?.product?.measure;
+                       
             let tmp = { ...requiredCounts };
             tmp[idx] = requiredCount;
             console.log("here", tmp);
@@ -287,7 +266,14 @@ const ApplicationCreate = ({ match }) => {
     }
 
     const submitInvoice = () => {
-        invoicePk ? submitInvoiceData({ number: invoiceNumber }, invoicePk, id) : submitInvoiceData({ number: invoiceNumber, application: pk }, undefined, id);
+        // console.log("invoceData", invoiceData);
+
+        const requestBody = {
+            ...invoiceData,
+            amount: resetPriceFormat(invoiceData.amount)
+        }
+
+        invoicePk ? submitInvoiceData(exceptKey(requestBody, ["id", "pk"]), invoicePk, id) : submitInvoiceData({...requestBody, application: pk}, undefined, id);
     }
 
     const beforeSubmit = () => {
@@ -297,23 +283,22 @@ const ApplicationCreate = ({ match }) => {
         let requestBody = {
             ...state,
             shippingDate: moment(state.shippingDate).format("YYYY-MM-DD"),
-            // typeOfPackaging: packagingTypes.find(packaging => packaging.value === state.typeOfPackaging)?.label,
             status: statuses.find(status => status.value === state.status)?.label,
             degreeOfDanger: degreeOfDanger.find(degree => degree.value === state.degreeOfDanger)?.label
         }
 
-        requestBody.applicationItems = !pk ? items.map(item => exceptKey(item, "invoice")) : items;
-        // console.log("requestBody", requestBody);
+        const itemsList = items.map(item => {
+            return {
+                ...item,
+                invoicePrice: resetPriceFormat(item.invoicePrice)
+            }
+        
+        })
 
+        requestBody.applicationItems = !pk ? itemsList.map(item => exceptKey(item, "invoice")) : itemsList;
 
         requestBody.files = files.uploaded.map(file => file.file_id);
-        // if (files.uploaded.length > 0) {
-        //     uploadFile('/api-file/documents/', files.uploaded)
-        //         .then(resp => console.log(resp))
-        //         .catch(err => console.log(err));
-        // }
 
-        console.log("requestBody", requestBody);
 
         if (pk) {
             handleSubmit(exceptKey(requestBody, ["orders"]), pk)
@@ -341,6 +326,15 @@ const ApplicationCreate = ({ match }) => {
     useEffect(() => {
         console.log("requiredCounts", requiredCounts);
     }, [requiredCounts]);
+
+    const handleInvoiceDataChange = (e) => {
+        const name = e.target.name;
+        if(name === "amount"){
+            setInvoiceData({...invoiceData, [name]: formatInputPrice(e.target.value)});
+        }else{
+            setInvoiceData({...invoiceData, [name]: e.target.value});
+        }
+    }
 
     return (
         <>
@@ -403,14 +397,6 @@ const ApplicationCreate = ({ match }) => {
                             validationMessages.deliveryCondition.length ? <ValidationMessage>{validationMessages.deliveryCondition}</ValidationMessage> : null
                         }
                     </div>
-                    {/* <CustomSelector label="Тип упаковки" name="typeOfPackaging" value={state.typeOfPackaging} stateChange={e => handleChange({fElem: e})}>
-                        {
-                            packagingTypes.map(packaging => {
-                                    return <MenuItem key={packaging.value} value={packaging.value} selected={state.typeOfPackaging === packaging.value}>{packaging.label}</MenuItem>    
-                                }
-                            )
-                        }
-                    </CustomSelector> */}
                     <div>
                         <CustomSelector label="Уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.degreeOfDanger.length ? true : false}>
                             {
@@ -423,7 +409,6 @@ const ApplicationCreate = ({ match }) => {
                             validationMessages.degreeOfDanger.length ? <ValidationMessage>{validationMessages.degreeOfDanger}</ValidationMessage> : null
                         }
                     </div>
-                    {/* <CustomInput label="уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({fElem: e})}/> */}
                     <div>
                         <CustomNumber label="Кол-во мест" value={state.packageOnPallet} name="packageOnPallet" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.packageOnPallet.length ? true : false} />
                         {
@@ -453,7 +438,7 @@ const ApplicationCreate = ({ match }) => {
                     </div>
                 </AddibleInput>
                 <p>
-                    <label htmlFor="transportMix">Комбинированный транспорт</label>
+                    <label htmlFor="transportMix">Сборный груз</label>
                     <Switch id="transportMix" name="transportMix" onChange={e => handleChange({ fElem: e, type: "choice" })} checked={state.transportMix} />
                 </p>
 
@@ -500,14 +485,12 @@ const ApplicationCreate = ({ match }) => {
                                             )
                                         }
                                     </CustomSelectorAdd>
-                                    <CustomInputWithComponent type="text" label="Кол-во" value={item.count} name="count" stateChange={e => handleItemChange(e, index)} component={requiredCounts[index] && <Badge>{requiredCounts[index]}</Badge>} />
+                                    <CustomInputWithComponent type="text" label="Кол-во" value={item.count} name="count" stateChange={e => handleItemChange(e, index)} component={requiredCounts[index]?.requiredCount && <Badge>{requiredCounts[index].requiredCount}</Badge>} />
                                 </Row>
 
                                 <Row>
                                     <CustomInputWithComponent type="text" fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} component={<Measure>кг</Measure>} />
-                                    <CustomInputWithComponent type="text" fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} component={<Measure value="3" index>м</Measure>} />
-                                    {/* <CustomNumber fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} />
-                                        <CustomNumber fullWidth label="Размер" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} /> */}
+                                    <CustomInputWithComponent type="text" fullWidth label="Вместимость" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} component={<Measure value="3" index>м</Measure>} />
                                     <CustomInput fullWidth label="Цена инвойса" value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
                                 </Row>
                             </RowWrapper>
@@ -517,7 +500,10 @@ const ApplicationCreate = ({ match }) => {
                 }
             </Form>
             <SmallDialog title="Cоздание нового инвойса" close={handleInvoiceEditClose} isOpen={open}>
-                <CustomInput label="Номер инвойса" value={invoiceNumber} name="number" stateChange={e => setInvoiceNumber(e.target.value)} />
+                <CustomInput label="Номер инвойса" value={invoiceData.number} name="number" stateChange={handleInvoiceDataChange} />
+                <CustomInput label="Брутто" value={invoiceData.brutto} name="brutto" stateChange={handleInvoiceDataChange} />
+                <CustomInput label="Нетто" value={invoiceData.netto} name="netto" stateChange={handleInvoiceDataChange} />
+                <CustomInput label="Транспортный расход" value={invoiceData.amount} name="amount" stateChange={handleInvoiceDataChange} />
                 <Button name={invoicePk ? "сохранить" : "создать"} color="#5762B2" clickHandler={submitInvoice} />
             </SmallDialog>
 

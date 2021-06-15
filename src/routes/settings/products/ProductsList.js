@@ -46,11 +46,7 @@ const ProductsList = ({ match }) => {
 
     const list = products.map(({ node }) => {
 
-        // console.log("measure packaging", node.typeOfPackaging);
-        // packagingTypes.map(type => {
-        //     console.log(type.value);
-        //     console.log("equality", type.valueEnglish == node.typeOfPackaging);
-        // });
+
         return {
             id: node.id,
             name: node.name,

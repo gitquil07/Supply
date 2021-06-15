@@ -8,21 +8,8 @@ import PrintIcon from '@material-ui/icons/Receipt';
 import DownloadIcon from '@material-ui/icons/GetApp';
 import ViewColumnIcon from '@material-ui/icons/DynamicFeed';
 import FilterIcon from '@material-ui/icons/GroupWork';
-import { Height } from "@material-ui/icons";
 
 export const CustomMUIDataTable = React.memo(({ count, title, data, columns, customRowOptions }) => {
-
-    const getMuiTheme = () => createMuiTheme({
-        overrides: {
-            MUIDataTable: {
-                responsiveBase: {
-                    maxHeight: "693px"
-                }
-            }
-        }
-    })
-
-    console.log("custom table rendered");
 
     const options = {
         filterType: 'dropdown',
@@ -42,7 +29,7 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
         }
     };
     return (
-        <MuiThemeProvider theme={getMuiTheme()}>
+        <MuiThemeProvider>
             <StyledMUIDataTable
                 title={title}
                 data={data}
@@ -57,10 +44,26 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
 
 
 const StyledMUIDataTable = styled(MUIDataTable)`
-
     box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1) !important;
     border-radius: 10px;
-    padding: 10px;
+    padding: 10px; 
+    height: calc(100vh - 280px);
+    overflow-y: scroll;
+
+    ::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(87, 98, 178, 0.5);
+        box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+    }
 
     .MuiToolbar-gutters {
         border: none !important;
@@ -69,13 +72,13 @@ const StyledMUIDataTable = styled(MUIDataTable)`
     .MuiToolbar-root {
         height: 40px !important;
         padding: 0;
+        
 
         .MuiTypography-root {
             font-size: 18px;
         }
 
         .MUIDataTableToolbar-actions-17 {
-
             button {
                 padding: 0 5px;
             }
@@ -114,8 +117,7 @@ const StyledMUIDataTable = styled(MUIDataTable)`
                 padding: 0 10px;
             }
         }
-    }
-
+    } 
 
     tbody tr td {
         padding: 15px 10px;

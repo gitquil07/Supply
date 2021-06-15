@@ -3,14 +3,15 @@ import { Helmet } from "react-helmet";
 
 import { PAGINATE_VENDOR_PRODUCTS } from "./gql";
 import { generateColumns } from "./TableData";
-import { useTitle } from "../../../hooks";
-import { FlexForHeader } from "../../../components/Flex";
-import { Pagination } from "../../../components/Pagination";
-import { ButtonWithIcon } from "../../../components/Buttons";
-import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { CustomRowGenerator, exceptKey } from "../../../utils/functions";
-import { usePagination } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { useTitle } from "hooks";
+import { FlexForHeader } from "components/Flex";
+import { Pagination } from "components/Pagination";
+import { ButtonWithIcon } from "components/Buttons";
+import { CustomMUIDataTable } from "components/CustomMUIDataTable";
+import { CustomRowGenerator, exceptKey } from "utils/functions";
+import { usePagination } from "hooks";
+import { getList } from "utils/functions";
+import { formatPrice } from "utils/functions";
 
 
 const MaterialsList = ({ match }) => {
@@ -42,20 +43,20 @@ const MaterialsList = ({ match }) => {
         setAmountOfElemsPerPage
     }
 
-
     const vendorProducts = getList(dataPaginationRes?.data) || [];
     const list = vendorProducts.map(({ node }) => {
         const obj = exceptKey(node, ["__typename", "vendorFactory", "product", "productionDayCount", "deliveryDayCount"]);
         return {
             ...obj,
-            vendorFactoryProduct: {factory: node.vendorFactory?.factory?.name, vendor: node.vendorFactory?.vendor?.name, product: node.product?.name},  
-            deliveryAndProductionDayCount: {deliveryDayCount: node.deliveryDayCount,  productionDayCount: node.productionDayCount, price: node.price,  measure: node.product.measure}
+            vendorFactoryProduct: {factory: node.vendorFactory?.factory?.name, vendor: node.vendorFactory?.vendor?.companyName, product: node.product?.name},  
+            deliveryAndProductionDayCount: {deliveryDayCount: node.deliveryDayCount,  productionDayCount: node.productionDayCount, price: formatPrice(node.price),  currency: node.currency}
         }
     });
 
 
     const { url } = match;
-    const columns = useMemo(() => generateColumns(url), [])
+    const columns = useMemo(() => generateColumns(url), []);
+
 
     return (
         <>

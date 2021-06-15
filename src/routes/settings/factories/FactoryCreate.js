@@ -11,31 +11,14 @@ import { useLazyQuery } from "@apollo/client";
 import { getList } from "utils/functions";
 import { useCustomMutation, useFormData } from "hooks";
 import { MenuItem } from "@material-ui/core";
-import { object, string, number } from "yup";
+import { factorySchema, fieldsMessages } from "./validation";
 
 const initialState = {
     firm: "",
     name: "",
-    officialName: "",
     code: "",
     position: ""
 }
-
-const fieldsMessages = {
-    firm: "",
-    name: "",
-    officialName: "",
-    code: "",
-    position: ""
-}
-
-const factorySchema = object({
-    firm: number().typeError("Поле должно быть числом").required("Поле 'Фирма' должно быть выбрано"),
-    name: string().typeError("Поле должно быть строкой").required("Поле 'Название' обязательно к заполнению"),
-    officialName: string().typeError("Поле должно быть строкой").required("Поле 'Официальное название' обязательо к заполнению"),
-    code: string().typeError("Поле должно быть строкой").required("Поле 'Код' обязательно к заполению"),
-    position: number().typeError("Введите число").required("Поле 'Позиция' обязательно к заполнению")
-});
 
 const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getEntries, amountOfElemsPerPage, paginatingState }) => {
 
@@ -62,7 +45,6 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, g
             setState({
                 firm: entry.firm,
                 name: entry.name,
-                officialName: entry.officialName,
                 code: entry.code,
                 position: entry.position
             });
@@ -133,18 +115,11 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, g
             {
                 validationMessages.name.length ? <ValidationMessage>{validationMessages.name}</ValidationMessage> : null
             }
-            <CustomInput value={state.officialName} name="officialName" label="Официальное название" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.officialName.length ? true : false} />
-            {
-                validationMessages.officialName.length ? <ValidationMessage>{validationMessages.officialName}</ValidationMessage> : null
-            }
             <CustomInput value={state.code} name="code" label="Код" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.code.length ? true : false} />
             {
                 validationMessages.code.length ? <ValidationMessage>{validationMessages.code}</ValidationMessage> : null
             }
-            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={e => handleChange({ fElem: e })} fullWidth errorVal={validationMessages.position.length ? true : false} />
-            {
-                validationMessages.position.length ? <ValidationMessage>{validationMessages.position}</ValidationMessage> : null
-            }
+            <CustomNumber value={state.position} name="position" label="Позиция" stateChange={e => handleChange({ fElem: e })} fullWidth />
             <Button name={pk ? "сохранить" : "Добавить завод"} color="#5762B2" clickHandler={() => pk ? handleSubmit(state, pk) : handleSubmit(state)} loading={mutationLoading} />
         </SmallDialog>
     );

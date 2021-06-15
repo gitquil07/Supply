@@ -232,7 +232,6 @@ export const toCamelCase = (word) => {
 }
 
 
-
 export const formatPrice = (price) => {
 
     if(!isNaN(price) && price.length > 0 || (price.length == 1 && price == "-")){
@@ -292,6 +291,16 @@ export const formatPrice = (price) => {
 
 export const formatInputPrice = (input) => {
 
+    const cleanedInput = resetPriceFormat(input);
+
+    console.log("cleanedInput", cleanedInput);
+
+    return  formatPrice(cleanedInput);
+
+}
+
+
+export const resetPriceFormat = (input) => {
     const iLength = input.length;
 
     let cleanedInput = "";
@@ -318,11 +327,7 @@ export const formatInputPrice = (input) => {
 
     }
 
-    console.log("cleanedInput", cleanedInput);
-
-    return  formatPrice(cleanedInput);
-
-
+    return cleanedInput;
 }
 
 
@@ -353,3 +358,56 @@ export const fullscreen = (id) => {
         }
     }
 };
+
+
+export const calculateDaysOnTheWay = (shippingDate) => {
+    const dayInMilliseconds = 24 * 60 * 60 * 1000,
+          hourInMilliseconds = 60 * 60 * 1000,
+          minuteInMilliseconds = 60 * 1000;
+
+    const shippingDateInMSeconds = new Date(shippingDate).getTime(),
+          currentTimeMSeconds = Date.now();
+
+          console.log("shippingDateInMSeconds", shippingDateInMSeconds);
+          console.log("currentTimeMSeconds", currentTimeMSeconds);
+    const onTheWay = currentTimeMSeconds - shippingDateInMSeconds;
+
+    let amountOfDays = Math.floor(onTheWay / dayInMilliseconds),
+
+        hoursInMilliseconds = onTheWay % dayInMilliseconds,
+        hours = Math.floor(hoursInMilliseconds / hourInMilliseconds),
+
+        minutesInMilliseconds = hoursInMilliseconds % hourInMilliseconds,
+        minutes = Math.floor(minutesInMilliseconds / minuteInMilliseconds);
+
+    
+    const r = amountOfDays % 10;
+
+    return addDays(r);
+}
+
+export const addDays = (dayAmount) => {
+    let days = "";
+
+    switch(dayAmount){
+        case 1:
+            days = "день";
+            break;
+        case 2:
+        case 3:
+        case 4:
+            days = "дня";
+            break;
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 0:
+            days = "дней";
+            break;
+
+    }
+
+    return dayAmount + " " + days;
+}

@@ -19,37 +19,11 @@ import { useCustomMutation, useFormData } from "hooks";
 import { getList } from "utils/functions";
 import { useState } from "react";
 import { ValidationMessage } from "components/ValidationMessage";
-import { object, string, number } from "yup";
-
-
-const vendorEnum = vendorRoles.map(vendorRole => vendorRole.label);
-
-const SuppliersValidation = object().shape({
-    sapCountry: number().typeError("Значение для поля 'Страна' не выбрано"),
-    name: string().required("Поле 'Контактное лицо' обязательно к заполнению"),
-    companyName: string().required("Поле 'Фирма' обязательно к заполнению"),
-    phoneNumber: string().required("Поле 'Телефонный номер' обязательно к заполнению"),
-    email: string().email("Некорректный Email адрес").required("Поле 'Email' обязательно к заполнению"),
-    street: string().required("Поле 'Улица' обязательно к заполнению"),
-    house: string().required("Поле 'Дом' обязательно к заполнению"),
-    role: string().typeError("Поле 'Роль' обязательно к заполнению").oneOf(vendorEnum),
-    postcode: number().required("Поле 'Почтовый индекс' обязательно к заполнению"),
-});
-
-const fieldsMessages = {
-    sapCountry: "",
-    name: "",
-    companyName: "",
-    phoneNumber: "",
-    street: "",
-    house: "",
-    role: "",
-    email: "",
-    postcode: ""
-};
+import { SuppliersValidation, fieldsMessages } from "./validation";
 
 const initialState = {
     sapCountry: "",
+    sapCity: "",
     name: "",
     companyName: "",
     phoneNumber: "",
@@ -191,6 +165,12 @@ const SuppliersCreate = ({ match }) => {
                         </CustomSelector>
                         {
                             validationMessages.sapCountry.length ? <ValidationMessage>{validationMessages.sapCountry}</ValidationMessage> : null
+                        }
+                    </div>
+                    <div>
+                        <CustomInput name="sapCity" label="Город" value={state.sapCity} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.sapCity.length ? true : false} />
+                        {
+                            validationMessages.sapCity.length ? <ValidationMessage>{validationMessages.sapCity}</ValidationMessage> : null
                         }
                     </div>
                     <div>

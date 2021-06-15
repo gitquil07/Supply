@@ -87,15 +87,13 @@ const CertificateList = () => {
     return (
         <>
             <Helmet title={title} />
-            <FlexForHeader>
-                <DatePickers mR="15px"
-                    fromDate={fromDateChange}
-                    toDate={toDateChange}
-                    changeFrom={setFromDateChange}
-                    changeTo={setToDateChange}
-                    buttonClicked={handleDateApply}
-                />
-            </FlexForHeader>
+            <DatePickers mR="15px"
+                fromDate={fromDateChange}
+                toDate={toDateChange}
+                changeFrom={setFromDateChange}
+                changeTo={setToDateChange}
+                buttonClicked={handleDateApply}
+            />
             <CustomMUIDataTable
                 title={"Список таможен (сертификаты)"}
                 data={list}

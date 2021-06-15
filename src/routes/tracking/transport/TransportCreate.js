@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Helmet } from "react-helmet";
 import { useToggleDialog } from "../../../hooks";
 
@@ -19,25 +19,25 @@ import { Arrows } from "components/Arrows";
 import { RemoveIcon } from "components/RemoveIcon";
 import { DisabledInput } from "components/DisabledInput";
 import CustomPicker from "components/Inputs/DatePicker";
-import { GrayishBackground, MiniForm } from "components/ComponentsForForm/MiniForm";
-import { InputsWrapper } from "components/ComponentsForForm/InputsWrapper";
+import { MiniForm } from "components/ComponentsForForm/MiniForm";
 import { Title } from "components/Title";
 import { CustomizableInputs } from "components/ComponentsForForm/CustomizableInputs";
 import { GET_TRACKING, GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS, GET_VENDORS, GET_INVOICES, INVOICE_UPDATE } from "./gql";
 import { useLazyQuery } from "@apollo/client";
-import { recursiveFetch, exceptKey, downloadFile } from "utils/functions";
-import { currencyOptions, trackingStatuses, Валю } from "utils/static";
+import { recursiveFetch, exceptKey } from "utils/functions";
+import { currencyOptions, measureOptions, trackingStatuses } from "utils/static";
 import { useFormData, useCustomMutation } from "hooks";
 import { useHistory } from "react-router-dom";
 import { UPDATE_TRACKING } from "./gql"
-import { invoiceStatuses, destinationOptions } from "utils/static";
+import { invoiceStatuses, noteOptions } from "utils/static";
 import MenuItem from "@material-ui/core/MenuItem";
 import moment from "moment";
 import { useMutation } from "@apollo/client";
 import { NotificationManager } from "react-notifications";
 import { FileElementA, FilesList } from "components/Inputs/DragFile";
-import { indexOf } from "ramda";
-
+import { degreeOfDanger as degreeOfDangerOptions } from "utils/static";
+import { addDays, formatPrice } from "utils/functions";
+import { UserContext } from "context/UserContext";
 
 const initialState = {
     vendor: "",
@@ -46,12 +46,15 @@ const initialState = {
     netto: "",
     brutto: "",
     amount: "",
-    trDate: new Date()
+    station: "",
+    trDate: new Date(),
+    "note": ""
 };
 
 const TrackingTransportCreate = ({ match }) => {
-    console.log("tracking transport rendered");
 
+    const {role} = useContext(UserContext);
+    console.log("role", role);
     const { id } = match.params;
     const title = useTitle("Изменение Слежения");
     const [additionalData, setAdditionalData] = useState({
@@ -73,9 +76,9 @@ const TrackingTransportCreate = ({ match }) => {
     const {
         state,
         setState,
-        handleChange
+        handleChange,
+        handlePriceChange
     } = useFormData(initialState);
-    // const [state, setState] = useState();
 
     const {
         submitData, mutationLoading
@@ -89,18 +92,6 @@ const TrackingTransportCreate = ({ match }) => {
         () => {
             history.push("/tracking/transport");
         }
-    );
-
-    const {
-        submitData: submitAdditionalData
-    } = useCustomMutation({
-        graphQlQuery: {
-            queryCreate: UPDATE_TRACKING,
-            queryUpdate: UPDATE_TRACKING
-        }
-    },
-        "Данные",
-        () => { }
     );
 
     const {
@@ -189,7 +180,7 @@ const TrackingTransportCreate = ({ match }) => {
             });
             setState({
                 ...trackingInfo,
-                vendor: trackingInfo?.vendor?.pk
+                vendor: trackingInfo?.vendor?.pk,
             });
             setAdditionalData({
                 ...additionalData,
@@ -211,15 +202,18 @@ const TrackingTransportCreate = ({ match }) => {
 
         if (additional) {
             const requestBody = {
-                ...exceptKey(state, ["pk", "publicId"]),
-                status: trackingStatuses.find(status => status.value === additionalData.status).label,
+                ...exceptKey(state, ["pk", "publicId", "netto", "brutto", "amount"]),
+                status: trackingStatuses.find(status => status.value === additionalData.status)?.label,
                 locations: [{
                     name: additionalData.locations
                 }]
             };
-            // submitAdditionalData(requestBody, pk);
-            // console.log("sad", requestBody);
-            // console.log("pk", pk);
+
+            requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
+            requestBody.note = noteOptions.find(note => note.value === requestBody.note)?.label;
+
+            // console.log("requestBody", requestBody);
+
             updateTracking({
                 variables: {
                     input: {
@@ -230,12 +224,11 @@ const TrackingTransportCreate = ({ match }) => {
             });
 
         } else {
-            console.log("requestBody", state);
 
 
             const invoicesToUpdate = invoiceList.map(invoice => {
                 return {
-                    ...exceptKey(invoice, ["pk", "relativeWeight"]),
+                    ...exceptKey(invoice, ["pk", "relativeWeight", "netto", "brutto", "amount"]),
                     status: invoiceStatuses.find(invoiceStatus => invoiceStatus.value == invoice.status).label
                 }
             });
@@ -249,12 +242,12 @@ const TrackingTransportCreate = ({ match }) => {
 
             recursiveMutation();
 
-            console.log("state", exceptKey(state, ["pk", "publicId"]));
-
-            const requestBody = { ...state };
+            let requestBody = { ...state };
 
             requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
+            requestBody.note = noteOptions.find(note => note.value === requestBody.note)?.label;
 
+            requestBody = exceptKey(requestBody, ["netto", "brutto", "amount"]);
             submitData({
                 ...exceptKey(requestBody, ["pk", "publicId", "status"])
             }, pk);
@@ -309,6 +302,14 @@ const TrackingTransportCreate = ({ match }) => {
     const [requestDialogState, closeRequestDialog, openRequestDialog] = useToggleDialog();
     const [materialsDialogState, closeMaterialDialog, openMaterialDialog] = useToggleDialog();
 
+    const isSupplyRoles = (role, label, value) => {
+        if(role === "SUPPLY_ADMIN" || role === "ORDER"){
+            return <CustomInput label={label} value={value} disabled />
+        }else{
+            return false;
+        }
+    }
+
 
     return (
         <>
@@ -317,26 +318,55 @@ const TrackingTransportCreate = ({ match }) => {
             <Form>
                 <MiniForm>
                     <Title>Данные транспорта</Title>
-                    <CustomizableInputs t="2fr 2fr 2fr 2fr 1fr 1fr 1fr">
-                        <CustomSelector label="Транспортировщики" value={state?.vendor} name="vendor" stateChange={e => handleChange({ fElem: e })}>
-                            {
-                                vendors.map(({ node }) =>
-                                    <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.vendor}>{node.name}</MenuItem>
-                                )
-                            }
-                        </CustomSelector>
-                        <CustomNumber name="transportNumber" label="Номер транспорта" value={state?.transportNumber} stateChange={e => handleChange({ fElem: e })} />
-                        <CustomNumber name="amount" label="Сумма" value={state?.amount} stateChange={e => handleChange({ fElem: e })} />
-                        <CustomSelector name="currency" label="Валюта" value={state?.currency} stateChange={e => handleChange({ fElem: e })}>
-                            {
-                                currencyOptions.map(currency =>
-                                    <MenuItem key={currency.value} value={currency.value} selected={state.currency === currency.value}>{currency.label}</MenuItem>
-                                )
-                            }
-                        </CustomSelector>
-                        <CustomNumber name="netto" label="Нетто" value={state?.netto} stateChange={e => handleChange({ fElem: e })} />
-                        <CustomNumber name="brutto" label="Бруто" value={state?.brutto} stateChange={e => handleChange({ fElem: e })} />
-                        <CustomPicker date={state.trDate} name="trDate" stateChange={date => handleDateChange(date)} label="Дата" />
+                    <CustomizableInputs t="1.5fr 1.5fr 1fr 1.5fr 2fr 2fr">
+
+                        {
+                            isSupplyRoles(role, "Транспортировщики", vendors.find(({node}) => node.pk === state?.vendor)?.node?.name) ||
+                            <CustomSelector label="Транспортировщики" value={state?.vendor} name="vendor" stateChange={e => handleChange({ fElem: e })}>
+                                {
+                                    vendors.map(({ node }) =>
+                                        <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.vendor}>{node.companyName}</MenuItem>
+                                    )
+                                }
+                            </CustomSelector>
+                        }
+                        {
+                            isSupplyRoles(role, "Номер транспорта", state?.transportNumber) ||
+                            <CustomNumber name="transportNumber" label="Номер транспорта" value={state?.transportNumber} stateChange={e => handleChange({ fElem: e })} />
+
+                        }
+                        {
+                            isSupplyRoles(role, "Валюта", state?.currency) ||
+                            <CustomSelector name="currency" label="Валюта" value={state?.currency} stateChange={e => handleChange({ fElem: e })}>
+                                {
+                                    currencyOptions.map(currency =>
+                                        <MenuItem key={currency.value} value={currency.value} selected={state.currency === currency.value}>{currency.label}</MenuItem>
+                                    )
+                                }
+                            </CustomSelector>
+                        }
+                        {
+                            isSupplyRoles(role, "Примечание", state?.note) || 
+                            <CustomSelector name="note" label="Примечание" stateChange={e => handleChange({fElem: e})} value={state.note}>
+                                {
+                                    noteOptions.map(note =>
+                                        <MenuItem key={note.value} value={note.value} selected={note.value == state.note}>{note.label}</MenuItem>
+                                    )
+                                }
+                            </CustomSelector>
+                        }
+                        {
+                            isSupplyRoles(role, "Станция", state?.station) || 
+                            <CustomInput name="station" label="Станция" value={state?.station} stateChange={e => handleChange({ fElem: e })} />
+                        }
+                        {
+                            isSupplyRoles(role, "Дата прибытия", state?.trDate) ||
+                            <CustomPicker date={state.trDate} name="trDate" stateChange={date => handleDateChange(date)} label="Дата прибытия" />
+                        }
+                    </CustomizableInputs>
+                    <CustomizableInputs t="1fr 1fr">
+                        <CustomInput label="Дата отгрузки" value={applicationInfo?.shippingDate || "YYYY-MM-DD"} disabled />
+                        <CustomInput label="В пути" value={addDays(applicationInfo?.inWayDayCount || 0)} disabled /> 
                     </CustomizableInputs>
                 </MiniForm>
 
@@ -346,41 +376,37 @@ const TrackingTransportCreate = ({ match }) => {
                             <Title size="18">Инвойсы</Title>
                             {
                                 invoiceList.map((invoice, idx) =>
-                                    <CustomizableInputs t="1fr 1fr 1fr 1fr">
-                                        <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
-                                        <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
-                                            {
-                                                invoiceStatuses.map(invoiceStatus =>
-                                                    <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status == invoiceStatus.value}>{invoiceStatus.label}</MenuItem>
-                                                )
-                                            }
-                                        </CustomSelector>
-                                        <CustomSelector name="destination" label="место оплаты" stateChaneg={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination}>
-                                            {
-                                                destinationOptions.map(destination =>
-                                                    <MenuItem key={destination.value} value={destination.value} selected={destination.value == invoice.destination} >{destination.label}</MenuItem>
-                                                )
-                                            }
-                                        </CustomSelector>
-                                        <CustomInput label="Относительный вес" value={invoice.relativeWeight} stateChange={() => { }} disabled={true} />
-                                        {/* <CustomInput name="destination" label="место назначения" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.destination} /> */}
+                                    <CustomizableInputs t="1fr 1fr 1fr 1fr 0.8fr 0.8fr">
+                                        {
+                                            isSupplyRoles(role, "Инвойс", invoice.number) ||
+                                            <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
+                                        }
+                                        {
+                                            isSupplyRoles(role, "Статус", invoice.status) ||
+                                            <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
+                                                {
+                                                    invoiceStatuses.map(invoiceStatus =>
+                                                        <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status == invoiceStatus.value}>{invoiceStatus.label}</MenuItem>
+                                                    )
+                                                }
+                                            </CustomSelector>
+                                        }
+                                        <CustomInput label="Нетто" value={invoice.netto}  disabled />
+                                        <CustomInput label="Брутто" value={invoice.brutto}  disabled />
+                                        <CustomInput label="Транспортный расход" value={formatPrice(invoice.amount)} disabled />
+                                        <CustomInput label="Относительный вес" value={invoice.relativeWeight} disabled />
                                     </CustomizableInputs>
 
                                 )
                             }
                         </> : null
                     }
-
-                    {/* <CustomizableInputs t="1fr 1fr 2fr">
-                        <CustomInput label="01290949889612389" />
-                        <CustomInput label="Вид оплаты" />
+                     <CustomizableInputs t="1fr 1fr 1fr 1fr">
+                        <CustomInput label="Общий Транспортный расход" value={formatPrice(state.amount)} disabled />
+                        <CustomInput label="Общий Относительный вес" value={invoiceList.length === 0? "0.00" : "1.00"} disabled />
+                        <CustomInput label="Общий Брутто" value={state.brutto} disabled /> 
+                        <CustomInput label="Общий Нетто" value={state.netto} disabled /> 
                     </CustomizableInputs>
-
-                    <CustomizableInputs t="1fr 1fr 2fr">
-                        <CustomInput label="01290949889612389" />
-                        <CustomInput label="Вид оплаты" />
-                    </CustomizableInputs> */}
-
                     <Title size="18">Статус слежения: <span>{trackingInfo?.publicId}</span></Title>
 
                     <CustomizableInputs t="1fr 1fr 1fr 1fr">
@@ -421,58 +447,6 @@ const TrackingTransportCreate = ({ match }) => {
 
                 </MiniForm>
                 <MiniForm>
-                    {/* <Title size="18">Данные транспорта</Title>
-
-                    <List>
-                        <Item>
-                            <h4>Транспортировщик</h4>
-                            <span>
-                                {
-                                    trackingInfo?.vendor?.name || vendors.find(({node}) => node.pk == state.vendor)?.node?.name
-                                }
-                            </span>
-                        </Item>
-                        <Item>
-                            <h4>Номер транспорта</h4>
-                            <span>
-                                {
-                                    trackingInfo?.transportNumber || state.transportNumber
-                                }
-                            </span>
-                        </Item>
-                        <Item>
-                            <h4>Сумма</h4>
-                            <span>
-                                {
-                                    trackingInfo?.amount || state.amount
-                                }
-                            </span>
-                        </Item>
-                        <Item>
-                            <h4>Нетто вес</h4>
-                            <span>
-                                {
-                                    trackingInfo?.netto || state.netto
-                                }
-                            </span>
-                        </Item>
-                        <Item>
-                            <h4>Брутто вес</h4>
-                            <span>
-                                {
-                                    trackingInfo?.brutto || state.brutto
-                                }
-                            </span>
-                        </Item>
-                        <Item>
-                            <h4>Примечание</h4>
-                            <span>
-                                {
-                                    trackingInfo?.note || state.note
-                                }
-                            </span>
-                        </Item>
-                    </List> */}
 
                     <Title size="18">Информация заявки</Title>
 
@@ -485,20 +459,14 @@ const TrackingTransportCreate = ({ match }) => {
                             <h4>Тип заявки</h4>
                             <span>{applicationInfo?.transportMix ? "Сборная" : "Обычная"}</span>
                         </Item>
-                        {/* <Item>
-                            <h4>
-                                Вид упаковки
-                            </h4>
-                            <span>
-                                {applicationInfo?.typeOfPackaging}
-                            </span>
-                        </Item> */}
                         <Item>
                             <h4>
                                 Степень опасности
                             </h4>
                             <span>
-                                {applicationInfo?.degreeOfDanger}
+                                {
+                                    degreeOfDangerOptions.find(degree => degree.value == applicationInfo?.degreeOfDanger)?.label
+                                }
                             </span>
                         </Item>
                         <Item>
@@ -577,50 +545,6 @@ const TrackingTransportCreate = ({ match }) => {
                         })
                     }
                 </MiniForm>
-
-                {/* 
-                {
-                    applications.map((e, i) =>
-                        <Applications expand={e.expand}>
-                            <FlexForHeader p="0 0 30px 0">
-                                <Title>Статус слежения: <span>873264923</span></Title>
-                                <Expand onClick={() => expand(i)}><Arrows open={e.expand} /> Свернуть</Expand>
-                            </FlexForHeader>
-
-                            <Inputs>
-                                <CustomSelector label="Статус" />
-                                <CustomPicker label="Дата" />
-                                <CustomInput label="Местонахождение" />
-                                <Button name="Добавить статус" color="#5762B2" />
-                            </Inputs>
-
-                            // <TableIII />,
-
-                            <Material>
-                                <FlexForHeader m="20px 0">
-                                    <Title>Материалы</Title>
-                                    <Button name="Добавить материал" color="#5762B2" />
-                                </FlexForHeader>
-
-                                <InputRow>
-                                    <DisabledInput name="Название материала" value="01290949889612389" />
-                                    <DisabledInput name="OOO “trade solution”" value="100 000 000" />
-                                    <DisabledInput name="Брутто вес" value="320 000 кг" />
-                                    <DisabledInput name="Обем" value="21 м3" />
-                                    <CustomInput label="Отгружаемое кол-во" />
-
-                                    <RemoveIcon />
-                                </InputRow>
-                            </Material>
-
-                            <Footer>
-                                <span>Кол-во материалов: 6</span>
-                                <Button name="Создать Слежение" />
-                            </Footer>
-                        </Applications>
-                    )
-                } */}
-
 
             </Form>
 

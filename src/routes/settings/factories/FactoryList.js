@@ -53,9 +53,9 @@ const FactoryList = () => {
                 id: node.id,
                 pk: node.pk,
                 firm: node.firm?.pk,
+                firmName: node.firm?.name,
                 code: node.code,
                 name: node.name,
-                officialName: node.officialName,
                 position: node.position,
                 createdAt: node.createdAt
             }

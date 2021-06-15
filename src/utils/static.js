@@ -345,10 +345,18 @@ export const degreeOfDanger = [
     }
 ];
 
-export const destinationOptions = [
+export const noteOptions = [
     {
-        label: "в офис",
-        value: "V_OFIS"
+        label: "офис",
+        value: "OFIS"
+    },
+    {
+        label: "прямой",
+        value: "PRIAMOI"
+    },
+    {
+        label: "SPL",
+        value: "SPL"
     }
 ];
 

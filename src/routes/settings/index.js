@@ -28,28 +28,21 @@ const Settings = ({ match }) => {
     return (
         <>
             <ProtectedRoute path={url("users")} component={UsersList} exact />
-
-            <Route path={url("factories")} component={FactoryList} exact />
-
-            <Route path={url("transports")} component={TransportsList} exact/>
-
-            <Route path={url("firms")} component={FirmsList} exact />
-
-            <Route path={url("suppliers")} component={SuppliersList} exact />
-            <Route path={url("suppliers/create")} component={SuppliersCreate} />
-            <Route path={url("suppliers/edit/:id")} component={SuppliersCreate} />
-
-            <Route path={url("materials")} component={MaterialsList} exact />
-            <Route path={url("materials/create")} component={MaterialCreate} />
-            <Route path={url("materials/edit/:id")} component={MaterialCreate} />
-
-            <Route path={url("products")} component={ProductsList} exact />
-            <Route path={url("products/create")} render={props => <ProductCreate {...props} />} />
-            <Route path={url("products/edit/:id")} render={props => <ProductCreate {...props}/>} />
-
-            <Route path={url("vendor-factories")} component={VendorFactoriesList} exact />
-            <Route path={url("vendor-factories/create")} component={VendorFactoryCreate} />
-            <Route path={url("vendor-factories/edit/:id")} component={VendorFactoryCreate} />
+            <ProtectedRoute path={url("factories")} component={FactoryList} exact />
+            <ProtectedRoute path={url("transports")} component={TransportsList} exact />
+            <ProtectedRoute path={url("firms")} component={FirmsList} exact />
+            <ProtectedRoute path={url("suppliers")} component={SuppliersList}  exact />
+            <ProtectedRoute path={url("suppliers/create")} component={SuppliersCreate} />
+            <ProtectedRoute path={url("suppliers/edit/:id")} component={SuppliersCreate} />
+            <ProtectedRoute path={url("materials")} component={MaterialsList} exact />
+            <ProtectedRoute path={url("materials/create")} component={MaterialCreate} />
+            <ProtectedRoute path={url("materials/edit/:id")} component={MaterialCreate} />
+            <ProtectedRoute path={url("products")} component={ProductsList} exact />
+            <ProtectedRoute path={url("products/create")} component={ProductCreate} />
+            <ProtectedRoute path={url("products/edit/:id")} component={ProductCreate} />
+            <ProtectedRoute path={url("vendor-factories")} component={VendorFactoriesList} exact />
+            <ProtectedRoute path={url("vendor-factories/create")} component={VendorFactoryCreate} />
+            <ProtectedRoute path={url("vendor-factories/edit/:id")} component={VendorFactoryCreate} />
         </>
     );
 };

@@ -23,6 +23,14 @@ export const Supply = [
     {
         name: "Отчет",
         url: "/supply/report"
+    },
+    {
+        name: "Остатки на складе",
+        url: "/supply/stock-balance"
+    },
+    {
+        name: "План",
+        url: "/supply/plan-product"
     }
 ];
 
