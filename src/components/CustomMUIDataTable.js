@@ -50,7 +50,6 @@ const StyledMUIDataTable = styled(MUIDataTable)`
     height: calc(100vh - 280px);
     overflow-y: scroll;
 
-    
     ::-webkit-scrollbar {
         width: 5px;
     }
@@ -80,7 +79,6 @@ const StyledMUIDataTable = styled(MUIDataTable)`
         }
 
         .MUIDataTableToolbar-actions-17 {
-
             button {
                 padding: 0 5px;
             }
@@ -94,7 +92,6 @@ const StyledMUIDataTable = styled(MUIDataTable)`
     .MUIDataTableSelectCell-root-35 {
         display: none;
         border-radius: 5px;
-    
     }
 
     tr {      
@@ -120,8 +117,7 @@ const StyledMUIDataTable = styled(MUIDataTable)`
                 padding: 0 10px;
             }
         }
-    }
-
+    } 
 
     tbody tr td {
         padding: 15px 10px;

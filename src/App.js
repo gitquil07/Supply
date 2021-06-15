@@ -77,7 +77,8 @@ const StyledDrawer = styled(Drawer)`
 `;
 
 const Contents = styled.div`
-  margin: 0 20px;
+  padding: 0 20px;
   overflow: hidden;
+  box-sizing: border-box;
 
 `;
