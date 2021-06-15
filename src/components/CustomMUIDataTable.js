@@ -8,7 +8,6 @@ import PrintIcon from '@material-ui/icons/Receipt';
 import DownloadIcon from '@material-ui/icons/GetApp';
 import ViewColumnIcon from '@material-ui/icons/DynamicFeed';
 import FilterIcon from '@material-ui/icons/GroupWork';
-import { Height } from "@material-ui/icons";
 
 export const CustomMUIDataTable = React.memo(({ count, title, data, columns, customRowOptions }) => {
 
