@@ -16,11 +16,14 @@ const authMiddleware = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem("supply_token");
     // console.log("token in apollo client", token);
 
-    operation.setContext({
-        headers: {
-            Authorization: token    
-        }
-    });
+    if(token != null){
+        operation.setContext({
+            headers: {
+                Authorization: `JWT ${token}`    
+            }
+        });
+    }
+
 
     return forward(operation);
 });

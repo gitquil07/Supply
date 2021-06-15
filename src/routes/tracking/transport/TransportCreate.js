@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Helmet } from "react-helmet";
 import { useToggleDialog } from "../../../hooks";
 
@@ -37,7 +37,7 @@ import { NotificationManager } from "react-notifications";
 import { FileElementA, FilesList } from "components/Inputs/DragFile";
 import { degreeOfDanger as degreeOfDangerOptions } from "utils/static";
 import { addDays, formatPrice } from "utils/functions";
-
+import { UserContext } from "context/UserContext";
 
 const initialState = {
     vendor: "",
@@ -52,8 +52,9 @@ const initialState = {
 };
 
 const TrackingTransportCreate = ({ match }) => {
-    console.log("tracking transport rendered");
 
+    const {role} = useContext(UserContext);
+    console.log("role", role);
     const { id } = match.params;
     const title = useTitle("Изменение Слежения");
     const [additionalData, setAdditionalData] = useState({
@@ -92,18 +93,6 @@ const TrackingTransportCreate = ({ match }) => {
             history.push("/tracking/transport");
         }
     );
-
-    // const {
-    //     submitData: submitAdditionalData
-    // } = useCustomMutation({
-    //     graphQlQuery: {
-    //         queryCreate: UPDATE_TRACKING,
-    //         queryUpdate: UPDATE_TRACKING
-    //     }
-    // },
-    //     "Данные",
-    //     () => { }
-    // );
 
     const {
         submitData: submitInvoiceUpdate
@@ -311,6 +300,14 @@ const TrackingTransportCreate = ({ match }) => {
     const [requestDialogState, closeRequestDialog, openRequestDialog] = useToggleDialog();
     const [materialsDialogState, closeMaterialDialog, openMaterialDialog] = useToggleDialog();
 
+    const isSupplyRoles = (role, label, value) => {
+        if(role === "SUPPLY_ADMIN" || role === "ORDER"){
+            return <CustomInput label={label} value={value} disabled />
+        }else{
+            return false;
+        }
+    }
+
 
     return (
         <>
@@ -320,30 +317,50 @@ const TrackingTransportCreate = ({ match }) => {
                 <MiniForm>
                     <Title>Данные транспорта</Title>
                     <CustomizableInputs t="1.5fr 1.5fr 1fr 1.5fr 2fr 2fr">
-                        <CustomSelector label="Транспортировщики" value={state?.vendor} name="vendor" stateChange={e => handleChange({ fElem: e })}>
-                            {
-                                vendors.map(({ node }) =>
-                                    <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.vendor}>{node.name}</MenuItem>
-                                )
-                            }
-                        </CustomSelector>
-                        <CustomNumber name="transportNumber" label="Номер транспорта" value={state?.transportNumber} stateChange={e => handleChange({ fElem: e })} />
-                        <CustomSelector name="currency" label="Валюта" value={state?.currency} stateChange={e => handleChange({ fElem: e })}>
-                            {
-                                currencyOptions.map(currency =>
-                                    <MenuItem key={currency.value} value={currency.value} selected={state.currency === currency.value}>{currency.label}</MenuItem>
-                                )
-                            }
-                        </CustomSelector>
-                        <CustomSelector name="note" label="Примечание" stateChange={e => handleChange({fElem: e})} value={state.note}>
-                            {
-                                noteOptions.map(note =>
-                                    <MenuItem key={note.value} value={note.value} selected={note.value == state.note}>{note.label}</MenuItem>
-                                )
-                            }
-                        </CustomSelector>
-                        <CustomInput name="station" label="Станция" value={state?.station} stateChange={e => handleChange({ fElem: e })} />
-                        <CustomPicker date={state.trDate} name="trDate" stateChange={date => handleDateChange(date)} label="Дата прибытия" />
+
+                        {
+                            isSupplyRoles(role, "Транспортировщики", vendors.find(({node}) => node.pk === state?.vendor)?.node?.name) ||
+                            <CustomSelector label="Транспортировщики" value={state?.vendor} name="vendor" stateChange={e => handleChange({ fElem: e })}>
+                                {
+                                    vendors.map(({ node }) =>
+                                        <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.vendor}>{node.name}</MenuItem>
+                                    )
+                                }
+                            </CustomSelector>
+                        }
+                        {
+                            isSupplyRoles(role, "Номер транспорта", state?.transportNumber) ||
+                            <CustomNumber name="transportNumber" label="Номер транспорта" value={state?.transportNumber} stateChange={e => handleChange({ fElem: e })} />
+
+                        }
+                        {
+                            isSupplyRoles(role, "Валюта", state?.currency) ||
+                            <CustomSelector name="currency" label="Валюта" value={state?.currency} stateChange={e => handleChange({ fElem: e })}>
+                                {
+                                    currencyOptions.map(currency =>
+                                        <MenuItem key={currency.value} value={currency.value} selected={state.currency === currency.value}>{currency.label}</MenuItem>
+                                    )
+                                }
+                            </CustomSelector>
+                        }
+                        {
+                            isSupplyRoles(role, "Примечание", state?.note) || 
+                            <CustomSelector name="note" label="Примечание" stateChange={e => handleChange({fElem: e})} value={state.note}>
+                                {
+                                    noteOptions.map(note =>
+                                        <MenuItem key={note.value} value={note.value} selected={note.value == state.note}>{note.label}</MenuItem>
+                                    )
+                                }
+                            </CustomSelector>
+                        }
+                        {
+                            isSupplyRoles(role, "Станция", state?.station) || 
+                            <CustomInput name="station" label="Станция" value={state?.station} stateChange={e => handleChange({ fElem: e })} />
+                        }
+                        {
+                            isSupplyRoles(role, "Дата прибытия", state?.trDate) ||
+                            <CustomPicker date={state.trDate} name="trDate" stateChange={date => handleDateChange(date)} label="Дата прибытия" />
+                        }
                     </CustomizableInputs>
                     <CustomizableInputs t="1fr 1fr">
                         <CustomInput label="Дата отгрузки" value={applicationInfo?.shippingDate || "YYYY-MM-DD"} disabled />
@@ -358,14 +375,20 @@ const TrackingTransportCreate = ({ match }) => {
                             {
                                 invoiceList.map((invoice, idx) =>
                                     <CustomizableInputs t="1fr 1fr 1fr 1fr 0.8fr 0.8fr">
-                                        <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
-                                        <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
-                                            {
-                                                invoiceStatuses.map(invoiceStatus =>
-                                                    <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status == invoiceStatus.value}>{invoiceStatus.label}</MenuItem>
-                                                )
-                                            }
-                                        </CustomSelector>
+                                        {
+                                            isSupplyRoles(role, "Инвойс", invoice.number) ||
+                                            <CustomInput label="Инвойс" value={invoice.number} stateChange={e => handleInvoiceFieldsChange(e, idx)} />
+                                        }
+                                        {
+                                            isSupplyRoles(role, "Статус", invoice.status) ||
+                                            <CustomSelector name="status" label="Статус" stateChange={e => handleInvoiceFieldsChange(e, idx)} value={invoice.status}>
+                                                {
+                                                    invoiceStatuses.map(invoiceStatus =>
+                                                        <MenuItem key={invoiceStatus.value} value={invoiceStatus.value} selected={invoice.status == invoiceStatus.value}>{invoiceStatus.label}</MenuItem>
+                                                    )
+                                                }
+                                            </CustomSelector>
+                                        }
                                         <CustomInput label="Нетто" value={invoice.netto}  disabled />
                                         <CustomInput label="Брутто" value={invoice.brutto}  disabled />
                                         <CustomInput label="Транспортный расход" value={formatPrice(invoice.amount)} disabled />
