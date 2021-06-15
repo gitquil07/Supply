@@ -14,8 +14,8 @@ const App = () => {
 
   const s_role = localStorage.getItem("supply_role");
   console.log("role from app", s_role);
-  const [role, setRole] = useState(s_role? s_role : ""),
-        token = localStorage.getItem("supply_token");
+  const [role, setRole] = useState(s_role ? s_role : ""),
+    token = localStorage.getItem("supply_token");
 
   return (
     <>
@@ -78,4 +78,6 @@ const StyledDrawer = styled(Drawer)`
 
 const Contents = styled.div`
   margin: 0 20px;
+  overflow: hidden;
+
 `;
