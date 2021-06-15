@@ -256,6 +256,7 @@ const SuppliersCreate = ({ match }) => {
                                 <span> Завод: </span>
                                 <span> Поставщик: </span>
                                 <span> Продукт: </span>
+                                <span> MOQ </span>
                                 <span> Цена: </span>
                                 <span> Валюта: </span>
                                 <span> Дни изготовления: </span>
@@ -271,6 +272,7 @@ const SuppliersCreate = ({ match }) => {
                                                 <span>{history?.factory}</span>
                                                 <span>{history?.vendor}</span>
                                                 <span>{history?.product.length > 25 ? history?.product.slice(0, 25) + "..." : history?.product}</span>
+                                                <span>{history?.moq}</span>
                                                 <span>{formatPrice(history?.price)}</span>
                                                 <span>{history?.currency}</span>
                                                 <span>{history?.productionDayCount}</span>
@@ -309,7 +311,7 @@ const GreyTable = styled.div`
 
 const Head = styled.div`
     display: grid;
-    grid-template-columns: .7fr 0.7fr 1.5fr .5fr .4fr 0.9fr 0.7fr 0.7fr 0.7fr;
+    grid-template-columns: .7fr 1fr 1fr .5fr .5fr .4fr 0.9fr 0.7fr 0.7fr 0.7fr;
     padding: 0 10px 10px 10px;
     gap: 10px;
 `;
@@ -323,7 +325,7 @@ const Body = styled.div`
 
 const List = styled.div`
     display: grid;
-    grid-template-columns: .7fr 0.7fr 1.5fr .5fr .4fr 0.9fr 0.7fr 0.7fr 0.7fr;
+    grid-template-columns: .7fr 1fr 1fr .5fr .5fr .4fr 0.9fr 0.7fr 0.7fr 0.7fr;
     gap: 10px;
     padding: 10px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);

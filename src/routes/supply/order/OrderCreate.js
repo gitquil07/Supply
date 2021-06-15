@@ -94,7 +94,7 @@ const OrderCreate = ({ match }) => {
         invoiceProforma: ""
     });
 
-    const [deliveryDayCounts, setDeliveryDayCounts] = useState({});
+    const [vendorProductChange, setVendorProductChange] = useState({});
 
     useEffect(() => {
         getFactories();
@@ -192,8 +192,13 @@ const OrderCreate = ({ match }) => {
                 materialsCopy[index] = { ...materialsCopy[index], price: formatInputPrice(event.target.value) }
             }else{
                 if(vendorProductChange){
-                    const deliveryDayCount = vendorProducts.find(({node}) => node.pk == event.target.value)?.node?.deliveryDayCount;
-                    setDeliveryDayCounts({ ...deliveryDayCounts, [index]: deliveryDayCount });
+                    const one = vendorProducts.find(({node}) => node.pk == event.target.value)?.node,
+                          deliveryDayCount = one?.deliveryDayCount,
+                          price = one?.price;
+                            setVendorProductChange({ ...vendorProductChange, [index]: {
+                                deliveryDayCount,
+                            }})
+                            materialsCopy[index] = { ...materialsCopy[index], price: formatInputPrice(price) }
 
                 }
                 materialsCopy[index] = { ...materialsCopy[index], [event.target.name]: event.target.value }
@@ -243,15 +248,15 @@ const OrderCreate = ({ match }) => {
     }
 
     const remove = (index) => {
-        const tmp = { ...deliveryDayCounts };
+        const tmp = { ...vendorProductChange };
         delete tmp[index];
-        setDeliveryDayCounts(tmp);
+        setVendorProductChange(tmp);
         removeTempl(index)
     }
 
     useEffect(() => {
-        console.log("deliveryDayCounts", deliveryDayCounts);
-    }, [deliveryDayCounts]);
+        console.log("vendorProductChange", vendorProductChange);
+    }, [vendorProductChange]);
 
 
     const sendFileToServer = (file) => {
@@ -283,7 +288,7 @@ const OrderCreate = ({ match }) => {
                             <CustomSelector label="Выберите поставщика" name="vendorFactory" value={orderData.vendorFactory} stateChange={(e) => handleDataChange(e, "order")} errorVal={validationMessages.vendorFactory.length ? true : false}>
                                 {
                                     vendorFactories?.map(({ node }) => {
-                                        return <MenuItem key={node.pk} value={node.pk} selected={orderData.vendorFactory === node.pk}>{node?.vendor?.name}</MenuItem>
+                                        return <MenuItem key={node.pk} value={node.pk} selected={orderData.vendorFactory === node.pk}>{node?.vendor?.companyName}</MenuItem>
                                     })
                                 }
                             </CustomSelector>
@@ -335,7 +340,7 @@ const OrderCreate = ({ match }) => {
                                         }
                                     </CustomSelector>
                                     <CustomPicker name="dateOfDelivery" label="Дата отгрузки" date={e.dateOfDelivery} stateChange={(date) => handleDateChange("dateOfDelivery", date, index)} />
-                                    <CustomInput label="Примерная дата прибытия" value={getAproximateDeliveryDate(e.dateOfDelivery, deliveryDayCounts[index])} disabled />
+                                    <CustomInput label="Примерная дата прибытия" value={getAproximateDeliveryDate(e.dateOfDelivery, vendorProductChange[index]?.deliveryDayCount)} disabled />
                                     <CustomInput name="count" label="Кол-во" value={e.count} stateChange={(e) => handleDataChange(e, "material", index)} />
                                     <CustomInput name="price" label="Цена" value={e.price} stateChange={(e) => handleDataChange(e, "material", index)} />
                                 </InputsWrapper>

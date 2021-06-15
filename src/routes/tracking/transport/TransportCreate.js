@@ -202,7 +202,7 @@ const TrackingTransportCreate = ({ match }) => {
 
         if (additional) {
             const requestBody = {
-                ...exceptKey(state, ["pk", "publicId"]),
+                ...exceptKey(state, ["pk", "publicId", "netto", "brutto", "amount"]),
                 status: trackingStatuses.find(status => status.value === additionalData.status)?.label,
                 locations: [{
                     name: additionalData.locations
@@ -211,6 +211,8 @@ const TrackingTransportCreate = ({ match }) => {
 
             requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
             requestBody.note = noteOptions.find(note => note.value === requestBody.note)?.label;
+
+            // console.log("requestBody", requestBody);
 
             updateTracking({
                 variables: {
@@ -323,7 +325,7 @@ const TrackingTransportCreate = ({ match }) => {
                             <CustomSelector label="Транспортировщики" value={state?.vendor} name="vendor" stateChange={e => handleChange({ fElem: e })}>
                                 {
                                     vendors.map(({ node }) =>
-                                        <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.vendor}>{node.name}</MenuItem>
+                                        <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.vendor}>{node.companyName}</MenuItem>
                                     )
                                 }
                             </CustomSelector>
@@ -401,7 +403,7 @@ const TrackingTransportCreate = ({ match }) => {
                     }
                      <CustomizableInputs t="1fr 1fr 1fr 1fr">
                         <CustomInput label="Общий Транспортный расход" value={formatPrice(state.amount)} disabled />
-                        <CustomInput label="Общий Относительный вес" value="1.00" disabled />
+                        <CustomInput label="Общий Относительный вес" value={invoiceList.length === 0? "0.00" : "1.00"} disabled />
                         <CustomInput label="Общий Брутто" value={state.brutto} disabled /> 
                         <CustomInput label="Общий Нетто" value={state.netto} disabled /> 
                     </CustomizableInputs>

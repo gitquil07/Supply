@@ -13,7 +13,7 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
           station
           border
           vendor {
-            name
+            companyName
             sapCountry {
               name
             }
@@ -92,7 +92,7 @@ query getTrackingInfo($id: ID!) {
       pk
       publicId
       vendor {
-        name
+        companyName
         pk
       }
       transportNumber
@@ -199,7 +199,7 @@ query getVendors {
       edges {
         node {
           pk
-          name
+          companyName
         }
       }
     }

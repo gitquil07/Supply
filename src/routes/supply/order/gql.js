@@ -80,7 +80,7 @@ export const GET_VENDOR_FACTORIES = gql`
         edges {
           node {
             vendor {
-              name
+              companyName
             }
             pk
           }
@@ -96,6 +96,7 @@ query MyQuery($vendorFactory : ID) {
     vendorProducts(vendorFactory: $vendorFactory) {
       edges {
         node {
+          price
           product {
             name
           }
