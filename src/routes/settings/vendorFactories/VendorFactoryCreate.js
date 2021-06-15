@@ -251,7 +251,7 @@ const FactoryCreate = ({ match }) => {
                                                             <span>{material.price}</span>
                                                             <span>{material.deliveryDayCount}</span>
                                                             <span>{material.productionDayCount}</span>
-                                                            <span>{material.updatedAt}</span>
+                                                            <span>{moment(material.updatedAt).format("YYYY-MM-DD")}</span>
                                                         </List>
                                                     )
                                                 }
@@ -285,7 +285,7 @@ const GreyTable = styled.div`
 
 const Head = styled.div`
     display: grid;
-    grid-template-columns: .7fr 0.7fr 0.7fr .5fr .7fr 0.7fr 0.7fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     padding: 0 10px 10px 10px;
     gap: 10px;
 `;
@@ -299,7 +299,7 @@ const Body = styled.div`
 
 const List = styled.div`
     display: grid;
-    grid-template-columns: .7fr 0.7fr 0.7fr .5fr .7fr 0.7fr 0.7fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     gap: 10px;
     padding: 10px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
