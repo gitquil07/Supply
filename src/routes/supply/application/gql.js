@@ -115,6 +115,7 @@ query getApplication($id : ID!){
           node{
             orderItem{
               pk
+              requiredCount
             }
             firm{
               pk
@@ -126,6 +127,7 @@ query getApplication($id : ID!){
             weight
             size
             invoicePrice
+            requiredCount
           }
         }
       }

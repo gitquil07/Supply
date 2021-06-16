@@ -205,12 +205,20 @@ const ApplicationCreate = ({ match }) => {
                 })
             }
 
-            const items = getList(application.applicationItems).map(({ node }) => ({
-                ...exceptKey(node, ["__typename"]),
-                firm: node?.firm?.pk,
-                invoice: node?.invoice?.pk,
-                orderItem: node?.orderItem?.pk
-            }))
+            const tmp = {};
+            const items = getList(application.applicationItems).map(({ node }, idx) => {
+            
+                tmp[idx] = node.orderItem.requiredCount;
+
+                return {
+                    ...exceptKey(node, ["__typename"]),
+                    firm: node?.firm?.pk,
+                    invoice: node?.invoice?.pk,
+                    orderItem: node?.orderItem?.pk
+                }
+            })
+
+            setRequiredCounts(tmp);
             setItems(items);
         }
     }, [applicationRes?.data?.application?.application?.pk]);
