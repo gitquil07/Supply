@@ -253,9 +253,10 @@ const ApplicationCreate = ({ match }) => {
         if (e.target.name === "orderItem") {
             const one = orderItems.find(({ node }) => node.pk === e.target.value).node,
             requiredCount = one.requiredCount;
-            console.log("one", one);
+        
                        
             let tmp = { ...requiredCounts };
+            tmp[idx] = requiredCount;
             console.log("here", tmp);
 
             setRequiredCounts(tmp);
