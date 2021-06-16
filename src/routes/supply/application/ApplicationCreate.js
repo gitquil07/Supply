@@ -252,11 +252,10 @@ const ApplicationCreate = ({ match }) => {
 
         if (e.target.name === "orderItem") {
             const one = orderItems.find(({ node }) => node.pk === e.target.value).node,
-                  requiredCount = one.requiredCount,
-                  measure = one.vendorProduct?.product?.measure;
+            requiredCount = one.requiredCount;
+            console.log("one", one);
                        
             let tmp = { ...requiredCounts };
-            tmp[idx] = requiredCount;
             console.log("here", tmp);
 
             setRequiredCounts(tmp);
@@ -485,7 +484,7 @@ const ApplicationCreate = ({ match }) => {
                                             )
                                         }
                                     </CustomSelectorAdd>
-                                    <CustomInputWithComponent type="text" label="Кол-во" value={item.count} name="count" stateChange={e => handleItemChange(e, index)} component={requiredCounts[index]?.requiredCount && <Badge>{requiredCounts[index].requiredCount}</Badge>} />
+                                    <CustomInputWithComponent type="text" label="Кол-во" value={item.count} name="count" stateChange={e => handleItemChange(e, index)} component={requiredCounts[index] && <Badge>{requiredCounts[index]}</Badge>} />
                                 </Row>
 
                                 <Row>

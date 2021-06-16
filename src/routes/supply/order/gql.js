@@ -15,7 +15,7 @@ query getOrders($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $before
           createdAt
           vendorFactory {
             vendor{
-              name
+              companyName
             }
             factory{
               name
