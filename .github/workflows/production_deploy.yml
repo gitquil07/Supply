@@ -86,4 +86,4 @@ jobs:
           ${{ github.event.repository.name }}
           ./k8s
       - name: Check pods
-        run: kubectl get pods --namespace=${{ github.event.repository.name }}
+        run: kubectl get pods --namespace supply-front
