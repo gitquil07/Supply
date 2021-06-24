@@ -9,6 +9,7 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
           id
           pk
           publicId
+          status
           trDate
           station
           border
@@ -76,7 +77,6 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
           amount
           brutto
           netto
-          note
         }
       }
     }
@@ -100,8 +100,6 @@ query getTrackingInfo($id: ID!) {
       brutto
       netto
       station
-      border
-      note
       status
       trDate
       currency
@@ -148,6 +146,14 @@ query getVendorProductsGroupedByOrder($id: ID!) {
         edges {
           node {
             publicId
+            vendorFactory{
+              vendor{
+                sapCountry{
+                  name
+                }    
+                sapCity
+              }
+            }
             orderItems {
               edges {
                 node {

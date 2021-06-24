@@ -165,16 +165,8 @@ export const CustomRowGenerator = (url) => {
     let history = useHistory();
 
     return {
-        customRowRender: (data) => {
-            return (
-                <TableRow onClick={() => history.push(`${url}/edit/${data[0]}`)} style={{ cursor: "pointer" }}>
-                    {data.slice(1).map((e, i) =>
-                        <TableCell key={i}>
-                            {e}
-                        </TableCell>
-                    )}
-                </TableRow>
-            );
+        onRowClick: (rowData) => {
+            history.push(`${url}/edit/${rowData[0]}`);
         }
     }
 };
@@ -182,16 +174,8 @@ export const CustomRowGenerator = (url) => {
 
 export const CustomRowGeneratorForModal = (openDialog) => {
     return {
-        customRowRender: (data) => {
-            return (
-                <TableRow onClick={() => openDialog(data[0])} style={{ cursor: "pointer" }}>
-                    {data.slice(1).map((e, i) =>
-                        <TableCell key={i}>
-                            {e}
-                        </TableCell>
-                    )}
-                </TableRow>
-            );
+        onRowClick: (rowData) => {
+            openDialog(rowData[0]);
         }
     }
 };
@@ -255,8 +239,6 @@ export const formatPrice = (price) => {
         let iterationCount = Math.floor(pLength / 3);
         
         (remaining > 0) && ++iterationCount;
-
-        // console.log("remaining", remaining);
      
         let formatedPrice = "",
             pointer = 0;
@@ -292,8 +274,6 @@ export const formatPrice = (price) => {
 export const formatInputPrice = (input) => {
 
     const cleanedInput = resetPriceFormat(input);
-
-    console.log("cleanedInput", cleanedInput);
 
     return  formatPrice(cleanedInput);
 
@@ -410,4 +390,11 @@ export const addDays = (dayAmount) => {
     }
 
     return dayAmount + " " + days;
+}
+
+export const cutTextLength = (text) => {
+    if(typeof text === "string"){
+        return (text.length >= 20)? text.slice(0, 20) + "..." : text;
+    }
+    return text;
 }

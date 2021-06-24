@@ -3,20 +3,22 @@ import { gql } from "@apollo/client";
 export const GET_TRACKING_ARRIVINGS = gql`
 query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $after: String, $before: String) {
   tracking {
-    trackings(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before, status: "передано" orderBy: "-createdAt") {
+    trackings(fromDate: $fromDate, toDate: $toDate, first: $first, last: $last, after: $after, before: $before, status: "передано", orderBy: "-createdAt") {
       edges {
         node {
           id
           pk
           publicId
+          status
           trDate
           station
           border
           vendor {
-            name
+            companyName
             sapCountry {
               name
             }
+            sapCity
           }
           application {
             transferredDate
@@ -75,7 +77,6 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
           amount
           brutto
           netto
-          note
         }
       }
     }

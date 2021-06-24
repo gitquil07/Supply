@@ -29,26 +29,31 @@ export const ProtectedRoute = (props) => {
     if(path.indexOf("/supply/order") > -1){
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
+        roles.trackingSupply = true;
     }
 
     if(path.indexOf("/supply/application") > -1){
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
+        roles.trackingSupply = true;
     }
 
     if(path.indexOf("/supply/arrived") > -1){
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
+        roles.trackingSupply = true;
     }
 
     if(path.indexOf("/supply/customs") > -1){
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
+        roles.trackingSupply = true;
     }
 
     if(path.indexOf("/supply/report") > -1){
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
+        roles.trackingSupply = true;
     }
 
     if(path.indexOf("/supply/stock-balance") > -1){
@@ -61,13 +66,15 @@ export const ProtectedRoute = (props) => {
         roles.order.allowRoute = true;
     }
 
-    // Tracking routes privileges for (adminTracking tracking) and( adminSupply order)
+    // Tracking routes privileges for (adminTracking tracking) and( adminSupply order) and (tracking_supply)
     if(path.indexOf("/tracking/transport") > -1){
         roles.trackingAdmin.allowRoute = true;
         roles.tracking.allowRoute = true;
 
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
+
+        roles.trackingSupply = true;
     }
 
     if(path.indexOf("/tracking/arrived") > -1){
@@ -76,16 +83,22 @@ export const ProtectedRoute = (props) => {
 
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
+
+        roles.trackingSupply = true;
     }
 
     if(path.indexOf("/tracking/clients") > -1){
         roles.trackingAdmin.allowRoute = true;
         roles.tracking.allowRoute = true;
+
+        roles.trackingSupply = true;
     }
 
     if(path.indexOf("/tracking/dept") > -1){
         roles.trackingAdmin.allowRoute = true;
         roles.tracking.allowRoute = true;
+
+        roles.trackingSupply = true;
     }
 
     // Custom routes privileges for (adminTracking tracking) and( adminSupply order)

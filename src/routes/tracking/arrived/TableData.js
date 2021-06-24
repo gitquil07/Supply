@@ -1,7 +1,14 @@
-import { Row, RowGray } from "components/Row";
-import moment from "moment";
+import { TwoRows } from "components/Row";
 import { setHeading } from "utils/functions";
-import styled from "styled-components";
+
+const options = {
+    options: {
+        filter: true,
+        sort: true,
+        display: false,
+        viewColumns: false
+    }
+}
 
 export const generateColumns = () => {
     return [
@@ -9,234 +16,150 @@ export const generateColumns = () => {
             name: "id",
             label: "№",
             options: {
-                display: "none"
+                filter: false,
+                display: false,
+                viewColumns: false
             }
         },
         {
-            name: "pk",
-            label: "№\nслежения",
-            options: {
-                filter: true,
-                sort: true,
-                customHeadRender: setHeading,
-                customBodyRender: value => <b>{value}</b>
-            }
-        },
-        {
-            name: "ordersNumbers",
-            label: "Номера\nзаказов",
-            options: {
+            name: "publicIdAndLogist",
+            label: "№ слежения\nлогист",
+            options:{
                 filter: false,
                 sort: false,
                 customHeadRender: setHeading,
-                customBodyRender: value => toNewLine(value, "50")
-            } 
-        },
-        {
-            name: "trackingUser",
-            label: "Логист",
-            options: {
-                filter: true,
-                sort: true,
-                customBodyRender: value => <RowFixWidth width="150">{value}</RowFixWidth>
-            }
-        },
-        {
-            name: "country",
-            label: "Страна\nпоставщика",
-            options: {
-                filter: true,
-                sort: true,
-                customHeadRender: setHeading,
-                customBodyRender: value => <RowFixWidth width="150">{value}</RowFixWidth>
-            }
-        },
-        {
-            name: "firmName",
-            label: "Получатель",
-            options: {
-                filter: true,
-                sort: true,
-                customBodyRender: value => toNewLine(value, "300"),
-            }
-        },
-        {
-            name: "factories",
-            label: "Заводы",
-            options: {
-                filter: false,
-                sort: false,
-                customBodyRender: value => toNewLine(value, "200"),
-            }
-        },
-        {
-            name: "products",
-            label: "Товары",
-            options: {
-                filter: false,
-                sort: false,
-                customBodyRender: value => toNewLine(value, "300")
-            }
-        },
-        {
-            name: "cargoInvoices",
-            label: "Грузовой\nинвойс №",
-            options: {
-                filter: false,
-                sort: false,
-                customHeadRender: setHeading,
-                customBodyRender: value => toNewLine(value, "150"),
-            }
-        },
-        {
-            name: "stationBorder",
-            label: "Станция\nГраница",
-            options: {
-                filter: true,
-                sort: true,
-                customHeadRender: setHeading,
-                customBodyRender: value => <RowFixWidth width="300">{   
-                    (value.station && value.border)? `${value.station} / ${value.border}` : null 
-                }</RowFixWidth>
-            }
-        },
-        {
-            name: "shippingDate",
-            label: "Дата\nотгрузки",
-            options: {
-                filter: true,
-                sort: true,
-                customHeadRender: setHeading,
-                customBodyRender: value => <RowFixWidth width="100">{moment(value).format("YYYY-MM-DD")}</RowFixWidth>
-            }
-        },
-        {
-            name: "inWayDayCount",
-            label: "Дней\nв пути",
-            options: {
-                filter: true,
-                sort: true,
-                customHeadRender: setHeading,
-                customBodyRender: value => <RowCenter>{value}</RowCenter>
-            }
-        },
-        {
-            name: "trDate",
-            label: "Дата\nприбытия",
-            options: {
-                filter: true,
-                sort: true,
-                customHeadRender: setHeading,
-                customBodyRender: value => <RowFixWidth width="100">{moment(value).format("YYYY-MM-DD")}</RowFixWidth>
-            }
-        },
-        {
-            name: "vendor",
-            label: "Транспортировщик\nТип / Номер транспорта",
-            options: {
-                filter: true,
-                sort: false,
-                customHeadRender: setHeading,
-                customBodyRender: (value) => {
+                customBodyRender: value => {
                     return (
-                        <RowFixWidth width="200">
-                            <Row>
-                                <b>{value.vendor}</b>
-                            </Row>
-                            <RowGray>
-                                {value.trType} / {value.trNumber}
-                            </RowGray>
-                        </RowFixWidth>
+                        <TwoRows main={value.publicId} sub={value.trackingUser} />
+                    );
+                }
+            }
+        },
+        {
+            name: "firmAndFactory",
+            label: "Получатель\nЗавод",
+            options:{
+                filter: false,
+                sort: false,
+                customHeadRender: setHeading,
+                customBodyRender: ({firms, factories}) => {
+                    return (
+                        <>
+                            {
+                                factories.map((factory, idx) => 
+                                    <TwoRows main={factory} sub={firms[idx]} />
+                                )
+                            }
+                        </>
                     )
                 }
             }
         },
         {
-            name: "locations",
-            label: "Местонахождение",
+            name: "shippingDateAndArrivingDate",
+            label: "Дата отгрузки\nДата прибытия",
             options: {
                 filter: false,
                 sort: false,
-            }            
+                customHeadRender: setHeading,
+                customBodyRender: ({shippingDate, trDate}) => 
+                    <TwoRows main={shippingDate} sub={trDate} />
+            }
+        },
+        {
+            name: "companyNameAndtransportNumber",
+            label: "Транспортировщик\nНомер транспорта",
+            options: {
+                filter: false,
+                sort: false,
+                customHeadRender: setHeading,
+                customBodyRender: ({companyName, transportNumber}) => 
+                    <TwoRows main={companyName} sub={transportNumber} />
+            }
+        },
+        {
+            name: "locationAndStatusAndDaysInWay",
+            label: "Местонахождение\nСтатус / Дни",
+            options: {
+                filter: false,
+                sort: false,
+                customHeadRender: setHeading,
+                customBodyRender: ({trackingStatus, inWayDayCount, location}) => 
+                    <TwoRows main={location} sub={`${trackingStatus} / ${inWayDayCount}`} />
+            }
+        },
+        {
+            name: "amountAndNettoAndBrutto",
+            label: "Сумма\nНетто / Брутто",
+            options: {
+                filter: false,
+                sort: false,
+                customHeadRender: setHeading,
+                customBodyRender: ({amount, netto, brutto}) => 
+                    <TwoRows main={amount} sub={`${netto} / ${brutto}`} />
+            }
+        },
+        // Columns to add to filter
+        {   
+            name: "publicId",
+            label: "номер",            
+            ...options
+        },
+        {
+            name: "trackingUser",
+            label: "Логист",
+            ...options
+        },
+        {
+            name: "shippingDate",
+            label: "Дата отгрузки",
+            ...options
+        },
+        {
+            name: "trDate",
+            label: "Дата прибытия",
+            ...options
+        },
+        {
+            name: "companyName",
+            label: "Транспортировщик",
+            ...options
+        },
+        {
+            name: "transportNumber",
+            label: "номер транспорта",
+            ...options
+        },
+        {
+            name: "location",
+            label: "Местонахождение",
+            ...options
+        },
+        {
+            name: "trackingStatus",
+            label: "Статус",
+            ...options
+        },
+        {
+            name: "inWayDayCount",
+            label: "В пути",
+            ...options
         },
         {
             name: "amount",
-            label: "Нетто / Брутто",
-            options: {
-                filter: true,
-                sort: false,
-                customHeadRender: setHeading,
-                customBodyRender: value => <RowFixWidth width="150">{value.netto} кг / {value.brutto} кг</RowFixWidth>
-            }
+            label: "Транспортный расход",
+            ...options
         },
         {
-            name: "transportExpencese",
-            label: "Транспортный\nрасход",
-            options: {
-                filter: false,
-                sort: false,
-                customHeadRender: setHeading,
-                customBodyRender: value => {
-                    return <RowFixWidth width="150">{value.amount} {value.currency}</RowFixWidth>
-                }
-            }
+            name: "brutto",
+            label: "Брутто",
+            ...options
         },
         {
-            name: "deliveryCondition",
-            label: "Условия\nдоставки",
-            options:{
-                filter: true,
-                sort: true,
-                customHeadRender: setHeading,
-            }
+            name: "netto",
+            label: "Нетто",
+            ...options
         },
-        {
-            name: "transferredDate",
-            label: "Дата\nоплаты",
-            options: {
-                filter: true,
-                sort: true,
-                customHeadRender: setHeading,
-                customBodyRender: value => <RowFixWidth width="100">{moment(value).format("YYYY-MM-DD")}</RowFixWidth> 
-            }
-        },
-        {
-            name: "note",
-            label: "Примечание",
-            options: {
-                filter: true,
-                sort: false,
-            }
-        },
-        {
-            name: "relativeWeight",
-            label: "Относительный\nвес",
-            options: {
-                filter: true,
-                sort: false,
-                customHeadRender: setHeading
-            }
-        }
     ];
 
-}
-
-
-const RowFixWidth = styled.div`
-    width:${({width}) => width+"px"};
-`;
-
-const RowCenter = styled.div`
-    text-align:center;
-`;
-
-const toNewLine = (arr, width) => {
-
-    console.log("arr", arr);
-
-    return <RowFixWidth width={width}>
-                {
-                    arr.map(item => <Row>{item}</Row>)
-                }
-           </RowFixWidth>
 }

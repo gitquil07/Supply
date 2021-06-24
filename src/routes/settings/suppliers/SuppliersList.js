@@ -2,14 +2,14 @@ import { Helmet } from "react-helmet";
 
 import { PAGINATE_VENDORS } from "./gql";
 import { generateColumns } from "./TableData";
-import { useTitle } from "../../../hooks";
-import { FlexForHeader } from "../../../components/Flex";
-import { ButtonWithIcon } from "../../../components/Buttons";
-import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
-import { Pagination } from "../../../components/Pagination";
+import { useTitle } from "hooks";
+import { FlexForHeader } from "components/Flex";
+import { ButtonWithIcon } from "components/Buttons";
+import { CustomMUIDataTable } from "components/CustomMUIDataTable";
+import { Pagination } from "components/Pagination";
 import { useMemo } from "react";
-import { usePagination } from "../../../hooks";
-import { CustomRowGenerator, getList } from "../../../utils/functions";
+import { usePagination } from "hooks";
+import { CustomRowGenerator, getList, cutTextLength } from "utils/functions";
 
 const SuppliersList = ({ match }) => {
     const title = useTitle("Партнеры");
@@ -43,7 +43,14 @@ const SuppliersList = ({ match }) => {
     const list = vendors.map(({ node }) => {
         return {
             id: node.id,
-            contactPersonVendorPhone: { contactPerson: node.name, vendor: node.companyName,  phoneNumber: node.phoneNumber },
+            contactPerson: node?.name,
+            vendor: cutTextLength(node?.companyName),
+            phoneNumber: node?.phoneNumber,
+            country: node?.sapCountry?.name,
+            city: node?.sapCity,
+            street: node?.street,
+            house: node?.house,
+            contactPersonVendorPhone: { contactPerson: node.name, vendor: cutTextLength(node.companyName),  phoneNumber: node.phoneNumber },
             address: { country: node.sapCountry?.name, city: node.sapCity, street: node.street, house: node.house },
             createdAt: node.createdAt
         }
@@ -51,6 +58,11 @@ const SuppliersList = ({ match }) => {
 
     const { url } = match;
     const columns = useMemo(() => generateColumns(url), []);
+
+    const searchableFields = [
+        "createdAt",
+        "contactPerson"
+    ];
 
     return (
         <>
@@ -64,6 +76,9 @@ const SuppliersList = ({ match }) => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGenerator(url)}
+                {
+                    ... { searchableFields }
+                }
             />
             <Pagination {...paginationParams} />
         </>

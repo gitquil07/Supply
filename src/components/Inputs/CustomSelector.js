@@ -129,6 +129,7 @@ const EditableItem = styled(MenuItem)`
 `;
 
 const Wrapper = styled.div`
+    width: ${({fullWidth}) => fullWidth? "100%" : ""};
     position: relative;
 
     #label {

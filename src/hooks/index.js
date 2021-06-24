@@ -51,7 +51,10 @@ export const useTitle = (title_to_set) => {
 export const useToggleDialog = () => {
     const [open, setOpen] = useState(false),
 
-        handleOpen = () => setOpen(true),
+        handleOpen = () => {
+            console.log("open", open);
+            setOpen(true)
+        },
         handleClose = () => setOpen(false);
 
 
@@ -335,7 +338,8 @@ export const useTemplate = (state, setState, template) => {
 
     const addTempl = () => {
         const temp = state.slice(0);
-        temp.push({ ...template });
+        const withId = {id: state.length, ...template}
+        temp.push({ ...withId });
         setState(temp);
     }
 

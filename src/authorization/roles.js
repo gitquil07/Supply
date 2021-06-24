@@ -138,6 +138,38 @@ export const RolesAuthority = {
                 }
             }
         }
+    },
+    trackingSupply: {
+        name: "TRACKING_SUPPLY",
+        allowRoute: false,
+        permissions: {
+            menuPermissions: {
+                ...menuPermissions,
+                useCustomNavigation: {
+                    ...menuPermissions.useCustomNavigation,
+                    main: false,
+                    new: false,
+                    ready: false,
+                    noDocument: false,
+                    noMoney: false,
+                    noTyped: false, 
+                    closed: false,
+                    certificate: false
+                },
+                useSettingNavigation: {
+                    ...menuPermissions.useSettingNavigation,
+                    main: false,
+                    firms: false,
+                    factories: false,
+                    users: false,
+                    products: false,
+                    materials: false,
+                    suppliers: false,
+                    vendorFactories: false,
+                    transports: false
+                }
+            }
+        }
      
     },
     tracking: {

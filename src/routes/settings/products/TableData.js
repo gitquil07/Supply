@@ -1,15 +1,14 @@
 import { Switch } from "@material-ui/core";
+import { transduce } from "ramda";
 
 export const generateColumns = (url) => {
-    const deactivateProduct = () => {
-
-    }
 
     return [
         {
             name: "id",
             label: "ID",
             options: {
+                filter: false,
                 display: "none"
             },
         },
@@ -17,24 +16,16 @@ export const generateColumns = (url) => {
             name: "name",
             label: "Продукт",
             options: {
-                filter: false,
+                filter: true,
                 sort: true
             }
         },
-        // {
-        //     name: "group",
-        //     label: "Группа",
-        //     options: {
-        //         filter: true,
-        //         sort: true,
-        //     }
-        // },
         {
             name: "measure",
             label: "Ед. измерения",
             options: {
                 filter: true,
-                sort: false,
+                sort: true
             }
         },
         {
@@ -42,26 +33,16 @@ export const generateColumns = (url) => {
             label: "Код тн вэд",
             options: {
                 filter: true,
-                sort: false,
+                sort: true
             }
         },
         {
             name: "typeOfPackaging",
             label: "Тип упаковки",
             options: {
-                filter: false,
-                sort: false,
+                filter: true,
+                sort: true
             }
         },
-        // {
-        //     name: "Активный",
-        //     options: {
-        //         customBodyRender: (value, tableMeta, updateValue) => {
-        //             return (
-        //                 <Switch checked={true} onClick={() => deactivateProduct(value)} />
-        //             );
-        //         }
-        //     }
-        // }
     ];
 }

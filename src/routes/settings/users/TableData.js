@@ -9,7 +9,8 @@ export const generateColumns = (switchActivation) => {
             name: "id",
             label: "ID",
             options: {
-                display: "none"
+                filter: false,
+                display: "excluded"
             }
         },
         {
@@ -47,7 +48,7 @@ export const generateColumns = (switchActivation) => {
             label: "Username",
             options: {
                 filter: true,
-                sort: false,
+                sort: true,
             }
         },
         {
@@ -55,7 +56,7 @@ export const generateColumns = (switchActivation) => {
             label: "Роли",
             options: {
                 filter: true,
-                sort: false,
+                sort: true,
             }
         },
         {
@@ -69,5 +70,29 @@ export const generateColumns = (switchActivation) => {
                 }
             }
         },
+        {
+            name: "firstName",
+            label: "Имя",
+            options: {
+                filter: true,
+                display: "excluded"
+            }
+        },
+        {
+            name: "lastName",
+            label: "Фамилия",
+            options: {
+                filter: true,
+                display: "excluded" 
+            }
+        },
+        {
+            name: "phoneNumber",
+            label: "Тел. номер",
+            options: {
+                filter: true,
+                display: "excluded"
+            }
+        }
     ];
 }

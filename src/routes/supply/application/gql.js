@@ -16,8 +16,7 @@ query getApplication($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $a
           transportCount
           deliveryCondition
           trackingUser {
-            firstName
-            lastName
+            username
           }
           createdAt
           count
@@ -50,6 +49,14 @@ query getOrders {
         node {
           pk
           publicId
+          vendorFactory {
+            vendor {
+              companyName
+            }
+            factory {
+              name
+            }
+          } 
         }
       }
     }
@@ -114,6 +121,9 @@ query getApplication($id : ID!){
         edges{
           node{
             orderItem{
+              order{
+                pk
+              }
               pk
               requiredCount
             }
@@ -127,11 +137,9 @@ query getApplication($id : ID!){
             weight
             size
             invoicePrice
-            requiredCount
           }
         }
       }
-      deliveryCondition
       degreeOfDanger
       packageOnPallet
       transportCount
@@ -210,7 +218,6 @@ query getInvoices($id: ID!) {
           id
           pk
           number
-          amount
           netto
           brutto
         }

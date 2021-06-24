@@ -52,14 +52,14 @@ const UsersList = () => {
             return {
                 id: node.id,
                 pk: node.pk,
-                firstName: node.firstName,
-                lastName: node.lastName,
-                phoneNumber: node.phoneNumber,
+                firstName: node.firstName || "",
+                lastName: node.lastName || "",
+                phoneNumber: node.phoneNumber || "",
                 fioNumber: { firstName: node.firstName, lastName: node.lastName, phoneNumber: node.phoneNumber },
-                username: node.username,
-                role: node.role?.displayName,
-                email: node?.email,
-                password: node?.password,
+                username: node.username || "",
+                role: node.role?.displayName || "",
+                email: node?.email || "",
+                password: node?.password || "",
                 factories: node.factories?.edges.map(({node}) => node.name),
                 createdAt: node.createdAt,
                 isActive: node.isActive
@@ -97,6 +97,10 @@ const UsersList = () => {
 
     const columns = useMemo(() => generateColumns(switchActivation), []);
 
+    const searchableFields = [
+        "username"
+    ];
+
     return (
         <>
             <UserCreate isOpen={createOpen} close={close} entry={user}
@@ -111,6 +115,9 @@ const UsersList = () => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGeneratorForModal(editEntry)}
+                {
+                    ...{ searchableFields }
+                }
             />
             <Pagination {...paginationParams} />
         </>

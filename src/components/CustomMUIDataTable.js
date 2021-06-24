@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import MUIDataTable from "mui-datatables";
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import styled from "styled-components";
@@ -9,13 +9,20 @@ import DownloadIcon from '@material-ui/icons/GetApp';
 import ViewColumnIcon from '@material-ui/icons/DynamicFeed';
 import FilterIcon from '@material-ui/icons/GroupWork';
 
-export const CustomMUIDataTable = React.memo(({ count, title, data, columns, customRowOptions }) => {
+
+export const CustomMUIDataTable = React.memo(({ count, title, data, columns, customRowOptions, searchableFields }) => {
+
+    const [words, setWords] = useState("");
 
     const options = {
         filterType: 'dropdown',
         selectableRows: "none",
         rowsPerPage: count,
-        ...customRowOptions
+        ...customRowOptions,
+        onSearchChange: searchText => {
+            console.log("searchText", searchText);
+            setWords(searchText)
+        }
     };
 
 
@@ -28,11 +35,47 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
             FilterIcon,
         }
     };
+
+
+    const filterList = () => {
+
+        return (words !== "" && words !== null)? data.filter(row => {
+            
+            const found = [];
+
+            searchableFields.forEach(fieldName => {
+
+                let val = row[fieldName];
+                console.log("searchText val", val);
+                console.log("searchText values", val.indexOf(words) > -1);
+                
+                // if(val !== null){
+
+                    // if(typeof val === "number"){
+                    //     val = `${val}`;
+                    // }
+    
+                    found.push(val.toLowerCase().indexOf(words.toLowerCase()) > -1);
+
+                // }
+
+            })
+
+            const hasAnyMatch = found.indexOf(true) > -1; 
+
+            console.log("searchText found", found);
+            console.log("searchText hasAnyMatch", hasAnyMatch);
+            return hasAnyMatch;
+
+            
+        }) : data
+    }
+
     return (
         <MuiThemeProvider>
             <StyledMUIDataTable
                 title={title}
-                data={data}
+                data={filterList(data)}
                 columns={columns}
                 options={options}
                 {...{ components }}

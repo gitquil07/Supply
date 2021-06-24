@@ -2,6 +2,13 @@ import moment from "moment";
 import { Row, RowGray } from "components/Row";
 import { setHeading } from "utils/functions";
 
+const options =  {
+    options: {
+        filter: true,
+        display: "excluded"
+    }
+}
+
 export const generateColumns = (url) => {
 
     return [
@@ -9,6 +16,7 @@ export const generateColumns = (url) => {
             name: "id",
             label: "ID",
             options: {
+                filter: false,
                 display: "none"
             }
         },
@@ -25,7 +33,7 @@ export const generateColumns = (url) => {
             name: "vendorFactoryProduct",
             label: "Завод / Поставщик\nПродукт",
             options: {
-                filter: true,
+                filter: false,
                 sort: false,
                 customHeadRender: setHeading,
                 customBodyRender: (value) => {
@@ -42,7 +50,7 @@ export const generateColumns = (url) => {
             name: "deliveryAndProductionDayCount",
             label: "Дни изгот. / Дни дост.\nЦена / Ед.Изм.",
             options: {
-                filter: true,
+                filter: false,
                 sort: false,
                 customHeadRender: setHeading,
                 customBodyRender: (value) => {
@@ -54,6 +62,41 @@ export const generateColumns = (url) => {
                     );
                 }
             }
+        },
+        {
+            name: "factory",
+            label: "Завод",
+            ...options
+        },
+        {
+            name: "vendor",
+            label: "Почставщик",
+            ...options
+        },
+        {
+            name: "product",
+            label: "Продукт",
+            ...options
+        },
+        {
+            name: "productionDayCount",
+            label: "Срок изготовления",
+            ...options
+        },
+        {
+            name: "deliveryDayCount",
+            label: "Срок доставки",
+            ...options
+        },
+        {
+            name: "price",
+            label: "Цена",
+            ...options
+        },
+        {
+            name: "currency",
+            label: "Валюта",
+            ...options
         }
     ];
 }

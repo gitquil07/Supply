@@ -53,7 +53,7 @@ const FirmsList = () => {
                 pk: node.pk,
                 name: node.name,
                 inn: node.inn,
-                factories: node.factories.edges.map(({ node }) => <p style={{ margin: "5px" }}>{node.name}</p>),
+                factories: node.factories.edges.map(({ node }) => node.name),
             }
         });
     }, [firms])
@@ -74,6 +74,11 @@ const FirmsList = () => {
 
     const columns = useMemo(() => generateColumns(editEntry), []);
 
+    const searchableFields = [
+        "name",
+        "inn"
+    ];
+
     return (
         <>
             <FirmCreate isOpen={createOpen} close={close} entry={firm}
@@ -88,6 +93,9 @@ const FirmsList = () => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGeneratorForModal(editEntry)}
+                {
+                    ...{ searchableFields }
+                }
             />
             <Pagination {...paginationParams} />
         </>

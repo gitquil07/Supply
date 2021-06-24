@@ -5,7 +5,8 @@ import OrderDetail from "./order/OrderDetail";
 import OrderCreate from "./order/OrderCreate";
 
 import ApplicationList from "./application/ApplicationsList";
-import ApplicationCreate from "./application/ApplicationCreate";
+// import ApplicationCreate from "./application/ApplicationCreate";
+import ApplicationCreateTwo from "./application/ApplicationCreateTwo";
 
 import InfoRecordList from "./info-record/InfoRecordList";
 import InfoRecordDetail from "./info-record/InfoRecordDetail";
@@ -33,8 +34,9 @@ const Supply = ({ match }) => {
             <ProtectedRoute path={url("/order/edit/:id")} component={OrderCreate} />
 
             <ProtectedRoute path={url("/application")} component={ApplicationList} exact />
-            <ProtectedRoute path={url("/application/create")} component={ApplicationCreate} />
-            <ProtectedRoute path={url("/application/edit/:id")} component={ApplicationCreate} />
+            <ProtectedRoute path={url("/application/create")} component={ApplicationCreateTwo} />
+            {/* <ProtectedRoute path={url("/application/create")} component={ApplicationCreate} /> */}
+            <ProtectedRoute path={url("/application/edit/:id")} component={ApplicationCreateTwo} />
 
             <ProtectedRoute path={url("/info-record")} component={InfoRecordList} exact />
             <ProtectedRoute path={url("/info-record/detail/:id")} component={InfoRecordDetail} />

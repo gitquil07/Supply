@@ -13,8 +13,8 @@ import { CustomRowGenerator, CustomRowGeneratorForModal, getList } from "../../.
 import { ButtonWithIcon } from "../../../components/Buttons";
 import SmallDialog from "components/SmallDialog";
 import { DetailedInfo } from "components/DetailedInfo";
-import { formatPrice } from "utils/functions";
-import { noteOptions } from "utils/static";
+import { formatPrice, cutTextLength } from "utils/functions";
+import { trackingStatuses } from "utils/static";
 
 const ArrivedList = ({ match }) => {
     const title = useTitle("Прибывшие");
@@ -64,36 +64,38 @@ const ArrivedList = ({ match }) => {
         type: "dateFilter"
     }
 
-    const applications = getList(dataPaginationRes?.data) || [];
-    const { one, setUniqueVal } = useGetOne(applications, "id");
-    const list = applications.map(({ node }) => {
-        return {
-            ...node,
-            publicId: { publicId: node.publicId, id: node.id },
-            pk: node.pk,
-            vendor: { vendor: node.vendor?.name, trNumber: node.transportNumber, trType: node.application?.transportType?.name },
-            amount: { brutto: node.brutto, netto: node.netto },
-            ordersNumbers: node.application?.orders?.edges?.map(({node}) => node.pk),
-            locations: node.locations?.edges?.map(({node}) => node?.name).join(", "),
-            factories: node.application?.orders?.edges?.filter(({node}) => node?.vendorFactory?.factory?.name !== null)?.map(({node}) => node?.vendorFactory?.factory?.name),
-            shippingDate: node.shippingDate,
-            note: noteOptions.find(note => note.value == node.note)?.label,
+    const trackings = getList(dataPaginationRes?.data) || [];
+    const { one, setUniqueVal } = useGetOne(trackings, "id");
+    const list = trackings.map(({ node }) => {
 
-            country: node?.vendor?.sapCountry?.name,
-            inWayDayCount: node?.application?.inWayDayCount,
+        const locations = node.locations?.edges?.map(({node}) => node?.name);
+
+        const fCols = {
+            publicId: node?.publicId,
             trackingUser: node?.application?.trackingUser?.username,
-            deliveryCondition: node?.application?.deliveryCondition,
-            invoiceProforma: node?.application?.orders?.edges?.filter(({node}) => node.invoiceProforma !== null)?.map(({node}) => "№"+node?.invoiceProforma)?.join(", "),
-            
-            // Additonal entries to display
-            firmName: node?.application?.orders?.edges?.map(({node}) => node?.vendorFactory?.factory?.firm?.name),
-            products: node?.application?.orders?.edges?.map(({node}) => node?.vendorFactory?.vendorProducts?.edges?.map(({node}) => node?.product?.name)),
-            cargoInvoices: node?.application?.invoices?.edges?.map(({node}) => "№" + node.number),
-            stationBorder: { station: node?.station, border: node?.border },
+            firms: node?.application?.orders?.edges.map(({node}) => node?.vendorFactory?.factory?.firm?.name),
+            factories: node.application?.orders?.edges?.filter(({node}) => node?.vendorFactory?.factory?.name !== null)?.map(({node}) => node?.vendorFactory?.factory?.name),
+            shippingDate: node?.application?.shippingDate,
             trDate: node?.trDate,
-            transportExpencese: { amount: formatPrice(node.amount), currency: node.currency },
-            transferredDate: node.transferredDate,
-            relativeWeight: node?.application?.invoices?.edges?.map(({node}) => node.relativeWeight)?.join(", ")
+            companyName: node?.vendor?.companyName,
+            transportNumber: node?.transportNumber,
+            location: locations[locations.length - 1],
+            trackingStatus: trackingStatuses.find(status => status.value === node.status)?.label,
+            inWayDayCount: node?.application?.inWayDayCount,
+            amount: node?.amount,
+            brutto: node?.brutto,
+            netto: node?.netto
+        }
+
+        return {
+            id: node?.id,
+            publicIdAndLogist: {publicId: fCols.publicId, trackingUser: fCols.trackingUser},
+            firmAndFactory: {firms: fCols.firms.map(firm => cutTextLength(firm)), factories: fCols.factories},
+            shippingDateAndArrivingDate: {shippingDate: fCols.shippingDate, trDate: fCols.trDate},
+            companyNameAndtransportNumber: {companyName: cutTextLength(fCols.companyName), transportNumber: fCols.transportNumber},
+            locationAndStatusAndDaysInWay: {location: fCols.location, trackingStatus: fCols.trackingStatus, inWayDayCount: fCols.inWayDayCount},
+            amountAndNettoAndBrutto: {amount: formatPrice(fCols.amount), netto: fCols.netto, brutto: fCols.brutto},
+            ...fCols
         }
     });
 

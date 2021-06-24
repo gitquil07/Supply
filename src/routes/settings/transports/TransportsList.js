@@ -69,6 +69,10 @@ const TransportList = () => {
 
     const columns = useMemo(() => generateColumns(editEntry), []);
 
+    const searchableFields = [
+        "name"
+    ];
+
     return (
         <>
             <TransportCreate isOpen={createOpen} close={close} entry={transportType}
@@ -83,6 +87,9 @@ const TransportList = () => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGeneratorForModal(editEntry)}
+                {
+                    ...{ searchableFields }
+                }
             />
             <Pagination {...paginationParams} />
         </>

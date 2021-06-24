@@ -4,6 +4,7 @@ export const generateColumns = () => {
             name: "id",
             label: "ID",
             options: {
+                filter: false,
                 display: "none"
             }
         },
@@ -12,7 +13,7 @@ export const generateColumns = () => {
             label: "Начало сотрудничества",
             options: {
                 filter: true,
-                sort: false,
+                sort: true,
             }
         },
         {
@@ -20,7 +21,7 @@ export const generateColumns = () => {
             label: "Завод",
             options: {
                 filter: true,
-                sort: false,
+                sort: true,
             }
         },
         {
@@ -36,7 +37,7 @@ export const generateColumns = () => {
             label: "Условия оплаты",
             options: {
                 filter: true,
-                sort: false,
+                sort: true,
             }
         },
         {
@@ -44,7 +45,7 @@ export const generateColumns = () => {
             label: "Статус",
             options: {
                 filter: true,
-                sort: false,
+                sort: true,
                 customBodyRender: (value) => {
                     return value ? "Активный" : "Неактивный"
                 }
