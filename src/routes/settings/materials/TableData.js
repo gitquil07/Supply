@@ -5,11 +5,11 @@ import { setHeading } from "utils/functions";
 const options =  {
     options: {
         filter: true,
-        display: "excluded"
+        display: "none"
     }
 }
 
-export const generateColumns = (url) => {
+export const generateColumns = () => {
 
     return [
         {

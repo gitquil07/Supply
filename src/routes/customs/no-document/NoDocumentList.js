@@ -65,15 +65,23 @@ const NoDocumentList = () => {
     const customs = getList(dataPaginationRes?.data) || [];
     const { one, setUniqueVal } = useGetOne(customs, "id");
     const list = useMemo(() => customs.map(({ node }) => {
+
+        const fCols = {
+            factories: node.invoice?.application?.orders?.edges?.map(({node}) => node.vendorFactory?.factory?.name),
+            vendors: node.invoice?.application?.orders?.edges?.map(({node}) => node.vendorFactory?.vendor?.companyName),
+            transportType: node.invoice?.application?.transportType?.name,
+            mode: modes.find(mode => mode.value === node.mode)?.label
+        }
+
         return {
             publicId: node.id,
             createdAt: node.createdAt,
-            vendorFactory: node.invoice?.application?.orders?.edges?.map(({ node }) => {
-                return node.vendorFactory.factory.name + " / " + node.vendorFactory.vendor.name
-            }),
-            trTypeAndMode: node.invoice?.application?.transportType?.name + " / " + modes.find(mode => mode.value == node.mode).label,
-            invoices: { declarant: node.declarantNote, contractor: node.contractorNote }
+            vendorFactory: {factories: fCols.factories, vendors: fCols.vendors},
+            trTypeAndMode: {transportType: fCols.transportType, mode: fCols.mode},
+            invoices: { declarant: node.declarantNote, contractor: node.contractorNote },
+            ...fCols
         }
+        
     }), [customs]);
 
     const openDialog = (id) => {

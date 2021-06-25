@@ -76,7 +76,8 @@ const FirmsList = () => {
 
     const searchableFields = [
         "name",
-        "inn"
+        "inn",
+        "factories"
     ];
 
     return (

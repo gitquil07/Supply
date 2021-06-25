@@ -4,8 +4,8 @@ import { setHeading } from "utils/functions";
 const options = {
     options: {
         filter: true,
-        sort: true,
-        display: false,
+        sort: false,
+        display: "none",
         viewColumns: false
     }
 }
@@ -30,7 +30,7 @@ export const generateColumns = () => {
                 customHeadRender: setHeading,
                 customBodyRender: value => {
                     return (
-                        <TwoRows main={value.publicId} sub={value.trackingUser} />
+                        <TwoRows main={value?.publicId} sub={value?.trackingUser} />
                     );
                 }
             }

@@ -5,7 +5,7 @@ import { generateColumns } from "./TableData";
 import { PAGINATE_TRANSPORT_TYPES } from "./gql.js";
 import TransportCreate from "./TransportCreate";
 import { useTitle, usePagination } from "../../../hooks";
-import { CustomRowGenerator, CustomRowGeneratorForModal, getList } from "../../../utils/functions";
+import { CustomRowGeneratorForModal, getList } from "../../../utils/functions";
 import { useState, useMemo } from "react";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { Pagination } from "../../../components/Pagination";
@@ -70,7 +70,8 @@ const TransportList = () => {
     const columns = useMemo(() => generateColumns(editEntry), []);
 
     const searchableFields = [
-        "name"
+        "name",
+        "customsDayCount"
     ];
 
     return (

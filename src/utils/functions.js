@@ -8,7 +8,6 @@ import { useHistory } from 'react-router-dom';
 import { Row, RowGray } from "components/Row";
 
 
-export const TimeParser = (time) => moment(time).format('YYYY-MM-DD');
 
 export const setTitleWithDateRange = (name, fromDate, toDate, format) => {
     const dateFormat = format || "DD.MM.YYYY";
@@ -18,20 +17,6 @@ export const setTitleWithDateRange = (name, fromDate, toDate, format) => {
 
     return `Заявки на ${name} c ${from} по ${to}`;
 }
-
-// export const getObjectivesList = (data, ...objectives) => {
-//     const objectivesList = {};
-
-//     for(let i = 0; i < objectives.length; i++){
-
-//         let pluralObjectiveName = (objectives[i].slice(-1) === "y")? objectives[i].slice(0, objectives[i].length -1) + "ies" : objectives[i] + "s";
-
-//         objectivesList[pluralObjectiveName] = data?.[objectives[i]]?.[pluralObjectiveName]?.edges;
-//     }
-
-//     return objectivesList;
-
-// } 
 
 export const recursiveFetch = (amount, mutateFunc) => {
     let i = 0;
@@ -88,8 +73,6 @@ export const onResponseComplete = (data, type, entityName, callback) => {
     } else {
         const errors = getValueOfProperty(data, "errors");
         errors.forEach((errorMessage) => {
-            // let msg = errorMessage.split(": ")[1];
-            //   msg = msg.slice(0, msg.indexOf("}"));
             NotificationManager.error(errorMessage);
         })
     }
@@ -152,14 +135,9 @@ export const findValue = (element, num) => {
 
 export const goToNewLine = (element) => {
     return element.split("\n").map((e, i) => <p key={i} style={{ margin: "0", lineHeight: "1.5" }}>
-        {
-            // (element.length > 20 && !element.includes("\n")) ?  element.substring(0, 25) + "..." : element
-            element
-        }
+        { element }
     </p>);
 }
-
-
 
 export const CustomRowGenerator = (url) => {
     let history = useHistory();

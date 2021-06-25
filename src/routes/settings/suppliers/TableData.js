@@ -6,7 +6,7 @@ import { setHeading } from "utils/functions";
 const options = {
      options: {
         filter: true,
-        display: "excluded"
+        display: "none"
      }
 }
 

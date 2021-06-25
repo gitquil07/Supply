@@ -67,7 +67,12 @@ const MaterialsList = ({ match }) => {
     const searchableFields = [
         "factory",
         "vendor",
-        "product"
+        "product",
+        "createdAt",
+        "productionDayCount",
+        "deliveryDayCount",
+        "price",
+        "currency"
     ];
 
 

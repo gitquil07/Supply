@@ -88,6 +88,13 @@ const CustomsList = () => {
     const columns = useMemo(() => generateColumns(openDialog), []);
 
     const searchableFields = [
+        "invoices",
+        "transportType",
+        "transportCount",
+        "deliveryCondition",
+        "trackingUser",
+        "createdAt",
+        "status",
         "invoice_proforma"
     ];
 

@@ -39,6 +39,8 @@ import { ValidationMessage } from "components/ValidationMessage";
 import { formatInputPrice } from "utils/functions";
 import { ApplicationSchema, fieldsMessages } from "./validation";
 import { resetPriceFormat } from "utils/functions";
+import Radio from "@material-ui/core/Radio";
+import {default as ConfirmButton } from "@material-ui/core/Button";
 
 const initialState = {
     orders: [],
@@ -65,9 +67,9 @@ const ApplicationCreate = ({ match }) => {
             setState,
             handleChange
         } = useFormData(initialState),
+        { id } = match.params,
         [openInvoice, handleInvoiceClose, handleInvoiceOpen] = useToggleDialog(),
         [openOrder, handleOrderClose, handleOrderOpen] = useToggleDialog(),
-        { id } = match.params,
         history = useHistory();
 
     const [files, setFiles] = useState({
@@ -212,10 +214,10 @@ const ApplicationCreate = ({ match }) => {
                 const found = orders.find(({node}) => node.pk === orderPk)?.node;
                       
                 const order = {
-                    pk: found.pk,
-                    publicId: found.publicId,
-                    factory: found.vendorFactory.factory.name,
-                    vendor: found.vendorFactory.vendor.companyName,
+                    pk: found?.pk,
+                    publicId: found?.publicId,
+                    factory: found?.vendorFactory.factory.name,
+                    vendor: found?.vendorFactory.vendor.companyName,
                     trackingUser: "",
                 }
 
@@ -570,8 +572,64 @@ const ApplicationCreate = ({ match }) => {
 
     }
 
-    const handleAddInvoiceClick = () => {
-        console.log("click");
+    const [transportMixMessage, setTransportMixMessage] = useState(""),
+          [selectedOption, setSelectedOption] = useState(undefined);
+
+    useEffect(() => {
+        console.log("selectedOption", selectedOption);
+    }, [selectedOption])
+
+    const handleTransportMixChange = (e) => {
+
+        // Check whether we switch from (mixed) to (normal) 
+        if(state.transportMix === true || e.target.checked === false){
+            if(state.orders.length > 1){
+                setTransportMixMessage("В обычной заявке не может быть более одного заказа! Выберите один из списка");
+                handleOrderOpen();
+            }
+
+            if(state.orders.length === 1){
+                handleChange({ fElem: e, type: "choice" });
+            }
+        }else{
+            handleChange({ fElem: e, type: "choice" });
+        }
+
+    }
+
+
+    const handleCheckboxChange = (e) => {
+        setSelectedOption(e.target.value)
+    }
+
+    const handleConfirmOrderChoice = () => {
+
+        // Update orders state, remain just one
+        setState({
+            ...state,
+            orders: [selectedOption]
+        });
+
+        // Update orderTemplate, remain that template that much to selected order pk
+        const selectedTemplate = orderTemplate.find(template => template.pk === +selectedOption);
+        console.log("selectedTemplate", typeof selectedOption);
+        console.log("selectedTemplate", orderTemplate);
+        console.log("selectedTemplate", selectedTemplate);
+        setOrderTemplate([selectedTemplate]);
+
+        // Reset (message) and (selectedOption) than close modal 
+        handleOrderClose();
+        setTransportMixMessage("");
+        setSelectedOption(undefined);
+
+        // Switch toogle 
+        const fakeEventObject = {
+            target: {
+                name: "transportMix",
+                checked: !state.transportMix
+            }
+        }
+        handleChange({ fElem: fakeEventObject, type: "choice" });
     }
     
     // Variable to count applicationItems
@@ -650,7 +708,7 @@ const ApplicationCreate = ({ match }) => {
                 </AddibleInput>
                 <p>
                     <label htmlFor="transportMix">Сборный груз</label>
-                    <Switch id="transportMix" name="transportMix" onChange={e => handleChange({ fElem: e, type: "choice" })} checked={state.transportMix} />
+                    <Switch id="transportMix" name="transportMix" onChange={e => handleTransportMixChange(e)} checked={state.transportMix} />
                 </p>
 
                 <DragFile
@@ -771,30 +829,47 @@ const ApplicationCreate = ({ match }) => {
                 <Button name={invoicePk ? "сохранить" : "создать"} color="#5762B2" clickHandler={submitInvoice} />
             </SmallDialog>
             <SmallDialog title="Выбор заказа" close={handleOrderClose} isOpen={openOrder}>
-                {   
-                    state.transportMix? 
-                        <CustomSelector label="Заказы" value={state.orders} name="orders" stateChange={e => handleOrderChange(e)} multiple
-                            renderValue={selected => selected.join(", ")}>
-                            {
-                                orders.map(({ node }) =>
-                                    <MenuItem key={node.pk} value={node.pk}>
-                                        <ListItemIcon>
-                                            <Checkbox checked={state.orders.indexOf(node.pk) > -1} />
-                                        </ListItemIcon>
-                                        <ListItemText>{node.pk}</ListItemText>
-                                    </MenuItem>
-                                )
-                            }
-                        </CustomSelector> :
-                        <CustomSelector label="Заказы" name="orders" value={state.orders[0]} stateChange={e => handleOrderOneChange(e)}>
-                            {
-                                orders.map(({node}) => 
-                                    <MenuItem key={node.pk} value={node.pk}>
-                                        {node.pk}
-                                    </MenuItem>
-                                )
-                            }
-                        </CustomSelector> 
+                {
+                    (transportMixMessage.length > 0)?
+                            <> 
+                                <ConfirmationMessage>{transportMixMessage}</ConfirmationMessage>
+                                <RadioGroup>
+                                    {
+                                        state.orders.map(orderPk => 
+                                            <label>{orderPk} <Radio name="order" value={orderPk} onChange={handleCheckboxChange} checked={selectedOption == orderPk} /></label>     
+                                        )
+                                    }
+                                </RadioGroup>
+                                <ConfirmButton color="primary" onClick={handleConfirmOrderChoice}>подтвердить</ConfirmButton>
+                            </>
+                            : 
+                            <>
+                                {   
+                                    state.transportMix? 
+                                        <CustomSelector label="Заказы" value={state.orders} name="orders" stateChange={e => handleOrderChange(e)} multiple
+                                            renderValue={selected => selected.join(", ")}>
+                                            {
+                                                orders.map(({ node }) =>
+                                                    <MenuItem key={node.pk} value={node.pk}>
+                                                        <ListItemIcon>
+                                                            <Checkbox checked={state.orders.indexOf(node.pk) > -1} />
+                                                        </ListItemIcon>
+                                                        <ListItemText>{node.pk}</ListItemText>
+                                                    </MenuItem>
+                                                )
+                                            }
+                                        </CustomSelector> :
+                                        <CustomSelector label="Заказы" name="orders" value={state.orders[0]} stateChange={e => handleOrderOneChange(e)}>
+                                            {
+                                                orders.map(({node}) => 
+                                                    <MenuItem key={node.pk} value={node.pk}>
+                                                        {node.pk}
+                                                    </MenuItem>
+                                                )
+                                            }
+                                        </CustomSelector> 
+                                }
+                            </>
                 }
             </SmallDialog>
             <Footer>
@@ -805,6 +880,18 @@ const ApplicationCreate = ({ match }) => {
         </>
     )
 }
+
+const RadioGroup = styled.div`
+    width:100%;
+    display:flex;
+    flex-direction:row;
+    justify-content:space-around;
+`;
+
+const ConfirmationMessage = styled.p`
+    color: #F50057;
+    text-align: center;
+`;
 
 const Badge = styled.span`
     padding:5px;

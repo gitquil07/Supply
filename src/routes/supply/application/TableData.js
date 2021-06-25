@@ -55,7 +55,7 @@ export const generateColumns = () => {
             label: "инвойсы",
             options: {
                 filter: true,
-                display: "exluded",
+                display: "none",
                 viewColumns: false
             }
         },
@@ -64,7 +64,7 @@ export const generateColumns = () => {
             label: "Тип транспорта",
             options: {
                 filter: true,
-                display: "exluded",
+                display: "none",
             }
         },
         {
@@ -72,7 +72,7 @@ export const generateColumns = () => {
             label: "Кол-во",
             options: {
                 filter: true,
-                display: "excluded"
+                display: "none"
             }
         },
         {
@@ -80,7 +80,15 @@ export const generateColumns = () => {
             label: "Условия доставки",
             options: {
                 filter: true,
-                display: "excluded"
+                display: "none"
+            }
+        },
+        {
+            name: "transportCount",
+            label: "Кол-во транспорта",
+            options: {
+                filter: true,
+                display: "none"
             }
         }
     ];

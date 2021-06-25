@@ -61,7 +61,13 @@ const SuppliersList = ({ match }) => {
 
     const searchableFields = [
         "createdAt",
-        "contactPerson"
+        "contactPerson",
+        "vendor",
+        "country",
+        "city",
+        "street",
+        "house",
+        "phoneNumber"
     ];
 
     return (

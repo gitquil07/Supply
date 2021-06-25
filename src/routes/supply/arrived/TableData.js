@@ -82,6 +82,14 @@ export const generateColumns = () => {
                 filter: true,
                 display: "excluded"
             }
+        },
+        {
+            name: "transportCount",
+            label: "Кол-во транспорта",
+            options: {
+                filter: true,
+                display: "none"
+            }
         }
     ];
 

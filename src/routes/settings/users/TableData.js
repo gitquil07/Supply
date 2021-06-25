@@ -75,7 +75,7 @@ export const generateColumns = (switchActivation) => {
             label: "Имя",
             options: {
                 filter: true,
-                display: "excluded"
+                display: "none"
             }
         },
         {
@@ -83,7 +83,7 @@ export const generateColumns = (switchActivation) => {
             label: "Фамилия",
             options: {
                 filter: true,
-                display: "excluded" 
+                display: "none" 
             }
         },
         {
@@ -91,7 +91,7 @@ export const generateColumns = (switchActivation) => {
             label: "Тел. номер",
             options: {
                 filter: true,
-                display: "excluded"
+                display: "none"
             }
         }
     ];

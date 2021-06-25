@@ -1,4 +1,5 @@
 import { TwoRows } from "components/Row"
+import moment from "moment";
 import { setHeading } from "utils/functions";
 
 export const generateColumns = () => {
@@ -28,7 +29,10 @@ export const generateColumns = () => {
         {
             name: "created_at",
             label: "Дата создания заказа",
-            options: options
+            options: {
+                ...options,
+                customBodyRender: value => moment(value).format("YYYY-MM-DD")
+            }
         },
         {
             name: "vendorFactory",
@@ -45,9 +49,7 @@ export const generateColumns = () => {
             name: "invoice_proforma",
             label: "№ инвойс проформа",
             options: {
-                ...options,
-                customBodyRender: value => "№"+value,
-
+                ...options
             }
         },
         {
@@ -64,7 +66,7 @@ export const generateColumns = () => {
             options: {
                 filter: true,
                 sort: false,
-                display: "excluded",
+                display: "none",
             }
         },
         {
@@ -73,7 +75,7 @@ export const generateColumns = () => {
             options: {
                 fitler: true,
                 sort: false,
-                display: "excluded"
+                display: "none"
             }
         }
     ];

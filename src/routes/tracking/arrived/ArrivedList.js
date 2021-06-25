@@ -106,6 +106,23 @@ const ArrivedList = ({ match }) => {
 
     const columns = useMemo(() => generateColumns(openDialog), []);
 
+    const searchableFields = [
+        "publicId",
+        "trackingUser",
+        "firms",
+        "factories",
+        "shippingDate",
+        "trDate",
+        "companyName",
+        "transportNumber",
+        "location",
+        "trackingStatus",
+        "inWayDayCount",
+        "amount",
+        "brutto",
+        "netto"
+    ];
+
     return (
         <>
             <Helmet title={title} />
@@ -123,6 +140,9 @@ const ArrivedList = ({ match }) => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGeneratorForModal(openDialog)}
+                {
+                    ...{ searchableFields }
+                }
             />
             <SmallDialog title={`Заявка ${one?.node?.publicId}`} close={handleClose} isOpen={open}>
                 {

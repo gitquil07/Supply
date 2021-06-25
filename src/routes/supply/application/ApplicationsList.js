@@ -76,7 +76,13 @@ const ApplicationList = ({ match }) => {
     });
 
     const searchableFields = [
-        "invoices"
+        "invoices",
+        "transportType",
+        "transportCount",
+        "deliveryCondition",
+        "trackingUser",
+        "createdAt",
+        "status"
     ]
 
 

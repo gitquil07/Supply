@@ -62,7 +62,10 @@ const ProductsList = ({ match }) => {
 
     const searchableFields = [
         "name",
-        "codeTnved"
+        "codeTnved",
+        "measure",
+        "codeTnved",
+        "typeOfPackaging"
     ];
 
     return (

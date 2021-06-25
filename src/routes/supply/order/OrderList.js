@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { ORDERS } from "./gql";
 import { useTitle } from 'hooks';
 import { generateColumns } from './TableData';
-import { CustomRowGenerator, TimeParser } from "utils/functions";
+import { CustomRowGenerator } from "utils/functions";
 import { FlexForHeader } from 'components/Flex';
 import { ButtonWithIcon } from "components/Buttons";
 import DatePickers from 'components/Inputs/DatePickers';
@@ -69,9 +69,9 @@ const OrderList = ({ match }) => {
             vendor: cutTextLength(node?.vendorFactory?.vendor?.companyName),
             vendorFactory: { factory: node.vendorFactory?.factory.name, vendor: cutTextLength(node.vendorFactory?.vendor.companyName)  },
             status: statuses.find(status => status.value == node.status).label,
-            invoice_proforma: node.invoiceProforma,
+            invoice_proforma: `№${node.invoiceProforma}`,
             invoice_date: node.invoiceDate,
-            created_at: TimeParser(node.createdAt),
+            created_at: node.createdAt
         }
     })
 
@@ -80,7 +80,14 @@ const OrderList = ({ match }) => {
     const columns = useMemo(() => generateColumns(url), []);
 
     const searchableFields = [
-        "invoice_proforma"
+        "pk",
+        "invoice_proforma",
+        "status",
+        "created_at",
+        "factory",
+        "vendor",
+        "invoice_proforma",
+        "invoice_date"
     ];
 
     return (

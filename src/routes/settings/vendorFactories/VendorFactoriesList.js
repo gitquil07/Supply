@@ -56,7 +56,9 @@ const VendorFactoriesList = ({ match }) => {
     const searchableFields = [
         "factory",
         "vendor",
-        "paymentCondition"
+        "paymentCondition",
+        "isActive",
+        "partnerStartDate"
     ];
 
     return (
