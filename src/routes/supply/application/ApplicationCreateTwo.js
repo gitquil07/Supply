@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { Helmet } from 'react-helmet';
 import styled, { css } from "styled-components";
 
@@ -12,7 +13,7 @@ import { CustomInput } from 'components/Inputs/CustomInput';
 import { CustomInputWithComponent } from "components/Inputs/CustomInput";
 import { CustomSelector } from 'components/Inputs/CustomSelector';
 import { CustomSelectorAdd } from "components/Inputs/CustomSelector";
-import { GET_ORDERS, GET_TRANSPORT_TYPES, GET_TRACKING_USER, GET_APPLICATION, CREATE_APPLICATION, UPDATE_APPLICATION } from "./gql";
+import { GET_ORDERS, GET_TRANSPORT_TYPES, GET_TRACKING_USER, GET_MIX_TRACKING_USER, GET_APPLICATION, CREATE_APPLICATION, UPDATE_APPLICATION } from "./gql";
 import { GET_ORDER_ITEMS, GET_FIRMS, GET_INVOICES, CREATE_INVOICE, UPDATE_INVOICE } from "./gql";
 import CustomPicker from "components/Inputs/DatePicker";
 import { CustomNumber } from "components/Inputs/CustomNumber";
@@ -80,6 +81,7 @@ const ApplicationCreate = ({ match }) => {
     const [loading, setLoading] = useState(false);
 
     const [getTrackingUserTypes, trackingUserTypesRes] = useLazyQuery(GET_TRACKING_USER),
+        [getMixTrackingUsertype, mixTrackingUserTypeRes] = useLazyQuery(GET_MIX_TRACKING_USER),
         [getTransportTypes, transportTypesRes] = useLazyQuery(GET_TRANSPORT_TYPES),
         [getApplication, applicationRes] = useLazyQuery(GET_APPLICATION),
         [getOrders, orderRes] = useLazyQuery(GET_ORDERS, {
@@ -93,6 +95,7 @@ const ApplicationCreate = ({ match }) => {
     const orders = useMemo(() => getList(orderRes?.data), [orderRes?.data]) || [],
         transportTypes = useMemo(() => getList(transportTypesRes?.data), [transportTypesRes?.data]) || [],
         trackingUserType = useMemo(() => getList(trackingUserTypesRes?.data), [trackingUserTypesRes?.data]) || [],
+        mixTrackingUserType = useMemo(() => getList(mixTrackingUserTypeRes?.data), [mixTrackingUserTypeRes?.data]) || [],
         pk = getValueOfProperty(applicationRes?.data, "pk"),
 
         orderItems = useMemo(() => getList(orderItemsRes?.data), [orderItemsRes?.data]) || [],
@@ -114,7 +117,8 @@ const ApplicationCreate = ({ match }) => {
         weight: "",
         size: "",
         invoicePrice: "",
-        requiredCount: 0
+        requiredCount: 0,
+        trackingUser: "",
     }
 
     const {
@@ -152,6 +156,7 @@ const ApplicationCreate = ({ match }) => {
         getOrders();
         getTransportTypes();
         getTrackingUserTypes();
+        getMixTrackingUsertype();
     }, []);
 
     useEffect(() => {
@@ -173,7 +178,6 @@ const ApplicationCreate = ({ match }) => {
         const application = applicationRes?.data?.application?.application;
 
         if (application !== undefined) {
-            // console.log("applicationRes?.data?.application?.application?.files?.edges", applicationRes?.data?.application?.application?.files?.edges)
 
             if (applicationRes?.data?.application?.application?.files?.edges.length > 0) {
                 setFiles({
@@ -206,8 +210,6 @@ const ApplicationCreate = ({ match }) => {
 
             const selectedOrders = [];
 
-            console.log("items application", application);
-            
             application.orders.edges.forEach(({node}) => {
                 const orderPk = node.pk;
 
@@ -216,36 +218,38 @@ const ApplicationCreate = ({ match }) => {
                 const order = {
                     pk: found?.pk,
                     publicId: found?.publicId,
-                    factory: found?.vendorFactory.factory.name,
-                    vendor: found?.vendorFactory.vendor.companyName,
+                    factory: found?.vendorFactory?.factory?.name,
+                    vendor: found?.vendorFactory?.vendor?.companyName,
                     trackingUser: "",
                 }
 
-                let itemsByOrderPk = items.filter(item => item.orderItem.order.pk === order.pk); 
+                let itemsByOrderPk = items.filter(item => item?.orderItem?.order?.pk === order.pk); 
 
+                
+                // Add trackingUser to order and remove it from applicationItems
+                order.trackingUser = itemsByOrderPk[0]?.trackingUser?.pk;
+                
+                
                 itemsByOrderPk = itemsByOrderPk.map(itemByOrderPk => {
                     return {
-                        ...itemByOrderPk,
+                        ...exceptKey(itemByOrderPk, ["trackingUser"]),
                         orderItem: itemByOrderPk.orderItem.pk,
                         invoicePrice: formatPrice(itemByOrderPk.invoicePrice)
                     }
-                })
-
+                });
+                
                 order.applicationItems = itemsByOrderPk;
 
                 selectedOrders.push(order);
             
             });
 
-            // console.log("selectedOrders", selectedOrders);
-
-            console.log("applicationItem", application);
 
             setState({
                 ...exceptKey(application, ["applicationItems", "__typename", "pk"]),
-                trackingUser: application.trackingUser.pk,
-                transportType: application.transportType.pk,
-                orders: application.orders.edges.map(({ node }) => node.pk)
+                trackingUser: application?.trackingUser?.pk,
+                transportType: application?.transportType?.pk || null,
+                orders: application?.orders?.edges?.map(({ node }) => node.pk)
             });
             setOrderTemplate(selectedOrders);
 
@@ -278,7 +282,6 @@ const ApplicationCreate = ({ match }) => {
     
     const editInvoice = (id) => {
         const invoiceToEdit = invoices.find(({ node }) => node.id === id).node;
-        console.log("invoiceToEdit", invoiceToEdit);
         setInvoiceData(exceptKey(invoiceToEdit, ["__typename"]));
         setInvoicePk(invoiceToEdit.pk);
         handleInvoiceOpen();
@@ -301,8 +304,6 @@ const ApplicationCreate = ({ match }) => {
 
     const beforeSubmit = () => {
 
-        console.log("requestBody state", state);
-
         let requestBody = {
             ...state,
             shippingDate: moment(state.shippingDate).format("YYYY-MM-DD"),
@@ -315,16 +316,21 @@ const ApplicationCreate = ({ match }) => {
         const templates = orderTemplate.slice(0);
 
         const reducer = (applicationItemsList, currentOrder) => {
-            const applicationItems = currentOrder.applicationItems;
+            const applicationItems = currentOrder.applicationItems,
+                  trackingUser = currentOrder.trackingUser; 
 
             applicationItems.forEach(applicationItem => 
-                applicationItemsList.push(exceptKey(!pk? exceptKey(applicationItem, ["invoice"]) : applicationItem, ["requiredCount"]))
+                applicationItemsList.push({...exceptKey(!pk? exceptKey(applicationItem, ["invoice"]) : applicationItem, ["requiredCount"]), trackingUser})
             );
 
             return applicationItemsList;
         }
 
         let applicationItems = templates.reduce(reducer,[]);
+        
+        // Check if amount of orders is one remove trackingUser from applicationItem
+
+
         
         // Reset price in applicationItems
         applicationItems = applicationItems.map(item => ({
@@ -340,12 +346,11 @@ const ApplicationCreate = ({ match }) => {
 
         requestBody.files = files.uploaded.map(file => file.file_id);
 
-        console.log("requestBody", requestBody);
 
         if (pk) {
-            // handleSubmit(exceptKey(requestBody, ["orders"]), pk)
+            handleSubmit(exceptKey(requestBody, ["orders"]), pk);
         } else {
-            // handleSubmit(requestBody)
+            handleSubmit(requestBody)
         }
     }
 
@@ -358,16 +363,6 @@ const ApplicationCreate = ({ match }) => {
             setLoading(false);
         }).catch(err => console.log(err));
     }
-
-
-    useEffect(() => {
-        console.log("ordersPk orderTemplate", orderTemplate);
-    }, [orderTemplate]);
-
-    useEffect(() => {
-        console.log("ordersPk state.order", state.order);
-    }, [state.order]);
-
 
     const handleItemChange = (e, orderPk, itemIndex) => {
         let templates = orderTemplate.slice(0);
@@ -392,7 +387,6 @@ const ApplicationCreate = ({ match }) => {
             found.applicationItems[itemIndex][name] = value;
         }
 
-        // console.log("itemChange found.applicationItems[itemIndex][name]", found.applicationItems[itemIndex][name]);
         templates[foundIndex] = found;
 
         setOrderTemplate(templates);
@@ -415,8 +409,6 @@ const ApplicationCreate = ({ match }) => {
         const selectedOrderPk = e.target.value;
         const templates = orderTemplate.slice(0);
 
-        console.log("templates", templates);
-
         const found = orders.find(({node}) => node.pk == selectedOrderPk)?.node;
 
         const order = {
@@ -432,7 +424,6 @@ const ApplicationCreate = ({ match }) => {
         // order.applicationItems = [applicationItemTemplate];
         
         templates[0] = order;
-        console.log("templates", templates);
 
         setOrderTemplate(templates);
         setState({
@@ -449,11 +440,6 @@ const ApplicationCreate = ({ match }) => {
 
         // 1) First get all pks from templates array use (map) to modify templates
         const templatesPk = templates.map(orderTemplate => orderTemplate.pk);
-
-
-        // console.log("orderCheck templatesPk", templatesPk);
-        // console.log("orderCheck selectedOrdersPk", selectedOrdersPk);
-
         
         // 2) Find unchecked pks by checking existing selectedOrdersPk
         let uncheckedPksList = [];
@@ -468,7 +454,6 @@ const ApplicationCreate = ({ match }) => {
                 uncheckedPksList.push(templatesPk[i]);
             }
         }
-        // console.log("orderCheck uncheckedPksList", uncheckedPksList);
 
         // 3) Remove order templates on unchcked pks
         for(let pk of uncheckedPksList){
@@ -478,7 +463,6 @@ const ApplicationCreate = ({ match }) => {
 
             templates.splice(foundIndex, 1);
         }
-        // console.log("orderCheck templates", templates);
 
         // 4) Check whether selcted pk exists in array if not 
         // create empty order template and add it to templates
@@ -489,11 +473,11 @@ const ApplicationCreate = ({ match }) => {
                 const orderByPk = orders.find(({node}) => node.pk === selectedOrdersPk[i])?.node;
 
                 const order = {
-                    pk: orderByPk.pk,
-                    publicId: orderByPk.publicId,
+                    pk: orderByPk?.pk,
+                    publicId: orderByPk?.publicId,
                     trackingUser: "",
-                    factory: orderByPk.vendorFactory.factory.name,
-                    vendor: orderByPk.vendorFactory.vendor.companyName,
+                    factory: orderByPk?.vendorFactory?.factory?.name,
+                    vendor: orderByPk?.vendorFactory?.vendor?.companyName,
                     applicationItems: [applicationItemTemplate]
                 }
 
@@ -535,34 +519,27 @@ const ApplicationCreate = ({ match }) => {
 
     const removeApplicationItemOrder = (orderPk, itemIndex) => {
         
-        console.log("orderPk", orderPk);
-        console.log("orderPk itemIndex", itemIndex);
-
         let templates = orderTemplate.slice(0);
 
         const {foundIndex, found} = getApplicationItem(orderPk);
         
-        console.log("ordePk found", found);
 
-        console.log("orderPk applicationItems before", found.applicationItems);
         found.applicationItems.splice(itemIndex, 1);
         
 
-        console.log("orderPk applicationItems after", found.applicationItems);
         templates[foundIndex] = found;
         setOrderTemplate(templates);
         
     }
 
     const removeOrder = (orderPk) => {
-        // console.log("ordersPk orderPk", orderPk);
         // 1) Remove orderPk from state.orders
-        let ordersPk = state.orders.slice(0);
-            ordersPk = ordersPk.filter(pk => pk !== orderPk);
+        let ordersPk = state?.orders?.slice(0);
+            ordersPk = ordersPk?.filter(pk => pk !== orderPk);
         
         // 2) Remove orderTemplate on orderPk
-        let templates = orderTemplate.slice(0);
-            templates = templates.filter(template =>  template.pk !== orderPk); 
+        let templates = orderTemplate?.slice(0);
+            templates = templates?.filter(template =>  template.pk !== orderPk); 
 
         setState({
             ...state,
@@ -575,9 +552,6 @@ const ApplicationCreate = ({ match }) => {
     const [transportMixMessage, setTransportMixMessage] = useState(""),
           [selectedOption, setSelectedOption] = useState(undefined);
 
-    useEffect(() => {
-        console.log("selectedOption", selectedOption);
-    }, [selectedOption])
 
     const handleTransportMixChange = (e) => {
 
@@ -587,10 +561,24 @@ const ApplicationCreate = ({ match }) => {
                 setTransportMixMessage("В обычной заявке не может быть более одного заказа! Выберите один из списка");
                 handleOrderOpen();
             }
-
+            
             if(state.orders.length === 1){
-                handleChange({ fElem: e, type: "choice" });
+                setState({
+                    ...state,
+                    trackingUser: "",
+                    transportMix: e.target.checked 
+                });
             }
+
+            if(state.orders.length === 0){
+                setState({
+                    ...state,
+                    transportMix: e.target.checked
+                });
+            }
+            
+            
+
         }else{
             handleChange({ fElem: e, type: "choice" });
         }
@@ -602,34 +590,25 @@ const ApplicationCreate = ({ match }) => {
         setSelectedOption(e.target.value)
     }
 
-    const handleConfirmOrderChoice = () => {
 
-        // Update orders state, remain just one
-        setState({
-            ...state,
-            orders: [selectedOption]
-        });
+    const handleConfirmOrderChoice = () => {
 
         // Update orderTemplate, remain that template that much to selected order pk
         const selectedTemplate = orderTemplate.find(template => template.pk === +selectedOption);
-        console.log("selectedTemplate", typeof selectedOption);
-        console.log("selectedTemplate", orderTemplate);
-        console.log("selectedTemplate", selectedTemplate);
         setOrderTemplate([selectedTemplate]);
-
+        
         // Reset (message) and (selectedOption) than close modal 
+        
         handleOrderClose();
         setTransportMixMessage("");
-        setSelectedOption(undefined);
+        setSelectedOption(undefined);    
 
-        // Switch toogle 
-        const fakeEventObject = {
-            target: {
-                name: "transportMix",
-                checked: !state.transportMix
-            }
-        }
-        handleChange({ fElem: fakeEventObject, type: "choice" });
+        setState({
+            ...state,
+            orders: [+selectedOption],
+            trackingUser: "",
+            transportMix: !state.transportMix
+        });
     }
     
     // Variable to count applicationItems
@@ -642,69 +621,87 @@ const ApplicationCreate = ({ match }) => {
                 <Title>Данные транспорта</Title>
 
                 <AddibleInput>
-                    <div>
-                        <CustomSelector label="Логист" value={state.trackingUser} name="trackingUser" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.trackingUser.length ? true : false} >
+                        <>               
                             {
-                                trackingUserType.map(({ node }) =>
-                                    <MenuItem key={node.pk} value={node.pk}>{node.username}</MenuItem>
-                                )
+                                !state.transportMix && orderTemplate.length === 1 &&
+                                    <div>
+                                        <CustomSelector label="Логист" value={orderTemplate[0]?.trackingUser} name="trackingUser" stateChange={e => handleOrderTrackingChange(e, orderTemplate[0]?.pk)} >
+                                            {
+                                                trackingUserType.map(({node}) => 
+                                                    <MenuItem key={node.pk} value={node.pk}>{node.username}</MenuItem>
+                                                )
+                                            }
+                                        </CustomSelector>
+                                    </div>
                             }
-                        </CustomSelector>
-                        {
-                            validationMessages.trackingUser.length ? <ValidationMessage>{validationMessages.trackingUser}</ValidationMessage> : null
-                        }
-                    </div>
-                    <div>
-                        <CustomSelector label="Тип транспорта" value={state.transportType} name="transportType" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.transportCount.length ? true : false}>
                             {
-                                transportTypes.map(({ node }) =>
-                                    <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.transportType}>{node.name}</MenuItem>
-                                )
+                                state.transportMix &&
+                                    <div>
+                                        <CustomSelector label="Сборный Логист" value={state.trackingUser} name="trackingUser" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.trackingUser.length ? true : false} >
+                                            {
+                                                mixTrackingUserType.map(({ node }) =>
+                                                    <MenuItem key={node.pk} value={node.pk}>{node.username}</MenuItem>
+                                                )
+                                            }
+                                        </CustomSelector>
+                                    </div>
                             }
-                        </CustomSelector>
-                        {
-                            validationMessages.transportType.length ? <ValidationMessage>{validationMessages.transportType}</ValidationMessage> : null
-                        }
-                    </div>
-                    <div>
-                        <CustomSelector label="Уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.degreeOfDanger.length ? true : false}>
                             {
-                                degreeOfDanger.map(level =>
-                                    <MenuItem key={level.value} value={level.value} selected={state.degreeOfDanger === level.value} >{level.label}</MenuItem>
-                                )
+                                validationMessages.trackingUser.length ? <ValidationMessage>{validationMessages.trackingUser}</ValidationMessage> : null
                             }
-                        </CustomSelector>
-                        {
-                            validationMessages.degreeOfDanger.length ? <ValidationMessage>{validationMessages.degreeOfDanger}</ValidationMessage> : null
-                        }
-                    </div>
-                    <div>
-                        <CustomNumber label="Кол-во мест" value={state.packageOnPallet} name="packageOnPallet" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.packageOnPallet.length ? true : false} />
-                        {
-                            validationMessages.packageOnPallet.length ? <ValidationMessage>{validationMessages.packageOnPallet}</ValidationMessage> : null
-                        }
-                    </div>
-                    <div>
-                        <CustomNumber label="Кол-во транспорта" value={state.transportCount} name="transportCount" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.transportCount.length ? true : false} />
-                        {
-                            validationMessages.transportCount.length ? <ValidationMessage>{validationMessages.transportCount}</ValidationMessage> : null
-                        }
-                    </div>
-
-                    <CustomPicker label="Дата отгрузки" date={state.shippingDate} name="shippingDate" stateChange={date => handleDateChange(date)} />
-                    <div>
-                        <CustomSelector label="Статус" name="status" value={state.status} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.status.length ? true : false}>
-                            {
-                                statuses.map(status => {
-                                    return <MenuItem key={status.label} value={status.value} selected={state.status === status.value}>{status.label}</MenuItem>
+                        <div>
+                            <CustomSelector label="Тип транспорта" value={state.transportType} name="transportType" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.transportCount.length ? true : false}>
+                                {
+                                    transportTypes.map(({ node }) =>
+                                        <MenuItem key={node.pk} value={node.pk} selected={node.pk === state.transportType}>{node.name}</MenuItem>
+                                    )
                                 }
-                                )
+                            </CustomSelector>
+                            {
+                                validationMessages.transportType.length ? <ValidationMessage>{validationMessages.transportType}</ValidationMessage> : null
                             }
-                        </CustomSelector>
-                        {
-                            validationMessages.status.length ? <ValidationMessage>{validationMessages.status}</ValidationMessage> : null
-                        }
-                    </div>
+                        </div>
+                        <div>
+                            <CustomSelector label="Уровень опасности" value={state.degreeOfDanger} name="degreeOfDanger" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.degreeOfDanger.length ? true : false}>
+                                {
+                                    degreeOfDanger.map(level =>
+                                        <MenuItem key={level.value} value={level.value} selected={state.degreeOfDanger === level.value} >{level.label}</MenuItem>
+                                    )
+                                }
+                            </CustomSelector>
+                            {
+                                validationMessages.degreeOfDanger.length ? <ValidationMessage>{validationMessages.degreeOfDanger}</ValidationMessage> : null
+                            }
+                        </div>
+                        <div>
+                            <CustomNumber label="Кол-во мест" value={state.packageOnPallet} name="packageOnPallet" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.packageOnPallet.length ? true : false} fullWidth />
+                            {
+                                validationMessages.packageOnPallet.length ? <ValidationMessage>{validationMessages.packageOnPallet}</ValidationMessage> : null
+                            }
+                        </div>
+                        <div>
+                            <CustomNumber label="Кол-во транспорта" value={state.transportCount} name="transportCount" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.transportCount.length ? true : false} fullWidth />
+                            {
+                                validationMessages.transportCount.length ? <ValidationMessage>{validationMessages.transportCount}</ValidationMessage> : null
+                            }
+                        </div>
+
+                        <CustomPicker label="Дата отгрузки" date={state.shippingDate} name="shippingDate" stateChange={date => handleDateChange(date)} />
+                        <div>
+                            <CustomSelector label="Статус" name="status" value={state.status} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.status.length ? true : false}>
+                                {
+                                    statuses.map(status => {
+                                        return <MenuItem key={status.label} value={status.value} selected={state.status === status.value}>{status.label}</MenuItem>
+                                    }
+                                    )
+                                }
+                            </CustomSelector>
+                            {
+                                validationMessages.status.length ? <ValidationMessage>{validationMessages.status}</ValidationMessage> : null
+                            }
+                        </div>
+                    </>
+
                 </AddibleInput>
                 <p>
                     <label htmlFor="transportMix">Сборный груз</label>
@@ -725,11 +722,8 @@ const ApplicationCreate = ({ match }) => {
                 </Header>
                 {
                     orderTemplate?.map(order => {
-                        console.log("templates order", order);
 
-                        const { applicationItems } = order;
-
-                        console.log("templates applicationItems", applicationItems);
+                        const applicationItems = order?.applicationItems || [];
 
                         return (
                             <Material bgColor="#F6F6FC" vM="20">
@@ -750,15 +744,18 @@ const ApplicationCreate = ({ match }) => {
                                                 <span>{order?.vendor}</span>
                                             </Item>
                                         </List>
-                                        <List width="370">
-                                            <CustomSelector label="Логист" name="trackingUser" value={order.trackingUser} stateChange={e => handleOrderTrackingChange(e, order.pk)} fullWidth>
-                                                {
-                                                    trackingUserType.map(({node}) =>
-                                                        <MenuItem key={node?.pk} value={node?.pk}>{node?.username}</MenuItem>
-                                                    )
-                                                }
-                                            </CustomSelector>
-                                        </List>
+                                        {
+                                            state.transportMix &&
+                                            <List width="370">
+                                                <CustomSelector label="Логист" name="trackingUser" value={order.trackingUser} stateChange={e => handleOrderTrackingChange(e, order.pk)} fullWidth>
+                                                    {
+                                                        trackingUserType.map(({node}) =>
+                                                            <MenuItem key={node?.pk} value={node?.pk}>{node?.username}</MenuItem>
+                                                        )
+                                                    }
+                                                </CustomSelector>
+                                            </List>
+                                        }
                                         <RemoveIcon clicked={() => removeOrder(order.pk)} />
                                         </OrderInfoConatiner>   
                                         <Header vM="0">
@@ -767,7 +764,7 @@ const ApplicationCreate = ({ match }) => {
                                         </Header>
                                     </RowWrapper>
                                 {
-                                    applicationItems.map((item, index) => {
+                                    applicationItems?.map((item, index) => {
                                     
                                         applicationItemCount++;
 
@@ -1035,8 +1032,13 @@ const RowWrapper = styled.div`
 const Row = styled.div`
     display: grid;
     gap: 10px;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(20%, 1fr)); 
     align-items: center;
+
+
+    @media(max-width: 1100px){
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
 `;
 
 

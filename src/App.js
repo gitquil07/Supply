@@ -13,7 +13,6 @@ import { Header } from './components/Header';
 const App = () => {
 
   const s_role = localStorage.getItem("supply_role");
-  console.log("role from app", s_role);
   const [role, setRole] = useState(s_role ? s_role : ""),
     token = localStorage.getItem("supply_token");
 
@@ -71,14 +70,15 @@ const StyledDrawer = styled(Drawer)`
 
   .MuiDrawer-paper {
     width: 270px;
-    background-image: url(${Background});
+    /* background-image: url(${Background}); */
+    background-color: #4A4D63;
     background-size: cover; 
   }
 `;
 
 const Contents = styled.div`
   padding: 0 20px;
-  overflow: hidden;
+  /* overflow: hidden; */
   box-sizing: border-box;
 
 `;

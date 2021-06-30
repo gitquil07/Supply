@@ -37,7 +37,8 @@ import { FileElementA, FilesList } from "components/Inputs/DragFile";
 import { degreeOfDanger as degreeOfDangerOptions } from "utils/static";
 import { addDays, formatPrice, formatInputPrice, resetPriceFormat } from "utils/functions";
 import { UserContext } from "context/UserContext";
-// import { AddibleInput } from "components/Flex";
+import { List, Item } from "components/ComponentsForForm/ItemList";
+
 
 const initialState = {
     vendor: "",
@@ -53,7 +54,6 @@ const initialState = {
 const TrackingTransportCreate = ({ match }) => {
 
     const {role} = useContext(UserContext);
-    console.log("role", role);
     const { id } = match.params;
     const title = useTitle("Изменение Слежения");
     const [additionalData, setAdditionalData] = useState({
@@ -138,7 +138,6 @@ const TrackingTransportCreate = ({ match }) => {
         }),
         ApplicationFiles = applicationInfo?.files?.edges;
 
-    console.log("applicationInfo", applicationInfo)
 
     const [updateTracking] = useMutation(UPDATE_TRACKING, {
         onCompleted: () => {
@@ -190,18 +189,8 @@ const TrackingTransportCreate = ({ match }) => {
         }
     }, [trackingInfoRes?.data]);
 
-
-    useEffect(() => {
-        console.log("state tracking", state);
-    }, [state]);
-
-    useEffect(() => {
-        console.log("additionalData", additionalData);
-    }, [additionalData]);
-
     const handleAdditionalDataSubmit = (additional) => {
 
-        console.log("here");
 
         if (additional) {
             const requestBody = {
@@ -231,6 +220,7 @@ const TrackingTransportCreate = ({ match }) => {
                     ...exceptKey(invoice, ["pk", "relativeWeight", "netto", "brutto"]),
                     status: invoiceStatuses.find(invoiceStatus => invoiceStatus.value == invoice.status).label,
                     amount: resetPriceFormat(invoice.amount)
+
                 }
             });
 
@@ -249,8 +239,6 @@ const TrackingTransportCreate = ({ match }) => {
 
             requestBody = exceptKey(requestBody, ["netto", "brutto", "amount"]);
 
-            console.log("requestBody", requestBody);
-
             submitData({
                 ...exceptKey(requestBody, ["pk", "publicId", "status"])
             }, pk);
@@ -262,17 +250,15 @@ const TrackingTransportCreate = ({ match }) => {
         }
     }
 
-    console.log("STATE", state)
-
     const [invoiceList, setInvoiceList] = useState([]);
 
     useEffect(() => {
         const list = invoicesRes?.data?.application?.application?.invoices.edges || [];
-        console.log("list", list);
         if (list.length > 0) {
             const obj = list.map(({ node }) => {
                 return {
                     ...exceptKey(node, ["__typename"]),
+                    amount: formatPrice(node.amount)
                 }
             })
 
@@ -280,9 +266,6 @@ const TrackingTransportCreate = ({ match }) => {
         }
     }, [invoicesRes?.data?.application?.application?.invoices?.edges.length]);
 
-    useEffect(() => {
-        console.log("invoice list", invoiceList);
-    }, [invoiceList]);
 
     const handleInvoiceFieldsChange = (e, idx) => {
         const name = e.target.name,
@@ -294,33 +277,28 @@ const TrackingTransportCreate = ({ match }) => {
                 case "FAS":
                 case "EXW":
                 case "FOB":
-                    tmp[idx].note = "SPL";
+                    tmp[idx].destination = "SPL";
                     break;
                 case "CPT":
-                    tmp[idx].note = "OFFICE";
+                    tmp[idx].destination = "OFFICE";
                     break;
                 case "CIP":
                 case "DAP":
                 case "CFR":
                 case "DDP":
                 case "DPU":
-                    tmp[idx].note = "X"
+                    tmp[idx].destination = "X"
                     break;
             }
             tmp[idx].deliveryCondition = e.target.value;
         }else if(name === "amount"){
-            console.log("amount");
             tmp[idx].amount = formatInputPrice(e.target.value);
         }else{
             tmp[idx][name] = e.target.value;
         }
 
-        console.log("tmp", tmp[idx].note);
-
         setInvoiceList(tmp);
     }
-
-    console.log("tmp render");
 
     const handleDateChange = (date) => {
         setState({ ...state, trDate: date });
@@ -432,7 +410,7 @@ const TrackingTransportCreate = ({ match }) => {
                                                 }
                                             </CustomSelector>
                                         }
-                                        <CustomInput value={invoice.note} name="note" />
+                                        <CustomInput value={invoice.destination} name="destination" />
                                         <CustomInput label="Транспортный расход" value={invoice.amount} name="amount" stateChange={e => handleInvoiceFieldsChange(e, idx)} />
                                     </AddibleInput> 
                                 )
@@ -542,60 +520,62 @@ const TrackingTransportCreate = ({ match }) => {
 
                     {
                         applicationItems?.map(item => {
-                            return <List direction="column">
-                                <ListHeader>
-                                    Номер заказа {item?.orderPublicId}
-                                    <b>{item?.country} / {item?.city}</b>
-                                </ListHeader>
-                                {
-                                    item.applicationItems.map(applicationItem => {
-                                        if (applicationItem.length > 0) {
-                                            return <List>
-                                                <Item>
-                                                    <h4>
-                                                        Название материала
-                                            </h4>
-                                                    <span>
-                                                        {applicationItem[0]?.orderItem?.vendorProduct?.product?.name}
-                                                    </span>
-                                                </Item>
-                                                <Item>
-                                                    <h4>
-                                                        Фирма
-                                            </h4>
-                                                    <span>
-                                                        {applicationItem[0]?.firm?.name}
-                                                    </span>
-                                                </Item>
-                                                <Item>
-                                                    <h4>
-                                                        Брутто вес
-                                            </h4>
-                                                    <span>
-                                                        {applicationItem[0]?.weight}
-                                                    </span>
-                                                </Item>
-                                                <Item>
-                                                    <h4>
-                                                        Обем
-                                            </h4>
-                                                    <span>
-                                                        {applicationItem[0]?.size}
-                                                    </span>
-                                                </Item>
-                                                <Item>
-                                                    <h4>
-                                                        Отгружаемое кол-во
-                                            </h4>
-                                                    <span>
-                                                        {applicationItem[0]?.count}
-                                                    </span>
-                                                </Item>
-                                            </List>
-                                        }
-                                    })
-                                }
-                            </List>
+                            if(item.applicationItems[0].length > 0){
+                                return <List direction="column">
+                                    <ListHeader>
+                                        Номер заказа {item?.orderPublicId}
+                                        <b>{item?.country} / {item?.city}</b>
+                                    </ListHeader>
+                                    {
+                                        item.applicationItems.map(applicationItem => {
+                                            if (applicationItem.length > 0) {
+                                                return <List>
+                                                    <Item>
+                                                        <h4>
+                                                            Название материала
+                                                </h4>
+                                                        <span>
+                                                            {applicationItem[0]?.orderItem?.vendorProduct?.product?.name}
+                                                        </span>
+                                                    </Item>
+                                                    <Item>
+                                                        <h4>
+                                                            Фирма
+                                                </h4>
+                                                        <span>
+                                                            {applicationItem[0]?.firm?.name}
+                                                        </span>
+                                                    </Item>
+                                                    <Item>
+                                                        <h4>
+                                                            Брутто вес
+                                                </h4>
+                                                        <span>
+                                                            {applicationItem[0]?.weight}
+                                                        </span>
+                                                    </Item>
+                                                    <Item>
+                                                        <h4>
+                                                            Обем
+                                                </h4>
+                                                        <span>
+                                                            {applicationItem[0]?.size}
+                                                        </span>
+                                                    </Item>
+                                                    <Item>
+                                                        <h4>
+                                                            Отгружаемое кол-во
+                                                </h4>
+                                                        <span>
+                                                            {applicationItem[0]?.count}
+                                                        </span>
+                                                    </Item>
+                                                </List>
+                                            }
+                                        })
+                                    }
+                                </List>
+                            }
                         })
                     }
                 </MiniForm>
@@ -656,6 +636,13 @@ const ContainerRow = styled.div`
     border-bottom:1px solid rgba(0, 0, 0, 0.1);
     display:grid;
     grid-template-columns:0.9fr 0.9fr 2fr;
+
+    @media(max-width: 970px){
+        &{
+            grid-template-columns: 1fr;
+            grid-row-gap:20px;
+        }
+    }
 `;
 
 const ListHeader = styled.div`
@@ -719,36 +706,6 @@ const ContainerColumn = styled.div`
 //     }
 // `;
 
-const List = styled.div`
-    width:100%;
-    padding:10px;
-    box-sizing:border-box;
-    background-color:#fff;
-    border-radius:5px;
-    border:1px solid rgba(0, 0, 0, 0.15);
-    display:flex;
-    justify-content:space-between;
-
-    ${({ direction }) =>
-        direction ? css`
-            flex-direction:column;
-            row-gap:10px;
-        ` : ""
-    }
-    
-`;
-
-const Item = styled.div`
-    h4{
-        margin:0 0 5px 0;
-        font-size:18px;
-        font-weight:normal;
-    }
-    span{
-        font-size:14px;
-        color: rgba(0, 0, 0, 0.5);
-    }
-`;
 
 const AddibleInput = styled.div`
     display:grid;
@@ -758,6 +715,22 @@ const AddibleInput = styled.div`
     background-color:#fff;
     grid-gap:10px;
     border:1px solid #E5E5E5;
+
+
+    @media(max-width: 1233px){
+
+        &{
+            grid-template-columns:1fr 1fr;
+        }
+
+    }
+
+    @media(max-width:609px){
+        &{
+            grid-template-columns:1fr;
+        }
+    }
+
 `;
 
 const Inputs = styled.div`

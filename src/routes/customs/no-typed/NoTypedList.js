@@ -5,8 +5,6 @@ import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { NO_TYPED_CUSTOMS } from './gql';
 import { generateColumns } from './TableData';
 import { useMemo } from 'react';
-import { FlexForHeader } from "../../../components/Flex";
-import { ButtonWithIcon } from "../../../components/Buttons";
 import { Pagination } from '../../../components/Pagination';
 import { usePagination, useToggleDialog, useGetOne } from "../../../hooks";
 import { CustomRowGeneratorForModal, getList } from "../../../utils/functions";

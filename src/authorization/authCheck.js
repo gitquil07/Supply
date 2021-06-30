@@ -10,7 +10,6 @@ export const checkPrivilege = (role, privilege) => {
 
     for(let key of keys){
         val = val[key];
-        console.log("val", val);
     } 
 
     return val;

@@ -65,7 +65,6 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, g
         () => {
             handleClose();
             if ((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)) {
-                console.log("inside condition first");
                 setIsFirstPage(true);
                 getEntries({
                     variables: {
@@ -77,7 +76,6 @@ const FactoryCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, g
                 });
             }
             if ((paginatingState.nextPage === true && paginatingState.prevPage === true) || (paginatingState.nextPage === false && paginatingState.prevPage === true)) {
-                console.log("inside condition second");
                 setMutateState("create");
                 getEntries({
                     variables: {

@@ -215,8 +215,6 @@ const TestTable2 = () => {
                                             }
                                         }
 
-                                        // console.log("cageClasses", cageClasses);
-                                        // debugger;
                                         if (flags.indexOf(colIdx + 1) > -1) {
                                             cageClasses += " last";
                                         }
@@ -228,9 +226,7 @@ const TestTable2 = () => {
                                             cageClasses += " reddest";
                                         }
 
-                                        // console.log("cage classes", cageClasses);
                                         return <td className={cageClasses}>{goToNewLine((!isNaN(col) && col.length > 0) ? formatPrice(col) : col)}</td>
-                                        // return <td className={cageClasses}>{col}</td>
                                     })
                                 }
                             </tr>

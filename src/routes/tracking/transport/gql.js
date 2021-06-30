@@ -22,7 +22,6 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
           }
           application {
             transferredDate
-            deliveryCondition
             trackingUser {
               username
             }
@@ -157,7 +156,7 @@ query getVendorProductsGroupedByOrder($id: ID!) {
             orderItems {
               edges {
                 node {
-                  applicationItems(application: $id) {
+                  applicationItems(application: $id, userTracking: true) {
                     edges {
                       node {
                         firm {
@@ -226,6 +225,8 @@ query getInvoices($id: ID!) {
             brutto
             netto
             amount
+            deliveryCondition
+            destination
             relativeWeight
           }
         }

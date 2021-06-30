@@ -22,7 +22,6 @@ export const recursiveFetch = (amount, mutateFunc) => {
     let i = 0;
     return function fetch() {
         if (i < amount) {
-            console.log("i", i);
             mutateFunc(i)
             i++;
             fetch();
@@ -79,7 +78,6 @@ export const onResponseComplete = (data, type, entityName, callback) => {
 }
 
 export const getList = (data) => {
-    console.log("getList called");
     return getValueOfProperty(data, "edges");
 }
 
@@ -326,8 +324,6 @@ export const calculateDaysOnTheWay = (shippingDate) => {
     const shippingDateInMSeconds = new Date(shippingDate).getTime(),
           currentTimeMSeconds = Date.now();
 
-          console.log("shippingDateInMSeconds", shippingDateInMSeconds);
-          console.log("currentTimeMSeconds", currentTimeMSeconds);
     const onTheWay = currentTimeMSeconds - shippingDateInMSeconds;
 
     let amountOfDays = Math.floor(onTheWay / dayInMilliseconds),

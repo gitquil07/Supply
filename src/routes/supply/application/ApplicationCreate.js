@@ -101,7 +101,6 @@ const ApplicationCreate = ({ match }) => {
         invoices = useMemo(() => getList(invoicesRes?.data), [invoicesRes?.data]) || [],
         firms = useMemo(() => getList(firmsRes?.data), [firmsRes?.data]) || [];
 
-        console.log("invoices", invoices);
 
     const templ = {
         orderItem: "",
@@ -117,9 +116,6 @@ const ApplicationCreate = ({ match }) => {
         [invoiceData, setInvoiceData] = useState(invoiceInitial),
         [invoicePk, setInvoicePk] = useState(undefined);
 
-    useEffect(() => {
-        console.log("invoiceCreate", invoiceData);
-    }, [invoiceData]);
 
     const {
         addTempl,
@@ -190,8 +186,6 @@ const ApplicationCreate = ({ match }) => {
                 orders: application.orders.edges.map(({ node }) => node.pk)
             });
 
-            console.log("applicationRes?.data?.application?.application?.files?.edges", applicationRes?.data?.application?.application?.files?.edges)
-
             if (applicationRes?.data?.application?.application?.files?.edges.length > 0) {
                 setFiles({
                     ...files,
@@ -226,10 +220,6 @@ const ApplicationCreate = ({ match }) => {
     }, [applicationRes?.data?.application?.application?.pk]);
 
     useEffect(() => {
-        console.log("orders", orders);
-    }, [orders]);
-
-    useEffect(() => {
         if(state.orders.length > 0){
             getOrderItems({
                 variables: {
@@ -241,7 +231,6 @@ const ApplicationCreate = ({ match }) => {
 
     const editInvoice = (id) => {
         const invoiceToEdit = invoices.find(({ node }) => node.id === id).node;
-        console.log("invoiceToEdit", invoiceToEdit);
         setInvoiceData(exceptKey(invoiceToEdit, ["__typename"]));
         setInvoicePk(invoiceToEdit.pk);
         handleInvoiceOpen();
@@ -273,7 +262,6 @@ const ApplicationCreate = ({ match }) => {
                        
             let tmp = { ...requiredCounts };
             tmp[idx] = requiredCount;
-            console.log("here", tmp);
 
             setRequiredCounts(tmp);
 
@@ -291,8 +279,6 @@ const ApplicationCreate = ({ match }) => {
     }
 
     const beforeSubmit = () => {
-
-        console.log("state", state);
 
         let requestBody = {
             ...state,
@@ -315,12 +301,9 @@ const ApplicationCreate = ({ match }) => {
 
 
         if (pk) {
-
-            console.log("requestBody update", requestBody);
-            // handleSubmit(exceptKey(requestBody, ["orders"]), pk)
+            handleSubmit(exceptKey(requestBody, ["orders"]), pk)
         } else {
-            console.log("requestBody create", requestBody);
-            // handleSubmit(requestBody)
+            handleSubmit(requestBody)
         }
     }
 
@@ -340,10 +323,6 @@ const ApplicationCreate = ({ match }) => {
         }).catch(err => console.log(err));
     }
 
-    useEffect(() => {
-        console.log("requiredCounts", requiredCounts);
-    }, [requiredCounts]);
-
     const handleInvoiceDataChange = (e) => {
         const name = e.target.name;
         // if(name === "amount"){
@@ -353,20 +332,10 @@ const ApplicationCreate = ({ match }) => {
         // }
     }
 
-    useEffect(() => {
-        console.log("tre map", map);
-    }, [map]);
-    
-    useEffect(() => {
-        console.log("tre items", items);
-    }, [items])
-
-
     const addMaterials = (orderPk, orderIdx) => {
         let mapTmpl = map.slice(0);
     
         const selectedOrder = mapTmpl.find(mapItem => mapItem.orderPk === orderPk); 
-        console.log("map selectedOrder", selectedOrder);
 
 
         if(selectedOrder !== undefined){
@@ -379,9 +348,6 @@ const ApplicationCreate = ({ match }) => {
             mapTmpl.push(relationObject);
         }
 
-        console.log("items mapTmpl", mapTmpl);
-        console.log("items in addTemplate function", items)
-
         setMap(mapTmpl);
         addTempl();
     }
@@ -389,18 +355,13 @@ const ApplicationCreate = ({ match }) => {
 
     const removeMaterial = (materialIndex) => {
 
-        console.log("materialIndex", materialIndex);
         const relations = map.slice(0);
-        console.log("materialIndex relations", relations);
         const relation = map.find(relation => relation.applicationItems.indexOf(materialIndex) > -1);
-        console.log("materialIndex relation", relation);
                   
         // // Get index of materialIndex in relation
         const mIIndex = relation.applicationItems.indexOf(materialIndex);
-        console.log("materialIndex mIIndex", mIIndex)
         // // Get index of relation in relations
         const relIndex =  relations.indexOf(relation);
-        console.log("materialIndex relIndex", relIndex);
 
         relation.applicationItems.splice(mIIndex, 1);
 
@@ -412,11 +373,8 @@ const ApplicationCreate = ({ match }) => {
     }   
 
     const removeOrder = (orderPk) => {
-        console.log("orderPk", orderPk);
         const orders = state.orders.slice(0);
-        console.log("orderPk orders", orders);
         const relations = map.slice(0);
-        console.log("orderPk relations", relations);
 
         const relation = relations.find(relation => relation.orderPk === orderPk),
               orderIdx = orders.indexOf(orderPk);
@@ -427,19 +385,13 @@ const ApplicationCreate = ({ match }) => {
             setMap(relations);
         }
 
-        console.log("orderPk relation", relation);
-        console.log("orderPk orderIdx", orderIdx);
         const restOrders = orders.filter(number => number !== orderPk);
-        console.log("orderPk restOrders", restOrders);
         setState({
             ...state,
             orders: restOrders``
         });
     }
 
-    useEffect(() => {
-        console.log("material items useEffect", items);
-    }, [items]);
     
     return (
         <>
@@ -677,7 +629,6 @@ const Measure = styled.span`
     color: #5762B2;
 
     ${({ index }) => {
-        console.log(index)
         return index ? css`
             position:relative;
 

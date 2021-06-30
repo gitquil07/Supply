@@ -5,15 +5,12 @@ import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { CERTIFICATE_CUSTOMS } from './gql';
 import { generateColumns } from './TableData';
 import { useMemo } from 'react';
-import { FlexForHeader } from "../../../components/Flex";
-import { ButtonWithIcon } from "../../../components/Buttons";
 import { Pagination } from '../../../components/Pagination';
 import { usePagination, useToggleDialog, useGetOne } from "../../../hooks";
 import { CustomRowGeneratorForModal, getList } from "../../../utils/functions";
 import { modes } from "utils/static";
 import SmallDialog from "components/SmallDialog";
 import { DetailedInfo } from "components/DetailedInfo";
-import moment from "moment";
 
 
 const CertificateList = () => {

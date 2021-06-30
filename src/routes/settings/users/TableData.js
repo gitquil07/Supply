@@ -1,7 +1,6 @@
 import moment from "moment";
 import { Row, RowGray } from "components/Row";
 import { setHeading } from "utils/functions";
-import Switch from "@material-ui/core/Switch";
 
 export const generateColumns = (switchActivation) => {
     return [
@@ -66,7 +65,7 @@ export const generateColumns = (switchActivation) => {
                 filter: true,
                 sort: false,
                 customBodyRender: (value) => {
-                    return value.join(", ");
+                    return value.map(factory => <Row>{factory}</Row>);
                 }
             }
         },

@@ -14,7 +14,6 @@ query getApplication($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $a
             name
           }
           transportCount
-          deliveryCondition
           trackingUser {
             username
           }

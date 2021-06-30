@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { NotificationManager } from "react-notifications";
 import { onResponseComplete } from "../utils/functions";
 import moment from "moment";
-import { ValidationMessage } from "components/ValidationMessage";
 import { formatInputPrice } from "utils/functions";
 
 export const useDateRange = (query) => {
@@ -19,7 +18,6 @@ export const useDateRange = (query) => {
     }, []);
 
     const handleClick = () => {
-        console.log("button clicked");
         fetchData({ variables: { fromDate: moment(fromDate).format("YYYY-MM-DD"), toDate: moment(toDate).format("YYYY-MM-DD") } });
     }
 
@@ -52,7 +50,6 @@ export const useToggleDialog = () => {
     const [open, setOpen] = useState(false),
 
         handleOpen = () => {
-            console.log("open", open);
             setOpen(true)
         },
         handleClose = () => setOpen(false);
@@ -128,20 +125,14 @@ export const usePagination = ({ type, qraphQlQuery, singular, plural }) => {
             vars.variables.toDate = moment(toDate).format("YYYY-MM-DD");
         }
 
-        console.log("vars", vars);
-
         getDataPagination(vars);
 
     }, [fromDate, toDate]);
 
-    console.log("---------------- component rendered --------------------");
 
     useEffect(() => {
 
-        console.log("useEffect 1 called --------------------------------------------------------------");
-
-        if (paginatingState.prevPage === null && paginatingState.nextPage === null && hasNextPage == true && hasPreviousPage == false) {
-            console.log("here first condition");
+        if (paginatingState.prevPage === null && paginatingState.nextPage === null && hasNextPage === true && hasPreviousPage === false) {
             setPaginatingState({
                 ...paginatingState,
                 direction: "forward",
@@ -152,8 +143,7 @@ export const usePagination = ({ type, qraphQlQuery, singular, plural }) => {
             });
         }
 
-        if ((hasNextPage === true && hasPreviousPage === false && paginatingState.prevPage === false) || (hasNextPage === false && hasPreviousPage == true && paginatingState.nextPage === false)) {
-            console.log("here second condition");
+        if ((hasNextPage === true && hasPreviousPage === false && paginatingState.prevPage === false) || (hasNextPage === false && hasPreviousPage === true && paginatingState.nextPage === false)) {
             setPaginatingState({
                 ...paginatingState,
                 prevPage: true,
@@ -161,8 +151,7 @@ export const usePagination = ({ type, qraphQlQuery, singular, plural }) => {
             });
         }
 
-        if (paginatingState.direction == "forward" && hasNextPage === false && hasPreviousPage === false) {
-            console.log("here third condition");
+        if (paginatingState.direction === "forward" && hasNextPage === false && hasPreviousPage === false) {
             setPaginatingState({
                 ...paginatingState,
                 prevPage: true,
@@ -173,7 +162,6 @@ export const usePagination = ({ type, qraphQlQuery, singular, plural }) => {
         }
 
         if (paginatingState.direction === "backward" && hasNextPage === false && hasPreviousPage === false) {
-            console.log("here fourth condition");
             setPaginatingState({
                 ...paginatingState,
                 prevPage: false,
@@ -193,22 +181,11 @@ export const usePagination = ({ type, qraphQlQuery, singular, plural }) => {
             });
         }
 
-        console.log("useEffect 1 finished --------------------------------------------------");
 
     }, [hasNextPage, hasPreviousPage]);
 
-
     useEffect(() => {
-        console.log("useEffect 2 called -----------------------------------------");
-        console.log("paginatingState", paginatingState);
-        console.log("useEffect 2 finished ---------------------------------------");
-    }, [paginatingState]);
-
-    useEffect(() => {
-        console.log("useEffect 3 called --------------------------------------------");
-
         if (paginatingState.prevPage !== null && paginatingState.nextPage !== null) {
-            console.log("condition paginatingState");
             setPaginatingState({
                 ...paginatingState,
                 direction: null,
@@ -219,17 +196,11 @@ export const usePagination = ({ type, qraphQlQuery, singular, plural }) => {
             });
         }
 
-        console.log("useEffect 3 finished ----------------------------------------")
     }, [amountOfElemsPerPage]);
 
 
     useEffect(() => {
-        console.log("useEffect 4 called --------------------------------------------");
-        console.log("hasNextPage", hasNextPage);
-        console.log("hasPreviousPage", hasPreviousPage);
-        console.log("mutate", mutate);
         if (mutate === "create" && ((hasNextPage === true && hasPreviousPage === false) || (hasNextPage === false && hasPreviousPage === false && paginatingState.direction === "forward"))) {
-            console.log("inside condition");
             setPaginatingState({
                 ...paginatingState,
                 direction: null,
@@ -241,14 +212,10 @@ export const usePagination = ({ type, qraphQlQuery, singular, plural }) => {
 
             setMutateState("");
         }
-        console.log("useEffect 4 finished------------------------------------------------");
     }, [mutate, hasNextPage, hasPreviousPage]);
 
     useEffect(() => {
         if (isFirstPage && hasNextPage && hasPreviousPage == false) {
-            console.log("useEffect 5 called ---------------------------------------------------");
-            console.log("hasNextPage", hasNextPage);
-            console.log("hasPreviousPage", hasPreviousPage);
             setPaginatingState({
                 ...paginatingState,
                 direction: null,
@@ -378,7 +345,6 @@ export const useCustomMutation = ({ graphQlQuery: { queryCreate, queryUpdate } }
     });
 
     const submitData = (data, pk, id) => {
-        console.log("submit data pk", pk);
         const options = {
             variables: {
                 input: {
@@ -408,10 +374,8 @@ export const useCustomMutation = ({ graphQlQuery: { queryCreate, queryUpdate } }
                 pk ? submitData(val, pk, id) : submitData(val, id)
             })
             .catch(errObj => {
-                console.dir(errObj);
                 const messages = {};
                 for (let error of errObj.inner) {
-                    console.log(error);
                     messages[error.path] = error.message;
                 }
                 setValidationMessages({ ...validationMessages, ...messages });

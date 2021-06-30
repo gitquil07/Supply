@@ -14,7 +14,6 @@ query getApplication($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $a
             name
           }
           transportCount
-          deliveryCondition
           trackingUser {
             username
           }
@@ -137,6 +136,9 @@ query getApplication($id : ID!){
             weight
             size
             invoicePrice
+            trackingUser{
+              pk
+            }
           }
         }
       }
@@ -279,6 +281,21 @@ export const GET_TRACKING_USER = gql`
 query getTrackingUsers {
   account {
     users(role: "Um9sZU5vZGU6NQ==") {
+      edges {
+        node {
+          pk
+          username
+        }
+      }
+    }
+  }
+}
+`;
+
+export const GET_MIX_TRACKING_USER = gql`
+query getMixTrackingUser {
+  account {
+    users(role: "Um9sZU5vZGU6MTA=") {
       edges {
         node {
           pk

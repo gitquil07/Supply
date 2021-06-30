@@ -60,8 +60,6 @@ const FirmsList = () => {
 
     const firm = list.find(firm => firm.id === id);
 
-    console.log(list)
-
     const editEntry = (id) => {
         setId(id);
         setCreateOpen(true);

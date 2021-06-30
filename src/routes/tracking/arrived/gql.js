@@ -22,7 +22,6 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
           }
           application {
             transferredDate
-            deliveryCondition
             trackingUser {
               username
             }

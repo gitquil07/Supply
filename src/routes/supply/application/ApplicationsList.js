@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext } from "react";
 import { Helmet } from 'react-helmet';
 import { useTitle } from 'hooks';
 import DatePickers from 'components/Inputs/DatePickers';
@@ -12,11 +12,14 @@ import { Pagination } from 'components/Pagination';
 import { usePagination } from "hooks";
 import { CustomRowGenerator, getList } from "utils/functions";
 import { statuses } from "utils/static"
+import { UserContext } from "context/UserContext";
+import { checkPrivilege } from "authorization/authCheck";
 
 
 
 const ApplicationList = ({ match }) => {
 
+    const { role } = useContext(UserContext);
 
     const title = useTitle("Заявки на Логистику");
     const {
@@ -100,7 +103,9 @@ const ApplicationList = ({ match }) => {
                     changeTo={setToDateChange}
                     buttonClicked={handleDateApply}
                 />
-                <ButtonWithIcon name="создать заявку" url={`${match.url}/create`} />
+                {
+                    checkPrivilege(role, "allowApplicationCreate") && <ButtonWithIcon name="создать заявку" url={`${match.url}/create`} />
+                }
             </FlexForHeader>
             <CustomMUIDataTable
                 title={"Список заявок"}

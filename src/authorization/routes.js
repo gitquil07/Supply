@@ -10,14 +10,12 @@ const AuthorityRoute = ({component: Component, roles, ...props}) => {
     const {role}= useContext(UserContext),
           trRole = toCamelCase(role);
 
-
     return <Route {...props} render={props => roles[trRole].allowRoute? <ErrorBoundary><Component {...props} /></ErrorBoundary> : "Page not found"}></Route>
 }
 
 
 export const ProtectedRoute = (props) => {
     const { path } = props;
-    console.log("props", props);
 
     const roles = {};
     Object.keys(RolesAuthority).forEach(key => {
@@ -29,41 +27,43 @@ export const ProtectedRoute = (props) => {
     if(path.indexOf("/supply/order") > -1){
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
-        roles.trackingSupply = true;
+        roles.mixTracking.allowRoute = true;
     }
 
     if(path.indexOf("/supply/application") > -1){
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
-        roles.trackingSupply = true;
+        roles.mixTracking.allowRoute = true;
     }
 
     if(path.indexOf("/supply/arrived") > -1){
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
-        roles.trackingSupply = true;
+        roles.mixTracking.allowRoute = true;
     }
 
     if(path.indexOf("/supply/customs") > -1){
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
-        roles.trackingSupply = true;
+        roles.mixTracking.allowRoute = true;
     }
 
     if(path.indexOf("/supply/report") > -1){
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
-        roles.trackingSupply = true;
+        roles.mixTracking.allowRoute = true;
     }
 
     if(path.indexOf("/supply/stock-balance") > -1){
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
+        roles.mixTracking.allowRoute = true;
     }
 
     if(path.indexOf("/supply/plan-product") > -1){
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
+        roles.mixTracking.allowRoute = true;
     }
 
     // Tracking routes privileges for (adminTracking tracking) and( adminSupply order) and (tracking_supply)
@@ -74,7 +74,7 @@ export const ProtectedRoute = (props) => {
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
 
-        roles.trackingSupply = true;
+        roles.mixTracking.allowRoute = true;
     }
 
     if(path.indexOf("/tracking/arrived") > -1){
@@ -84,21 +84,21 @@ export const ProtectedRoute = (props) => {
         roles.supplyAdmin.allowRoute = true;
         roles.order.allowRoute = true;
 
-        roles.trackingSupply = true;
+        roles.mixTracking.allowRoute = true;
     }
 
     if(path.indexOf("/tracking/clients") > -1){
         roles.trackingAdmin.allowRoute = true;
         roles.tracking.allowRoute = true;
 
-        roles.trackingSupply = true;
+        roles.mixTracking.allowRoute = true;
     }
 
     if(path.indexOf("/tracking/dept") > -1){
         roles.trackingAdmin.allowRoute = true;
         roles.tracking.allowRoute = true;
 
-        roles.trackingSupply = true;
+        roles.mixTracking.allowRoute = true;
     }
 
     // Custom routes privileges for (adminTracking tracking) and( adminSupply order)
@@ -199,8 +199,6 @@ export const ProtectedRoute = (props) => {
         roles.supplyAdmin.allowRoute = true;
         roles.trackingAdmin.allowRoute = true;
     }
-
-    console.log("roles protected", roles);
 
     return  <AuthorityRoute {...{roles, ...props}} />
 }

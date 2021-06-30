@@ -33,25 +33,6 @@ export const Table = () => {
     );
 };
 
-export const TableIII = ({dataset}) => {
-    // return (
-    //     <Wrapper>
-    //         {
-    //             dataset.map(({node}) => {
-    //                 return <RowIII>
-    //                     {
-    //                         Object.keys(node).map(key => 
-    //                             <div>
-    //                                 <span>{node[key]}</span>
-    //                             </div>   
-    //                         )
-    //                     }
-    //                 </RowIII>
-    //             })
-    //         }
-    //     </Wrapper>
-    // );
-};
 
 const Wrapper = styled.div`
     width: 100%;
@@ -81,29 +62,5 @@ const Row = styled.div`
 
     #value {
         color: rgba(0, 0, 0, 0.5);
-    };
-`;
-
-
-const RowIII = styled.div`
-    height: 40px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    display: grid;
-    gap: 10px;
-    grid-template-columns: 1fr 1fr 4fr;
-    align-items: center;
-    padding: 0 10px;
-
-    :last-child {
-        border: none;
-    }
-
-    #property {
-        color: rgba(0, 0, 0, 0.8);
-    };
-
-    #value {
-        color: rgba(0, 0, 0, 0.5);
-        margin-left: 5px
     };
 `;

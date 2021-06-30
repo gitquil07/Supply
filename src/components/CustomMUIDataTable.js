@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import MUIDataTable from "mui-datatables";
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import styled from "styled-components";
 
 import SearchIcon from '@material-ui/icons/YoutubeSearchedFor';
@@ -8,7 +7,6 @@ import PrintIcon from '@material-ui/icons/Receipt';
 import DownloadIcon from '@material-ui/icons/GetApp';
 import ViewColumnIcon from '@material-ui/icons/DynamicFeed';
 import FilterIcon from '@material-ui/icons/GroupWork';
-import { ContactSupportOutlined } from "@material-ui/icons";
 
 
 export const CustomMUIDataTable = React.memo(({ count, title, data, columns, customRowOptions, searchableFields }) => {
@@ -21,7 +19,6 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
         rowsPerPage: count,
         ...customRowOptions,
         onSearchChange: searchText => {
-            console.log("searchText", searchText);
             setWords(searchText)
         }
     };
@@ -37,9 +34,6 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
         }
     };
 
-    console.log("custom table rendered");
-
-
     const filterList = () => {
 
         if(words !== "" && words !== null){
@@ -54,7 +48,6 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
                     if(value !== undefined){
     
                         if(typeof value === "object"){
-                            console.log("foundRes object condition", value);
                             
                             if(Array.isArray(value)){
                                 // Case when object is (array)
@@ -66,11 +59,9 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
                                 
                                 const matches = [];
                                 value.forEach(val => {
-                                    console.log("foundRes value ----------------------------------------", val);
                                     matches.push(val.toLowerCase().indexOf(words.toLowerCase()) > -1);
                                 });
                                 
-                                console.log("found matches", matches.indexOf(true) > -1);
                                 found.push(matches.indexOf(true) > -1);
     
                             }else if(value !== null){
@@ -129,13 +120,11 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
                         }
     
                         if(typeof value === "string"){
-                            console.log("foundRes string", value);
                             found.push(value.toLowerCase().indexOf(words.toLowerCase()) > -1);
                             
                         }
     
                         if(typeof value === "number"){
-                            console.log("foundRes number", value);
                             found.push(value == words);
 
                         }
@@ -178,65 +167,26 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
     
                 });
     
-                console.log("found", found);
-    
                 const hasAtLeastOneMatchWithinRow = found.indexOf(true) > -1;
     
-                console.log("found hasAtLeastOneMatchWithinRow", hasAtLeastOneMatchWithinRow);
                 return hasAtLeastOneMatchWithinRow; 
             });
 
-            console.log("foundRes", res);
-            console.log("foundRes", Array.isArray(res));
-            console.log("foundRes length", res.length);
+        
             return [...res];
         }else{
-            console.log("foundRes here");
             return data;
         }
-
-        // return (words !== "" && words !== null)? data.filter(row => {
-            
-        //     const found = [];
-
-        //     searchableFields.forEach(fieldName => {
-
-        //         let val = row[fieldName];
-        //         console.log("searchText val", val);
-        //         console.log("searchText values", val.indexOf(words) > -1);
-                
-        //         // if(val !== null){
-
-        //             // if(typeof val === "number"){
-        //             //     val = `${val}`;
-        //             // }
-    
-        //             found.push(val.toLowerCase().indexOf(words.toLowerCase()) > -1);
-
-        //         // }
-
-        //     })
-
-        //     const hasAnyMatch = found.indexOf(true) > -1; 
-
-        //     console.log("searchText found", found);
-        //     console.log("searchText hasAnyMatch", hasAnyMatch);
-        //     return hasAnyMatch;
-
-            
-        // }) : data
     }
 
     return (
-        <MuiThemeProvider>
-            <StyledMUIDataTable
-                title={title}
-                data={(filterList(data))}
-                columns={columns}
-                options={options}
-                {...{ components }}
-            />
-        </MuiThemeProvider>
+        <StyledMUIDataTable
+            title={title}
+            data={(filterList(data))}
+            columns={columns}
+            options={options}
+            {...{ components }}
+        />
     )
 
 }, (prevProps, nextProps) => prevProps.count === nextProps.count && prevProps.title === nextProps.title && prevProps.data === nextProps.data && prevProps.columns === nextProps.columns);
@@ -246,23 +196,28 @@ const StyledMUIDataTable = styled(MUIDataTable)`
     box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1) !important;
     border-radius: 10px;
     padding: 10px; 
-    height: calc(100vh - 280px);
-    overflow-y: scroll;
 
-    ::-webkit-scrollbar {
-        width: 5px;
+    & > div:nth-child(3){
+        height: calc(100vh - 400px) !important;
+        overflow-y:auto;
+
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(87, 98, 178, 0.5);
+            box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
     }
 
-    ::-webkit-scrollbar-track {
-        background-color: rgba(0, 0, 0, 0.1);
-        border-radius: 5px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: rgba(87, 98, 178, 0.5);
-        box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.1);
-        border-radius: 5px;
-    }
 
     .MuiToolbar-gutters {
         border: none !important;
