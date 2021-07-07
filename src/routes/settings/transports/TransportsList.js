@@ -88,6 +88,7 @@ const TransportList = () => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGeneratorForModal(editEntry)}
+                loading={dataPaginationRes.loading}
                 {
                     ...{ searchableFields }
                 }

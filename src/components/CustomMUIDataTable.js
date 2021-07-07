@@ -7,9 +7,19 @@ import PrintIcon from '@material-ui/icons/Receipt';
 import DownloadIcon from '@material-ui/icons/GetApp';
 import ViewColumnIcon from '@material-ui/icons/DynamicFeed';
 import FilterIcon from '@material-ui/icons/GroupWork';
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 
-export const CustomMUIDataTable = React.memo(({ count, title, data, columns, customRowOptions, searchableFields }) => {
+const Container = styled.div`
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+`
+
+
+export const CustomMUIDataTable = React.memo(({ count, title, data, columns, customRowOptions, searchableFields, loading, onDownload }) => {
 
     const [words, setWords] = useState("");
 
@@ -20,7 +30,13 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
         ...customRowOptions,
         onSearchChange: searchText => {
             setWords(searchText)
-        }
+        },
+        textLabels: {
+            body:{
+                noMatch: loading? <Container><CircularProgress /></Container> : "Нет записей"
+            }
+        },
+        onDownload: (typeof onDownload === "function")? onDownload : undefined
     };
 
 
@@ -44,6 +60,7 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
                 
                 searchableFields.forEach(fieldName => {
                     const value = row[fieldName];
+                    
     
                     if(value !== undefined){
     
@@ -55,8 +72,7 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
                                 // Look at least one match in array.
                                 // If found push (true) to (found) array!!
                                 // if not found push (false)
-                                found.push(value.indexOf(words) > -1);
-                                
+
                                 const matches = [];
                                 value.forEach(val => {
                                     matches.push(val.toLowerCase().indexOf(words.toLowerCase()) > -1);
@@ -166,12 +182,11 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
                     }
     
                 });
-    
+
                 const hasAtLeastOneMatchWithinRow = found.indexOf(true) > -1;
-    
+
                 return hasAtLeastOneMatchWithinRow; 
             });
-
         
             return [...res];
         }else{
@@ -182,7 +197,7 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
     return (
         <StyledMUIDataTable
             title={title}
-            data={(filterList(data))}
+            data={filterList(data)}
             columns={columns}
             options={options}
             {...{ components }}

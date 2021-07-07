@@ -106,6 +106,8 @@ const NewList = ({ match }) => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGenerator(url)}
+                loading={dataPaginationRes.loading}
+
                 {
                     ...{ searchableFields }
                 }

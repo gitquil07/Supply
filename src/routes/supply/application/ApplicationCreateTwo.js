@@ -346,6 +346,12 @@ const ApplicationCreate = ({ match }) => {
 
         requestBody.files = files.uploaded.map(file => file.file_id);
 
+        if(!requestBody.transportMix){
+            delete requestBody.trackingUser;
+        }
+
+
+        // console.log("requestBody", requestBody);
 
         if (pk) {
             handleSubmit(exceptKey(requestBody, ["orders"]), pk);

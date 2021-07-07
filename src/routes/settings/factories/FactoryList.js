@@ -102,6 +102,7 @@ const FactoryList = () => {
                 count={amountOfElemsPerPage}
                 options={options}
                 customRowOptions={CustomRowGeneratorForModal(editEntry)}
+                loading={dataPaginationRes.loading}
                 {
                     ...{ searchableFields }
                 }

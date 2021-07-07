@@ -90,13 +90,21 @@ export const generateColumns = () => {
         },
         {
             name: "amountAndNettoAndBrutto",
-            label: "Сумма\nНетто / Брутто",
+            label: "Транс., расходы\nНетто / Брутто",
             options: {
                 filter: false,
                 sort: false,
                 customHeadRender: setHeading,
                 customBodyRender: ({amount, netto, brutto}) => 
                     <TwoRows main={amount} sub={`${netto} / ${brutto}`} />
+            }
+        },
+        {
+            name: "transportType",
+            label: "Тип транспорта",
+            options:{
+                filter: true,
+                sort: true
             }
         },
         // Columns to add to filter

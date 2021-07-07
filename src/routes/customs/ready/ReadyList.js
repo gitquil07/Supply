@@ -105,6 +105,7 @@ const ReadyList = () => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGeneratorForModal(openDialog)}
+                loading={dataPaginationRes.loading}
             />
             <SmallDialog title={`Заявка ${one?.node?.publicId}`} close={handleClose} isOpen={open}>
                 {

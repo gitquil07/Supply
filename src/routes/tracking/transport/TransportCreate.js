@@ -12,17 +12,12 @@ import { CustomNumber } from "components/Inputs/CustomNumber";
 import { CustomSelector } from "components/Inputs/CustomSelector";
 import SmallDialog from "components/SmallDialog";
 
-import { FlexForHeader } from "components/Flex";
-import { TableIII } from "components/Table";
 import { Footer } from "components/Footer";
-import { Arrows } from "components/Arrows";
-import { RemoveIcon } from "components/RemoveIcon";
-import { DisabledInput } from "components/DisabledInput";
 import CustomPicker from "components/Inputs/DatePicker";
 import { MiniForm } from "components/ComponentsForForm/MiniForm";
 import { Title } from "components/Title";
 import { CustomizableInputs } from "components/ComponentsForForm/CustomizableInputs";
-import { GET_TRACKING, GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS, GET_VENDORS, GET_INVOICES, INVOICE_UPDATE } from "./gql";
+import { GET_TRACKING, GET_APPLICATION_ITEMS_GROUPED_BY_ORDERS, GET_VENDORS, GET_INVOICES, INVOICE_UPDATE, UPDATE_APPLICATION } from "./gql";
 import { useLazyQuery } from "@apollo/client";
 import { recursiveFetch, exceptKey } from "utils/functions";
 import { currencyOptions, invoiceStatuses, trackingStatuses, deliveryCondition } from "utils/static";
@@ -105,6 +100,17 @@ const TrackingTransportCreate = ({ match }) => {
         () => { }
     )
 
+    const {
+        submitData: submitShippingUpdate
+    } = useCustomMutation({
+        graphQlQuery: {
+            queryCreate: UPDATE_APPLICATION,
+            queryUpdate: UPDATE_APPLICATION
+        }
+    },
+        "Дата отгрузки",
+        () => {}
+    );
 
 
     const [getTrackingInfo, trackingInfoRes] = useLazyQuery(GET_TRACKING, {
@@ -150,6 +156,32 @@ const TrackingTransportCreate = ({ match }) => {
         },
         onError: (error) => NotificationManager.error(error.message)
     });
+
+    const [shippingDate, setShippingDate] = useState(new Date());
+
+    const shipDate = applicationInfo?.shippingDate;
+    console.log("shipDate", shipDate);
+    
+    useEffect(() => {
+
+        if(shipDate){
+
+            setShippingDate(shipDate);
+
+        }
+        console.log("shipDate", shipDate);
+
+    }, [shipDate]);
+
+    useEffect(() => {
+        console.log("shippingDate", shippingDate);
+    }, [shippingDate]);
+
+
+    const handleShippingDateChange = (date) => {
+        setShippingDate(date);
+    }
+
 
     useEffect(() => {
         getVendors();
@@ -197,12 +229,15 @@ const TrackingTransportCreate = ({ match }) => {
                 ...exceptKey(state, ["pk", "publicId", "netto", "brutto", "amount"]),
                 status: trackingStatuses.find(status => status.value === additionalData.status)?.label,
                 locations: [{
-                    name: additionalData.locations
+                    name: additionalData.locations,
+                    locationDate: moment(additionalData.locationDate).format("YYYY-MM-DD"),
+                    status: trackingStatuses.find(status => status.value === additionalData.status)?.label
                 }]
             };
 
-            requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
+            console.log("additionalData requestBody", requestBody);
 
+            requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
 
             updateTracking({
                 variables: {
@@ -241,7 +276,12 @@ const TrackingTransportCreate = ({ match }) => {
 
             submitData({
                 ...exceptKey(requestBody, ["pk", "publicId", "status"])
-            }, pk);
+            }, pk); 
+            
+            submitShippingUpdate({
+                shippingDate: moment(shippingDate).format("YYYY-MM-DD")
+            }, applicationInfo.pk)
+
             getTrackingInfo({
                 variables: {
                     id
@@ -323,7 +363,6 @@ const TrackingTransportCreate = ({ match }) => {
         }
     }
 
-
     return (
         <>
             <Helmet title={title} />
@@ -368,7 +407,8 @@ const TrackingTransportCreate = ({ match }) => {
                         }
                     </CustomizableInputs>
                     <CustomizableInputs t="1fr 1fr">
-                        <CustomInput label="Дата отгрузки" value={applicationInfo?.shippingDate || "YYYY-MM-DD"} disabled />
+                        <CustomPicker date={shippingDate} name="shippingDate" stateChange={date => handleShippingDateChange(date)} label="Дата отгрузки" />
+                        {/* <CustomInput label="Дата отгрузки" value={applicationInfo?.shippingDate || "YYYY-MM-DD"} disabled /> */}
                         <CustomInput label="В пути" value={addDays(applicationInfo?.inWayDayCount || 0)} disabled /> 
                     </CustomizableInputs>
                 </MiniForm>
@@ -447,6 +487,7 @@ const TrackingTransportCreate = ({ match }) => {
                             }
                         </CustomSelector>
                         <CustomInput value={additionalData.location} name="location" stateChange={e => setAdditionalData({ ...additionalData, locations: e.target.value })} label="Местонахождение" />
+                        <CustomPicker date={additionalData.locationDate} name="locationDate" stateChange={date => setAdditionalData({...additionalData, locationDate: date})} label="Дата" />
                         <Button value={additionalData.status} name="Добавить статус" color="#5762B2" clickHandler={() => handleAdditionalDataSubmit(true)} />
                     </CustomizableInputs>
 
@@ -461,7 +502,7 @@ const TrackingTransportCreate = ({ match }) => {
                                         </ContainerColumn>
                                         <ContainerColumn>
                                             <b>Дата:</b>
-                                            <span>{moment(location.createdAt).format("YYYY-MM-DD")}</span>
+                                            <span>{moment(location.locationDate).format("YYYY-MM-DD")}</span>
                                         </ContainerColumn>
                                         <ContainerColumn>
                                             <b>Местонахождение:</b>

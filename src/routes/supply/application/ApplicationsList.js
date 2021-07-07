@@ -72,7 +72,7 @@ const ApplicationList = ({ match }) => {
             deliveryCondition: node?.deliveryCondition,
             transportTypeCountDelivery: { transportType: node.transportType.name, transportCount: node.transportCount, deliveryCondition: node.deliveryCondition },
             typeOfPackaging: node.typeOfPackaging,
-            trackingUser: node.trackingUser.username,
+            trackingUser: node.trackingUser?.username,
             status: statuses.find(status => status.value == node.status)?.label,
             invoices: node.invoices.edges.map(({node}) => node.number).join(", ")
         }
@@ -113,6 +113,7 @@ const ApplicationList = ({ match }) => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGenerator(url)}
+                loading={dataPaginationRes.loading}
                 {
                     ...{ searchableFields }
                 }

@@ -13,6 +13,7 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
           trDate
           station
           border
+          note
           vendor {
             companyName
             sapCountry {
@@ -34,6 +35,8 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
                 node {
                   number
                   relativeWeight
+                  deliveryCondition
+                  destination
                 }
               }
             }
@@ -41,6 +44,17 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
               edges {
                 node {
                   pk
+                  orderItems {
+                    edges {
+                      node {
+                        vendorProduct {
+                          product {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }                        
                   vendorFactory {
                     vendorProducts {
                       edges {
@@ -50,6 +64,12 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
                           }
                         }
                       }
+                    }
+                    vendor {
+                      sapCountry {
+                        name
+                      }
+                      sapCity
                     }
                     factory {
                       name
@@ -106,12 +126,14 @@ query getTrackingInfo($id: ID!) {
         edges{
           node{
             name
-            createdAt
+            locationDate
+            status
           }
         }
       }
       application {
         id
+        pk
         transportMix
         inWayDayCount
         shippingDate
@@ -244,3 +266,14 @@ mutation updateInvoice($input: InvoiceUpdateMutationInput!){
     }
   }
 }`;
+
+export const UPDATE_APPLICATION = gql`
+mutation updateApplicationDate($input: ApplicationUpdateMutationInput!) {
+  application {
+    applicationUpdate(input: $input) {
+      ok
+      errors
+    }
+  }
+}
+`;

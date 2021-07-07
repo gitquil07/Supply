@@ -118,6 +118,7 @@ const ArrivedList = () => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGeneratorForModal(openDialog)}
+                loading={dataPaginationRes.loading}
                 {
                     ...{ searchableFields }
                 }
