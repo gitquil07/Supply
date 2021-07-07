@@ -74,7 +74,8 @@ const TestTable2 = () => {
 
     let renderedValues = [];
     let repeatedRenderedValues = [];
-    let repeatedColsAmount = columns[0] ? columns[0].filter(column => column.indexOf("Планируемый прогноз") > -1).length / 4 : 0;
+    // let repeatedColsAmount = columns[0] ? columns[0].filter(column => column.indexOf("Планируемый прогноз") > -1).length / 4 : 0;
+    let enoughDayAmount = 2;
     let flags = [];
     return (
         <Wrapper>
@@ -122,6 +123,8 @@ const TestTable2 = () => {
                                         } else if (flags.indexOf(colIdx) > -1) {
                                             cageClasses = "first";
                                         }
+
+                                        let repeatedColsAmount = columns[0].filter(column => column.indexOf(columns[0][colIdx]) > -1).length / 4;
 
                                         if (renderedValues.indexOf(col) == -1 || (renderedValues.indexOf(col) > -1 && shallowCheckingForExisting(col, allowedHeadersToRepeat))) {
                                             renderedValues.push(col);
@@ -215,8 +218,6 @@ const TestTable2 = () => {
                                             }
                                         }
 
-                                        // console.log("cageClasses", cageClasses);
-                                        // debugger;
                                         if (flags.indexOf(colIdx + 1) > -1) {
                                             cageClasses += " last";
                                         }
@@ -228,9 +229,7 @@ const TestTable2 = () => {
                                             cageClasses += " reddest";
                                         }
 
-                                        // console.log("cage classes", cageClasses);
                                         return <td className={cageClasses}>{goToNewLine((!isNaN(col) && col.length > 0) ? formatPrice(col) : col)}</td>
-                                        // return <td className={cageClasses}>{col}</td>
                                     })
                                 }
                             </tr>

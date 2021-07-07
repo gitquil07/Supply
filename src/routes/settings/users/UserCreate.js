@@ -57,8 +57,6 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
         }
     }, [entry?.id]);
 
-    console.log("state", state);
-
 
     const [getFactories, getFactoriesRes] = useLazyQuery(GET_FACTORIES),
           [getRoles, getRolesRes] = useLazyQuery(GET_ROLES);
@@ -97,7 +95,6 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
         () => {
             handleClose();
             if ((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)) {
-                console.log("inside condition first");
                 setIsFirstPage(true);
                 getEntries({
                     variables: {
@@ -127,12 +124,9 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
     const beforeSubmit = () => {
 
         let tmp = { ...state };
-        console.log("entry", entry);
-
 
         const factoriesPks = [];
         state.factories.forEach(factory => {
-            console.log("factory", factory);
             const pk = factories.find(({ node }) => node.name == factory)?.node?.pk;
             factoriesPks.push(pk);
         });
@@ -142,8 +136,6 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
         tmp.role = roles.find(({ node }) => node.displayName == tmp.role)?.node?.pk;
 
         tmp = pk ? exceptKey(tmp, ["username"]) : tmp;
-
-        console.log("tmp", tmp);
 
         pk ? handleSubmit(tmp, pk) : handleSubmit(tmp);
     }

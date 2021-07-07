@@ -88,7 +88,6 @@ const ProductCreate = ({ match }) => {
     }, [id]);
 
     useEffect(() => {
-        console.log("product", product);
         if (product !== undefined) {
             setProducts([
                 {
@@ -101,11 +100,7 @@ const ProductCreate = ({ match }) => {
                 }
             ])
         }
-    }, [product])
-
-    useEffect(() => {
-        console.log("products", products);
-    }, [products])
+    }, [product]);
 
     const title = useTitle(id ? "Редактирование продукта" : "Создание нового продукта");
 

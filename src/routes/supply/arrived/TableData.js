@@ -13,7 +13,9 @@ export const generateColumns = () => {
             name: "id",
             label: "№",
             options: {
-                display: "none"
+                filter: false,
+                display: false,
+                viewColumns: false
             },
         },
         {
@@ -25,10 +27,15 @@ export const generateColumns = () => {
             }
         },
         {
+            name: "status",
+            label: "Статус",
+        },
+        {
             name: "transportTypeCountDelivery",
             label: "Тип транспортировки / Кол - во\nУсловие доставки",
             options: {
-                ...options,
+                filter: false,
+                sort: false,
                 customHeadRender: setHeading,
                 customBodyRender: value => {
                     return <>
@@ -38,15 +45,51 @@ export const generateColumns = () => {
                 }
             }
         },
-        // {
-        //     name: "typeOfPackaging",
-        //     label: "Вид упаковки / Кол-во",
-        //     options
-        // },
         {
             name: "trackingUser",
             label: "Логист",
             options: options
+        },
+        {
+            name: "invoices",
+            label: "инвойсы",
+            options: {
+                filter: true,
+                display: "exluded",
+                viewColumns: false
+            }
+        },
+        {
+            name: "transportType",
+            label: "Тип транспорта",
+            options: {
+                filter: true,
+                display: "exluded",
+            }
+        },
+        {
+            name: "count",
+            label: "Кол-во",
+            options: {
+                filter: true,
+                display: "excluded"
+            }
+        },
+        {
+            name: "deliveryCondition",
+            label: "Условия доставки",
+            options: {
+                filter: true,
+                display: "excluded"
+            }
+        },
+        {
+            name: "transportCount",
+            label: "Кол-во транспорта",
+            options: {
+                filter: true,
+                display: "none"
+            }
         }
     ];
 

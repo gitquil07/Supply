@@ -147,19 +147,6 @@ const OrderCreate = ({ match }) => {
     }, [orderRes?.data]);
 
     useEffect(() => {
-        console.log("order", orderData);
-    }, [orderData]);
-
-    useEffect(() => {
-        console.log("factory", factory);
-    }, [factory]);
-
-
-    useEffect(() => {
-        console.log("files", files);
-    }, [files]);
-
-    useEffect(() => {
 
         getVendorFactories({
             variables: {
@@ -171,7 +158,6 @@ const OrderCreate = ({ match }) => {
 
     const { vendorFactory } = orderData;
     useEffect(() => {
-        console.log("vendorFactory", vendorFactory);
         getVendorFactoryProducts({
             variables: {
                 vendorFactory
@@ -253,11 +239,6 @@ const OrderCreate = ({ match }) => {
         setVendorProductChange(tmp);
         removeTempl(index)
     }
-
-    useEffect(() => {
-        console.log("vendorProductChange", vendorProductChange);
-    }, [vendorProductChange]);
-
 
     const sendFileToServer = (file) => {
         setLoading(true);

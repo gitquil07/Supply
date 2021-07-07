@@ -1,3 +1,4 @@
+import { Row } from "components/Row"
 export const generateColumns = (callback) => {
 
     return [
@@ -5,7 +6,8 @@ export const generateColumns = (callback) => {
             name: "id",
             label: "ID",
             options: {
-                display: "none"
+                filter: false,
+                display: "exluded"
             }
         },
         {
@@ -26,11 +28,11 @@ export const generateColumns = (callback) => {
         },
         {
             name: "factories",
-            label: "Заводов",
+            label: "Заводы",
             options: {
-                sort: true,
-                filter: true,
-                customBodyRender: value => <div style={{ fontSize: "14px" }}>{value}</div>
+                sort: false,
+                filter: false,
+                customBodyRender: value => value.map(factory => <Row>{factory}</Row>)
             }
         }
 

@@ -24,12 +24,12 @@ export const Sidebar = () => {
     });
 
     const { role } = useContext(UserContext);
-    // const role = "ADMIN";
 
     const handleExpand = (name) => setState({ ...state, supply: false, logistics: false, customs: false, settings: false, [name]: !state[name] });
 
     return (
-        <List component="nav" style={{ color: "white", background: "rgba(0, 0, 0, 0.6)", height: "100%" }}>
+        // <List component="nav" style={{ color: "white", background: "rgba(0, 0, 0, 0.6)", height: "100%" }}>
+        <List component="nav" style={{ color: "white" }}>
             {navElements.map((i, index) =>  {
 
                 let allow = true;
@@ -53,9 +53,6 @@ export const Sidebar = () => {
                         break;
                 }
 
-                console.log("name", i.name);
-                console.log("allow", allow);
-
                 return (
                     <>
                          {
@@ -67,13 +64,11 @@ export const Sidebar = () => {
                                 </ListItem>
 
                                 <Collapse in={state[i.state]} timeout="auto" unmountOnExit>
-                                    <List component="div" disablePadding>
+                                    <List component="div" disablePadding >
                                         {i.children.map((i, index) => {
 
                                             let path = i.url.slice(i.url.indexOf("/", 1) + 1);
-                                                console.log("path before", path);
                                                 path = path.indexOf("-") === -1? path : path.slice(0, path.indexOf("-")) + path.slice(path.indexOf("-")+1, path.indexOf("-")+2).toUpperCase() + path.slice(path.indexOf("-")+2)
-                                                console.log("path after", path);
 
                                             let allowSub = checkPrivilege(role, `menuPermissions.${name}.${path}`);
 

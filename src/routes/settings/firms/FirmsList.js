@@ -53,14 +53,12 @@ const FirmsList = () => {
                 pk: node.pk,
                 name: node.name,
                 inn: node.inn,
-                factories: node.factories.edges.map(({ node }) => <p style={{ margin: "5px" }}>{node.name}</p>),
+                factories: node.factories.edges.map(({ node }) => node.name),
             }
         });
     }, [firms])
 
     const firm = list.find(firm => firm.id === id);
-
-    console.log(list)
 
     const editEntry = (id) => {
         setId(id);
@@ -73,6 +71,12 @@ const FirmsList = () => {
     }
 
     const columns = useMemo(() => generateColumns(editEntry), []);
+
+    const searchableFields = [
+        "name",
+        "inn",
+        "factories"
+    ];
 
     return (
         <>
@@ -88,6 +92,10 @@ const FirmsList = () => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGeneratorForModal(editEntry)}
+                loading={dataPaginationRes.loading}
+                {
+                    ...{ searchableFields }
+                }
             />
             <Pagination {...paginationParams} />
         </>

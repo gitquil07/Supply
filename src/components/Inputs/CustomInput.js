@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
 
 export const CustomInput = ({ name, value, label, type, required, stateChange, short, fullWidth, errorVal, disabled, width}) => {
     return (
@@ -31,6 +30,7 @@ const Wrapper = styled.div`
 
         fieldset {
             border: 1px solid ${({errorVal}) => !errorVal? `rgba(0, 0, 0, 0.1) !important` : `red`};
+            overflow-y:hidden;
         }
     }  
 `;

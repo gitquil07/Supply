@@ -11,7 +11,7 @@ import { CustomMUIDataTable } from "components/CustomMUIDataTable";
 import { CustomRowGenerator, exceptKey } from "utils/functions";
 import { usePagination } from "hooks";
 import { getList } from "utils/functions";
-import { formatPrice } from "utils/functions";
+import { formatPrice, cutTextLength } from "utils/functions";
 
 
 const MaterialsList = ({ match }) => {
@@ -48,7 +48,14 @@ const MaterialsList = ({ match }) => {
         const obj = exceptKey(node, ["__typename", "vendorFactory", "product", "productionDayCount", "deliveryDayCount"]);
         return {
             ...obj,
-            vendorFactoryProduct: {factory: node.vendorFactory?.factory?.name, vendor: node.vendorFactory?.vendor?.companyName, product: node.product?.name},  
+            factory: node?.vendorFactory?.factory?.name,
+            vendor: cutTextLength(node?.vendorFactory?.vendor?.companyName),
+            product: node?.product?.name,
+            productionDayCount: node?.productionDayCount,
+            deliveryDayCount: node?.deliveryDayCount,
+            price: node?.price,
+            currency: node?.currency,
+            vendorFactoryProduct: {factory: node.vendorFactory?.factory?.name, vendor: cutTextLength(node.vendorFactory?.vendor?.companyName), product: node.product?.name},  
             deliveryAndProductionDayCount: {deliveryDayCount: node.deliveryDayCount,  productionDayCount: node.productionDayCount, price: formatPrice(node.price),  currency: node.currency}
         }
     });
@@ -57,12 +64,22 @@ const MaterialsList = ({ match }) => {
     const { url } = match;
     const columns = useMemo(() => generateColumns(url), []);
 
+    const searchableFields = [
+        "factory",
+        "vendor",
+        "product",
+        "createdAt",
+        "productionDayCount",
+        "deliveryDayCount",
+        "price",
+        "currency"
+    ];
+
 
     return (
         <>
             <Helmet title={title} />
             <FlexForHeader>
-                {/* <DatePickers mR="15px" /> */}
                 <ButtonWithIcon name="Создать материал" url={`${match.url}/create`} />
             </FlexForHeader>
             <CustomMUIDataTable
@@ -71,6 +88,10 @@ const MaterialsList = ({ match }) => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGenerator(url)}
+                loading={dataPaginationRes.loading}
+                {
+                    ... { searchableFields }
+                }
             />
             <Pagination {...paginationParams} />
         </>

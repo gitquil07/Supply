@@ -6,14 +6,14 @@ const httpLink = new HttpLink({
 });
 
 const logoutLink = onError(({ networkError }) => {
-    if (networkError.statusCode === 401) console.log("logout");
+    if (networkError.statusCode === 401) {
+        localStorage.removeItem("supply_token");
+    }
 })
 
 const authMiddleware = new ApolloLink((operation, forward) => {
-    // console.log("operation", operation);
-    // console.log("forward", forward);
+
     const token = localStorage.getItem("supply_token");
-    // console.log("token in apollo client", token);
 
     if(token != null){
         operation.setContext({
@@ -29,5 +29,5 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 
 export const client = new ApolloClient({
     cache: new InMemoryCache(),
-    link: concat(authMiddleware, httpLink),
+    link: concat(authMiddleware, httpLink, logoutLink),
 });

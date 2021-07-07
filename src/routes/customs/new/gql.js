@@ -22,7 +22,7 @@ query getCustoms($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $after
                   node {
                     vendorFactory {
                       vendor {
-                        name
+                        companyName
                       }
                       factory {
                         name

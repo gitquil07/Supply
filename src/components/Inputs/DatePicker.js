@@ -13,7 +13,6 @@ const CustomPicker = ({ date, stateChange, label, disabled }) => {
                 <DatePicker
                     format={moment(date).format("DD.MM.YYYY")}
                     autoOk
-                    value={date}
                     variant="inline"
                     inputVariant="outlined"
                     label={label}

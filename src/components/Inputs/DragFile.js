@@ -4,7 +4,6 @@ import Remove from "../../assets/icons/deleteFile.svg";
 import { Loading } from "../LoadingIndicator";
 
 export const DragFile = ({ receivedFile, fetchedFiles, uploadedFiles, removeClicked, loading }) => {
-    console.log("fetchedFiles drag file", fetchedFiles);
     return (
         <Wrapper>
             <Form>
