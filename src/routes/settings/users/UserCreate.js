@@ -154,7 +154,6 @@ const UserCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage, getE
             }
             {
                 inputs.map((e, i) => {
-                    console.log("NAME", typeof validationMessages[e.name]);
                     return <>
                         <CustomInput
                             key={i}
