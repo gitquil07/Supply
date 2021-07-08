@@ -29,7 +29,7 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: 125061666750.dkr.ecr.us-east-1.amazonaws.com/supply-front-prod
+          ECR_REPOSITORY: supply-front-prod
           IMAGE_TAG: ${{ github.sha }}
         run: |
           aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
@@ -56,7 +56,7 @@ jobs:
         id: repo
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ecr repo name
+          ECR_REPOSITORY: supply-front-prod
           IMAGE_TAG: ${{ github.sha }}
         run: echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
       - name: Check Repo Location
@@ -72,7 +72,7 @@ jobs:
       - name: Helm Deploy
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: 125061666750.dkr.ecr.us-east-1.amazonaws.com/supply-front-prod
+          ECR_REPOSITORY: supply-front-prod
           IMAGE_TAG: ${{ github.sha }}
           HOST: ${{ secrets.HOST }}
         run: >
@@ -86,4 +86,4 @@ jobs:
           ${{ github.event.repository.name }}
           ./k8s
       - name: Check pods
-        run: kubectl get pods --namespace=${{ github.event.repository.name }}
+        run: kubectl get pods --namespace supply-front
