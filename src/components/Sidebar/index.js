@@ -1,4 +1,4 @@
-import { Fragment, useState, useContext } from "react";
+import { Fragment, useState, useContext, useEffect } from "react";
 import styled from "styled-components";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -13,6 +13,17 @@ import { navElements } from "./data"
 import { Link } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 import { checkPrivilege } from "authorization/authCheck";
+import { useLazyQuery, gql } from "@apollo/client";
+
+const GET_TRACKING_COUNT = gql`
+{
+    tracking {
+      trackings {
+        edgeCount
+      }
+    }
+}  
+`;
 
 
 export const Sidebar = () => {
@@ -22,6 +33,18 @@ export const Sidebar = () => {
         customs: false,
         settings: false
     });
+
+    const [getTrackingCount, trackingCountRes] = useLazyQuery(GET_TRACKING_COUNT);
+
+    console.log("trackingCount", trackingCountRes.data);
+
+    const totalTrackingCount = trackingCountRes?.data?.tracking?.trackings?.edgeCount;
+
+    console.log("totalTrackingCount", totalTrackingCount);
+
+    useEffect(() => {
+        getTrackingCount();
+    }, []);
 
     const { role } = useContext(UserContext);
 
@@ -78,7 +101,7 @@ export const Sidebar = () => {
                                                         allowSub && <StyledLink to={i.url} key={index}>
                                                         <ListItem button key={index}>
                                                             <ListItemIcon></ListItemIcon>
-                                                            <ListItemText primary={i.name} />
+                                                            <ListItemText>{i.name} {i.name === "Слежение"? <Count>{`(${totalTrackingCount})`}</Count> : null}</ListItemText>
                                                         </ListItem>
                                                     </StyledLink> 
                                                     }
@@ -101,4 +124,9 @@ export const Sidebar = () => {
 const StyledLink = styled(Link)`
     text-decoration: none;
     color: #fff;
+`;
+
+const Count = styled.span`
+  font-size:14px;
+  margin-left:5px;
 `;
