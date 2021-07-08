@@ -477,7 +477,7 @@ export const convertDataIntoExcelSpreadSheet = (data, columnNames) => {
     ws["!rows"] = [{hpt: 40}];
 
 
-    const lengthes = data.map(d => d.invoices.length);
+    const lengthes = data.map(d => d.factories.length);
 
     let points = [];
     let start = 0, end = 0;
