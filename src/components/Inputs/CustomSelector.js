@@ -18,7 +18,6 @@ export const CustomSelector = ({ name, label, disabled, defaultValue, fullWidth,
         onChange: stateChange
     };
 
-    console.log("renderValue", renderValue);
 
     if(multiple){
         props.multiple = true;
@@ -75,7 +74,6 @@ export const EditableMenuItem = (props) => {
         stateChange
     } = props;
 
-    console.log("props", props);
   
     return (
         <EditableItem value={value} selected={selected}>

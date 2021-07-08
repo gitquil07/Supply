@@ -213,7 +213,7 @@ const StyledMUIDataTable = styled(MUIDataTable)`
     padding: 10px; 
 
     & > div:nth-child(3){
-        height: calc(100vh - 400px) !important;
+        height: calc(100vh - 320px) !important;
         overflow-y:auto;
 
 

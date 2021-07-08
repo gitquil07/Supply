@@ -65,7 +65,6 @@ export const generateColumns = () => {
                 filter: false,
                 sort: false,
                 customBodyRender: value => {
-                    console.log("invoices", value);
                     if (typeof value === "object") {
                         return (
                             <>

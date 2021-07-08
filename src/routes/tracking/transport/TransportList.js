@@ -97,7 +97,6 @@ const TransportList = ({ match }) => {
 
         const allProducts = [];
         node?.application?.orders?.edges?.forEach(({node}) => {
-            console.log("xlsx node", node);
             const products = node?.orderItems?.edges?.map(({node}) => node?.vendorProduct?.product?.name);
             allProducts.push(...products);
         });

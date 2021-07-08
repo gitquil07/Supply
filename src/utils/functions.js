@@ -373,8 +373,6 @@ export const cutTextLength = (text) => {
 
 export const convertDataIntoExcelSpreadSheet = (data, columnNames) => {
 
-    console.log("xlsx data", data);
-    console.log("xlsx columnNames", columnNames);
 
     // Create workbook using (.book_new) method which weill return workbook
     // object with following properties:
@@ -418,7 +416,6 @@ export const convertDataIntoExcelSpreadSheet = (data, columnNames) => {
     // which will return value.
     
     const arrayOfArray = transformToArrayOfArrayFormat(data);
-    
 
     // After transforming data we have to concat
     // columns with entries. For that we will use 
@@ -427,18 +424,14 @@ export const convertDataIntoExcelSpreadSheet = (data, columnNames) => {
     
     arrayOfArray.unshift(columnNames);
 
-    console.log("xlsx arrOfarr", arrayOfArray);
 
     const ws = XLSX.utils.aoa_to_sheet(arrayOfArray);
-    // console.log("xlsx ws", ws);
     // Lets apply border for cages.
 
 
     let address = Object.keys(ws);
 
     address.pop();
-
-    console.log("xlsx address", address);
 
     for(let i = 0; i < address.length; i++){
     
@@ -541,8 +534,6 @@ export const convertDataIntoExcelSpreadSheet = (data, columnNames) => {
     
 
     
-    // console.log("XLSX data", wb);
-
     const wbBinary = XLSX.write(wb, {bookType: "xlsx", type: "binary"});
 
     // Now we have created a XLSX binary
@@ -572,10 +563,8 @@ export const convertDataIntoExcelSpreadSheet = (data, columnNames) => {
 
     const bf = s2ab(wbBinary);
     const blob = new Blob([bf], {type: "application/octet-stream"});
-    console.log("xlsx blob", blob);
 
 
-    
     // Last step is creating link and adding autoclick
     // behaviour for it
 
@@ -619,8 +608,6 @@ export const convertDataIntoExcelSpreadSheet = (data, columnNames) => {
 
         }
 
-    // console.log("XLSX", XLSX.utils); -----------------------------------------------------------------------------------
-    // console.log("XLSX", XLSX);
 }
 
 
@@ -651,7 +638,6 @@ export const convertDataIntoExcelSpreadSheet = (data, columnNames) => {
 
 const transformToArrayOfArrayFormat = (data) => {
 
-    console.log("XLSX transform", data.length);
 
         // Retrieve all values with Object.entries() method
         // Also we can use Object.keys() method. That method
@@ -676,18 +662,15 @@ const transformToArrayOfArrayFormat = (data) => {
         const amount = data[i].invoices.length,
               arr = Object.entries(data[i]).map(entry => entry[1]);
 
-              console.log("amount invoices", data[i].invoices);
-              console.log("amount", amount);
 
         let tmp = [];
         for(let l = 0; l < amount; l++){
             let tmpIn = [];
-            console.log("amount arr", arr);
 
             if(l === 0){
                 for(let k = 0; k < arr.length; k++){
                     if(typeof arr[k] === "object"){
-                        tmpIn.push(arr[k][0]);
+                        tmpIn.push(arr[k]?.[0]);
                     }else{
                         tmpIn.push(arr[k]);
                     }
@@ -721,8 +704,6 @@ const transformToArrayOfArrayFormat = (data) => {
         transformed.push(...tmp);
         
     }
-
-    console.log("amount", transformed);
 
     return transformed;
     

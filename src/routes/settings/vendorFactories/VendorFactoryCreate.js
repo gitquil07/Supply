@@ -98,10 +98,6 @@ const FactoryCreate = ({ match }) => {
 
 
     useEffect(() => {
-        console.log("state", state);
-    }, [state]);
-
-    useEffect(() => {
 
         if (id !== undefined) {
             getVendorFactory({
@@ -115,7 +111,6 @@ const FactoryCreate = ({ match }) => {
 
     useEffect(() => {
         if (pk != undefined) {
-            console.log("pk useEffect", pk);
             getDependentMaterials({
                 variables: {
                     vendorFactory: pk
@@ -154,8 +149,6 @@ const FactoryCreate = ({ match }) => {
     const beforeSubmit = () => {
 
         const data = { ...state, partnerStartDate: moment(state.partnerStartDate).format("YYYY-MM-DD") };
-
-        console.log("data", data);
 
         pk ? handleSubmit(exceptKey(data, ["factory", "vendor"]), pk) : handleSubmit(data);
 

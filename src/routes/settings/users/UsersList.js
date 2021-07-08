@@ -68,7 +68,6 @@ const UsersList = () => {
     }, [users]);
 
     const user = list?.find(user => user.id === id);
-    console.log("user", user);
 
     const editEntry = (id) => {
         setId(id);
