@@ -60,6 +60,14 @@ const ProductsList = ({ match }) => {
     const { url } = match;
     const columns = useMemo(() => generateColumns(url), []);
 
+    const searchableFields = [
+        "name",
+        "codeTnved",
+        "measure",
+        "codeTnved",
+        "typeOfPackaging"
+    ];
+
     return (
         <>
             <Helmet title={title} />
@@ -73,6 +81,10 @@ const ProductsList = ({ match }) => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGenerator(url)}
+                loading={dataPaginationRes.loading}
+                {
+                    ... { searchableFields }
+                }
             />
             <Pagination {...paginationParams} />
         </>

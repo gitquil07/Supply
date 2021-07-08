@@ -17,7 +17,6 @@ import { useHistory } from "react-router-dom";
 import { vendorRoles } from "utils/static";
 import { useCustomMutation, useFormData } from "hooks";
 import { getList } from "utils/functions";
-import { useState } from "react";
 import { ValidationMessage } from "components/ValidationMessage";
 import { SuppliersValidation, fieldsMessages } from "./validation";
 
@@ -97,13 +96,11 @@ const SuppliersCreate = ({ match }) => {
     }, [vendorRes.data?.vendor?.vendor])
 
     const beforeSubmit = () => {
-        console.log("state", state);
         const requestBody = {
             ...state,
             role: vendorRoles.find(vendorRole => vendorRole.value == state.role)?.label
         }
 
-        console.log("requestBody", requestBody);
         // pk? submitData(requestBody, pk) : submitData(requestBody)
         pk ? handleSubmit(requestBody, pk) : handleSubmit(requestBody)
 

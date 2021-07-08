@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { uploadFile } from "api";
-import { NotificationManager } from "react-notifications";
 import { Title } from "components/Title";
 import { DragFile } from "components/Inputs/DragFile";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import styled from "styled-components";
 import { gql, useLazyQuery } from "@apollo/client";
 import { getValueOfProperty } from "utils/functions";
-import { Button as CutomButton } from "components/Buttons"
 import MenuItem from "@material-ui/core/MenuItem";
 import { CustomSelector } from "components/Inputs/CustomSelector";
 import { CustomizableInputs } from "components/ComponentsForForm/CustomizableInputs"
@@ -52,7 +49,6 @@ export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection
 
     const {
         state,
-        setState,
         handleChange
     } = useFormData(initialState);
 
@@ -69,54 +65,12 @@ export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection
     () => {}
     )
 
-
-    useEffect(() => {
-        console.log("state", state);
-    }, [state]);
-
     useEffect(() => {
         getFactories();
         getTemplate();
     }, []);
 
-    // const handleFileUpload = () => {
-    //     if(files.length > 0){
-    //         setLoading(true);
-    //         uploadFile("/api-file/documents/", files)
-    //         .then(res => {
-    //             setLoading(false);
-    //             if(res.status === 200){
-    //                 res.data.forEach(d => {
-    //                     NotificationManager.success(d.file_name + " загружен");
-    //                 });
-
-    //                 if(withoutSelection){
-    //                     submitData({
-    //                         file: res.data[0].id
-    //                     })
-    //                 }else{
-    //                     setState({
-    //                         ...state,
-    //                         file: res.data[0].id
-    //                     });
-    //                 }
-    //             }
-    //         })
-    //         .catch(err => NotificationManager.error("Ошибка"));
-    //     }else{
-    //         NotificationManager.error("Выберите файлы");
-    //     }
-    // }
-
-
     const handleCreate = () => {
-
-        console.log("files", files);
-
-        // console.log("sad", {
-        //     ...state,
-        //     file: files.uploaded[0].file_id
-        // });
 
         if(state.factory !== ""){
             submitData({
@@ -124,7 +78,6 @@ export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection
                 file: files.uploaded[0].file_id
             });
         }else{
-            // console.log("here");
             submitData({
                 file: files.uploaded[0].file_id
             });
@@ -139,19 +92,10 @@ export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection
 
         
         uploadFile('/api-file/documents/', file).then(res => {
-            console.log("sadasd");
             setLoading(false);
             setFiles({ ...files, uploaded: [...files.uploaded, { file_id: res.data[0].id, file_name: file.name }] })
         }).catch(err => console.log(err));
     }
-
-    useEffect(() => {
-        console.log("loading", loading);
-    }, [loading]);
-
-    useEffect(() => {
-        console.log("state", state);
-    }, [state]);
 
     return (
         <Wrapper>
@@ -186,14 +130,6 @@ export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection
 }
 
 export default React.memo(BulkUpload);
-
-const WhiteCircularProgress = styled(CircularProgress)`
-   
-    &{
-        color:#5762B2 !important;
-    }
-
-`;
 
 const CustomizableInput = styled(CustomizableInputs)`
     width:500px;

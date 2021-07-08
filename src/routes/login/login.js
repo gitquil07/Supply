@@ -32,7 +32,6 @@ const Login = () => {
                 const role = data.account.tokenAuth.query.account.users.edges[0].node.role.name;
                 localStorage.setItem("supply_role", role);
                 onResponseComplete(data, "auth", "", () => {
-                    console.log("here")
                     const token = getValueOfProperty(data, "token");
                     localStorage.setItem("supply_token", token);
                     history.push("/");
@@ -48,8 +47,6 @@ const Login = () => {
 
     const logIn = e => {
         e.preventDefault();
-        console.log("state", state);
-
         auth({
             variables: {
                 username: state.username,

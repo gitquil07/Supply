@@ -7,7 +7,6 @@ import { CustomHeader } from "./CustomHeader";
 export const Button = ({ name, url, color, clickHandler, loading }) => <IButton to={url} color={color} onClick={clickHandler} loading={loading}>{name}</IButton>
 
 export const ButtonWithIcon = React.memo(({ name, url, clicked }) => {
-    console.log("button rendered");
     return (
         <CustomHeader>
             <IIButton to={url} onClick={clicked}>

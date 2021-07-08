@@ -103,6 +103,26 @@ export const deliveryCondition = [
     {
         value: "CPT",
         label: "CPT"
+    },
+    {
+        value: "FAS",
+        label: "FAS"
+    },
+    {
+        value: "DAP",
+        label: "DAP"
+    },
+    {
+        value: "CFR",
+        label: "CFR"
+    },
+    {
+        value: "DDP",
+        label: "DDP"
+    },
+    {
+        value: "DPU",
+        label: "DPU"
     }
 ];
 

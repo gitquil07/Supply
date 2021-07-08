@@ -97,6 +97,16 @@ const UsersList = () => {
 
     const columns = useMemo(() => generateColumns(switchActivation), []);
 
+    const searchableFields = [
+        "username",
+        "lastName",
+        "firstName",
+        "phoneNumber",
+        "role",
+        "factories",
+        "createdAt"
+    ];
+
     return (
         <>
             <UserCreate isOpen={createOpen} close={close} entry={user}
@@ -111,6 +121,10 @@ const UsersList = () => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGeneratorForModal(editEntry)}
+                loading={dataPaginationRes.loading}
+                {
+                    ...{ searchableFields }
+                }
             />
             <Pagination {...paginationParams} />
         </>

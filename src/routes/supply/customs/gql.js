@@ -8,21 +8,25 @@ query getApplication($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $a
         node {
           id
           publicId
+          pk
           status
           transportType {
             name
           }
+          transportCount
           trackingUser {
-            firstName
-            lastName
+            username
           }
-          typeOfPackaging
           createdAt
           count
           shippingDate
-          isActive
-          transportMix
-          deliveryCondition
+          invoices {
+            edges {
+              node {
+                number
+              }
+            }
+          }
         }
       }
       pageInfo {

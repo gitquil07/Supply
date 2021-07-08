@@ -6,20 +6,16 @@ query MyQuery($fromDate: Date, $toDate: Date) {
       applications(fromDate: $fromDate, toDate: $toDate) {
         edges {
           node {
-            trackings {
-              edges {
-                node {
-                  vendor {
-                    id
-                    name
-                    createdAt
-                    role
-                    phoneNumber
-                    sapCity
-                    sapCountry {
-                      name
-                    }
-                  }
+            tracking{
+              vendor{
+                id
+                name
+                createdAt
+                role
+                phoneNumber
+                sapCity
+                sapCountry{
+                  name
                 }
               }
             }

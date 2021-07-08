@@ -55,7 +55,6 @@ const TransportCreate = ({ isOpen, close, entry, setMutateState, setIsFirstPage,
         () => {
             handleClose();
             if ((paginatingState.nextPage === true && paginatingState.prevPage === false) || (paginatingState.nextPage === false && paginatingState.prevPage === false)) {
-                console.log("inside condition first");
                 setIsFirstPage(true);
                 getEntries({
                     variables: {

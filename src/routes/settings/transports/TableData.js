@@ -5,6 +5,7 @@ export const generateColumns = (callback) => {
             name: "id",
             label: "ID",
             options: {
+                filter: false,
                 display: "none"
             }
         },

@@ -13,12 +13,11 @@ import { usePagination, useToggleDialog, useGetOne } from "hooks";
 import { CustomRowGeneratorForModal, getList } from "utils/functions";
 import SmallDialog from "components/SmallDialog";
 import { DetailedInfo } from "components/DetailedInfo";
-
-import { TableRow } from '@material-ui/core';
-import { TableCell } from '@material-ui/core';
+import { statuses } from "utils/static"
 
 
-const ApplicationList = () => {
+
+const ArrivedList = () => {
     const title = useTitle("Прибывшие");
 
     const {
@@ -73,9 +72,14 @@ const ApplicationList = () => {
         return {
             ...node,
             id: node.id,
+            transportType: node?.transportType?.name,
+            count: node?.count,
+            deliveryCondition: node?.deliveryCondition,
             transportTypeCountDelivery: { transportType: node.transportType.name, transportCount: node.transportCount, deliveryCondition: node.deliveryCondition },
             typeOfPackaging: node.typeOfPackaging,
-            trackingUser: node.trackingUser.firstName + " " + node.trackingUser.lastName
+            trackingUser: node.trackingUser.username,
+            status: statuses.find(status => status.value == node.status)?.label,
+            invoices: node.invoices.edges.map(({node}) => node.number).join(", ")
         }
     }), [applications]);
 
@@ -86,6 +90,17 @@ const ApplicationList = () => {
     }
 
     const columns = useMemo(() => generateColumns(openDialog), []);
+
+    const searchableFields = [
+        "invoices",
+        "transportType",
+        "transportCount",
+        "deliveryCondition",
+        "trackingUser",
+        "createdAt",
+        "status",
+        "invoice_proforma"
+    ];
 
     return (
         <>
@@ -103,6 +118,10 @@ const ApplicationList = () => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGeneratorForModal(openDialog)}
+                loading={dataPaginationRes.loading}
+                {
+                    ...{ searchableFields }
+                }
             />
             <SmallDialog title={`Заявка ${one?.node?.publicId}`} close={handleClose} isOpen={open}>
                 {
@@ -148,4 +167,4 @@ const ApplicationList = () => {
 };
 
 
-export default ApplicationList;
+export default ArrivedList;

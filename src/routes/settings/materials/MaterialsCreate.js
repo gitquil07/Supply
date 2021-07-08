@@ -138,11 +138,7 @@ const SuppliersCreate = ({ match }) => {
     const beforeSubmit = () => {
         const data = exceptKey(state, ["factory"]);
 
-        console.log("pk", pk);
         data.price = resetPriceFormat(data.price);
-
-        console.log("data", data);
-
 
         pk ? handleSubmit(exceptKey(data, ["vendorFactory", "product"]), pk) : handleSubmit(data);
     }
@@ -216,19 +212,19 @@ const SuppliersCreate = ({ match }) => {
                         }
                     </div>
                     <div>
-                        <CustomNumber label="Дни доставки" name="deliveryDayCount" value={state.deliveryDayCount} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.deliveryDayCount.length > 0 ? true : false} />
+                        <CustomNumber label="Дни доставки" name="deliveryDayCount" value={state.deliveryDayCount} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.deliveryDayCount.length > 0 ? true : false} fullWidth />
                         {
                             validationMessages.deliveryDayCount.length > 0 ? <ValidationMessage>{validationMessages.deliveryDayCount}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomNumber label="Срок изготовления" name="productionDayCount" value={state.productionDayCount} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.productionDayCount.length > 0 ? true : false} />
+                        <CustomNumber label="Срок изготовления" name="productionDayCount" value={state.productionDayCount} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.productionDayCount.length > 0 ? true : false} fullWidth />
                         {
                             validationMessages.productionDayCount.length > 0 ? <ValidationMessage>{validationMessages.productionDayCount}</ValidationMessage> : null
                         }
                     </div>
                     <div>
-                        <CustomNumber label="MOQ" name="moq" value={state.moq} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.moq.length > 0? true : false} />
+                        <CustomNumber label="MOQ" name="moq" value={state.moq} stateChange={e => handleChange({fElem: e})} errorVal={validationMessages.moq.length > 0? true : false} fullWidth />
                         {
                             validationMessages.moq.length? <ValidationMessage>{validationMessages.moq}</ValidationMessage> : null
                         }

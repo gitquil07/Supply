@@ -10,7 +10,7 @@ import { ButtonWithIcon } from "../../../components/Buttons";
 import { CustomMUIDataTable } from "../../../components/CustomMUIDataTable";
 import { CustomRowGenerator, exceptKey } from "../../../utils/functions";
 import { usePagination } from "../../../hooks";
-import { getList } from "../../../utils/functions";
+import { getList, cutTextLength } from "../../../utils/functions";
 
 const VendorFactoriesList = ({ match }) => {
 
@@ -45,13 +45,21 @@ const VendorFactoriesList = ({ match }) => {
     const list = useMemo(() => vendorFactories.map(({ node }) => {
         return {
             ...exceptKey(node, ["__typename"]),
-            vendor: node.vendor?.companyName,
-            factory: node.factory?.name
+            vendor: cutTextLength(node.vendor?.companyName),
+            factory: node.factory?.name,
         }
     }), [vendorFactories]);
 
     const { url } = match;
     const columns = useMemo(() => generateColumns(url), []);
+
+    const searchableFields = [
+        "factory",
+        "vendor",
+        "paymentCondition",
+        "isActive",
+        "partnerStartDate"
+    ];
 
     return (
         <>
@@ -65,6 +73,10 @@ const VendorFactoriesList = ({ match }) => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGenerator(url)}
+                loading={dataPaginationRes.loading}
+                {
+                    ...{ searchableFields }
+                }
             />
             <Pagination {...paginationParams} />
         </>

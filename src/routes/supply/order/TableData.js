@@ -1,15 +1,18 @@
+import { TwoRows } from "components/Row"
+import moment from "moment";
 import { setHeading } from "utils/functions";
 
 export const generateColumns = () => {
     const options = {
         filter: true,
-        sort: false
+        sort: true
     }
 
     return [
         {
             name: "id",
             options: {
+                filter: false,
                 display: "none"
             }
         },
@@ -26,13 +29,17 @@ export const generateColumns = () => {
         {
             name: "created_at",
             label: "Дата создания заказа",
-            options: options
+            options: {
+                ...options,
+                customBodyRender: value => moment(value).format("YYYY-MM-DD")
+            }
         },
         {
             name: "vendorFactory",
             label: "Завод / Поставщик",
             options: {
-                ...options,
+                filter: false,
+                sort: false,
                 customBodyRender: value => {
                     return <>{value.factory} / {value.vendor}</>
                 }
@@ -42,9 +49,7 @@ export const generateColumns = () => {
             name: "invoice_proforma",
             label: "№ инвойс проформа",
             options: {
-                ...options,
-                customHeadRender: setHeading,
-                customBodyRender: value => "№"+value
+                ...options
             }
         },
         {
@@ -52,9 +57,27 @@ export const generateColumns = () => {
             label: "Дата инвойс проформа",
             options: {
                 ...options,
-                customHeadRender: setHeading
+                sort: true,
             }
         },
+        {
+            name: "factory",
+            label: "Завод",
+            options: {
+                filter: true,
+                sort: false,
+                display: "none",
+            }
+        },
+        {
+            name: "vendor",
+            label: "Поставщик",
+            options: {
+                fitler: true,
+                sort: false,
+                display: "none"
+            }
+        }
     ];
 
 }

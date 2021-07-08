@@ -6,15 +6,16 @@ export const generateColumns = (callback) => {
             name: "id",
             label: "ID",
             options: {
-                display: "none"
+                filter: false,
+                display: "excluded"
             }
         },
         {
             name: "createdAt",
             label: "Дата создания",
             options: {
-                filter: false,
-                sortL: false,
+                filter: true,
+                sort: true,
                 customBodyRender: value => moment(value).format("YYYY-MM-DD")
             }
         },
@@ -23,7 +24,7 @@ export const generateColumns = (callback) => {
             label: "Название завода",
             options: {
                 filter: true,
-                sort: false,
+                sort: true,
             }
         },
         {
@@ -39,7 +40,7 @@ export const generateColumns = (callback) => {
             label: "Код",
             options: {
                 filter: true,
-                sort: false,
+                sort: true,
             }
         }
     ];

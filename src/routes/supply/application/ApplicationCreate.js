@@ -24,7 +24,7 @@ import { useState, useEffect, useMemo } from 'react';
 import MenuItem from "@material-ui/core/MenuItem";
 import { getList, getValueOfProperty } from "utils/functions";
 import moment from 'moment';
-import { deliveryCondition, statuses, degreeOfDanger } from "utils/static";
+import { statuses, degreeOfDanger } from "utils/static";
 import Checkbox from "@material-ui/core/Checkbox";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -44,20 +44,18 @@ const initialState = {
     orders: [],
     trackingUser: "",
     transportType: "",
-    deliveryCondition: undefined,
     degreeOfDanger: undefined,
     packageOnPallet: "",
     transportCount: "",
     shippingDate: new Date(),
     status: undefined,
-    transportMix: true
+    transportMix: false
 };
 
 const invoiceInitial = {
     number: "",
     netto: "",
-    brutto: "",
-    amount: ""
+    brutto: ""
 }
 
 const ApplicationCreate = ({ match }) => {
@@ -67,7 +65,8 @@ const ApplicationCreate = ({ match }) => {
             setState,
             handleChange
         } = useFormData(initialState),
-        [open, handleClose, handleOpen] = useToggleDialog(),
+        [openInvoice, handleInvoiceClose, handleInvoiceOpen] = useToggleDialog(),
+        [openOrder, handleOrderClose, handleOrderOpen] = useToggleDialog(),
         { id } = match.params,
         history = useHistory();
 
@@ -77,7 +76,10 @@ const ApplicationCreate = ({ match }) => {
         fetched: [],
         uploaded: []
     });
+    
     const [loading, setLoading] = useState(false);
+    
+    const [map, setMap] = useState([]);
 
     const [getTrackingUserTypes, trackingUserTypesRes] = useLazyQuery(GET_TRACKING_USER),
         [getTransportTypes, transportTypesRes] = useLazyQuery(GET_TRANSPORT_TYPES),
@@ -99,7 +101,6 @@ const ApplicationCreate = ({ match }) => {
         invoices = useMemo(() => getList(invoicesRes?.data), [invoicesRes?.data]) || [],
         firms = useMemo(() => getList(firmsRes?.data), [firmsRes?.data]) || [];
 
-        console.log("invoices", invoices);
 
     const templ = {
         orderItem: "",
@@ -111,13 +112,10 @@ const ApplicationCreate = ({ match }) => {
         invoicePrice: ""
     };
 
-    const [items, setItems] = useState([templ]),
+    const [items, setItems] = useState([]),
         [invoiceData, setInvoiceData] = useState(invoiceInitial),
         [invoicePk, setInvoicePk] = useState(undefined);
 
-    useEffect(() => {
-        console.log("invoiceCreate", invoiceData);
-    }, [invoiceData]);
 
     const {
         addTempl,
@@ -151,7 +149,7 @@ const ApplicationCreate = ({ match }) => {
     },
         "Инвойс",
         () => {
-            handleClose();
+            handleInvoiceClose();
         }
     )
 
@@ -188,8 +186,6 @@ const ApplicationCreate = ({ match }) => {
                 orders: application.orders.edges.map(({ node }) => node.pk)
             });
 
-            console.log("applicationRes?.data?.application?.application?.files?.edges", applicationRes?.data?.application?.application?.files?.edges)
-
             if (applicationRes?.data?.application?.application?.files?.edges.length > 0) {
                 setFiles({
                     ...files,
@@ -205,36 +201,45 @@ const ApplicationCreate = ({ match }) => {
                 })
             }
 
-            const items = getList(application.applicationItems).map(({ node }) => ({
-                ...exceptKey(node, ["__typename"]),
-                firm: node?.firm?.pk,
-                invoice: node?.invoice?.pk,
-                orderItem: node?.orderItem?.pk
-            }))
+            const tmp = {};
+            const items = getList(application.applicationItems).map(({ node }, idx) => {
+            
+                tmp[idx] = node.orderItem.requiredCount;
+
+                return {
+                    ...exceptKey(node, ["__typename"]),
+                    firm: node?.firm?.pk,
+                    invoice: node?.invoice?.pk,
+                    orderItem: node?.orderItem?.pk
+                }
+            })
+
+            setRequiredCounts(tmp);
             setItems(items);
         }
     }, [applicationRes?.data?.application?.application?.pk]);
 
     useEffect(() => {
-        getOrderItems({
-            variables: {
-                orders: state.orders
-            }
-        });
-    }, [state.orders]);
+        if(state.orders.length > 0){
+            getOrderItems({
+                variables: {
+                    orders: state.orders
+                }
+            });
+        }
+    }, [state.orders.length])
 
     const editInvoice = (id) => {
         const invoiceToEdit = invoices.find(({ node }) => node.id === id).node;
-        console.log("invoiceToEdit", invoiceToEdit);
         setInvoiceData(exceptKey(invoiceToEdit, ["__typename"]));
         setInvoicePk(invoiceToEdit.pk);
-        handleOpen();
+        handleInvoiceOpen();
     }
 
     const handleInvoiceEditClose = () => {
         setInvoiceData(invoiceInitial);
         setInvoicePk(undefined);
-        handleClose();
+        handleInvoiceClose();
     }
 
     const handleDateChange = date => {
@@ -252,12 +257,11 @@ const ApplicationCreate = ({ match }) => {
 
         if (e.target.name === "orderItem") {
             const one = orderItems.find(({ node }) => node.pk === e.target.value).node,
-                  requiredCount = one.requiredCount,
-                  measure = one.vendorProduct?.product?.measure;
+            requiredCount = one.requiredCount;
+        
                        
             let tmp = { ...requiredCounts };
             tmp[idx] = requiredCount;
-            console.log("here", tmp);
 
             setRequiredCounts(tmp);
 
@@ -266,19 +270,15 @@ const ApplicationCreate = ({ match }) => {
     }
 
     const submitInvoice = () => {
-        // console.log("invoceData", invoiceData);
 
         const requestBody = {
-            ...invoiceData,
-            amount: resetPriceFormat(invoiceData.amount)
+            ...exceptKey(invoiceData, ["id", "pk"])
         }
 
-        invoicePk ? submitInvoiceData(exceptKey(requestBody, ["id", "pk"]), invoicePk, id) : submitInvoiceData({...requestBody, application: pk}, undefined, id);
+        invoicePk ? submitInvoiceData(requestBody, invoicePk, id) : submitInvoiceData({...requestBody, application: pk}, undefined, id);
     }
 
     const beforeSubmit = () => {
-
-        console.log("state", state);
 
         let requestBody = {
             ...state,
@@ -323,19 +323,76 @@ const ApplicationCreate = ({ match }) => {
         }).catch(err => console.log(err));
     }
 
-    useEffect(() => {
-        console.log("requiredCounts", requiredCounts);
-    }, [requiredCounts]);
-
     const handleInvoiceDataChange = (e) => {
         const name = e.target.name;
-        if(name === "amount"){
-            setInvoiceData({...invoiceData, [name]: formatInputPrice(e.target.value)});
-        }else{
+        // if(name === "amount"){
+        //     setInvoiceData({...invoiceData, [name]: formatInputPrice(e.target.value)});
+        // }else{
             setInvoiceData({...invoiceData, [name]: e.target.value});
-        }
+        // }
     }
 
+    const addMaterials = (orderPk, orderIdx) => {
+        let mapTmpl = map.slice(0);
+    
+        const selectedOrder = mapTmpl.find(mapItem => mapItem.orderPk === orderPk); 
+
+
+        if(selectedOrder !== undefined){
+            mapTmpl[orderIdx].applicationItems = [...selectedOrder.applicationItems, items.length]; 
+        }else{
+            const relationObject = {
+                orderPk,
+                applicationItems: [items.length] 
+            }
+            mapTmpl.push(relationObject);
+        }
+
+        setMap(mapTmpl);
+        addTempl();
+    }
+
+
+    const removeMaterial = (materialIndex) => {
+
+        const relations = map.slice(0);
+        const relation = map.find(relation => relation.applicationItems.indexOf(materialIndex) > -1);
+                  
+        // // Get index of materialIndex in relation
+        const mIIndex = relation.applicationItems.indexOf(materialIndex);
+        // // Get index of relation in relations
+        const relIndex =  relations.indexOf(relation);
+
+        relation.applicationItems.splice(mIIndex, 1);
+
+        relations[relIndex] = {...relation};
+
+        setMap(relations);
+        remove(materialIndex == 0? materialIndex : materialIndex - 1);
+
+    }   
+
+    const removeOrder = (orderPk) => {
+        const orders = state.orders.slice(0);
+        const relations = map.slice(0);
+
+        const relation = relations.find(relation => relation.orderPk === orderPk),
+              orderIdx = orders.indexOf(orderPk);
+
+        if(relation !== undefined){
+            const relIdx = relations.indexOf(relation);
+            relations.splice(relIdx, 1);
+            setMap(relations);
+        }
+
+        const restOrders = orders.filter(number => number !== orderPk);
+        setState({
+            ...state,
+            orders: restOrders``
+        });
+    }
+
+    
     return (
         <>
             <Helmet title={title} />
@@ -343,24 +400,6 @@ const ApplicationCreate = ({ match }) => {
                 <Title>Данные транспорта</Title>
 
                 <AddibleInput>
-
-                    {
-                        pk ? <CustomInput value={state.orders.join(", ")} label="Заказы" disabled={true} /> :
-                            <CustomSelector label="Заказы" value={state.orders} name="orders" stateChange={e => handleChange({ fElem: e })} multiple
-                                renderValue={selected => selected.join(", ")}
-                            >
-                                {
-                                    orders.map(({ node }) =>
-                                        <MenuItem key={node.pk} value={node.pk}>
-                                            <ListItemIcon>
-                                                <Checkbox checked={state.orders.indexOf(node.pk) > -1} />
-                                            </ListItemIcon>
-                                            <ListItemText>{node.pk}</ListItemText>
-                                        </MenuItem>
-                                    )
-                                }
-                            </CustomSelector>
-                    }
                     <div>
                         <CustomSelector label="Логист" value={state.trackingUser} name="trackingUser" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.trackingUser.length ? true : false} >
                             {
@@ -383,18 +422,6 @@ const ApplicationCreate = ({ match }) => {
                         </CustomSelector>
                         {
                             validationMessages.transportType.length ? <ValidationMessage>{validationMessages.transportType}</ValidationMessage> : null
-                        }
-                    </div>
-                    <div>
-                        <CustomSelector label="Условия доставки" value={state.deliveryCondition} name="deliveryCondition" stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.deliveryCondition.length ? true : false}>
-                            {
-                                deliveryCondition.map(condition =>
-                                    <MenuItem key={condition.value} value={condition.value} selected={state.deliveryCondition === condition.value}>{condition.value}</MenuItem>
-                                )
-                            }
-                        </CustomSelector>
-                        {
-                            validationMessages.deliveryCondition.length ? <ValidationMessage>{validationMessages.deliveryCondition}</ValidationMessage> : null
                         }
                     </div>
                     <div>
@@ -451,62 +478,132 @@ const ApplicationCreate = ({ match }) => {
                 />
 
 
-                <Header>
+                {/* <Header>
                     <Title>Материал</Title>
                     <Button name="Добавить материал" color="#5762B2" clickHandler={addTempl} />
+                </Header> */}
+                <Header vM="30" >
+                    <Title>Заказы</Title>
+                    <Button name="Добавить заказ" color="#5762B2" clickHandler={handleOrderOpen} />
                 </Header>
                 {
-                    items?.map((item, index) => {
+                    state.orders.map((orderPk, idx) => {
+                        const foundOrder = orders.find(({node}) => node.pk === orderPk)?.node;
+                        const itemsToOrderRelationMap = map.find(relation => relation.orderPk === orderPk)?.applicationItems;
 
-                        return <Material>
-                            <RowWrapper>
-                                <Row>
-                                    <CustomSelector label="Мат, заказа" value={item.orderItem} name="orderItem" stateChange={e => handleItemChange(e, index)}>
+                        const filteredItems = [];
+                        if(itemsToOrderRelationMap !== undefined && items.length > 0){
+                            itemsToOrderRelationMap.forEach(itemIdx => {
+                                const applicationItem = items[itemIdx];
+                                filteredItems.push(applicationItem);
+                            })
+                        }
+                        
+                        return <Material bgColor="#F6F6FC" vM="20">
+                                    <RowWrapper>
+                                        <RowWrapper>
+                                            <OrderInfoConatiner>
+                                                <List>
+                                                    <Item>
+                                                        <h4>Номер заказа</h4>
+                                                        <span>{foundOrder?.publicId}</span>
+                                                    </Item>
+                                                    <Item>
+                                                        <h4>Завод</h4>
+                                                        <span>{foundOrder?.vendorFactory.factory.name}</span>
+                                                    </Item>
+                                                    <Item>
+                                                        <h4>Поставщик</h4>
+                                                        <span>{foundOrder?.vendorFactory.vendor.companyName}</span>
+                                                    </Item>
+                                                </List>
+                                                <List width="370">
+                                                    <CustomSelector label="Логист" name="" stateChange={() => {}} fullWidth>
+                                                        {
+                                                            trackingUserType.map(({node}) =>
+                                                                <MenuItem key={node?.pk} value={node?.pk}>{node?.username}</MenuItem>
+                                                            )
+                                                        }
+                                                    </CustomSelector>
+                                                </List>
+                                                <RemoveIcon clicked={() => removeOrder(orderPk)} />
+                                            </OrderInfoConatiner>   
+                                            <Header vM="0">
+                                                <Title>Материалы</Title>
+                                                <Button name="Добавить материал" color="#5762B2" clickHandler={() => addMaterials(orderPk, idx)} />
+                                            </Header>
+                                        </RowWrapper>
                                         {
-                                            orderItems.map(({ node }) =>
-                                                <MenuItem key={node.pk} value={node.pk} selected={node.pk === item.orderItem}>{node.vendorProduct?.product?.name}</MenuItem>
-                                            )
-                                        }
-                                    </CustomSelector>
-                                    <CustomSelector label="Фирма" value={item.firm} name="firm" stateChange={e => handleItemChange(e, index)}>
-                                        {
-                                            firms.map(({ node }) =>
-                                                <MenuItem key={node.pk} value={node.pk} selected={node.pk === item.firm}>{node.name}</MenuItem>
-                                            )
-                                        }
-                                    </CustomSelector>
-                                    <CustomSelectorAdd label="Номер инвойса" value={item.invoice} name="invoice" stateChange={e => handleItemChange(e, index)} disabled={!pk ? true : false} openModal={handleOpen}>
-                                        {
-                                            invoices.map(({ node }) =>
-                                                <CheckedMenuItem key={node.pk} value={node.pk} selected={node.pk === item.invoice}>
-                                                    {node.number}
-                                                    <button className="editBtn" onClick={() => editInvoice(node.id)}></button>
-                                                </CheckedMenuItem>
-                                            )
-                                        }
-                                    </CustomSelectorAdd>
-                                    <CustomInputWithComponent type="text" label="Кол-во" value={item.count} name="count" stateChange={e => handleItemChange(e, index)} component={requiredCounts[index]?.requiredCount && <Badge>{requiredCounts[index].requiredCount}</Badge>} />
-                                </Row>
+                                            filteredItems?.map((item, index) => {
+                                                const materialIndex = itemsToOrderRelationMap[index];
 
-                                <Row>
-                                    <CustomInputWithComponent type="text" fullWidth label="Вес" value={item.weight} name="weight" stateChange={e => handleItemChange(e, index)} component={<Measure>кг</Measure>} />
-                                    <CustomInputWithComponent type="text" fullWidth label="Вместимость" value={item.size} name="size" stateChange={e => handleItemChange(e, index)} component={<Measure value="3" index>м</Measure>} />
-                                    <CustomInput fullWidth label="Цена инвойса" value={item.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, index)} />
-                                </Row>
-                            </RowWrapper>
-                            <RemoveIcon clicked={() => remove(index)} />
-                        </Material>
+                                                return <Material bgColor="#fff" vM="0">
+                                                    <RowWrapper>
+                                                        <Row>
+                                                            <CustomSelector label="Мат, заказа" value={item?.orderItem} name="orderItem" stateChange={e => handleItemChange(e, materialIndex)}>
+                                                                {
+                                                                    orderItems.map(({ node }) =>
+                                                                        <MenuItem key={node.pk} value={node.pk} selected={node.pk === item?.orderItem}>{node.vendorProduct?.product?.name}</MenuItem>
+                                                                    )
+                                                                }
+                                                            </CustomSelector>
+                                                            <CustomSelector label="Фирма" value={item?.firm} name="firm" stateChange={e => handleItemChange(e, materialIndex)}>
+                                                                {
+                                                                    firms.map(({ node }) =>
+                                                                        <MenuItem key={node.pk} value={node.pk} selected={node.pk === item?.firm}>{node.name}</MenuItem>
+                                                                    )
+                                                                }
+                                                            </CustomSelector>
+                                                            <CustomSelectorAdd label="Номер инвойса" value={item?.invoice} name="invoice" stateChange={e => handleItemChange(e, materialIndex)} disabled={!pk ? true : false} openInvoiceModal={handleInvoiceOpen}>
+                                                                {
+                                                                    invoices.map(({ node }) =>
+                                                                        <CheckedMenuItem key={node.pk} value={node.pk} selected={node.pk === item?.invoice}>
+                                                                            {node.number}
+                                                                            <button className="editBtn" onClick={() => editInvoice(node.id)}></button>
+                                                                        </CheckedMenuItem>
+                                                                    )
+                                                                }
+                                                            </CustomSelectorAdd>
+                                                            <CustomInputWithComponent type="text" label="Кол-во" value={item?.count} name="count" stateChange={e => handleItemChange(e, materialIndex)} component={requiredCounts[materialIndex] && <Badge>{requiredCounts[materialIndex]}</Badge>} />
+                                                        </Row>
+                                        
+                                                        <Row>
+                                                            <CustomInputWithComponent type="text" fullWidth label="Вес" value={item?.weight} name="weight" stateChange={e => handleItemChange(e, materialIndex)} component={<Measure>кг</Measure>} />
+                                                            <CustomInputWithComponent type="text" fullWidth label="Вместимость" value={item?.size} name="size" stateChange={e => handleItemChange(e, materialIndex)} component={<Measure value="3" materialIndex>м</Measure>} />
+                                                            <CustomInput fullWidth label="Цена инвойса" value={item?.invoicePrice} name="invoicePrice" stateChange={e => handleItemChange(e, materialIndex)} />
+                                                        </Row>
+                                                    </RowWrapper>
+                                                    <RemoveIcon clicked={() => removeMaterial(materialIndex)} />
+                                                </Material>
+                                            })
+                                        }
+                                    </RowWrapper>
+                               </Material>
+
                     })
                 }
             </Form>
-            <SmallDialog title="Cоздание нового инвойса" close={handleInvoiceEditClose} isOpen={open}>
+            <SmallDialog title="Cоздание нового инвойса" close={handleInvoiceEditClose} isOpen={openInvoice}>
                 <CustomInput label="Номер инвойса" value={invoiceData.number} name="number" stateChange={handleInvoiceDataChange} />
                 <CustomInput label="Брутто" value={invoiceData.brutto} name="brutto" stateChange={handleInvoiceDataChange} />
                 <CustomInput label="Нетто" value={invoiceData.netto} name="netto" stateChange={handleInvoiceDataChange} />
-                <CustomInput label="Транспортный расход" value={invoiceData.amount} name="amount" stateChange={handleInvoiceDataChange} />
                 <Button name={invoicePk ? "сохранить" : "создать"} color="#5762B2" clickHandler={submitInvoice} />
             </SmallDialog>
-
+            <SmallDialog title="Выбор заказа" close={handleOrderClose} isOpen={openOrder}>
+                <CustomSelector label="Заказы" value={state.orders} name="orders" stateChange={e => handleChange({ fElem: e })} multiple
+                    renderValue={selected => selected.join(", ")}>
+                    {
+                        orders.map(({ node }) =>
+                            <MenuItem key={node.pk} value={node.pk}>
+                                <ListItemIcon>
+                                    <Checkbox checked={state.orders.indexOf(node.pk) > -1} />
+                                </ListItemIcon>
+                                <ListItemText>{node.pk}</ListItemText>
+                            </MenuItem>
+                        )
+                    }
+                </CustomSelector>
+            </SmallDialog>
             <Footer>
                 <span>Кол-во материалов: {items?.length}</span>
                 <Button name={pk ? "Сохранить" : "Создать"} clickHandler={beforeSubmit} loading={mutationLoading} />
@@ -516,6 +613,8 @@ const ApplicationCreate = ({ match }) => {
 }
 
 export default ApplicationCreate;
+
+
 
 const Badge = styled.span`
     padding:5px;
@@ -530,7 +629,6 @@ const Measure = styled.span`
     color: #5762B2;
 
     ${({ index }) => {
-        console.log(index)
         return index ? css`
             position:relative;
 
@@ -545,6 +643,37 @@ const Measure = styled.span`
             }
         ` : ""
     }}
+`;
+
+const List = styled.div`
+    width:${({width}) => width? `${width}px` : '100%'};
+    padding:10px;
+    box-sizing:border-box;
+    background-color:#fff;
+    border-radius:5px;
+    border:1px solid rgba(0, 0, 0, 0.15);
+    display:flex;
+    justify-content:space-between;
+
+    ${({ direction }) =>
+        direction ? css`
+            flex-direction:column;
+            row-gap:10px;
+        ` : ""
+    }
+    
+`;
+
+const Item = styled.div`
+    h4{
+        margin:0 0 5px 0;
+        font-size:18px;
+        font-weight:normal;
+    }
+    span{
+        font-size:14px;
+        color: rgba(0, 0, 0, 0.5);
+    }
 `;
 
 const CheckedMenuItem = styled(MenuItem)`
@@ -597,19 +726,25 @@ const Header = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 20px 0;
+    margin: ${({vM}) => `${vM}px`} 0;
 `;
 
 const Material = styled.div`
     display: flex;
     gap: 10px;
-    margin: 20px 0;
-    height: 144px;
-    background: #F6F6FC;
+    margin: ${({vM}) => `${vM}px`} 0;
+    height: ${({fixHeight}) => fixHeight? '144px' : ''};
+    background: ${({bgColor}) => bgColor};
     border: 1px solid rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
     border-radius: 10px;
     padding: 10px; 
+`;
+
+const OrderInfoConatiner = styled.div`
+    display:flex;
+    width:100%;
+    column-gap:10px
 `;
 
 const RowWrapper = styled.div`

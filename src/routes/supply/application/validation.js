@@ -6,9 +6,8 @@ const degreeOfDangerEnum = degreeOfDanger.map(degree => degree.label);
 const statusEnum = statuses.map(status => status.label);
 
 export const ApplicationSchema = object().shape({
-    trackingUser: number().typeError("Значение для поля 'Логист' не выбрано"),
+    // trackingUser: number().typeError("Значение для поля 'Логист' не выбрано"),
     transportType: number().typeError("Значение для поля 'Тип транспорта' не выбрано"),
-    deliveryCondition: string().typeError("Значение для поля 'Условия доставки' не выбрано").oneOf(deliveryConditionEnum, "Недопустимое значение для поля 'Условия доставки'"),
     degreeOfDanger: string().required("Значение для поля 'Уровень опасности' не выбрано").typeError("Значение для поля 'Уровень опасности' не выбрано").oneOf(degreeOfDangerEnum, "Недопустимое значение для поля 'Уровень опасности'"),
     packageOnPallet: number().positive("Введите положительно число").integer("Введите целое число").required("Поле 'Количество мест' должно быть заполнено"),
     transportCount: number().typeError("Введите число").required("Поле 'Количество транспорта' должно быть заполнено").positive("Введите положительно число").integer("Введите целое число"),
@@ -19,7 +18,6 @@ export const ApplicationSchema = object().shape({
 export const fieldsMessages = {
     trackingUser: "",
     transportType: "",
-    deliveryCondition: "",
     degreeOfDanger: "",
     packageOnPallet: "",
     transportCount: "",

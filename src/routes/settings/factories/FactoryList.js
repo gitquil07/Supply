@@ -80,6 +80,12 @@ const FactoryList = () => {
         responsive: "scrollFullHeight"
     }
 
+    const searchableFields = [
+        "createdAt",
+        "firmName",
+        "name",
+        "code"
+    ];
 
     return (
         <>
@@ -96,6 +102,10 @@ const FactoryList = () => {
                 count={amountOfElemsPerPage}
                 options={options}
                 customRowOptions={CustomRowGeneratorForModal(editEntry)}
+                loading={dataPaginationRes.loading}
+                {
+                    ...{ searchableFields }
+                }
             />
             <Pagination {...paginationParams} />
         </>

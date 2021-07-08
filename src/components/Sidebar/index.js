@@ -1,4 +1,4 @@
-import { Fragment, useState, useContext } from "react";
+import { Fragment, useState, useContext, useEffect } from "react";
 import styled from "styled-components";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -13,6 +13,17 @@ import { navElements } from "./data"
 import { Link } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 import { checkPrivilege } from "authorization/authCheck";
+import { useLazyQuery, gql } from "@apollo/client";
+
+const GET_TRACKING_COUNT = gql`
+{
+    tracking {
+      trackings {
+        edgeCount
+      }
+    }
+}  
+`;
 
 
 export const Sidebar = () => {
@@ -23,13 +34,25 @@ export const Sidebar = () => {
         settings: false
     });
 
+    const [getTrackingCount, trackingCountRes] = useLazyQuery(GET_TRACKING_COUNT);
+
+    console.log("trackingCount", trackingCountRes.data);
+
+    const totalTrackingCount = trackingCountRes?.data?.tracking?.trackings?.edgeCount;
+
+    console.log("totalTrackingCount", totalTrackingCount);
+
+    useEffect(() => {
+        getTrackingCount();
+    }, []);
+
     const { role } = useContext(UserContext);
-    // const role = "ADMIN";
 
     const handleExpand = (name) => setState({ ...state, supply: false, logistics: false, customs: false, settings: false, [name]: !state[name] });
 
     return (
-        <List component="nav" style={{ color: "white", background: "rgba(0, 0, 0, 0.6)", height: "100%" }}>
+        // <List component="nav" style={{ color: "white", background: "rgba(0, 0, 0, 0.6)", height: "100%" }}>
+        <List component="nav" style={{ color: "white" }}>
             {navElements.map((i, index) =>  {
 
                 let allow = true;
@@ -53,9 +76,6 @@ export const Sidebar = () => {
                         break;
                 }
 
-                console.log("name", i.name);
-                console.log("allow", allow);
-
                 return (
                     <>
                          {
@@ -67,13 +87,11 @@ export const Sidebar = () => {
                                 </ListItem>
 
                                 <Collapse in={state[i.state]} timeout="auto" unmountOnExit>
-                                    <List component="div" disablePadding>
+                                    <List component="div" disablePadding >
                                         {i.children.map((i, index) => {
 
                                             let path = i.url.slice(i.url.indexOf("/", 1) + 1);
-                                                console.log("path before", path);
                                                 path = path.indexOf("-") === -1? path : path.slice(0, path.indexOf("-")) + path.slice(path.indexOf("-")+1, path.indexOf("-")+2).toUpperCase() + path.slice(path.indexOf("-")+2)
-                                                console.log("path after", path);
 
                                             let allowSub = checkPrivilege(role, `menuPermissions.${name}.${path}`);
 
@@ -83,7 +101,7 @@ export const Sidebar = () => {
                                                         allowSub && <StyledLink to={i.url} key={index}>
                                                         <ListItem button key={index}>
                                                             <ListItemIcon></ListItemIcon>
-                                                            <ListItemText primary={i.name} />
+                                                            <ListItemText>{i.name} {i.name === "Слежение"? <Count>{`(${totalTrackingCount})`}</Count> : null}</ListItemText>
                                                         </ListItem>
                                                     </StyledLink> 
                                                     }
@@ -106,4 +124,9 @@ export const Sidebar = () => {
 const StyledLink = styled(Link)`
     text-decoration: none;
     color: #fff;
+`;
+
+const Count = styled.span`
+  font-size:14px;
+  margin-left:5px;
 `;

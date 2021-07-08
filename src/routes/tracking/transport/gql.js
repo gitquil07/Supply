@@ -9,9 +9,11 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
           id
           pk
           publicId
+          status
           trDate
           station
           border
+          note
           vendor {
             companyName
             sapCountry {
@@ -21,7 +23,6 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
           }
           application {
             transferredDate
-            deliveryCondition
             trackingUser {
               username
             }
@@ -34,6 +35,8 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
                 node {
                   number
                   relativeWeight
+                  deliveryCondition
+                  destination
                 }
               }
             }
@@ -41,6 +44,17 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
               edges {
                 node {
                   pk
+                  orderItems {
+                    edges {
+                      node {
+                        vendorProduct {
+                          product {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }                        
                   vendorFactory {
                     vendorProducts {
                       edges {
@@ -50,6 +64,12 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
                           }
                         }
                       }
+                    }
+                    vendor {
+                      sapCountry {
+                        name
+                      }
+                      sapCity
                     }
                     factory {
                       name
@@ -76,7 +96,6 @@ query getTrackings($fromDate: Date, $toDate: Date, $first: Int, $last: Int, $aft
           amount
           brutto
           netto
-          note
         }
       }
     }
@@ -100,8 +119,6 @@ query getTrackingInfo($id: ID!) {
       brutto
       netto
       station
-      border
-      note
       status
       trDate
       currency
@@ -109,12 +126,14 @@ query getTrackingInfo($id: ID!) {
         edges{
           node{
             name
-            createdAt
+            locationDate
+            status
           }
         }
       }
       application {
         id
+        pk
         transportMix
         inWayDayCount
         shippingDate
@@ -148,10 +167,18 @@ query getVendorProductsGroupedByOrder($id: ID!) {
         edges {
           node {
             publicId
+            vendorFactory{
+              vendor{
+                sapCountry{
+                  name
+                }    
+                sapCity
+              }
+            }
             orderItems {
               edges {
                 node {
-                  applicationItems(application: $id) {
+                  applicationItems(application: $id, userTracking: true) {
                     edges {
                       node {
                         firm {
@@ -220,6 +247,8 @@ query getInvoices($id: ID!) {
             brutto
             netto
             amount
+            deliveryCondition
+            destination
             relativeWeight
           }
         }
@@ -237,3 +266,14 @@ mutation updateInvoice($input: InvoiceUpdateMutationInput!){
     }
   }
 }`;
+
+export const UPDATE_APPLICATION = gql`
+mutation updateApplicationDate($input: ApplicationUpdateMutationInput!) {
+  application {
+    applicationUpdate(input: $input) {
+      ok
+      errors
+    }
+  }
+}
+`;

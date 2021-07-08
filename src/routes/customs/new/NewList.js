@@ -57,19 +57,35 @@ const NewList = ({ match }) => {
 
     const applications = getList(dataPaginationRes?.data) || [];
     const list = useMemo(() => applications.map(({ node }) => {
+        
+        const fCols = {
+            factories: node.invoice?.application?.orders?.edges?.map(({node}) => node.vendorFactory?.factory?.name),
+            vendors: node.invoice?.application?.orders?.edges?.map(({node}) => node.vendorFactory?.vendor?.companyName),
+            transportType: node.invoice?.application?.transportType?.name,
+            mode: modes.find(mode => mode.value === node.mode)?.label
+        }
+
         return {
             publicId: node.id,
             createdAt: node.createdAt,
-            vendorFactory: node.invoice?.application?.orders?.edges?.map(({ node }) => {
-                return node.vendorFactory?.factory?.name + " / " + node.vendorFactory?.vendor?.name
-            }),
-            trTypeAndMode: node.invoice?.application?.transportType?.name + " / " + modes.find(mode => mode.value == node.mode)?.label,
-            invoices: { declarant: node.declarantNote, contractor: node.contractorNote }
+            vendorFactory: {factories: fCols.factories, vendors: fCols.vendors},
+            trTypeAndMode: {transportType: fCols.transportType, mode: fCols.mode},
+            invoices: { declarant: node.declarantNote, contractor: node.contractorNote },
+            ...fCols
         }
+        
     }), [applications]);
 
     const { url } = match;
     const columns = useMemo(() => generateColumns(url), []);
+
+    const searchableFields = [
+        "createdAt",
+        "transportType",
+        "mode",
+        "factories",
+        "vendors"
+    ];
 
     return (
         <>
@@ -90,6 +106,11 @@ const NewList = ({ match }) => {
                 columns={columns}
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGenerator(url)}
+                loading={dataPaginationRes.loading}
+
+                {
+                    ...{ searchableFields }
+                }
             />
             <Pagination {...paginationParams} />
         </>

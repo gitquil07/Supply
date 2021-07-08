@@ -18,7 +18,6 @@ const isEqualPaginationProps = (prevProps, nextProps) => {
 }
 
 export const Pagination = React.memo((props) => {
-    console.log("pagination rendered");
     const {
         toDate,
         fromDate,
@@ -48,7 +47,7 @@ export const Pagination = React.memo((props) => {
             }
         }
 
-        if(type == "dateFilter"){
+        if(type === "dateFilter"){
             vars.variables.fromDate = moment(fromDate).format("YYYY-MM-DD");
             vars.variables.toDate = moment(toDate).format("YYYY-MM-DD");
         }

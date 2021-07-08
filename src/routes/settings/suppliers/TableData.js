@@ -2,12 +2,21 @@ import { Row, RowGray } from "components/Row";
 import moment from "moment";
 import { setHeading } from "utils/functions";
 
+
+const options = {
+     options: {
+        filter: true,
+        display: "none"
+     }
+}
+
 export const generateColumns = (url) => {
     return [
         {
             name: "id",
             label: "ID",
             options: {
+                filter: false,
                 display: "none"
             }
         },
@@ -24,8 +33,8 @@ export const generateColumns = (url) => {
             name: "contactPersonVendorPhone",
             label: "Контактное лицо / Поставщик\nНомер телефона",
             options: {
-                filter: true,
-                sort: true,
+                filter: false,
+                sort: false,
                 customHeadRender: setHeading,
                 customBodyRender: value => {
                     return (
@@ -45,8 +54,8 @@ export const generateColumns = (url) => {
             name: "address",
             label: "Страна / Город\nУлица / Дом",
             options: {
-                filter: true,
-                sort: true,
+                filter: false,
+                sort: false,
                 customHeadRender: setHeading,
                 customBodyRender: value => {
                     return (
@@ -62,5 +71,40 @@ export const generateColumns = (url) => {
                 }
             }
         },
+        {
+            name: "contactPerson",
+            label: "Контактное лицо",
+            ...options
+        },
+        {
+            name: "vendor",
+            label: "Поставщик",
+            ...options
+        },
+        {
+            name: "phoneNumber",
+            label: "Тел. номер",
+            ...options
+        },
+        {
+            name: "country",
+            label: "Страна",
+            ...options
+        },
+        {
+            name: "city",
+            label: "Город",
+            ...options
+        },
+        {
+            name: "street",
+            label: "Улица",
+            ...options
+        },
+        {
+            name: "house",
+            label: "Дом",
+            ...options
+        }
     ];
 }

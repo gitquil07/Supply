@@ -17,7 +17,6 @@ class ErrorBoundary extends React.Component{
     }
 
     toggle(){
-        console.log("sdfsdff");
         this.setState(prevState => {
             return {
                 isOpen: !prevState.isOpen
@@ -37,8 +36,6 @@ class ErrorBoundary extends React.Component{
 
 
     render(){
-
-        console.log("error boundary component");
         
         const { hasError, error, errorInfo, isOpen } = this.state,
               { children: renderedComponent } = this.props;
@@ -47,7 +44,6 @@ class ErrorBoundary extends React.Component{
         const stackTrace = errorInfo?.componentStack.toString().split(" at ");
 
         if(hasError){
-            console.log("hasError true");
             return (
                 <div>
                     <h1>Something went wrong</h1>
@@ -75,7 +71,6 @@ class ErrorBoundary extends React.Component{
                 </div>
             ) 
         }else{
-            console.log("hasError false");
             return renderedComponent;
         }
 

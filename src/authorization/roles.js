@@ -45,6 +45,7 @@ export const RolesAuthority = {
         name: "ADMIN",
         allowRoute: false,
         permissions: {
+            allowApplicationCreate: true,
             menuPermissions:{
                 ...menuPermissions
             }
@@ -54,6 +55,7 @@ export const RolesAuthority = {
         name: "TRACKING_ADMIN",
         allowRoute: false,
         permissions: {
+            allowApplicationCreate: false,
             menuPermissions: {
                 ...menuPermissions,
                 useCustomNavigation: {
@@ -85,6 +87,7 @@ export const RolesAuthority = {
         name: "CUSTOM_ADMIN",
         allowRoute: false,
         permissions: {
+            allowApplicationCreate: false,
             menuPermissions: {
                 ...menuPermissions,
                 useSupplyNavigation: {
@@ -114,6 +117,7 @@ export const RolesAuthority = {
         name: "SUPPLY_ADMIN",
         allowRoute: false,
         permissions: {
+            allowApplicationCreate: true,
             menuPermissions: {
                 ...menuPermissions,
                 useCustomNavigation: {
@@ -138,12 +142,48 @@ export const RolesAuthority = {
                 }
             }
         }
-     
+    },
+    mixTracking: {
+        name: "MIX_TRACKING",
+        allowRoute: false,
+        permissions:{
+            allowApplicationCreate: true,
+            menuPermissions: {
+                ...menuPermissions,
+                useCustomNavigation: {
+                    ...menuPermissions.useCustomNavigation,
+                    main: false,
+                    new: false,
+                    ready: false,
+                    noDocument: false,
+                    noMoney: false,
+                    noTyped: false, 
+                    closed: false,
+                    certificate: false
+                },
+                useSupplyNavigation: {
+                    ...menuPermissions.useSupplyNavigation,
+                },
+                useSettingNavigation: {
+                    ...menuPermissions.useSettingNavigation, 
+                    main: false,
+                    firms: false,
+                    factories: false,
+                    users: false,
+                    products: false,
+                    materials: false,
+                    suppliers: false,
+                    vendorFactories: false,
+                    transports: false
+                }
+            }
+        }
     },
     tracking: {
         name: "TRACKING",
         allowRoute: false,
         permissions: {
+            allowApplicationCreate: false,
             menuPermissions: {
                 ...menuPermissions,
                 useCustomNavigation: {
@@ -188,6 +228,7 @@ export const RolesAuthority = {
         name: "ORDER",
         allowRoute: false,
         permissions: {
+            allowApplicationCreate: true,
             menuPermissions: {
                 ...menuPermissions,
                 useCustomNavigation: {
@@ -229,6 +270,7 @@ export const RolesAuthority = {
         name: "CONTRACTOR",
         allowRoute: false,
         permissions: {
+            allowApplicationCreate: false,
             menuPermissions: {
                 ...menuPermissions,
                 useSupplyNavigation: {
@@ -269,6 +311,7 @@ export const RolesAuthority = {
     declarant: {
         name: "DECLARANT",
         allowRoute: false,
+        allowApplicationCreate: false,
         permissions: {
             menuPermissions: {
                 ...menuPermissions,

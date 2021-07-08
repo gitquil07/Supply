@@ -55,14 +55,9 @@ const NewCreate = ({ match }) => {
         }
     );
 
-    useEffect(() => {
-        console.log("stare", state);
-    }, [state])
-
     const [getCustom, customRes] = useLazyQuery(GET_CUSTOM),
           pk = getValueOfProperty(customRes?.data, "pk");
 
-          console.log("pk", pk);
 
     useEffect(() => {
         if(id !== undefined){
@@ -90,10 +85,6 @@ const NewCreate = ({ match }) => {
         pk? submitData(state, pk) : submitData(state);
         
     }
-
-    useEffect(() => {
-        console.log("state", state);
-    }, [state]);
 
     const handleCheckBoxChange = e => {
         let checkedStatuses = state.status.slice(0),

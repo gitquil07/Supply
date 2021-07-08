@@ -1,7 +1,6 @@
 import moment from "moment";
 import { Row, RowGray } from "components/Row";
 import { setHeading } from "utils/functions";
-import Switch from "@material-ui/core/Switch";
 
 export const generateColumns = (switchActivation) => {
     return [
@@ -9,7 +8,8 @@ export const generateColumns = (switchActivation) => {
             name: "id",
             label: "ID",
             options: {
-                display: "none"
+                filter: false,
+                display: "excluded"
             }
         },
         {
@@ -47,7 +47,7 @@ export const generateColumns = (switchActivation) => {
             label: "Username",
             options: {
                 filter: true,
-                sort: false,
+                sort: true,
             }
         },
         {
@@ -55,7 +55,7 @@ export const generateColumns = (switchActivation) => {
             label: "Роли",
             options: {
                 filter: true,
-                sort: false,
+                sort: true,
             }
         },
         {
@@ -65,9 +65,33 @@ export const generateColumns = (switchActivation) => {
                 filter: true,
                 sort: false,
                 customBodyRender: (value) => {
-                    return value.join(", ");
+                    return value.map(factory => <Row>{factory}</Row>);
                 }
             }
         },
+        {
+            name: "firstName",
+            label: "Имя",
+            options: {
+                filter: true,
+                display: "none"
+            }
+        },
+        {
+            name: "lastName",
+            label: "Фамилия",
+            options: {
+                filter: true,
+                display: "none" 
+            }
+        },
+        {
+            name: "phoneNumber",
+            label: "Тел. номер",
+            options: {
+                filter: true,
+                display: "none"
+            }
+        }
     ];
 }
