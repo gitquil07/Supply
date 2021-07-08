@@ -160,7 +160,6 @@ const TrackingTransportCreate = ({ match }) => {
     const [shippingDate, setShippingDate] = useState(new Date());
 
     const shipDate = applicationInfo?.shippingDate;
-    console.log("shipDate", shipDate);
     
     useEffect(() => {
 
@@ -169,13 +168,8 @@ const TrackingTransportCreate = ({ match }) => {
             setShippingDate(shipDate);
 
         }
-        console.log("shipDate", shipDate);
 
     }, [shipDate]);
-
-    useEffect(() => {
-        console.log("shippingDate", shippingDate);
-    }, [shippingDate]);
 
 
     const handleShippingDateChange = (date) => {
@@ -234,8 +228,6 @@ const TrackingTransportCreate = ({ match }) => {
                     status: trackingStatuses.find(status => status.value === additionalData.status)?.label
                 }]
             };
-
-            console.log("additionalData requestBody", requestBody);
 
             requestBody.trDate = moment(requestBody.trDate).format("YYYY-MM-DD");
 

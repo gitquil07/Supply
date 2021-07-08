@@ -175,7 +175,6 @@ const ReportTable = ({columns, tableData}) => {
                                                     }     
                                             }
                                                     
-                                        // console.log("cageClasses", cageClasses);
                                         // debugger;
                                         if(flags.indexOf(colIdx + 1) > -1){
                                             cageClasses += " last";
@@ -184,9 +183,7 @@ const ReportTable = ({columns, tableData}) => {
                                             cageClasses += " first";
                                         }
 
-                                        // console.log("cage classes", cageClasses);
                                         return <td className={cageClasses}>{goToNewLine(col)}</td>
-                                        // return <td className={cageClasses}>{col}</td>
                                 })
                             }
                         </tr>

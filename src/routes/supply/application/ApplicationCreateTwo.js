@@ -351,8 +351,6 @@ const ApplicationCreate = ({ match }) => {
         }
 
 
-        // console.log("requestBody", requestBody);
-
         if (pk) {
             handleSubmit(exceptKey(requestBody, ["orders"]), pk);
         } else {
@@ -909,7 +907,6 @@ const Measure = styled.span`
     color: #5762B2;
 
     ${({ index }) => {
-        console.log(index)
         return index ? css`
             position:relative;
 

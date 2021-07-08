@@ -25,7 +25,6 @@ const GET_TRACKING_COUNT = gql`
 }  
 `;
 
-
 export const Sidebar = () => {
     const [state, setState] = useState({
         supply: false,
@@ -36,11 +35,9 @@ export const Sidebar = () => {
 
     const [getTrackingCount, trackingCountRes] = useLazyQuery(GET_TRACKING_COUNT);
 
-    console.log("trackingCount", trackingCountRes.data);
 
     const totalTrackingCount = trackingCountRes?.data?.tracking?.trackings?.edgeCount;
 
-    console.log("totalTrackingCount", totalTrackingCount);
 
     useEffect(() => {
         getTrackingCount();
