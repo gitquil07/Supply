@@ -2,7 +2,7 @@ import { ApolloClient, HttpLink, ApolloLink, InMemoryCache, concat } from '@apol
 import { onError } from "@apollo/client/link/error";
 
 const httpLink = new HttpLink({
-    uri: 'http://supply-api.artelgroup.org/graphql/'
+    uri: 'https://supply-api.artelgroup.org/graphql/'
 });
 
 const logoutLink = onError(({ networkError }) => {
