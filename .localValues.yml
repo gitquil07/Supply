@@ -1,4 +1,4 @@
-image: "125061666750.dkr.ecr.us-east-1.amazonaws.com/supply-front-prod:v2"
+image: "125061666750.dkr.ecr.us-east-1.amazonaws.com/supply-front-prod:v5"
 
 ingress:
   host: supply.artelgroup.org
