@@ -2,15 +2,15 @@ import { Helmet } from 'react-helmet';
 import { useTitle } from 'hooks';
 import DatePickers from 'components/Inputs/DatePickers';
 import { CustomMUIDataTable } from "components/CustomMUIDataTable";
-import { CUSTOMS } from './gql';
+import { CUSTOMS, CUSTOM_FILE_CREATE, GET_CUSTOM_TEMPLATE } from './gql';
 import { generateColumns } from './TableData';
 import { useMemo } from 'react';
-import { FlexForHeader } from "components/Flex";
-import { ButtonWithIcon } from "components/Buttons";
 import { Pagination } from 'components/Pagination';
 import { usePagination } from "hooks";
 import { CustomRowGenerator, getList } from "utils/functions";
 import { modes } from "utils/static";
+import { BulkUpload } from "components/BulkUpload";
+import styled from "styled-components";
 
 
 const NewList = ({ match }) => {
@@ -90,16 +90,22 @@ const NewList = ({ match }) => {
     return (
         <>
             <Helmet title={title} />
-            <FlexForHeader>
-                <DatePickers mR="15px"
-                    fromDate={fromDateChange}
-                    toDate={toDateChange}
-                    changeFrom={setFromDateChange}
-                    changeTo={setToDateChange}
-                    buttonClicked={handleDateApply}
+            <DatePickers
+                fromDate={fromDateChange}
+                toDate={toDateChange}
+                changeFrom={setFromDateChange}
+                changeTo={setToDateChange}
+                buttonClicked={handleDateApply}
+            />
+            <BulkUploadWrapper>
+                <BulkUpload 
+                    query={GET_CUSTOM_TEMPLATE} 
+                    keyName="customsTemplate"
+                    message="Данные"
+                    mutation={CUSTOM_FILE_CREATE}   
+                    withoutSelection={true} 
                 />
-                <ButtonWithIcon name="создать таможню" url={`${match.url}/create`} />
-            </FlexForHeader>
+            </BulkUploadWrapper>
             <CustomMUIDataTable
                 title={"Список новых таможен"}
                 data={list}
@@ -118,3 +124,8 @@ const NewList = ({ match }) => {
 };
 
 export default NewList;
+
+
+const BulkUploadWrapper = styled.div`
+    margin-bottom:20px;
+`;

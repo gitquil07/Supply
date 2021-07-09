@@ -8,7 +8,7 @@ import { Footer } from "components/Footer";
 import { Button } from "components/Buttons";
 
 import { useLazyQuery } from "@apollo/client";
-import { UPDATE_CUSTOM, GET_CUSTOM, GET_CUSTOM_TEMPLATE, CUSTOM_FILE_CREATE } from "./gql";
+import { UPDATE_CUSTOM, GET_CUSTOM } from "./gql";
 import { useEffect } from "react";
 import MenuItem from "@material-ui/core/MenuItem";
 import { useHistory } from "react-router-dom";
@@ -18,7 +18,6 @@ import { customModes, modes } from "utils/static";
 import { getValueOfProperty } from "utils/functions";
 import styled, { css } from "styled-components";
 import arrow from "assets/icons/checkmark.svg"
-import { BulkUpload } from "components/BulkUpload";
 
 const initialState = {
     files: [],
@@ -139,13 +138,6 @@ const NewCreate = ({ match }) => {
                         )
                     }
                 </Block>
-                <BulkUpload 
-                    query={GET_CUSTOM_TEMPLATE} 
-                    keyName="customsTemplate"
-                    message="Данные"
-                    mutation={CUSTOM_FILE_CREATE}   
-                    withoutSelection={true} 
-                />
             </Form>
             <Footer justify="flex-end">
                     <Button name={pk? "Сохранить" : "Создать"} clickHandler={() => handleSubmitData()} /> 

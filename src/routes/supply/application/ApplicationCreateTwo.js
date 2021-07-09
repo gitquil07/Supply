@@ -51,7 +51,7 @@ const initialState = {
     packageOnPallet: "",
     transportCount: "",
     shippingDate: new Date(),
-    status: undefined,
+    // status: undefined,
     transportMix: false
 };
 
@@ -254,9 +254,10 @@ const ApplicationCreate = ({ match }) => {
             setOrderTemplate(selectedOrders);
 
         }
-    }, [applicationRes?.data?.application?.application?.pk]);
+    }, [applicationRes?.data?.application?.application?.pk, ]);
 
     useEffect(() => {
+        console.log("orders", orders)
         if(state.orders.length > 0){
             getOrderItems({
                 variables: {
@@ -307,7 +308,7 @@ const ApplicationCreate = ({ match }) => {
         let requestBody = {
             ...state,
             shippingDate: moment(state.shippingDate).format("YYYY-MM-DD"),
-            status: statuses.find(status => status.value === state.status)?.label,
+            // status: statuses.find(status => status.value === state.status)?.label,
             degreeOfDanger: degreeOfDanger.find(degree => degree.value === state.degreeOfDanger)?.label
         }
 
@@ -691,7 +692,7 @@ const ApplicationCreate = ({ match }) => {
                         </div>
 
                         <CustomPicker label="Дата отгрузки" date={state.shippingDate} name="shippingDate" stateChange={date => handleDateChange(date)} />
-                        <div>
+                        {/* <div>
                             <CustomSelector label="Статус" name="status" value={state.status} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.status.length ? true : false}>
                                 {
                                     statuses.map(status => {
@@ -703,7 +704,7 @@ const ApplicationCreate = ({ match }) => {
                             {
                                 validationMessages.status.length ? <ValidationMessage>{validationMessages.status}</ValidationMessage> : null
                             }
-                        </div>
+                        </div> */}
                     </>
 
                 </AddibleInput>

@@ -146,7 +146,6 @@ query getApplication($id : ID!){
       packageOnPallet
       transportCount
       shippingDate,
-      status
       transportMix
     }
   }

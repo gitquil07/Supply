@@ -124,9 +124,7 @@ const TrackingTransportCreate = ({ match }) => {
         vendors = vendorsRes?.data?.vendor?.vendors.edges || [],
         trackingInfo = trackingInfoRes?.data ? exceptKey(trackingInfoRes?.data?.tracking.tracking, ["application", "__typename", "locations"]) : null,
         locations = trackingInfoRes?.data?.tracking.tracking.locations.edges.map(({ node }) => {
-            const obj = exceptKey(node, ["__typename"]);
-            obj.status = trackingStatuses.find(trackStatus => trackingInfoRes?.data?.tracking.tracking.status == trackStatus.value).label;
-            return obj;
+            return exceptKey(node, ["__typename"]);
         }) || [],
         applicationInfo = trackingInfoRes?.data?.tracking?.tracking?.application,
         pk = trackingInfoRes?.data?.tracking?.tracking?.pk,
@@ -143,6 +141,9 @@ const TrackingTransportCreate = ({ match }) => {
             }
         }),
         ApplicationFiles = applicationInfo?.files?.edges;
+
+
+        console.log("locations", locations);
 
 
     const [updateTracking] = useMutation(UPDATE_TRACKING, {
