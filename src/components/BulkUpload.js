@@ -10,6 +10,7 @@ import { CustomSelector } from "components/Inputs/CustomSelector";
 import { CustomizableInputs } from "components/ComponentsForForm/CustomizableInputs"
 import { getList } from "utils/functions";
 import { useCustomMutation, useFormData } from "hooks";
+import { Loading } from "./LoadingIndicator";
 
 
 const GET_FACTORIES_LIST = gql`
@@ -54,7 +55,8 @@ export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection
 
 
     const {
-        submitData
+        submitData,
+        mutationLoading
     } = useCustomMutation({
         graphQlQuery: {
             queryCreate: mutation,
@@ -62,7 +64,7 @@ export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection
         }
     },
     message,
-    () => {}
+    () => setLoading(false)
     )
 
     useEffect(() => {
@@ -75,11 +77,11 @@ export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection
         if(state.factory !== ""){
             submitData({
                 ...state,
-                file: files.uploaded[0].file_id
+                file: files.uploaded[0]?.file_id
             });
         }else{
             submitData({
-                file: files.uploaded[0].file_id
+                file: files.uploaded[0]?.file_id
             });
         }
 
@@ -122,7 +124,7 @@ export const BulkUpload = ({ mutation, message, query, keyName, withoutSelection
                 removeClicked={(id) => setFiles({ ...files, uploaded: files.uploaded.filter((e) => e.file_id !== id) })}
              />
             <p>
-                <Button onClick={handleCreate}>{"сохранить"}</Button>
+                <Button onClick={handleCreate} disabled={loading}>{mutationLoading?<Loading fs="17">сохранить</Loading> : "сохранить"}</Button>
             </p>
         </Wrapper>
     );

@@ -18,7 +18,7 @@ import { GET_ORDER_ITEMS, GET_FIRMS, GET_INVOICES, CREATE_INVOICE, UPDATE_INVOIC
 import CustomPicker from "components/Inputs/DatePicker";
 import { CustomNumber } from "components/Inputs/CustomNumber";
 import Switch from "@material-ui/core/Switch";
-import { useTemplate, useFormData, useCustomMutation, useToggleDialog } from "hooks";
+import { useFormData, useCustomMutation, useToggleDialog } from "hooks";
 import { useHistory } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
 import { useState, useEffect, useMemo } from 'react';
@@ -152,8 +152,8 @@ const ApplicationCreate = ({ match }) => {
             )
 
     useEffect(() => {
-        getFirms();
         getOrders();
+        getFirms();
         getTransportTypes();
         getTrackingUserTypes();
         getMixTrackingUsertype();
@@ -177,8 +177,9 @@ const ApplicationCreate = ({ match }) => {
     useEffect(() => {
         const application = applicationRes?.data?.application?.application;
 
-        if (application !== undefined) {
-
+    
+        if (application !== undefined && orders.length !== 0) {
+            
             if (applicationRes?.data?.application?.application?.files?.edges.length > 0) {
                 setFiles({
                     ...files,
@@ -194,6 +195,7 @@ const ApplicationCreate = ({ match }) => {
                 })
             }
 
+
             const items = getList(application.applicationItems).map(({ node }, idx) => {
                 return {
                     ...exceptKey(node, ["__typename"]),
@@ -203,7 +205,6 @@ const ApplicationCreate = ({ match }) => {
                 }
             });
 
-
             // Distribute applicationItems between orders
 
             // 1) Get order objects
@@ -212,9 +213,10 @@ const ApplicationCreate = ({ match }) => {
 
             application.orders.edges.forEach(({node}) => {
                 const orderPk = node.pk;
-
+                
                 const found = orders.find(({node}) => node.pk === orderPk)?.node;
-                      
+                
+
                 const order = {
                     pk: found?.pk,
                     publicId: found?.publicId,
@@ -254,10 +256,9 @@ const ApplicationCreate = ({ match }) => {
             setOrderTemplate(selectedOrders);
 
         }
-    }, [applicationRes?.data?.application?.application?.pk, ]);
+    }, [applicationRes?.data?.application?.application?.pk, orders.length]);
 
     useEffect(() => {
-        console.log("orders", orders)
         if(state.orders.length > 0){
             getOrderItems({
                 variables: {
