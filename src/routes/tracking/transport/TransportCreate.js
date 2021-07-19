@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { Helmet } from "react-helmet";
 import { useToggleDialog } from "../../../hooks";
 
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { useTitle } from "hooks";
 import { Form } from "components/Form";
@@ -141,9 +141,6 @@ const TrackingTransportCreate = ({ match }) => {
             }
         }),
         ApplicationFiles = applicationInfo?.files?.edges;
-
-
-        console.log("locations", locations);
 
 
     const [updateTracking] = useMutation(UPDATE_TRACKING, {
@@ -696,50 +693,6 @@ const ContainerColumn = styled.div`
         color:rgba(0, 0, 0, 0.5);
     }
 `;
-
-// const CardContainer = styled.div`   
-//     display:flex;
-//     column-gap:10px;
-// `;
-
-// const CardElem = styled.div`
-//     display:flex;
-//     flex-direction:column;
-//     background-color:#fff;
-//     border:1px solid rgba(0, 0, 0, 0.1);
-//     padding:10px;
-//     box-sizing:border-box;
-//     border-radius:5px;
-//     width:100%;
-
-//     &>div:first-child{
-//         padding-top:0;
-//     }
-
-//     &>div:last-child{
-//         padding-bottom:0;
-//         border:none;
-//     }
-
-// `;
-
-// const CardRow = styled.div`
-//     display:flex;
-//     justify-content:space-between;
-//     padding:10px 0;
-//     border-bottom:1px solid rgba(0, 0, 0, 0.1);
-//     font-size:18px;
-
-//     h4{
-//         font-weight:normal;
-//         margin:0;
-//     }
-
-//     span{
-//         color:rgba(0, 0, 0, 0.5);
-//     }
-// `;
-
 
 const AddibleInput = styled.div`
     display:grid;

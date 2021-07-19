@@ -70,7 +70,7 @@ const TransportList = ({ match }) => {
             trDate: node?.trDate,
             companyName: node?.vendor?.companyName,
             transportNumber: node?.transportNumber,
-            location: locations[locations.length - 1],
+            location: locations[0],
             trackingStatus: trackingStatuses.find(status => status.value === node.status)?.label,
             inWayDayCount: node?.application?.inWayDayCount,
             amount: node?.amount,
@@ -121,13 +121,6 @@ const TransportList = ({ match }) => {
             deliveryConditions: node?.application?.invoices?.edges?.map(({node}) => node?.deliveryCondition),
             note: node?.application?.invoices?.edges?.map(({node}) => node?.destination),
             relativeWeight: node?.application?.invoices?.edges?.map(({node}) => node?.relativeWeight),
-          
-            // trDate: node?.trDate,
-            // trackingStatus: trackingStatuses.find(status => status.value === node.status)?.label,
-            // amount: node?.amount,
-
-            // // New
-            // station: node?.station,
         }
     });
 
@@ -158,8 +151,6 @@ const TransportList = ({ match }) => {
     const searchableFields = [
         "publicId",
         "trackingUser",
-        // "firms",
-        // "factories",
         "shippingDate",
         "trDate",
         "companyName",
