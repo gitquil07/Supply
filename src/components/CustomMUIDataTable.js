@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import MUIDataTable from "mui-datatables";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import SearchIcon from '@material-ui/icons/YoutubeSearchedFor';
 import PrintIcon from '@material-ui/icons/Receipt';
@@ -8,6 +8,7 @@ import DownloadIcon from '@material-ui/icons/GetApp';
 import ViewColumnIcon from '@material-ui/icons/DynamicFeed';
 import FilterIcon from '@material-ui/icons/GroupWork';
 import CircularProgress from "@material-ui/core/CircularProgress";
+
 
 
 const Container = styled.div`
@@ -19,7 +20,7 @@ const Container = styled.div`
 `
 
 
-export const CustomMUIDataTable = React.memo(({ count, title, data, columns, customRowOptions, searchableFields, loading, onDownload }) => {
+export const CustomMUIDataTable = React.memo(({ count, title, data, columns, customRowOptions, searchableFields, loading, onDownload, heightOffset }) => {
 
     const [words, setWords] = useState("");
 
@@ -200,7 +201,7 @@ export const CustomMUIDataTable = React.memo(({ count, title, data, columns, cus
             data={filterList(data)}
             columns={columns}
             options={options}
-            {...{ components }}
+            {...{ components, heightOffset }}
         />
     )
 
@@ -213,7 +214,7 @@ const StyledMUIDataTable = styled(MUIDataTable)`
     padding: 10px; 
 
     & > div:nth-child(3){
-        height: calc(100vh - 320px) !important;
+        height: calc(100vh - ${({heightOffset}) => heightOffset? heightOffset+"px" : "320px"}) !important;
         overflow-y:auto;
 
 

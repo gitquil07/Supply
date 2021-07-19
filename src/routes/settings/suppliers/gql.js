@@ -47,23 +47,6 @@ query MyQuery {
 }
 `;
 
-// export const GET_SAP_ACCOUNTS = gql`
-// query getAccountGroups{
-//   vendor {
-//     vendors {
-//       edges {
-//         node {
-//           sapAccountGroup {
-//             name
-//             pk
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
-// `;
-
 export const CREATE_VENDOR = gql`
 mutation createVendor($input: VendorCreateMutationInput!) {
   vendor {

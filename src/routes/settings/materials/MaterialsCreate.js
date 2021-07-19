@@ -121,6 +121,10 @@ const SuppliersCreate = ({ match }) => {
         }
     }, [state.factory])
 
+    useEffect(() => {
+        console.log("price", state.price);
+    }, [state.price]);
+
     const { submitData, handleSubmit, validationMessages, mutationLoading } = useCustomMutation({
         graphQlQuery: {
             queryCreate: CREATE_VENDOR_PRODUCT,
@@ -138,7 +142,9 @@ const SuppliersCreate = ({ match }) => {
     const beforeSubmit = () => {
         const data = exceptKey(state, ["factory"]);
 
-        data.price = resetPriceFormat(data.price);
+        data.price = "" + resetPriceFormat(data.price);
+
+        console.log("price data", data);
 
         pk ? handleSubmit(exceptKey(data, ["vendorFactory", "product"]), pk) : handleSubmit(data);
     }

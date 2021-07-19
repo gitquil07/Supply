@@ -222,7 +222,7 @@ mutation updateTracking($input: TrackingUpdateMutationInput!) {
 export const GET_VENDORS = gql`
 query getVendors {
   vendor {
-    vendors {
+    vendors(role: "транспортная компания") {
       edges {
         node {
           pk

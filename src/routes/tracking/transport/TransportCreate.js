@@ -377,7 +377,7 @@ const TrackingTransportCreate = ({ match }) => {
                         }
                         {
                             isSupplyRoles(role, "Номер транспорта", state?.transportNumber) ||
-                            <CustomNumber name="transportNumber" label="Номер транспорта" value={state?.transportNumber} stateChange={e => handleChange({ fElem: e })} fullWidth/>
+                            <CustomInput name="transportNumber" label="Номер транспорта" value={state?.transportNumber} stateChange={e => handleChange({ fElem: e })} fullWidth/>
 
                         }
                         {

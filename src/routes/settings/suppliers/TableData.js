@@ -31,7 +31,7 @@ export const generateColumns = (url) => {
         },
         {
             name: "contactPersonVendorPhone",
-            label: "Контактное лицо / Поставщик\nНомер телефона",
+            label: "Контактное лицо / Фирма\nНомер телефона",
             options: {
                 filter: false,
                 sort: false,

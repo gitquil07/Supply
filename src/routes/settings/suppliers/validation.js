@@ -12,7 +12,7 @@ export const SuppliersValidation = object().shape({
     street: string().required("Поле 'Улица' обязательно к заполнению"),
     house: string().required("Поле 'Дом' обязательно к заполнению"),
     role: string().typeError("Поле 'Роль' обязательно к заполнению").oneOf(vendorEnum),
-    postcode: number().required("Поле 'Почтовый индекс' обязательно к заполнению"),
+    postcode: number().typeError("Поле 'Почтовый индекс' должен содержать только цифры"),
     sapCity: string().required("Поле 'Город' обязательно к заполнению")
 });
 

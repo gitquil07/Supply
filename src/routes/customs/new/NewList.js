@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet';
 import { useTitle } from 'hooks';
+import { Form } from "components/Form";
 import DatePickers from 'components/Inputs/DatePickers';
 import { CustomMUIDataTable } from "components/CustomMUIDataTable";
 import { CUSTOMS, CUSTOM_FILE_CREATE, GET_CUSTOM_TEMPLATE } from './gql';
@@ -113,6 +114,7 @@ const NewList = ({ match }) => {
                 count={amountOfElemsPerPage}
                 customRowOptions={CustomRowGenerator(url)}
                 loading={dataPaginationRes.loading}
+                heightOffset="715"
 
                 {
                     ...{ searchableFields }

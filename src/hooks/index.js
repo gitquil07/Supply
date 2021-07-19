@@ -371,6 +371,7 @@ export const useCustomMutation = ({ graphQlQuery: { queryCreate, queryUpdate } }
             abortEarly: false
         })
             .then(val => {
+                console.log("price val", val);
                 pk ? submitData(val, pk, id) : submitData(val, id)
             })
             .catch(errObj => {

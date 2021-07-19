@@ -26,7 +26,7 @@ export const generateColumns = () => {
         },
         {
             name: "vendor",
-            label: "Поставщик",
+            label: "Партнер",
             options: {
                 filter: true,
                 sort: true,

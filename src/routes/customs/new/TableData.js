@@ -37,7 +37,7 @@ export const generateColumns = () => {
                     return (
                         <>
                             {
-                                factories.map((factory, idx) => 
+                                factories?.map((factory, idx) => 
                                     <Row>{factory} / {vendors[idx]}</Row>    
                                 )
                             }

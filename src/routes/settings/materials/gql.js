@@ -159,6 +159,7 @@ query getVendorProduct($id: ID!) {
       }
       deliveryDayCount
       productionDayCount
+      moq
     }
   }
 }

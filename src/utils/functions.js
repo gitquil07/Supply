@@ -201,7 +201,7 @@ export const formatPrice = (price) => {
             wholePart = price.slice(isNegative? 1 : 0);
             
         if(separator){
-            fractionalPart = price.slice(separator + 1);
+            fractionalPart = price.slice(separator + 1, separator + 3);
             wholePart = price.slice(isNegative? 1 : 0, separator);
         }
         
