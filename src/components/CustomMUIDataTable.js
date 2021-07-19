@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import MUIDataTable from "mui-datatables";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import SearchIcon from '@material-ui/icons/YoutubeSearchedFor';
 import PrintIcon from '@material-ui/icons/Receipt';
