@@ -3,7 +3,6 @@ import { NotificationManager } from "react-notifications";
 import { useHistory } from 'react-router-dom';
 import { Row, RowGray } from "components/Row";
 import XLSX from "sheetjs-style";
-import { ifElse } from "ramda";
 
 
 export const setTitleWithDateRange = (name, fromDate, toDate, format) => {
@@ -389,7 +388,7 @@ export const convertDataIntoExcelSpreadSheet = (data, columnNames) => {
     // After creating workbook out next step is add necessary
     // configurations to this workbook  
     // To set this configurations we will use 
-    // workbook (.Props) rpoeprty this property name
+    // workbook (.Props) property this property name
     // is reserved. (.Props) property contains 
     // object.
     
