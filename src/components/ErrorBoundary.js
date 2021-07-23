@@ -1,6 +1,6 @@
 import React from "react";
-import { Row } from "components/Row";
 import styled, { css } from "styled-components";
+import { Row } from "components/Row";
 
 class ErrorBoundary extends React.Component{
 
@@ -33,41 +33,61 @@ class ErrorBoundary extends React.Component{
         });
     }
 
-
+    refresh(){
+        window.location.reload();
+    }
 
     render(){
+        
         
         const { hasError, error, errorInfo, isOpen } = this.state,
               { children: renderedComponent } = this.props;
         
+        const chunkFailedMessage = /Loading chunk [\d]+ failed/;
+        const isChunkFailedMessage = chunkFailedMessage.test(error?.message);
 
         const stackTrace = errorInfo?.componentStack.toString().split(" at ");
 
         if(hasError){
             return (
                 <div>
-                    <h1>Something went wrong</h1>
-                    <More 
-                        { ...{ isOpen } }
-                        onClick={() => this.toggle()}>Подробнее</More>
                     {
-                        isOpen && <>
+                        isChunkFailedMessage?
+                        <Notification>
+                            Плохое соедиение с интернетом
                             <p>
-                                <b>{error.toString()}</b>
-                            </p>
-                            <b>Stack trace: </b><br />
+                                <RefershBtn onClick={this.refresh.bind(this)}>попробовать обновить страницу</RefershBtn> 
+                            </p> 
+                        </Notification>
+                        :
+                        <>
+                            <h1>Something went wrong</h1>
+                            {error.toString()}
+                            <More 
+                                { ...{ isOpen } }
+                            onClick={() => this.toggle()}>Подробнее</More>
                             {
-                                stackTrace && stackTrace.map(msg => {
-                                    return (
-                                        <Row>
-                                            <b>{msg.slice(0, msg.indexOf(" "))}</b>
-                                            {msg.slice(msg.indexOf(" "))}
-                                        </Row>
-                                    )
-                                })
+                                isOpen && <>
+                                    <p>
+                                        <b>{error.toString()}</b>
+                                    </p>
+                                    <b>Stack trace: </b><br />
+                                    {
+                                        stackTrace && stackTrace.map(msg => {
+                                            return (
+                                                <Row>
+                                                    <b>{msg.slice(0, msg.indexOf(" "))}</b>
+                                                    {msg.slice(msg.indexOf(" "))}
+                                                </Row>
+                                            )
+                                        })
+                                    }
+                                </>
                             }
+        
                         </>
                     }
+                    
                 </div>
             ) 
         }else{
@@ -119,3 +139,14 @@ const More = styled.b`
         } 
     }
 `;
+
+const RefershBtn = styled.button`
+    cursor: pointer;
+    font-size:20px;
+`;
+
+const Notification = styled.p`
+    font-size:30px;
+    text-align:center;
+`;
+

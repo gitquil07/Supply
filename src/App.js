@@ -72,7 +72,21 @@ const StyledDrawer = styled(Drawer)`
     width: 270px;
     /* background-image: url(${Background}); */
     background-color: #4A4D63;
-    background-size: cover; 
+    background-size: cover;
+    
+    ::-webkit-scrollbar-track{
+      background-color:transparent;
+    }
+
+    ::-webkit-scrollbar-thumb{
+      background:rgba(255, 255, 255, .5);
+      border-radius:5px;
+    }
+
+    ::-webkit-scrollbar{
+      width:5px;
+    }
+    
   }
 `;
 
