@@ -25,7 +25,7 @@ import { useState, useEffect, useMemo } from 'react';
 import MenuItem from "@material-ui/core/MenuItem";
 import { formatPrice, getList, getValueOfProperty } from "utils/functions";
 import moment from 'moment';
-import { statuses, degreeOfDanger } from "utils/static";
+import { degreeOfDanger } from "utils/static";
 import Checkbox from "@material-ui/core/Checkbox";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -51,7 +51,6 @@ const initialState = {
     packageOnPallet: "",
     transportCount: "",
     shippingDate: new Date(),
-    // status: undefined,
     transportMix: false
 };
 
@@ -297,11 +296,7 @@ const ApplicationCreate = ({ match }) => {
 
     const handleInvoiceDataChange = (e) => {
         const name = e.target.name;
-        // if(name === "amount"){
-        //     setInvoiceData({...invoiceData, [name]: formatInputPrice(e.target.value)});
-        // }else{
-            setInvoiceData({...invoiceData, [name]: e.target.value});
-        // }
+        setInvoiceData({...invoiceData, [name]: e.target.value});
     }
 
     const beforeSubmit = () => {
@@ -309,7 +304,6 @@ const ApplicationCreate = ({ match }) => {
         let requestBody = {
             ...state,
             shippingDate: moment(state.shippingDate).format("YYYY-MM-DD"),
-            // status: statuses.find(status => status.value === state.status)?.label,
             degreeOfDanger: degreeOfDanger.find(degree => degree.value === state.degreeOfDanger)?.label
         }
 
@@ -693,19 +687,6 @@ const ApplicationCreate = ({ match }) => {
                         </div>
 
                         <CustomPicker label="Дата отгрузки" date={state.shippingDate} name="shippingDate" stateChange={date => handleDateChange(date)} />
-                        {/* <div>
-                            <CustomSelector label="Статус" name="status" value={state.status} stateChange={e => handleChange({ fElem: e })} errorVal={validationMessages.status.length ? true : false}>
-                                {
-                                    statuses.map(status => {
-                                        return <MenuItem key={status.label} value={status.value} selected={state.status === status.value}>{status.label}</MenuItem>
-                                    }
-                                    )
-                                }
-                            </CustomSelector>
-                            {
-                                validationMessages.status.length ? <ValidationMessage>{validationMessages.status}</ValidationMessage> : null
-                            }
-                        </div> */}
                     </>
 
                 </AddibleInput>
